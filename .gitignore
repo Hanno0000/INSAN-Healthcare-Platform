@@ -1,0 +1,16 @@
+# Binaries
+*.xlsx
+*.gsheet
+*.ai
+*.eps
+*.pdf
+*.pptx
+*.jpeg
+*.jpg
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
