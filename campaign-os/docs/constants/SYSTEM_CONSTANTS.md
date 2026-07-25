@@ -154,6 +154,15 @@ No creative rewording inside controlled fields.
 - Listicle
 - Before to After
 
+### Production Mode
+- PROJECT_ASSET
+- AI_GENERATED
+
+### Visual Language Style
+- Stylized Realism
+- Semi-Realistic Editorial Illustration
+- 3D Matte Illustration
+
 ---
 
 ## Worker Ownership

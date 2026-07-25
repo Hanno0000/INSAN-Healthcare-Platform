@@ -2,9 +2,9 @@
 
 INSAN Healthcare AI Operating System
 
-Version: 1.2
+Version: 2.0
 
-Status: VISUAL_STAGE write removed — orchestration layer owns all state transitions
+Status: Sprint 1 — Visual Language Integration
 
 Date: July 2026
 
@@ -36,7 +36,7 @@ Stage 3: Quality Assurance (Visual QA)
 
 Visual Planner (Stage 1)
 
-The Media Generation Service receives a validated Creative Package from the Visual Planner's internal runtime payload. This payload contains the Creative Package from Section A and any minor execution-level guidance added by the Visual Planner.
+The Media Generation Service receives a validated Creative Package from the Visual Planner. This includes the Creative Package from Section A, the Production Mode (PROJECT_ASSET or AI_GENERATED), and the Reference Asset Package containing generation instructions and INSAN Visual Language guidelines.
 
 ---
 
@@ -64,9 +64,13 @@ The Media Generation Service passes generated assets to Visual QA for quality va
 | Do NOT Show | No |
 | Text On Design | No |
 
-### Visual Planner Runtime Payload
+### Section B (Visual Planner Output)
 
-Execution-level guidance from Visual Planner's internal runtime payload (if any).
+| Column | Required |
+|---|---|
+| Asset Count | Yes |
+| Production Mode | Yes |
+| Reference Asset Package | Yes |
 
 ---
 
@@ -85,7 +89,9 @@ Execution-level guidance from Visual Planner's internal runtime payload (if any)
 ## Runtime Responsibilities
 
 - Generate visual assets from the Creative Package
+- Apply INSAN Visual Language guidelines to all generated media
 - Support one or multiple assets depending on content format
+- Handle Mode A (PROJECT_ASSET) and Mode B (AI_GENERATED) appropriately
 - Return assets with metadata
 - Use Model Router to determine which model to use based on Content Format
 
@@ -123,7 +129,13 @@ Reads the complete Creative Package directly from Section A:
 | Do NOT Show | No |
 | Text On Design | No |
 
-Also reads execution-level guidance from Visual Planner's internal runtime payload.
+Also reads from Section B:
+
+| Column | Required |
+|---|---|
+| Asset Count | Yes |
+| Production Mode | Yes |
+| Reference Asset Package | Yes |
 
 ---
 

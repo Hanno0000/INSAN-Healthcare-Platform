@@ -2,9 +2,9 @@
 
 INSAN Healthcare AI Operating System
 
-Version: 4.1
+Version: 5.0
 
-Status: Orchestration Ownership Enforced — All VISUAL_STAGE writes removed from workers/services
+Status: Sprint 1 — Visual Language Integration
 
 Date: July 2026
 
@@ -113,12 +113,18 @@ Section A columns (complete Creative Package):
 1. **Read the complete Creative Package** from Section A.
 2. **Verify completeness** — Check that all information required for the requested media format exists.
 3. **Verify production readiness** — Confirm the Creative Package can be executed by the Media Generation Service.
-4. **Add execution guidance** — If minor execution information is missing, add temporary execution-level guidance in memory only.
-5. **Pass package to Media Generation Service** — Invoke the Media Generation Service with the validated Creative Package and any temporary execution guidance.
+4. **Select production mode** — Check Project Assets folder for suitable reference images. If found, select PROJECT_ASSET mode. Otherwise, select AI_GENERATED mode.
+5. **Prepare generation brief** — Create a structured brief for the Media Generation Service including INSAN Visual Language instructions.
+6. **Add execution guidance** — If minor execution information is missing, add temporary execution-level guidance in memory only.
+7. **Pass package to Media Generation Service** — Invoke the Media Generation Service with the validated Creative Package and generation brief.
 
 ### Writes
 
 Asset Count (to Section B)
+
+Production Mode (to Section B)
+
+Reference Asset Package (to Section B)
 
 **Note:** The Visual Planner reports completion. The orchestration layer transitions VISUAL_STAGE to GENERATING.
 
@@ -172,7 +178,11 @@ Section A columns (Creative Package):
 - Do NOT Show
 - Text On Design
 
-Also reads execution-level guidance from Visual Planner's internal runtime payload (if any).
+Also reads from Section B:
+
+- Asset Count
+- Production Mode
+- Reference Asset Package
 
 ### Writes
 
@@ -229,14 +239,18 @@ Section A columns (Creative Package):
 Section B columns:
 
 - Generated Assets
+- Production Mode
+- Reference Asset Package
 
 ### Process
 
 1. **Strategy Alignment Check** — Verify generated assets align with Creative Director's approved strategy.
-2. **Brand Alignment Check** — Validate assets align with hospital brand guidelines.
-3. **Technical Feasibility Check** — Ensure assets meet technical requirements.
-4. **Emotional Coherence Check** — Confirm assets match intended emotional impact.
-5. **Quality Standard Check** — Verify assets meet INSAN premium quality standard.
+2. **Visual Language Compliance** — Validate assets conform to INSAN Visual Language (70/20/10 style ratio, no prohibited styles).
+3. **Brand Alignment Check** — Validate assets align with hospital brand guidelines.
+4. **Technical Feasibility Check** — Ensure assets meet technical requirements.
+5. **Emotional Coherence Check** — Confirm assets match intended emotional impact.
+6. **Production Mode Fidelity** — Verify reference image qualities were respected (Mode A) or Visual Language guidelines followed (Mode B).
+7. **Quality Standard Check** — Verify assets meet INSAN premium quality standard.
 6. **Decision** — Approve, request revision, or reject with clear reasoning.
 
 ### Writes
@@ -466,7 +480,7 @@ Content Pipeline
 
 1. **Creative Director is Source of Truth** — The Creative Package is complete. No worker recreates it.
 
-2. **Visual Planner is Production Readiness** — Validates completeness, does not create.
+2. **Visual Planner is Production Readiness** — Validates completeness, selects production mode, prepares generation brief. Does not create.
 
 3. **Spreadsheet is Persistent Database** — Only write columns that store NEW production information. Temporary data stays in memory.
 
@@ -474,7 +488,9 @@ Content Pipeline
 
 5. **Visual QA validates against Creative Director** — The Creative Package is the standard, not any intermediate interpretation.
 
-6. **Orchestration Layer owns state transitions** — Single authoritative state machine. Workers report completion.
+6. **INSAN Visual Language is mandatory** — All generated media must conform to the visual identity. Style ratio, goals, and prohibitions are enforced at generation and validation.
+
+7. **Orchestration Layer owns state transitions** — Single authoritative state machine. Workers report completion.
 
 ---
 

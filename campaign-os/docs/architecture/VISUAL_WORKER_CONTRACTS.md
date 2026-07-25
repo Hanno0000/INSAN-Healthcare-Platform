@@ -2,9 +2,9 @@
 
 INSAN Healthcare AI Operating System
 
-Version: 8.0
+Version: 9.0
 
-Status: Final Schema Freeze — Ownership Audit Complete
+Status: Sprint 1 — Visual Language Integration
 
 Date: July 2026
 
@@ -117,15 +117,18 @@ Reads the complete Creative Package from Section A:
 - Read the complete Creative Package from Section A
 - Verify that all information required for the requested media format exists
 - Verify production readiness
-- If minor execution information is missing, add execution-level guidance ONLY
-- Pass the finalized Production Package to the Media Generation Service
-- Update VISUAL_STAGE and Asset Count
+- Select production mode (PROJECT_ASSET or AI_GENERATED)
+- Check Project Assets folder for suitable reference images
+- Prepare generation brief for the Media Generation Service
+- Apply INSAN Visual Language guidelines to the generation brief
+- Update VISUAL_STAGE, Asset Count, Production Mode, and Reference Asset Package
 
 ### Decisions It Can Make
 
 - Whether the Creative Package is complete for the requested format
 - Whether production readiness requirements are met
 - What minor execution-level guidance is needed (if any)
+- Production mode selection (PROJECT_ASSET or AI_GENERATED)
 
 ### Decisions It Cannot Make
 
@@ -144,12 +147,16 @@ Provides NEW information not in Section A:
 | Output | Purpose |
 |---|---|
 | Asset Count | Number of media assets to generate |
+| Production Mode | PROJECT_ASSET or AI_GENERATED |
+| Reference Asset Package | Structured brief for Media Generation Service |
 
 ### Columns Written
 
 | Column | Owner |
 |---|---|
 | Asset Count | Visual Planner |
+| Production Mode | Visual Planner |
+| Reference Asset Package | Visual Planner |
 
 ### Stage Transitions
 
@@ -187,17 +194,22 @@ Reads from Section B:
 | Column | Required |
 |---|---|
 | Asset Count | Yes |
+| Production Mode | Yes |
+| Reference Asset Package | Yes |
 
 ### Responsibilities
 
 - Generate visual assets from the Creative Package
+- Apply INSAN Visual Language guidelines to all generated media
 - Support one or multiple assets depending on format
+- Handle Mode A (PROJECT_ASSET) and Mode B (AI_GENERATED) appropriately
 - Return assets with metadata
 
 ### Decisions It Can Make
 
 - Which model to use (via Media Router)
 - How to interpret the Creative Package for generation
+- How to apply Visual Language guidelines
 
 ### Decisions It Cannot Make
 
@@ -277,14 +289,20 @@ Reads from Section B:
 | Column | Required |
 |---|---|
 | Generated Assets | Yes |
+| Production Mode | Yes |
+| Reference Asset Package | Yes |
 
 ### Responsibilities
 
 - Validate alignment with Creative Director's approved strategy
+- Validate compliance with INSAN Visual Language
+- Check style ratio (70/20/10)
+- Check for prohibited styles
 - Check brand consistency
 - Check healthcare credibility
 - Assess technical feasibility
 - Confirm emotional coherence
+- Verify production mode fidelity
 
 ### Decisions It Can Make
 
@@ -404,9 +422,9 @@ PUBLISHING → FAILED (on failure)
 | Component | Reads From | Writes To |
 |---|---|---|
 | Transfer Mechanism | Content Pipeline | Section A (17 columns), VISUAL_STAGE |
-| Visual Planner | Section A + QA feedback | Asset Count |
-| Media Generation Service | Section A + Asset Count | Generated Assets, Generation Status, Generation Timestamp |
-| Visual QA | Section A + Generated Assets | Visual QA Score, Visual QA Decision, Visual QA Notes, Final Asset URL |
+| Visual Planner | Section A + QA feedback + Project Assets | Asset Count, Production Mode, Reference Asset Package |
+| Media Generation Service | Section A + Asset Count + Production Mode + Reference Asset Package | Generated Assets, Generation Status, Generation Timestamp |
+| Visual QA | Section A + Generated Assets + Production Mode + Reference Asset Package | Visual QA Score, Visual QA Decision, Visual QA Notes, Final Asset URL |
 | Publishing Service (RESERVED) | Section A + Final Asset URL | Publishing Status, Publishing Timestamp, Live Post URL |
 | **Orchestration Layer** | Worker results | **VISUAL_STAGE** (all transitions) |
 
@@ -435,6 +453,8 @@ PUBLISHING → FAILED (on failure)
 | Design Notes | READ-ONLY | No |
 | VISUAL_STAGE | Orchestration Layer | No — single writer |
 | Asset Count | Visual Planner | No |
+| Production Mode | Visual Planner | No |
+| Reference Asset Package | Visual Planner | No |
 | Generated Assets | Media Generation Service | No |
 | Generation Status | Media Generation Service | No |
 | Generation Timestamp | Media Generation Service | No |
@@ -453,7 +473,7 @@ PUBLISHING → FAILED (on failure)
 
 1. **Creative Director is Source of Truth** — The Creative Package is complete. No worker recreates it.
 
-2. **Visual Planner is Production Readiness** — Validates completeness, does not create.
+2. **Visual Planner is Production Readiness** — Validates completeness, selects production mode, prepares generation brief. Does not create.
 
 3. **Spreadsheet is Persistent Database** — Only write columns that store NEW production information. Temporary data stays in memory.
 
@@ -461,11 +481,13 @@ PUBLISHING → FAILED (on failure)
 
 5. **Visual QA validates against Creative Director** — The Creative Package is the standard, not any intermediate interpretation.
 
-6. **Every column has exactly one owner** — No orphan columns. No undefined ownership.
+6. **INSAN Visual Language is mandatory** — All generated media must conform to the visual identity. Style ratio, goals, and prohibitions are enforced at generation and validation.
 
-7. **Orchestration Layer owns state transitions** — Workers report completion. The orchestration layer (WorkerRunner) performs all VISUAL_STAGE transitions. Single authoritative state machine.
+7. **Every column has exactly one owner** — No orphan columns. No undefined ownership.
 
-8. **AI Worker column is per-pipeline** — Content workers write to Content Pipeline's AI Worker column. Visual workers write to Visual Pipeline's AI Worker column. They never cross boundaries.
+8. **Orchestration Layer owns state transitions** — Workers report completion. The orchestration layer (WorkerRunner) performs all VISUAL_STAGE transitions. Single authoritative state machine.
+
+9. **AI Worker column is per-pipeline** — Content workers write to Content Pipeline's AI Worker column. Visual workers write to Visual Pipeline's AI Worker column. They never cross boundaries.
 
 ---
 

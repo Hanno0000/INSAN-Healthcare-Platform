@@ -2,9 +2,9 @@
 
 INSAN Healthcare AI Operating System
 
-Version: 8.0
+Version: 9.0
 
-Status: Final Schema Freeze — Ownership Audit Complete
+Status: Sprint 1 — Visual Language Integration
 
 Date: July 2026
 
@@ -80,31 +80,44 @@ The Creative Director produces production-quality strategic output (Design Promp
 
 The Visual Planner's format-specific visual plan becomes the direct input to the Image Generation Service. There is no intermediate worker between planning and generation.
 
+### AP-014: INSAN Visual Language is Mandatory
+
+All generated media must conform to the INSAN Visual Language. The visual identity follows a 70/20/10 style ratio (Stylized Realism, Semi-Realistic Editorial Illustration, 3D Matte). Strictly prohibited styles include cartoon, anime, Pixar, comic-book, hyper-realistic AI photography, uncanny faces, plastic skin, and obvious AI artifacts. The Visual Language is enforced at both generation and validation stages.
+
+### AP-015: Production Mode Selection
+
+The Visual Planner selects the production mode (PROJECT_ASSET or AI_GENERATED) based on available project reference images. Mode A (PROJECT_ASSET) is preferred when suitable reference images exist. Mode B (AI_GENERATED) is the fallback. The selected mode is communicated to the Media Generation Service through the Reference Asset Package.
+
 ---
 
 ## 3. Worker Responsibilities
 
 ### Visual Planner
 
-**Unique Capability:** Format-Specific Visual Storytelling Planning
+**Unique Capability:** Production Mode Selection and Generation Brief Preparation
 
-The Visual Planner receives the Creative Director's strategic output from Section A (Design Prompt, Visual Concept, Visual Priority, Composition, Design Mood, Visual Elements, Do NOT Show, Text On Design, Design Notes). It translates this strategic direction into a format-specific visual plan that defines how the concept should be visualized for the target content format.
+The Visual Planner receives the Creative Director's strategic output from Section A (Design Prompt, Visual Concept, Visual Priority, Composition, Design Mood, Visual Elements, Do NOT Show, Text On Design, Design Notes). It validates production readiness and selects the appropriate production mode.
 
-The Visual Planner does not recreate or rewrite the Creative Director's direction. It adapts the approved concept for the specific format requirements (e.g., how to sequence a carousel, how to structure a video storyboard, how to compose a static image).
+The Visual Planner checks the Project Assets folder for suitable reference images. If found, it selects PROJECT_ASSET mode and prepares a reference-based generation brief. If not found, it selects AI_GENERATED mode and prepares a Visual Language-based generation brief.
 
-The Visual Planner's output becomes the direct input to the Image Generation Service.
+The Visual Planner does not recreate or rewrite the Creative Director's direction. It validates completeness and prepares the generation brief for the Media Generation Service.
 
-The Visual Planner is responsible only for planning. It does not evaluate quality, compliance, or coherence. Those responsibilities belong to Visual QA.
+The Visual Planner's output (Asset Count, Production Mode, Reference Asset Package) becomes the direct input to the Media Generation Service.
+
+The Visual Planner is responsible only for production readiness and mode selection. It does not evaluate quality, compliance, or coherence. Those responsibilities belong to Visual QA.
 
 ### Visual QA
 
-**Unique Capability:** Production Quality Validation
+**Unique Capability:** Production Quality Validation and Visual Language Compliance
 
-Visual QA is the only component responsible for evaluation, compliance, and approval. It validates that generated assets faithfully represent the Creative Director's approved strategy and the Visual Planner's format-specific plan.
+Visual QA is the only component responsible for evaluation, compliance, and approval. It validates that generated assets faithfully represent the Creative Director's approved strategy and comply with the INSAN Visual Language.
 
 Visual QA checks for:
 - Alignment with approved communication objective
 - Alignment with approved emotional direction
+- INSAN Visual Language compliance (70/20/10 style ratio)
+- Prohibited style detection (cartoon, anime, Pixar, etc.)
+- Production mode fidelity (reference image respect for Mode A)
 - Brand consistency
 - Healthcare credibility
 - Technical feasibility
@@ -253,6 +266,8 @@ Section B contains columns written only by designated workers. Each column has e
 |---|---|---|
 | VISUAL_STAGE | Orchestration Layer | Master production state |
 | Asset Count | Visual Planner | Number of media assets to generate |
+| Production Mode | Visual Planner | PROJECT_ASSET or AI_GENERATED |
+| Reference Asset Package | Visual Planner | Structured brief for Media Generation Service |
 | Generated Assets | Media Generation Service | One or multiple generated files |
 | Generation Status | Media Generation Service | Generation status |
 | Generation Timestamp | Media Generation Service | When generated |
@@ -352,14 +367,18 @@ Section A columns (auto-populated from Content Pipeline):
 - Hospital Brand
 - Content Type
 
+Also reads from Project Assets folder (for Mode A selection).
+
 ### Output
 
 Section B columns (Visual Planner Output):
 - Asset Count
+- Production Mode (PROJECT_ASSET or AI_GENERATED)
+- Reference Asset Package (structured brief for Media Generation Service)
 
 ### Unique Capability
 
-Format-Specific Visual Storytelling Planning
+Production Mode Selection and Generation Brief Preparation
 
 ### Stage Transition
 
@@ -369,10 +388,10 @@ VISUAL_STAGE: READY → PLANNING → GENERATING
 ### Process
 
 1. **Context Absorption** — Reads all Section A columns, focusing on Creative Director output.
-2. **Concept Translation** — Translates the Creative Director's strategic direction into format-specific visual storytelling.
-3. **Format Analysis** — Evaluates Content Format requirements and constraints (e.g., carousel needs multiple panels, video needs motion, static needs single-frame composition).
-4. **Visual Sequencing** — For multi-asset formats, plans the sequence and flow of visual elements.
-5. **Composition Planning** — Defines composition approach for the specific format.
+2. **Completeness Validation** — Check that all information required for the requested media format exists.
+3. **Production Mode Selection** — Check Project Assets folder for suitable reference images. Select PROJECT_ASSET or AI_GENERATED mode.
+4. **Generation Brief Preparation** — Create a structured brief including INSAN Visual Language instructions.
+5. **Asset Count** — Set the number of media assets to generate based on Content Format.
 6. **Constraint Check** — Validates plan against all visual constraints from Section A.
 
 ### What the Visual Planner Does NOT Do
@@ -388,7 +407,7 @@ VISUAL_STAGE: READY → PLANNING → GENERATING
 
 ### Input
 
-Section A columns (Creative Director output) + Visual Planner Output + Generated Assets from Image Generation Service.
+Section A columns (Creative Director output) + Visual Planner Output + Generated Assets from Image Generation Service + Production Mode + Reference Asset Package.
 
 ### Output
 
@@ -399,7 +418,7 @@ Section B columns (Visual QA Output):
 
 ### Unique Capability
 
-Production Quality Validation
+Production Quality Validation and Visual Language Compliance
 
 ### Stage Transition
 
@@ -411,11 +430,11 @@ If rejected: VISUAL_STAGE: QA → FAILED
 ### Process
 
 1. **Strategy Alignment Check** — Verifies generated assets align with Creative Director's approved strategy.
-2. **Visual Plan Alignment Check** — Verifies generated assets align with Visual Planner's format-specific plan.
-3. **Completeness Check** — Verifies all required elements are present.
-4. **Brand Alignment Check** — Validates assets align with hospital brand guidelines.
-5. **Technical Feasibility Check** — Ensures assets meet technical requirements.
-6. **Emotional Coherence Check** — Confirms assets match intended emotional impact.
+2. **Visual Language Compliance** — Validates assets conform to INSAN Visual Language (70/20/10 style ratio, no prohibited styles).
+3. **Brand Alignment Check** — Validates assets align with hospital brand guidelines.
+4. **Technical Feasibility Check** — Ensures assets meet technical requirements.
+5. **Emotional Coherence Check** — Confirms assets match intended emotional impact.
+6. **Production Mode Fidelity** — Verifies reference image qualities respected (Mode A) or Visual Language followed (Mode B).
 7. **Quality Standard Check** — Verifies assets meet INSAN premium quality standard.
 8. **Decision** — Approves, flags for revision, or rejects output with clear reasoning.
 

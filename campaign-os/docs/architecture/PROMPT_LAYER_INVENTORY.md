@@ -4,7 +4,7 @@ INSAN Healthcare AI Operating System
 
 Date: July 2026
 
-Status: Architecture Compliance
+Status: Sprint 1 — Visual Language Integration
 
 ---
 
@@ -23,9 +23,9 @@ Workers are prompt-based components that read from the spreadsheet, perform proc
 | Visual Planner | `prompts/workers/VISUAL_PLANNER_WORKER.md` | Active |
 | Visual QA | `prompts/workers/VISUAL_QA_WORKER.md` | Active |
 
-**Visual Planner Role:** Production Readiness worker. Validates the Creative Package for media generation. Writes Asset Count. Does NOT write VISUAL_STAGE (orchestration layer handles state transitions).
+**Visual Planner Role:** Production Readiness worker. Validates the Creative Package for media generation. Selects production mode (PROJECT_ASSET or AI_GENERATED). Prepares generation brief with INSAN Visual Language instructions. Writes Asset Count, Production Mode, Reference Asset Package. Does NOT write VISUAL_STAGE (orchestration layer handles state transitions).
 
-**Visual QA Role:** Validates generated media against the Creative Package. Writes Visual QA Score, Visual QA Decision, Visual QA Notes, Final Asset URL. Does NOT write VISUAL_STAGE (orchestration layer handles state transitions).
+**Visual QA Role:** Validates generated media against the Creative Package and INSAN Visual Language. Checks style ratio (70/20/10), prohibited styles, production mode fidelity. Writes Visual QA Score, Visual QA Decision, Visual QA Notes, Final Asset URL. Does NOT write VISUAL_STAGE (orchestration layer handles state transitions).
 
 ---
 
@@ -38,7 +38,7 @@ Services are external capabilities invoked by workers. They do not have prompt f
 | Media Generation Service | None (external API) | Active |
 | Publishing Service | None (external API) | Active |
 
-**Media Generation Service Role:** Receives the Creative Package from Section A and generates visual assets. Writes Generated Assets, Generation Status, Generation Timestamp. Does NOT write VISUAL_STAGE (orchestration layer handles state transitions).
+**Media Generation Service Role:** Receives the Creative Package from Section A and the production brief from the Visual Planner. Applies INSAN Visual Language guidelines. Generates visual assets respecting production mode (PROJECT_ASSET or AI_GENERATED). Writes Generated Assets, Generation Status, Generation Timestamp. Does NOT write VISUAL_STAGE (orchestration layer handles state transitions).
 
 **Publishing Service Role:** Uploads assets and publishes to Facebook. Writes Publishing Status, Publishing Timestamp, Live Post URL. Does NOT write VISUAL_STAGE (orchestration layer handles state transitions). **RESERVED — not yet implemented.**
 
@@ -106,11 +106,13 @@ Visual Pipeline (Production)
 
 1. **Creative Director is Source of Truth** — The Creative Package is complete. No worker recreates it.
 
-2. **Visual Planner is Production Readiness** — Validates completeness, does not create. Writes no persistent columns.
+2. **Visual Planner is Production Readiness** — Validates completeness, selects production mode, prepares generation brief. Does not create.
 
 3. **No Creative Reinterpretation** — The Creative Package flows directly from Section A to the Media Generation Service.
 
-4. **Spreadsheet is Persistent Database** — Only write columns that store NEW production information.
+4. **INSAN Visual Language is mandatory** — All generated media must conform to the visual identity. Style ratio, goals, and prohibitions are enforced at generation and validation.
+
+5. **Spreadsheet is Persistent Database** — Only write columns that store NEW production information.
 
 ---
 

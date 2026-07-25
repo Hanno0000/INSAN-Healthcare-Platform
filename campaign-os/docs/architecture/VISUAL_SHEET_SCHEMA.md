@@ -2,9 +2,9 @@
 
 INSAN Healthcare AI Operating System
 
-Version: 7.0
+Version: 8.0
 
-Status: Final Schema Freeze — Ownership Audit Complete
+Status: Sprint 1 — Visual Language Integration
 
 Date: July 2026
 
@@ -177,6 +177,8 @@ Each column has exactly one owner. No orphan columns.
 | Column Name | Owner | Purpose |
 |---|---|---|
 | Asset Count | Visual Planner | Number of media assets to generate |
+| Production Mode | Visual Planner | PROJECT_ASSET or AI_GENERATED |
+| Reference Asset Package | Visual Planner | Structured brief for Media Generation Service |
 
 #### Media Generation Service Output
 

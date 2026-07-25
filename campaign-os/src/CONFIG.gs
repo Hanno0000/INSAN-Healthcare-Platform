@@ -20,6 +20,68 @@ var CONFIG = {
   GEMINI_MAX_OUTPUT_TOKENS: 8192,
 
   // ================================
+  // INSAN VISUAL LANGUAGE
+  // Canonical visual identity for all generated media.
+  // All workers must reference this standard.
+  // ================================
+
+  VISUAL_LANGUAGE: {
+    IDENTITY: {
+      label: 'INSAN Premium Editorial Visual Language',
+      philosophy: 'Designed artwork, not fake photography',
+      goal: 'Human warmth, premium healthcare branding, Egyptian healthcare environment'
+    },
+    STYLE_RATIO: {
+      STYLIZED_REALISM: 0.70,
+      SEMI_REALISTIC_EDITORIAL: 0.20,
+      THREE_D_MATTE: 0.10
+    },
+    STYLE_GUIDELINES: [
+      'Modern composition',
+      'Soft realistic rendering',
+      'Social-media friendly',
+      'Clearly designed artwork rather than fake photography',
+      'Premium healthcare branding',
+      'Egyptian healthcare environment',
+      'Human warmth'
+    ],
+    STRICTLY_AVOID: [
+      'Cartoon style',
+      'Anime',
+      'Pixar',
+      'Comic-book style',
+      'Hyper-realistic AI photography',
+      'Uncanny faces',
+      'Plastic skin',
+      'Obvious AI artifacts',
+      'Photorealistic generation'
+    ]
+  },
+
+  // ================================
+  // PROJECT ASSETS CONFIGURATION
+  // Future: Reference images for visual production.
+  // Currently a workflow hook — folder is empty.
+  // ================================
+
+  PROJECT_ASSETS: {
+    FOLDER_ID: '',
+    SUPPORTED_IMAGE_TYPES: ['image/jpeg', 'image/png', 'image/webp'],
+    DOMAIN_FOLDERS: {
+      'icu': 'Intensive Care Unit',
+      'nicu': 'Neonatal Intensive Care Unit',
+      'emergency': 'Emergency Department',
+      'operating-room': 'Operating Room',
+      'outpatient-clinic': 'Outpatient Clinic',
+      'radiology': 'Radiology Department',
+      'laboratory': 'Laboratory',
+      'physiotherapy': 'Physiotherapy',
+      'pharmacy': 'Pharmacy',
+      'branding': 'Brand Identity'
+    }
+  },
+
+  // ================================
   // MEDIA MODELS CONFIGURATION
   // Dedicated models for media generation.
   // Do not modify unless explicitly requested.
@@ -110,7 +172,7 @@ var CONFIG = {
       'Text On Design', 'Design Notes'
     ],
     SECTION_B_COLUMNS: [
-      'VISUAL_STAGE', 'Asset Count',
+      'VISUAL_STAGE', 'Asset Count', 'Production Mode', 'Reference Asset Package',
       'Generated Assets', 'Generation Status', 'Generation Timestamp',
       'Visual QA Score', 'Visual QA Decision', 'Visual QA Notes', 'Final Asset URL',
       'Publishing Status', 'Publishing Timestamp', 'Live Post URL',
@@ -281,10 +343,12 @@ var CONFIG = {
         'Visual QA Decision', 'Visual QA Notes'
       ],
       writeColumns: [
-        'Asset Count'
+        'Asset Count', 'Production Mode', 'Reference Asset Package'
       ],
       outputFields: {
-        'Asset Count': 'controlled'
+        'Asset Count': 'controlled',
+        'Production Mode': 'controlled',
+        'Reference Asset Package': 'free'
       },
       stageTransitions: {
         'GENERATING': 'GENERATING'
@@ -305,7 +369,8 @@ var CONFIG = {
         'Creative Director Design Prompt', 'Visual Concept',
         'Visual Focus', 'Visual Priority', 'Design Mood',
         'Composition', 'Visual Elements', 'Do NOT Show',
-        'Text On Design', 'Design Notes', 'Generated Assets'
+        'Text On Design', 'Design Notes', 'Generated Assets',
+        'Production Mode', 'Reference Asset Package'
       ],
       writeColumns: [
         'Visual QA Score', 'Visual QA Decision', 'Visual QA Notes',
@@ -338,7 +403,8 @@ var CONFIG = {
         'Content ID', 'Content Format',
         'Creative Director Design Prompt', 'Visual Concept',
         'Visual Focus', 'Composition', 'Visual Elements',
-        'Do NOT Show', 'Text On Design', 'Asset Count'
+        'Do NOT Show', 'Text On Design', 'Asset Count',
+        'Production Mode', 'Reference Asset Package'
       ],
       writeColumns: [
         'Generated Assets', 'Generation Status',
@@ -439,6 +505,9 @@ var CONFIG = {
     ],
     'Visual QA Score': [
       'A+', 'A', 'B+', 'B', 'C', 'Needs Revision'
+    ],
+    'Production Mode': [
+      'PROJECT_ASSET', 'AI_GENERATED'
     ]
   }
 };
