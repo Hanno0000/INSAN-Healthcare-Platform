@@ -9,25 +9,10 @@ export default async function PublicLayout({ children }: { children: React.React
   ]);
 
   return (
-    <html lang="ar" dir="rtl">
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link
-          rel="preconnect"
-          href="https://fonts.googleapis.com"
-        />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-      </head>
-      <body className="bg-white text-gray-900 font-sans antialiased">
-        <Header navItems={headerNav} />
-        <main>{children}</main>
-        <Footer navItems={footerNav} />
-      </body>
-    </html>
+    <div className="bg-white min-h-screen flex flex-col">
+      <Header navItems={headerNav} />
+      <main className="flex-1">{children}</main>
+      <Footer navItems={footerNav} />
+    </div>
   );
 }
