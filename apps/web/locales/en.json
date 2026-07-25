@@ -1,0 +1,60 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "publish": "Publish",
+    "archive": "Archive",
+    "search": "Search",
+    "filter": "Filter",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "actions": "Actions",
+    "status": "Status",
+    "draft": "Draft",
+    "published": "Published",
+    "archived": "Archived"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "login_button": "Sign In",
+    "login_error": "Invalid credentials",
+    "welcome": "Welcome to INSAN Admin Panel"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "pages": "Pages",
+    "hospitals": "Hospitals",
+    "medical_centers": "Medical Centers",
+    "doctors": "Doctors",
+    "news": "News",
+    "media": "Media",
+    "appointments": "Appointments",
+    "contact": "Contact",
+    "testimonials": "Testimonials",
+    "navigation": "Navigation",
+    "users": "Users",
+    "settings": "Settings",
+    "ai_assistant": "AI Assistant",
+    "audit_log": "Audit Log"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "hospitals": "Our Hospitals",
+    "medical_centers": "Our Medical Centers",
+    "news": "News & Media",
+    "contact": "Contact Us"
+  }
+}

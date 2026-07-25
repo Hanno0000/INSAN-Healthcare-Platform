@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --font-cairo: 'Cairo', sans-serif;
+  --font-inter: 'Inter', sans-serif;
+}
+
+html[lang="ar"],
+[dir="rtl"] {
+  direction: rtl;
+  font-family: var(--font-cairo), sans-serif;
+}
+
+html[lang="en"],
+[dir="ltr"] {
+  direction: ltr;
+  font-family: var(--font-inter), sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Smooth scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #0E7C86 #f1f1f1;
+}

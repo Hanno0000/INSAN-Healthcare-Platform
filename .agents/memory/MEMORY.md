@@ -1,0 +1,1 @@
+- [Foundation setup](foundation-setup.md) — monorepo layout, env vars, pnpm workspace, and workflow config decisions

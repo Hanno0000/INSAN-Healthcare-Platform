@@ -1,0 +1,60 @@
+{
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "create": "إنشاء",
+    "publish": "نشر",
+    "archive": "أرشفة",
+    "search": "بحث",
+    "filter": "فلتر",
+    "back": "رجوع",
+    "next": "التالي",
+    "previous": "السابق",
+    "yes": "نعم",
+    "no": "لا",
+    "confirm": "تأكيد",
+    "actions": "الإجراءات",
+    "status": "الحالة",
+    "draft": "مسودة",
+    "published": "منشور",
+    "archived": "مؤرشف"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "login_button": "دخول",
+    "login_error": "بيانات الدخول غير صحيحة",
+    "welcome": "مرحباً بك في لوحة تحكم إنسان"
+  },
+  "admin": {
+    "dashboard": "لوحة التحكم",
+    "pages": "الصفحات",
+    "hospitals": "المستشفيات",
+    "medical_centers": "المراكز الطبية",
+    "doctors": "الأطباء",
+    "news": "الأخبار",
+    "media": "الوسائط",
+    "appointments": "المواعيد",
+    "contact": "التواصل",
+    "testimonials": "الشهادات",
+    "navigation": "التنقل",
+    "users": "المستخدمون",
+    "settings": "الإعدادات",
+    "ai_assistant": "المساعد الذكي",
+    "audit_log": "سجل التدقيق"
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "about": "عن المجموعة",
+    "hospitals": "مستشفياتنا",
+    "medical_centers": "مراكزنا الطبية",
+    "news": "الأخبار والأنشطة",
+    "contact": "تواصل معنا"
+  }
+}

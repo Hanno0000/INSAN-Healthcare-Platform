@@ -1,0 +1,684 @@
+import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcryptjs';
+
+const prisma = new PrismaClient();
+
+// ========================= ROLES =========================
+
+async function seedRoles() {
+  console.log('  → Seeding roles...');
+
+  const roleDefs = [
+    {
+      name: 'SUPER_ADMIN' as const,
+      permissions: {
+        pages: ['view', 'create', 'edit', 'publish', 'delete', 'manage-hidden'],
+        hospitals: ['view', 'create', 'edit', 'publish', 'delete'],
+        'medical-centers': ['view', 'create', 'edit', 'publish', 'delete'],
+        doctors: ['view', 'create', 'edit', 'publish', 'delete'],
+        news: ['view', 'create', 'edit', 'publish', 'delete'],
+        media: ['view', 'upload', 'delete'],
+        appointments: ['view', 'manage'],
+        contact: ['view', 'manage'],
+        testimonials: ['view', 'create', 'edit', 'delete'],
+        navigation: ['view', 'edit'],
+        'ai-chat': ['view', 'manage'],
+        users: ['view', 'manage'],
+        settings: ['view', 'manage'],
+        audit: ['view'],
+        analytics: ['view'],
+      },
+    },
+    {
+      name: 'ADMIN' as const,
+      permissions: {
+        pages: ['view', 'create', 'edit', 'publish', 'delete', 'manage-hidden'],
+        hospitals: ['view', 'create', 'edit', 'publish', 'delete'],
+        'medical-centers': ['view', 'create', 'edit', 'publish', 'delete'],
+        doctors: ['view', 'create', 'edit', 'publish', 'delete'],
+        news: ['view', 'create', 'edit', 'publish', 'delete'],
+        media: ['view', 'upload', 'delete'],
+        appointments: ['view', 'manage'],
+        contact: ['view', 'manage'],
+        testimonials: ['view', 'create', 'edit', 'delete'],
+        navigation: ['view', 'edit'],
+        'ai-chat': ['view', 'manage'],
+        users: ['view', 'manage'],
+        settings: ['view', 'manage'],
+        audit: ['view'],
+        analytics: ['view'],
+      },
+    },
+    {
+      name: 'MANAGER' as const,
+      permissions: {
+        pages: ['view', 'create', 'edit', 'publish', 'delete'],
+        hospitals: ['view', 'create', 'edit', 'publish', 'delete'],
+        'medical-centers': ['view', 'create', 'edit', 'publish', 'delete'],
+        doctors: ['view', 'create', 'edit', 'publish', 'delete'],
+        news: ['view', 'create', 'edit', 'publish', 'delete'],
+        media: ['view', 'upload', 'delete'],
+        appointments: ['view', 'manage'],
+        contact: ['view', 'manage'],
+        testimonials: ['view'],
+        navigation: ['view'],
+        'ai-chat': ['view'],
+        users: [],
+        settings: ['view'],
+        audit: ['view'],
+        analytics: ['view'],
+      },
+    },
+    {
+      name: 'EDITOR' as const,
+      permissions: {
+        pages: ['view', 'create', 'edit'],
+        hospitals: ['view', 'create', 'edit'],
+        'medical-centers': ['view', 'create', 'edit'],
+        doctors: ['view', 'create', 'edit'],
+        news: ['view', 'create', 'edit'],
+        media: ['view', 'upload'],
+        appointments: ['view'],
+        contact: ['view'],
+        testimonials: ['view'],
+        navigation: ['view'],
+        'ai-chat': ['view'],
+        users: [],
+        settings: [],
+        audit: [],
+        analytics: ['view'],
+      },
+    },
+    {
+      name: 'VIEWER' as const,
+      permissions: {
+        pages: ['view'],
+        hospitals: ['view'],
+        'medical-centers': ['view'],
+        doctors: ['view'],
+        news: ['view'],
+        media: ['view'],
+        appointments: ['view'],
+        contact: ['view'],
+        testimonials: ['view'],
+        navigation: ['view'],
+        'ai-chat': ['view'],
+        users: [],
+        settings: [],
+        audit: [],
+        analytics: ['view'],
+      },
+    },
+  ];
+
+  const roles: Record<string, any> = {};
+  for (const role of roleDefs) {
+    const r = await prisma.role.upsert({
+      where: { name: role.name },
+      create: role,
+      update: { permissions: role.permissions },
+    });
+    roles[role.name] = r;
+  }
+
+  console.log('    ✓ 5 roles seeded');
+  return roles;
+}
+
+// ========================= SUPER ADMIN =========================
+
+async function seedSuperAdmin(roles: Record<string, any>) {
+  console.log('  → Seeding super admin user...');
+
+  const TEMP_PASSWORD = 'INSAN@Admin2026!';
+  const passwordHash = await bcrypt.hash(TEMP_PASSWORD, 12);
+
+  const existing = await prisma.user.findUnique({
+    where: { email: 'admin@insan-platform.com' },
+  });
+
+  if (!existing) {
+    await prisma.user.create({
+      data: {
+        name: 'Super Admin',
+        email: 'admin@insan-platform.com',
+        passwordHash,
+        roleId: roles['SUPER_ADMIN'].id,
+        isActive: true,
+      },
+    });
+
+    console.log('');
+    console.log('=============================================');
+    console.log('SUPER ADMIN ACCOUNT CREATED');
+    console.log('Email: admin@insan-platform.com');
+    console.log(`Password: ${TEMP_PASSWORD}`);
+    console.log('IMPORTANT: Change this password immediately after first login.');
+    console.log('=============================================');
+    console.log('');
+  } else {
+    console.log('    ✓ Super admin already exists, skipping');
+  }
+}
+
+// ========================= SETTINGS =========================
+
+async function seedSettings() {
+  console.log('  → Seeding settings...');
+
+  const settings = [
+    // General
+    { key: 'site_name', group: 'general', value: { ar: 'منظومة إنسان', en: 'INSAN Platform' } },
+    { key: 'site_tagline', group: 'general', value: { ar: 'الرعاية الصحية المتكاملة', en: 'Integrated Healthcare' } },
+    { key: 'contact_email', group: 'general', value: 'info@insan-platform.com' },
+    { key: 'contact_phone', group: 'general', value: '+20-XXX-XXX-XXXX' },
+    { key: 'contact_address', group: 'general', value: { ar: 'القاهرة، مصر', en: 'Cairo, Egypt' } },
+    { key: 'whatsapp_number', group: 'general', value: '+20-XXX-XXX-XXXX' },
+    { key: 'emergency_phone', group: 'general', value: '+20-XXX-XXX-XXXX' },
+    { key: 'timezone', group: 'general', value: 'Africa/Cairo' },
+    { key: 'error_page_text', group: 'general', value: { ar: 'عذراً، الصفحة غير موجودة', en: 'Sorry, page not found' } },
+    {
+      key: 'working_hours',
+      group: 'general',
+      value: {
+        ar: 'السبت - الخميس: 9 صباحاً - 5 مساءً | الطوارئ: 24 ساعة',
+        en: 'Saturday - Thursday: 9:00 AM - 5:00 PM | Emergency: 24/7',
+        schedule: [
+          { day: { ar: 'السبت', en: 'Saturday' }, open: '09:00', close: '17:00' },
+          { day: { ar: 'الأحد', en: 'Sunday' }, open: '09:00', close: '17:00' },
+          { day: { ar: 'الاثنين', en: 'Monday' }, open: '09:00', close: '17:00' },
+          { day: { ar: 'الثلاثاء', en: 'Tuesday' }, open: '09:00', close: '17:00' },
+          { day: { ar: 'الأربعاء', en: 'Wednesday' }, open: '09:00', close: '17:00' },
+          { day: { ar: 'الخميس', en: 'Thursday' }, open: '09:00', close: '17:00' },
+          { day: { ar: 'الجمعة', en: 'Friday' }, open: null, close: null, closed: true },
+        ],
+      },
+    },
+    // Brand
+    { key: 'primary_color', group: 'brand', value: '#0B1F3A' },
+    { key: 'secondary_color', group: 'brand', value: '#0E7C86' },
+    { key: 'accent_color', group: 'brand', value: '#0B5FFF' },
+    { key: 'logo_light', group: 'brand', value: '/logos/insan-logo-light.png' },
+    { key: 'logo_dark', group: 'brand', value: '/logos/insan-logo-dark.png' },
+    { key: 'favicon', group: 'brand', value: '/favicon.ico' },
+    // SEO
+    { key: 'default_meta_title', group: 'seo', value: { ar: 'منظومة إنسان للرعاية الصحية', en: 'INSAN Healthcare Platform' } },
+    { key: 'default_meta_description', group: 'seo', value: { ar: 'منظومة إنسان — منصة مصرية متكاملة لإدارة المستشفيات والمراكز الطبية المتخصصة', en: 'INSAN — An integrated Egyptian platform for managing hospitals and specialized medical centers' } },
+    { key: 'ga4_measurement_id', group: 'seo', value: '' },
+    { key: 'gtm_container_id', group: 'seo', value: '' },
+    { key: 'sitemap_enabled', group: 'seo', value: true },
+    { key: 'robots_txt', group: 'seo', value: 'User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /investors' },
+    // Languages
+    { key: 'default_locale', group: 'languages', value: 'ar' },
+    { key: 'enabled_locales', group: 'languages', value: ['ar', 'en'] },
+    // Security
+    { key: 'password_min_length', group: 'security', value: 8 },
+    { key: 'password_require_uppercase', group: 'security', value: true },
+    { key: 'password_require_number', group: 'security', value: true },
+    { key: 'session_duration_hours', group: 'security', value: 24 },
+    { key: 'recaptcha_enabled', group: 'security', value: false },
+    { key: 'recaptcha_site_key', group: 'security', value: '' },
+  ];
+
+  for (const setting of settings) {
+    await prisma.setting.upsert({
+      where: { key: setting.key },
+      create: setting,
+      update: { value: setting.value },
+    });
+  }
+
+  console.log(`    ✓ ${settings.length} settings seeded`);
+}
+
+// ========================= INTEGRATION SETTINGS =========================
+
+async function seedIntegrationSettings() {
+  console.log('  → Seeding integration settings...');
+
+  const integrations = [
+    { provider: 'facebook_page_insan', encryptedValue: '', isActive: false },
+    { provider: 'facebook_page_future', encryptedValue: '', isActive: false },
+    { provider: 'facebook_page_delta', encryptedValue: '', isActive: false },
+    { provider: 'instagram_page_insan', encryptedValue: '', isActive: false },
+    { provider: 'linkedin_page_insan', encryptedValue: '', isActive: false },
+  ];
+
+  for (const integration of integrations) {
+    await prisma.integrationSetting.upsert({
+      where: { provider: integration.provider },
+      create: integration,
+      update: {},
+    });
+  }
+
+  console.log('    ✓ Integration settings seeded');
+}
+
+// ========================= AI SETTINGS =========================
+
+async function seedAiSettings() {
+  console.log('  → Seeding AI settings...');
+
+  const aiSettings = [
+    { key: 'isEnabled', value: true },
+    { key: 'greetingMessage', value: { ar: 'مرحباً! أنا مساعد إنسان الذكي. كيف يمكنني مساعدتك اليوم؟', en: 'Hello! I am the INSAN AI assistant. How can I help you today?' } },
+    { key: 'escalationEnabled', value: true },
+    { key: 'escalationChannel', value: 'whatsapp' },
+    { key: 'escalationMessage', value: { ar: 'يبدو أن سؤالك يحتاج تخصيصاً أكثر. يمكنك التواصل معنا مباشرة.', en: "It seems your question needs more specific attention. You can contact us directly." } },
+  ];
+
+  for (const s of aiSettings) {
+    await prisma.aiSettings.upsert({
+      where: { key: s.key },
+      create: s,
+      update: { value: s.value },
+    });
+  }
+
+  console.log('    ✓ AI settings seeded');
+}
+
+// ========================= HOSPITALS =========================
+
+async function seedHospitals() {
+  console.log('  → Seeding hospitals...');
+
+  const hospitalDefs = [
+    {
+      slug: 'future-hospital',
+      name: { ar: 'مستشفى المستقبل التخصصي', en: 'Future Specialized Hospital' },
+      shortDescription: {
+        ar: 'مستشفى المستقبل التخصصي — رمز القيادة والابتكار في الرعاية الصحية',
+        en: 'Future Specialized Hospital — A symbol of leadership and innovation in healthcare',
+      },
+      description: {
+        ar: 'مستشفى المستقبل التخصصي هو أحد أبرز المستشفيات ضمن منظومة إنسان للرعاية الصحية.',
+        en: 'Future Specialized Hospital is one of the leading hospitals within the INSAN Healthcare Ecosystem.',
+      },
+      logoUrl: '/logos/future-logo.png',
+      heroImage: '/images/future-hero.jpg',
+      brandColor: '#1B4FCC',
+      status: 'PUBLISHED' as const,
+      metaTitle: { ar: 'مستشفى المستقبل التخصصي | منظومة إنسان', en: 'Future Specialized Hospital | INSAN Platform' },
+      metaDescription: { ar: 'مستشفى المستقبل التخصصي — خدمات طبية متقدمة', en: 'Future Specialized Hospital — Advanced medical services' },
+    },
+    {
+      slug: 'delta-hospital',
+      name: { ar: 'مستشفى الدلتا الدولي', en: 'Delta International Hospital' },
+      shortDescription: {
+        ar: 'مستشفى الدلتا الدولي — إعادة بناء الثقة من خلال التجربة الإنسانية',
+        en: 'Delta International Hospital — Restoring trust through human experience',
+      },
+      description: {
+        ar: 'مستشفى الدلتا الدولي يمثل رحلة التحول والتطوير في منظومة إنسان.',
+        en: 'Delta International Hospital represents the journey of transformation and development within the INSAN ecosystem.',
+      },
+      logoUrl: '/logos/delta-logo.png',
+      heroImage: '/images/delta-hero.jpg',
+      brandColor: '#0E7C86',
+      status: 'PUBLISHED' as const,
+      metaTitle: { ar: 'مستشفى الدلتا الدولي | منظومة إنسان', en: 'Delta International Hospital | INSAN Platform' },
+      metaDescription: { ar: 'مستشفى الدلتا الدولي — تجربة رعاية صحية إنسانية', en: 'Delta International Hospital — A human healthcare experience' },
+    },
+  ];
+
+  const hospitals: Record<string, any> = {};
+  for (const h of hospitalDefs) {
+    const hospital = await prisma.hospital.upsert({
+      where: { slug: h.slug },
+      create: h,
+      update: { name: h.name, status: h.status },
+    });
+    hospitals[h.slug] = hospital;
+  }
+
+  console.log('    ✓ 2 hospitals seeded');
+  return hospitals;
+}
+
+// ========================= MEDICAL CENTERS =========================
+
+async function seedMedicalCenters(hospitals: Record<string, any>) {
+  console.log('  → Seeding 12 medical centers...');
+
+  const centerDefs = [
+    { slug: 'orthopedic-center', name: { ar: 'مركز العناية العظمية والمفاصل', en: 'Orthopedic & Joint Care Center' }, isFeatured: true, hospitalSlugs: ['future-hospital', 'delta-hospital'] },
+    { slug: 'cardiac-center', name: { ar: 'مركز القلب والأوعية الدموية', en: 'Cardiac & Vascular Center' }, isFeatured: true, hospitalSlugs: ['future-hospital', 'delta-hospital'] },
+    { slug: 'womens-health-center', name: { ar: 'مركز صحة المرأة', en: "Women's Health Center" }, isFeatured: true, hospitalSlugs: ['delta-hospital'] },
+    { slug: 'digestive-center', name: { ar: 'مركز الجهاز الهضمي والكبد', en: 'Digestive & Liver Center' }, isFeatured: true, hospitalSlugs: ['delta-hospital'] },
+    { slug: 'neurology-center', name: { ar: 'مركز الأعصاب والدماغ', en: 'Neurology & Brain Center' }, isFeatured: true, hospitalSlugs: ['future-hospital', 'delta-hospital'] },
+    { slug: 'emergency-center', name: { ar: 'مركز الطوارئ', en: 'Emergency Center' }, isFeatured: false, hospitalSlugs: ['delta-hospital'] },
+    { slug: 'icu-center', name: { ar: 'مركز العناية المركزة', en: 'Intensive Care Center' }, isFeatured: false, hospitalSlugs: ['delta-hospital'] },
+    { slug: 'senior-care-center', name: { ar: 'مركز كبارنا للرعاية', en: 'Senior Care Center' }, isFeatured: false, hospitalSlugs: ['delta-hospital'] },
+    { slug: 'ophthalmology-center', name: { ar: 'مركز العيون', en: 'Ophthalmology Center' }, isFeatured: false, hospitalSlugs: ['future-hospital'] },
+    { slug: 'dermatology-center', name: { ar: 'مركز الجلدية والتجميل', en: 'Dermatology & Aesthetics Center' }, isFeatured: false, hospitalSlugs: ['future-hospital'] },
+    { slug: 'pediatrics-center', name: { ar: 'مركز طب الأطفال', en: 'Pediatrics Center' }, isFeatured: false, hospitalSlugs: ['delta-hospital'] },
+    { slug: 'dental-center', name: { ar: 'مركز طب الأسنان', en: 'Dental Center' }, isFeatured: false, hospitalSlugs: ['delta-hospital'] },
+  ];
+
+  for (const c of centerDefs) {
+    const { hospitalSlugs, ...centerData } = c;
+
+    const center = await prisma.medicalCenter.upsert({
+      where: { slug: c.slug },
+      create: { ...centerData, status: 'PUBLISHED', description: { ar: '...', en: '...' } },
+      update: { name: centerData.name, status: 'PUBLISHED' },
+    });
+
+    // Create hospital-center junction rows
+    for (const hospitalSlug of hospitalSlugs) {
+      const hospital = hospitals[hospitalSlug];
+      if (!hospital) continue;
+
+      await prisma.hospitalMedicalCenter.upsert({
+        where: {
+          hospitalId_medicalCenterId: {
+            hospitalId: hospital.id,
+            medicalCenterId: center.id,
+          },
+        },
+        create: {
+          hospitalId: hospital.id,
+          medicalCenterId: center.id,
+        },
+        update: {},
+      });
+    }
+  }
+
+  console.log('    ✓ 12 medical centers seeded');
+}
+
+// ========================= NAVIGATION =========================
+
+async function seedNavigation() {
+  console.log('  → Seeding navigation items...');
+
+  const headerNav = [
+    { label: { ar: 'الرئيسية', en: 'Home' }, target: '/', location: 'header', order: 1, isVisible: true },
+    { label: { ar: 'عن المجموعة', en: 'About' }, target: '/about', location: 'header', order: 2, isVisible: true },
+    { label: { ar: 'مستشفياتنا', en: 'Our Hospitals' }, target: '/hospitals', location: 'header', order: 3, isVisible: true },
+    { label: { ar: 'مراكزنا الطبية', en: 'Our Medical Centers' }, target: '/medical-centers', location: 'header', order: 4, isVisible: true },
+    { label: { ar: 'الأخبار والأنشطة', en: 'News & Media' }, target: '/news', location: 'header', order: 5, isVisible: true },
+    { label: { ar: 'تواصل معنا', en: 'Contact Us' }, target: '/contact', location: 'header', order: 6, isVisible: true },
+  ];
+
+  const footerNav = [
+    { label: { ar: 'الرئيسية', en: 'Home' }, target: '/', location: 'footer', order: 1, isVisible: true },
+    { label: { ar: 'عن المجموعة', en: 'About' }, target: '/about', location: 'footer', order: 2, isVisible: true },
+    { label: { ar: 'مستشفياتنا', en: 'Our Hospitals' }, target: '/hospitals', location: 'footer', order: 3, isVisible: true },
+    { label: { ar: 'مراكزنا الطبية', en: 'Our Medical Centers' }, target: '/medical-centers', location: 'footer', order: 4, isVisible: true },
+    { label: { ar: 'الأخبار', en: 'News' }, target: '/news', location: 'footer', order: 5, isVisible: true },
+    { label: { ar: 'تواصل معنا', en: 'Contact Us' }, target: '/contact', location: 'footer', order: 6, isVisible: true },
+    { label: { ar: 'سياسة الخصوصية', en: 'Privacy Policy' }, target: '/privacy', location: 'footer', order: 7, isVisible: true },
+    { label: { ar: 'شروط الاستخدام', en: 'Terms of Use' }, target: '/terms', location: 'footer', order: 8, isVisible: true },
+  ];
+
+  for (const item of [...headerNav, ...footerNav]) {
+    // Use a composite key — find by target + location + order
+    const existing = await prisma.navigationItem.findFirst({
+      where: { target: item.target, location: item.location },
+    });
+
+    if (existing) {
+      await prisma.navigationItem.update({
+        where: { id: existing.id },
+        data: item,
+      });
+    } else {
+      await prisma.navigationItem.create({ data: item });
+    }
+  }
+
+  console.log('    ✓ Navigation items seeded');
+}
+
+// ========================= PAGES =========================
+
+async function seedPages() {
+  console.log('  → Seeding pages...');
+
+  const pages = [
+    {
+      slug: 'home',
+      type: 'standard',
+      title: { ar: 'الرئيسية', en: 'Home' },
+      status: 'PUBLISHED' as const,
+      metaTitle: { ar: 'منظومة إنسان للرعاية الصحية', en: 'INSAN Healthcare Platform' },
+      metaDescription: { ar: 'منظومة إنسان — منصة مصرية متكاملة', en: 'INSAN — An integrated Egyptian healthcare platform' },
+      robotsIndex: true,
+    },
+    { slug: 'about', type: 'standard', title: { ar: 'عن المجموعة', en: 'About INSAN' }, status: 'PUBLISHED' as const, robotsIndex: true },
+    { slug: 'hospitals', type: 'standard', title: { ar: 'مستشفياتنا', en: 'Our Hospitals' }, status: 'PUBLISHED' as const, robotsIndex: true },
+    { slug: 'medical-centers', type: 'standard', title: { ar: 'مراكزنا الطبية', en: 'Our Medical Centers' }, status: 'PUBLISHED' as const, robotsIndex: true },
+    { slug: 'news', type: 'standard', title: { ar: 'الأخبار والأنشطة', en: 'News & Media' }, status: 'PUBLISHED' as const, robotsIndex: true },
+    { slug: 'contact', type: 'standard', title: { ar: 'تواصل معنا', en: 'Contact Us' }, status: 'PUBLISHED' as const, robotsIndex: true },
+    { slug: 'investors', type: 'hidden', title: { ar: 'المستثمرون', en: 'Investors' }, status: 'PUBLISHED' as const, robotsIndex: false },
+    { slug: 'privacy', type: 'legal', title: { ar: 'سياسة الخصوصية', en: 'Privacy Policy' }, status: 'PUBLISHED' as const, robotsIndex: true },
+    { slug: 'terms', type: 'legal', title: { ar: 'شروط الاستخدام', en: 'Terms of Use' }, status: 'PUBLISHED' as const, robotsIndex: true },
+  ];
+
+  for (const page of pages) {
+    const p = await prisma.page.upsert({
+      where: { slug: page.slug },
+      create: page,
+      update: { title: page.title, status: page.status },
+    });
+
+    // Add hero section for home page
+    if (page.slug === 'home') {
+      const existingSection = await prisma.section.findFirst({
+        where: { pageId: p.id, componentType: 'Hero' },
+      });
+      if (!existingSection) {
+        await prisma.section.create({
+          data: {
+            pageId: p.id,
+            componentType: 'Hero',
+            order: 1,
+            isVisible: true,
+            config: {
+              title: { ar: 'منظومة إنسان للرعاية الصحية', en: 'INSAN Healthcare Platform' },
+              subtitle: { ar: 'نبني مؤسسات صحية قوية ومستدامة', en: 'Building strong and sustainable healthcare institutions' },
+              ctas: [
+                { label: { ar: 'اكتشف منظومتنا', en: 'Explore Our Ecosystem' }, href: '/hospitals' },
+                { label: { ar: 'تواصل معنا', en: 'Contact Us' }, href: '/contact' },
+              ],
+            },
+          },
+        });
+      }
+    }
+  }
+
+  console.log('    ✓ Pages seeded');
+}
+
+// ========================= NEWS CATEGORIES =========================
+
+async function seedNewsCategories() {
+  console.log('  → Seeding news categories...');
+
+  const categories = [
+    { name: { ar: 'أخبار المنظومة', en: 'Ecosystem News' }, slug: 'ecosystem-news' },
+    { name: { ar: 'أخبار المستشفيات', en: 'Hospital News' }, slug: 'hospital-news' },
+    { name: { ar: 'أخبار المراكز الطبية', en: 'Medical Center News' }, slug: 'medical-center-news' },
+    { name: { ar: 'الأحداث والأنشطة', en: 'Events & Activities' }, slug: 'events' },
+    { name: { ar: 'نصائح طبية', en: 'Health Tips' }, slug: 'health-tips' },
+  ];
+
+  for (const cat of categories) {
+    await prisma.newsCategory.upsert({
+      where: { slug: cat.slug },
+      create: cat,
+      update: { name: cat.name },
+    });
+  }
+
+  console.log('    ✓ News categories seeded');
+}
+
+// ========================= KNOWLEDGE BASE =========================
+
+async function seedKnowledgeBase() {
+  console.log('  → Seeding AI knowledge base...');
+
+  const entries = [
+    {
+      topic: { ar: 'عن المستشفيات', en: 'About Hospitals' },
+      question: { ar: 'كم عدد المستشفيات في منظومة إنسان؟', en: 'How many hospitals are in the INSAN ecosystem?' },
+      answer: { ar: 'تضم منظومة إنسان مستشفيين: مستقبل التخصصي والدلتا الدولي، بالإضافة إلى 12 مركزاً طبياً متخصصاً.', en: 'The INSAN ecosystem includes two hospitals: Future Specialized and Delta International, along with 12 specialized medical centers.' },
+      category: 'general',
+      isActive: true,
+    },
+    {
+      topic: { ar: 'المواعيد', en: 'Appointments' },
+      question: { ar: 'كيف أحجز موعد؟', en: 'How do I book an appointment?' },
+      answer: { ar: 'يمكنك حجز موعد من خلال نموذج "احجز موعد" المتاح في جميع صفحات الموقع، أو التواصل معنا عبر واتساب.', en: 'You can book an appointment through the "Book Appointment" form available on all pages, or contact us via WhatsApp.' },
+      category: 'appointments',
+      isActive: true,
+    },
+    {
+      topic: { ar: 'العنوان', en: 'Location' },
+      question: { ar: 'أين يقع المستشفى؟', en: 'Where is the hospital located?' },
+      answer: { ar: 'للعناوين التفصيلية، يرجى زيارة صفحة "تواصل معنا".', en: 'For detailed addresses, please visit the "Contact Us" page.' },
+      category: 'location',
+      isActive: true,
+    },
+    {
+      topic: { ar: 'ساعات العمل', en: 'Working Hours' },
+      question: { ar: 'ما هي ساعات العمل؟', en: 'What are the working hours?' },
+      answer: { ar: 'ساعات العمل من السبت إلى الخميس، من الساعة 9 صباحاً حتى 5 مساءً. قسم الطوارئ متاح على مدار الساعة.', en: 'Working hours are Saturday to Thursday, 9:00 AM to 5:00 PM. The emergency department is available 24/7.' },
+      category: 'general',
+      isActive: true,
+    },
+  ];
+
+  for (const entry of entries) {
+    const existing = await prisma.aiKnowledgeBase.findFirst({
+      where: { category: entry.category },
+    });
+    if (!existing) {
+      await prisma.aiKnowledgeBase.create({ data: entry });
+    }
+  }
+
+  console.log('    ✓ AI knowledge base seeded');
+}
+
+// ========================= MEDIA FOLDERS =========================
+
+async function seedMediaFolders() {
+  console.log('  → Seeding media folders...');
+
+  const rootFolders = ['Hospitals', 'Medical Centers', 'Doctors', 'News', 'General', 'Logos & Brand'];
+  const folderMap: Record<string, any> = {};
+
+  for (const name of rootFolders) {
+    const existing = await prisma.mediaFolder.findFirst({ where: { name, parentId: null } });
+    if (!existing) {
+      const folder = await prisma.mediaFolder.create({ data: { name, parentId: null } });
+      folderMap[name] = folder;
+    } else {
+      folderMap[name] = existing;
+    }
+  }
+
+  // Sub-folders under Hospitals
+  const hospitalsFolderExisting = await prisma.mediaFolder.findFirst({ where: { name: 'Future Hospital', parentId: folderMap['Hospitals'].id } });
+  if (!hospitalsFolderExisting) {
+    await prisma.mediaFolder.create({ data: { name: 'Future Hospital', parentId: folderMap['Hospitals'].id } });
+    await prisma.mediaFolder.create({ data: { name: 'Delta Hospital', parentId: folderMap['Hospitals'].id } });
+  }
+
+  console.log('    ✓ Media folders seeded');
+}
+
+// ========================= TESTIMONIALS =========================
+
+async function seedTestimonials() {
+  console.log('  → Seeding testimonials...');
+
+  const existing = await prisma.testimonial.count();
+  if (existing > 0) {
+    console.log('    ✓ Testimonials already exist, skipping');
+    return;
+  }
+
+  await prisma.testimonial.createMany({
+    data: [
+      {
+        name: { ar: 'د. أحمد محمد', en: 'Dr. Ahmed Mohamed' },
+        audience: 'DOCTOR',
+        quote: { ar: 'العمل في منظومة إنسان يمنحني الثقة بأنني أقدم أفضل رعاية ممكنة لمرضاي.', en: 'Working within the INSAN ecosystem gives me confidence that I am providing the best possible care for my patients.' },
+        status: 'PUBLISHED',
+        order: 1,
+      },
+      {
+        name: { ar: 'مستثمر', en: 'An Investor' },
+        audience: 'INVESTOR',
+        quote: { ar: 'منظومة إنسان تمثل فرصة استثمارية حقيقية في قطاع الرعاية الصحية المصري.', en: 'The INSAN ecosystem represents a genuine investment opportunity in the Egyptian healthcare sector.' },
+        status: 'PUBLISHED',
+        order: 2,
+      },
+    ],
+  });
+
+  console.log('    ✓ Testimonials seeded');
+}
+
+// ========================= FEATURE FLAGS =========================
+
+async function seedFeatureFlags() {
+  console.log('  → Seeding feature flags...');
+
+  const flags = [
+    { key: 'ai_chat_enabled', isEnabled: true, description: 'Enable/disable AI chat widget globally' },
+    { key: 'social_sync_enabled', isEnabled: false, description: 'Enable/disable social media sync worker' },
+    { key: 'appointment_booking_enabled', isEnabled: true, description: 'Enable/disable appointment booking form' },
+  ];
+
+  for (const flag of flags) {
+    await prisma.featureFlag.upsert({
+      where: { key: flag.key },
+      create: flag,
+      update: { description: flag.description },
+    });
+  }
+
+  console.log('    ✓ Feature flags seeded');
+}
+
+// ========================= MAIN =========================
+
+async function main() {
+  console.log('🌱 Starting database seed...');
+  console.log('');
+
+  // Order matters — later seeders depend on earlier ones
+  const roles = await seedRoles();
+  await seedSuperAdmin(roles);
+  await seedSettings();
+  await seedIntegrationSettings();
+  await seedAiSettings();
+  const hospitals = await seedHospitals();
+  await seedMedicalCenters(hospitals);
+  await seedNavigation();
+  await seedPages();
+  await seedNewsCategories();
+  await seedKnowledgeBase();
+  await seedMediaFolders();
+  await seedTestimonials();
+  await seedFeatureFlags();
+
+  console.log('');
+  console.log('✅ Seed complete!');
+}
+
+main()
+  .catch((err) => {
+    console.error('❌ Seed failed:', err);
+    process.exit(1);
+  })
+  .finally(() => prisma.$disconnect());

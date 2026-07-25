@@ -1,0 +1,523 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ========================= ENUMS =========================
+
+enum RoleName {
+  SUPER_ADMIN
+  ADMIN
+  MANAGER
+  EDITOR
+  VIEWER
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum NewsSourceType {
+  MANUAL
+  SOCIAL_SYNC
+}
+
+enum SocialPlatform {
+  FACEBOOK
+  INSTAGRAM
+  LINKEDIN
+}
+
+enum SourceEntity {
+  INSAN
+  FUTURE
+  DELTA
+}
+
+enum AppointmentStatus {
+  NEW
+  CONTACTED
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum TestimonialAudience {
+  INVESTOR
+  DOCTOR
+  PATIENT
+}
+
+enum ChatSender {
+  USER
+  AI
+  SYSTEM
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  PDF
+  DOCUMENT
+}
+
+// ========================= AUTH / USERS =========================
+
+model Role {
+  id          String     @id @default(cuid())
+  name        RoleName   @unique
+  // permissions: { "pages": ["view","create","edit","delete","publish"], "hospitals": [...], ... }
+  permissions Json
+  users       User[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model User {
+  id            String         @id @default(cuid())
+  name          String
+  email         String         @unique
+  passwordHash  String
+  roleId        String
+  role          Role           @relation(fields: [roleId], references: [id])
+  isActive      Boolean        @default(true)
+  avatarUrl     String?
+  lastLoginAt   DateTime?
+  refreshTokens RefreshToken[]
+  auditLogs     AuditLog[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([roleId])
+  @@index([email])
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userAgent String?
+  ipAddress String?
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ========================= CMS CORE =========================
+
+model Page {
+  id              String        @id @default(cuid())
+  slug            String        @unique
+  type            String        @default("standard") // standard | hidden | legal
+  title           Json          // {ar, en}
+  status          ContentStatus @default(DRAFT)
+  metaTitle       Json?
+  metaDescription Json?
+  ogImage         String?
+  canonicalUrl    String?
+  robotsIndex     Boolean       @default(true)
+  sections        Section[]
+  drafts          PageDraft[]
+  customFields    Json?         @default("{}")
+  createdBy       String?
+  updatedBy       String?
+  publishedAt     DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([status])
+  @@index([slug])
+}
+
+model PageDraft {
+  id      String   @id @default(cuid())
+  pageId  String
+  page    Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  content Json
+  savedAt DateTime @default(now())
+  savedBy String?
+
+  @@index([pageId])
+}
+
+model Section {
+  id            String   @id @default(cuid())
+  pageId        String
+  page          Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  componentType String   // "Hero" | "FeatureGrid" | "EntityCards" | "ServiceCards" | ...
+  order         Int
+  isVisible     Boolean  @default(true)
+  config        Json     // all component config including {ar,en} texts
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([pageId, order])
+}
+
+// ========================= SLUG HISTORY & REDIRECTS =========================
+
+model SlugHistory {
+  id        String   @id @default(cuid())
+  entity    String   // "Page" | "Hospital" | "MedicalCenter" | "Doctor" | "NewsPost" | "NewsCategory"
+  entityId  String
+  oldSlug   String
+  newSlug   String
+  changedAt DateTime @default(now())
+
+  @@index([entity, entityId])
+  @@index([oldSlug])
+}
+
+model Redirect {
+  id         String    @id @default(cuid())
+  fromPath   String    @unique // e.g. "/en/hospitals/old-slug"
+  toPath     String            // e.g. "/en/hospitals/new-slug"
+  statusCode Int       @default(301)
+  createdAt  DateTime  @default(now())
+  expiresAt  DateTime?
+
+  @@index([fromPath])
+}
+
+// ========================= FEATURE FLAGS =========================
+
+model FeatureFlag {
+  key         String   @id
+  isEnabled   Boolean  @default(false)
+  description String?
+  updatedAt   DateTime @updatedAt
+}
+
+// ========================= HOSPITALS / MEDICAL CENTERS =========================
+
+model Hospital {
+  id               String                  @id @default(cuid())
+  slug             String                  @unique
+  name             Json
+  shortDescription Json?
+  description      Json?
+  logoUrl          String?
+  heroImage        String?
+  brandColor       String?
+  status           ContentStatus           @default(DRAFT)
+  metaTitle        Json?
+  metaDescription  Json?
+  medicalCenters   HospitalMedicalCenter[]
+  doctors          DoctorHospital[]
+  newsPosts        NewsPost[]
+  appointments     AppointmentRequest[]
+  customFields     Json?                   @default("{}")
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+
+  @@index([status])
+}
+
+model MedicalCenter {
+  id              String                  @id @default(cuid())
+  slug            String                  @unique
+  name            Json
+  description     Json?
+  features        Json? // [{icon, title:{ar,en}}]
+  services        Json? // [{title:{ar,en}, description:{ar,en}}]
+  heroImage       String?
+  isFeatured      Boolean                 @default(false)
+  status          ContentStatus           @default(DRAFT)
+  metaTitle       Json?
+  metaDescription Json?
+  hospitals       HospitalMedicalCenter[]
+  clinics         Clinic[]
+  doctors         DoctorMedicalCenter[]
+  appointments    AppointmentRequest[]
+  customFields    Json?                   @default("{}")
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  @@index([status])
+  @@index([isFeatured])
+}
+
+model HospitalMedicalCenter {
+  hospitalId      String
+  medicalCenterId String
+  hospital        Hospital      @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+  medicalCenter   MedicalCenter @relation(fields: [medicalCenterId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+
+  @@id([hospitalId, medicalCenterId])
+}
+
+model Clinic {
+  id              String        @id @default(cuid())
+  medicalCenterId String
+  medicalCenter   MedicalCenter @relation(fields: [medicalCenterId], references: [id], onDelete: Cascade)
+  name            Json
+  schedule        Json // [{day:"Sunday", from:"10:00", to:"18:00"}]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([medicalCenterId])
+}
+
+model Doctor {
+  id           String                @id @default(cuid())
+  slug         String                @unique
+  name         Json
+  title        Json?
+  specialty    Json?
+  photo        String?
+  bio          Json?
+  isFeatured   Boolean               @default(false)
+  status       ContentStatus         @default(DRAFT)
+  hospitals    DoctorHospital[]
+  centers      DoctorMedicalCenter[]
+  appointments AppointmentRequest[]
+  customFields Json?                 @default("{}")
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+
+  @@index([status])
+  @@index([isFeatured])
+}
+
+model DoctorHospital {
+  doctorId   String
+  hospitalId String
+  doctor     Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  hospital   Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+
+  @@id([doctorId, hospitalId])
+}
+
+model DoctorMedicalCenter {
+  doctorId        String
+  medicalCenterId String
+  doctor          Doctor        @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  medicalCenter   MedicalCenter @relation(fields: [medicalCenterId], references: [id], onDelete: Cascade)
+
+  @@id([doctorId, medicalCenterId])
+}
+
+// ========================= NEWS =========================
+
+model NewsCategory {
+  id    String     @id @default(cuid())
+  name  Json
+  slug  String     @unique
+  posts NewsPost[]
+}
+
+model NewsPost {
+  id                String          @id @default(cuid())
+  slug              String          @unique
+  title             Json
+  excerpt           Json?
+  body              Json?
+  featuredImage     String?
+  categoryId        String?
+  category          NewsCategory?   @relation(fields: [categoryId], references: [id])
+  authorId          String?
+  status            ContentStatus   @default(DRAFT)
+  sourceType        NewsSourceType  @default(MANUAL)
+  sourcePlatform    SocialPlatform?
+  sourceEntity      SourceEntity?
+  externalPostId    String?
+  externalPermalink String?
+  syncedAt          DateTime?
+  relatedHospitalId String?
+  relatedHospital   Hospital?       @relation(fields: [relatedHospitalId], references: [id])
+  metaTitle         Json?
+  metaDescription   Json?
+  publishedAt       DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([status, publishedAt])
+  @@index([sourceType])
+  @@unique([sourcePlatform, externalPostId])
+}
+
+// ========================= MEDIA =========================
+
+model MediaFolder {
+  id        String        @id @default(cuid())
+  name      String
+  parentId  String?
+  parent    MediaFolder?  @relation("FolderTree", fields: [parentId], references: [id])
+  children  MediaFolder[] @relation("FolderTree")
+  media     Media[]
+  createdAt DateTime      @default(now())
+}
+
+model Media {
+  id         String       @id @default(cuid())
+  url        String
+  type       MediaType
+  altText    Json?
+  tags       String[]
+  folderId   String?
+  folder     MediaFolder? @relation(fields: [folderId], references: [id])
+  sizeBytes  Int?
+  width      Int?
+  height     Int?
+  uploadedBy String?
+  createdAt  DateTime     @default(now())
+
+  @@index([folderId])
+  @@index([type])
+}
+
+// ========================= NAVIGATION / SETTINGS =========================
+
+model NavigationItem {
+  id       String           @id @default(cuid())
+  label    Json
+  target   String
+  parentId String?
+  parent   NavigationItem?  @relation("NavTree", fields: [parentId], references: [id])
+  children NavigationItem[] @relation("NavTree")
+  location String           // "header" | "footer"
+  order    Int
+  isVisible Boolean         @default(true)
+
+  @@index([location, order])
+}
+
+model Setting {
+  key       String   @id
+  group     String   // general | brand | social | integrations | languages | security | seo
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+model IntegrationSetting {
+  id             String   @id @default(cuid())
+  provider       String   @unique
+  encryptedValue String
+  isActive       Boolean  @default(true)
+  updatedAt      DateTime @updatedAt
+}
+
+// ========================= LEADS =========================
+
+model AppointmentRequest {
+  id              String            @id @default(cuid())
+  name            String
+  phone           String
+  email           String?
+  hospitalId      String?
+  hospital        Hospital?         @relation(fields: [hospitalId], references: [id])
+  medicalCenterId String?
+  medicalCenter   MedicalCenter?    @relation(fields: [medicalCenterId], references: [id])
+  doctorId        String?
+  doctor          Doctor?           @relation(fields: [doctorId], references: [id])
+  preferredDate   DateTime?
+  message         String?
+  status          AppointmentStatus @default(NEW)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([isRead])
+}
+
+// ========================= TESTIMONIALS =========================
+
+model Testimonial {
+  id        String              @id @default(cuid())
+  name      Json
+  audience  TestimonialAudience
+  quote     Json
+  photo     String?
+  status    ContentStatus       @default(DRAFT)
+  order     Int                 @default(0)
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+}
+
+// ========================= AUDIT =========================
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String   // create | update | delete | publish | login | logout
+  entity    String   // "Page" | "Hospital" | ...
+  entityId  String?
+  before    Json?
+  after     Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@index([entity, entityId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// ========================= AI CHAT =========================
+
+model ChatConversation {
+  id        String        @id @default(cuid())
+  visitorId String
+  locale    String
+  startedAt DateTime      @default(now())
+  endedAt   DateTime?
+  messages  ChatMessage[]
+
+  @@index([visitorId])
+}
+
+model ChatMessage {
+  id             String           @id @default(cuid())
+  conversationId String
+  conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         ChatSender
+  content        String
+  matchedKbId    String?
+  isUnanswered   Boolean          @default(false)
+  isFallback     Boolean          @default(false)
+  createdAt      DateTime         @default(now())
+
+  @@index([conversationId])
+  @@index([isUnanswered])
+}
+
+model AiKnowledgeBase {
+  id        String   @id @default(cuid())
+  topic     Json
+  question  Json
+  answer    Json
+  category  String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+}
+
+model AiSettings {
+  key   String @id
+  value Json
+}
