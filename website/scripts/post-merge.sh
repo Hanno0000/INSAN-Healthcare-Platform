@@ -3,6 +3,9 @@ set -e
 
 echo "=== Post-merge setup ==="
 
+# Replit executes this script from the repo root, so navigate into website/
+cd website
+
 echo "--- Installing dependencies ---"
 pnpm install
 

@@ -28,7 +28,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd apps/api && pnpm run dev"
+args = "cd website/apps/api && pnpm run dev"
 waitForPort = 4000
 
 [workflows.workflow.metadata]
@@ -40,7 +40,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd apps/web && pnpm run dev"
+args = "cd website/apps/web && pnpm run dev"
 waitForPort = 5000
 
 [workflows.workflow.metadata]
@@ -63,7 +63,7 @@ RATE_LIMIT_WINDOW = "15m"
 S3_BUCKET = "insan-media"
 
 [postMerge]
-path = "scripts/post-merge.sh"
+path = "website/scripts/post-merge.sh"
 timeoutMs = 180000
 
 [[ports]]
