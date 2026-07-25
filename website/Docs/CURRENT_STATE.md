@@ -765,4 +765,58 @@ If you modify any specification during implementation:
 
 ---
 
+## Sprint 1 Direction Correction
+
+During the review of the first Validation Run, we identified that the primary objective of Sprint 1 is improving production quality, not expanding the architecture.
+
+The poor production results were caused mainly by:
+
+- Weak Creative Direction
+- Weak Media Generation Prompt Philosophy
+- Missing Visual Language
+- Missing Branding Rules
+- Weak Visual QA Hard Gates
+
+During implementation, the project gradually expanded into broader architectural improvements (Project Assets, Visual Planner evolution, documentation expansion, etc.).
+
+After review, we intentionally decided to refocus Sprint 1 on its original objective:
+
+**"Improve the quality of the next Production Validation Run."**
+
+Any architectural improvements that do not directly improve the next production run should be postponed to a future sprint.
+
+### Project Assets
+
+- Project Assets remain part of the long-term architecture.
+- The Project Assets integration remains reserved for future activation.
+- The configuration placeholder (`PROJECT_ASSETS_FOLDER_ID`) remains valid.
+- The Visual Planner may support Project Assets in the future, but this feature is not required for validating the current production quality improvements.
+
+### Sprint 1 Execution Plan
+
+| Step | Area | Status |
+|---|---|---|
+| Step 1 | Creative Direction | ✓ Completed |
+| Step 2 | Media Generation | ✓ Completed |
+| Step 3 | Visual QA | ✓ Completed |
+| Step 4 | Production Validation Run | Current Step |
+| Step 5 | Post-Run Review | Pending |
+
+### Deferred / Sprint 2+
+
+- Visual Planner full redesign
+- Project Assets activation
+- Advanced Visual Planner intelligence
+- Additional architecture refactoring
+- Documentation expansion not required for production quality
+- Other non-critical architectural enhancements
+
+### Project Note
+
+The project intentionally paused additional architectural expansion in order to validate whether the implemented Creative Direction, Media Generation, and Visual QA improvements are sufficient to improve production quality.
+
+Future architectural work will be driven by evidence from the next Validation Run rather than assumptions.
+
+---
+
 *This document is the primary entry point for anyone continuing development on the INSAN Healthcare Platform. Last updated: 2026-07-25.*

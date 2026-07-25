@@ -2,7 +2,7 @@
 
 Campaign OS — Official Sprint Reference
 
-Version: 4.0
+Version: 5.0
 Status: Active — In Progress
 Date: July 2026
 
@@ -48,25 +48,29 @@ Not "will this add a feature." Not "will this expand the architecture." Only "wi
 
 ## Current Sprint Progress
 
-| Step | Worker | Status |
+| Step | Area | Status |
 |---|---|---|
-| Step 1 | Media Generation Service | ✓ COMPLETE — APPROVED |
-| Step 2 | Visual QA Service | ✓ COMPLETE — APPROVED |
-| Step 3 | Visual QA Review | Pending |
-| Step 4 | Apps Script Implementation | Pending |
-| Step 5 | Production Validation Run | Pending |
+| Step 1 | Creative Direction | ✓ COMPLETE |
+| Step 2 | Media Generation | ✓ COMPLETE |
+| Step 3 | Visual QA | ✓ COMPLETE |
+| Step 4 | Production Validation Run | ← CURRENT |
+| Step 5 | Post-Run Review | Pending |
 
 **Completed:**
 
-- ✓ Architecture reviewed
-- ✓ Worker ownership finalized
-- ✓ Visual pipeline finalized
-- ✓ MEDIA_GENERATION_SERVICE rewritten and approved
-- ✓ VISUAL_QA_WORKER rewritten and approved
+- ✓ Creative Direction, Visual Language, Design Governance, Branding Rules
+- ✓ MEDIA_GENERATION_SERVICE.md rewritten (V3, AI Coaching philosophy)
+- ✓ CREATIVE_DIRECTOR_WORKER.md rewritten (V2, Creative Package Owner)
+- ✓ VISUAL_QA_WORKER.md rewritten (V2, AI Coaching philosophy)
+- ✓ All architecture documents updated and propagated
 
-**Next planned task:**
+**Current Step:**
 
-➡ Rewrite the next worker using the same AI Coaching philosophy.
+➡ Step 4: Production Validation Run — waiting for execution and evidence.
+
+**Next planned step:**
+
+➡ Step 5: Post-Run Review — analyze validation run results, identify gaps, inform next sprint.
 
 ---
 
@@ -305,91 +309,85 @@ If any one of these three emotions is missing, the image fails.
 
 ## 5. Sprint Scope — The Five Steps
 
-### Step 1: Media Generation Service Prompt Rewrite
+### Step 1: Creative Direction
 
-**Status:** COMPLETE — APPROVED
+**Status:** COMPLETE
 
-**What was done:**
+Applied Visual Language, Design Governance, Branding Rules, and Creative Direction improvements across all relevant prompts and architecture documents.
 
-- Completely rewritten `MEDIA_GENERATION_SERVICE.md` from scratch
-- Applied new Prompt Philosophy (~80% AI Coaching, ~20% Operational Rules)
-- Added Worker Identity, Mission, Pipeline Responsibility
-- Added Manufacturing Mindset, Honest Healthcare Philosophy
-- Added Human Psychology, Visual Storytelling, Human Representation
-- Added Composition, Lighting, Color Psychology, Brand Consistency
-- Added Internal QA, Worker Contract Inputs/Outputs
-- Added Model-Specific Generation Behavior (Gemini failure prevention)
-- Added Success Definition
-- Fixed formatting: added missing `---` separators between sections
-- Fixed typo: `confelling` → `compelling`
-- Removed all legacy sections (Production Mode Handling, Generation Methodology, Professional Boundaries, Working Rules, old Inputs/Outputs/Definition of Success)
+**Key files modified:**
+
+- `INSAN_VISUAL_LANGUAGE_SPEC.md` — v1.1
+- `CREATIVE_DIRECTOR_WORKER.md` — V2 (Creative Package Owner)
+- `VISUAL_WORKER_CONTRACTS.md`, `VISUAL_PIPELINE_FLOW.md`, `VISUAL_PRODUCTION_ARCHITECTURE.md`, `VISUAL_SHEET_SCHEMA.md`, `PROMPT_LAYER_INVENTORY.md`, `SYSTEM_CONSTANTS.md`, `CONFIG.gs`
+
+---
+
+### Step 2: Media Generation
+
+**Status:** COMPLETE
+
+Implemented Prompt Philosophy rewrite, Visual Language compliance, Branding protection, and Generation improvements.
 
 **Key file modified:**
 
-- `MEDIA_GENERATION_SERVICE.md` — V3 (1034 lines, complete rewrite)
+- `MEDIA_GENERATION_SERVICE.md` — V3 (1034 lines, complete rewrite with AI Coaching philosophy)
 
 ---
 
-### Step 2: Visual QA Service Prompt Rewrite
+### Step 3: Visual QA
 
-**Status:** COMPLETE — APPROVED
+**Status:** COMPLETE
 
-**What was done:**
-
-- Completely rewritten `VISUAL_QA_WORKER.md` from scratch
-- Applied new Prompt Philosophy (~80% AI Coaching, ~20% Operational Rules)
-- Added Worker Identity, Mission, Core Philosophy
-- Added Mental Model, Quality Philosophy, Healthcare Communication Mindset
-- Added Brand Guardian Mindset, Long-Term Thinking
-- Added Creative Evaluation Framework (Communication Quality, Visual Hierarchy, Emotional Evaluation, Healthcare Credibility, Brand Consistency, Simplicity, Originality, Production Readiness, Human Judgment)
-- Added Evaluation Workflow (8-step sequence)
-- Added Failure Analysis, Severity Assessment, Recovery Recommendations
-- Added Decision Categories (PASS / REVISE / REJECT)
-- Added Output Requirements, Worker Boundaries, Collaboration Philosophy
-- Added Approval Philosophy, Success Definition, Final Principle
+Rewrote Visual QA Worker with AI Coaching philosophy, Hard Gates, Branding validation, and Quality validation.
 
 **Key file modified:**
 
-- `VISUAL_QA_WORKER.md` — V2 (complete rewrite)
+- `VISUAL_QA_WORKER.md` — V2 (590 lines, complete rewrite with AI Coaching philosophy)
 
 ---
 
-### Step 3: Visual QA Review
+### Step 4: Production Validation Run
 
-**Status:** Not Started
+**Status:** Current Step
 
-Review the Visual QA Service prompt against architecture contracts and ensure full alignment.
+Execute a production validation run to verify improved output quality. No new features, no worker rewrites, no Apps Script changes during this step. The goal is evidence.
+
+**What happens:**
+
+- Trigger a new Production Validation Run
+- Capture generation results (images, QA outcomes, errors)
+- Collect human review feedback
+- Document evidence of improvement or regression
 
 ---
 
-### Step 4: Apps Script Implementation
+### Step 5: Post-Run Review
 
-**Status:** Not Started
+**Status:** Pending
 
-Implement prompt changes in Apps Script container-bound functions.
+Analyze the validation run results. Identify what improved, what regressed, and what gaps remain. Use evidence to inform the next sprint.
 
----
+**What happens:**
 
-### Step 5: Production Validation Run
-
-**Status:** Not Started
-
-Execute a production validation run to verify improved output quality.
+- Review validation run output against Success Criteria (Section 7)
+- Document findings
+- Inform Sprint 2 planning if applicable
 
 ---
 
 ## Step Dependencies
 
 ```
-Media Generation Service ✓ COMPLETE
-        ↓
-Visual QA Service ✓ COMPLETE
-        ↓
-Visual QA Review ← CURRENT
-        ↓
-Implementation
-        ↓
-Production Validation
+Creative Direction ✓ COMPLETE
+         ↓
+Media Generation ✓ COMPLETE
+         ↓
+Visual QA ✓ COMPLETE
+         ↓
+Production Validation Run ← CURRENT
+         ↓
+Post-Run Review
 ```
 
 ---
@@ -420,6 +418,16 @@ The following are implemented as reserved hooks only. They are production-ready 
 | `DOMAIN_FOLDERS` | `CONFIG.gs` | Empty, ready for domain-specific folders |
 | Visual Planner asset lookup | `VISUAL_PLANNER_WORKER.md` | Workflow hook implemented, folder empty |
 | Production Mode Selection | `VISUAL_PLANNER_WORKER.md` | Logic implemented, falls back to AI_GENERATED |
+
+### Deferred / Sprint 2+
+
+The following were considered during Sprint 1 but intentionally deferred:
+
+- Visual Planner full redesign
+- Project Assets activation
+- Advanced Visual Planner intelligence
+- Documentation expansion not required for production quality
+- Other non-critical architectural enhancements
 
 ---
 
@@ -564,11 +572,11 @@ If you cannot answer all 8 questions, the document has not been read thoroughly.
 
 ## Current Sprint Position
 
-The Media Generation Service and Visual QA Worker have both been completed and approved.
+Steps 1–3 (Creative Direction, Media Generation, Visual QA) are complete. All three core workers have been rewritten using AI Coaching philosophy and are aligned with the INSAN Visual Language.
 
-The sprint is now focused on reviewing the Visual QA Worker against architecture contracts before moving to Apps Script implementation.
+The sprint is now waiting for the Production Validation Run (Step 4). No new features, worker rewrites, or Apps Script changes should occur during this step. The goal is evidence — not expansion.
 
-Prompt architecture continues to be finalized before code implementation.
+After the validation run, Step 5 (Post-Run Review) will analyze results and inform future work.
 
 ---
 
@@ -581,6 +589,7 @@ Prompt architecture continues to be finalized before code implementation.
 | 2.1 | July 2026 | Documentation Patch — Sprint Background, Visual Language philosophy, Project Assets workflow, Visual Planner & Media Generation responsibilities, How to Use |
 | 3.0 | July 2026 | Sprint progress update — Media Generation Service V3 complete, Visual QA Service in progress, 5-step execution sequence defined |
 | 4.0 | July 2026 | Visual QA Worker V2 complete and approved — both core workers rewritten using AI Coaching philosophy |
+| 5.0 | July 2026 | Sprint 1 Direction Correction — simplified 5-step execution plan, deferred non-quality architectural work, added Post-Run Review step |
 
 ---
 
