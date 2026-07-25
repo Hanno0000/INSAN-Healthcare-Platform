@@ -1,41 +1,46 @@
 ---
 name: Foundation setup
-description: Key decisions and environment facts for the INSAN platform monorepo
+description: Monorepo layout, env vars, pnpm workspace, workflow config, and initial migration decisions.
 ---
 
-# Foundation Setup
-
-## Package manager
-Use **pnpm** (not npm). npm is blocked because a transitive dependency (`tar-6.2.1`) is flagged by the Replit Package Firewall. pnpm resolves this cleanly.
-
-**Why:** `npm install` fails with 403 on that tar version. pnpm uses a different resolution chain.
-
-**How to apply:** Always run `pnpm install`, never `npm install`. Root `pnpm-workspace.yaml` controls the workspace. `onlyBuiltDependencies` for Prisma/NestJS must be in the **root** `package.json`, not child packages.
-
-## Password hashing
-Using **bcryptjs** (not argon2). argon2 is a native module requiring compilation; bcryptjs is pure JS and works immediately in this environment.
-
-**How to apply:** `bcrypt.hash(password, 12)` / `bcrypt.compare(plain, hash)` in auth service and seed.
-
-## Ports
-- Next.js (web): port **5000** (Replit webview)
-- NestJS (api): port **4000** (console workflow)
-
-## Database
-Replit's built-in PostgreSQL. `DATABASE_URL` env var is pre-populated. Schema pushed with `prisma db push` for development (not `migrate dev`).
-
-## cookie-parser import in NestJS
-Must use `const cookieParser = require('cookie-parser')` — not `import * as cookieParser` — due to CommonJS/ESM interop with transpile-only mode.
-
-## JWT decode in refresh endpoint
-Use `Buffer.from(payloadB64, 'base64url').toString('utf8')` to extract `sub` from the refresh token without requiring `jsonwebtoken` as a dependency. Security: the AuthService then validates the token hash against the DB, so the unverified decode is safe.
-
-## Health endpoint
-Excluded from global prefix: `app.setGlobalPrefix('api/v1', { exclude: ['health'] })`.
-
-## useSearchParams() in Next.js
-Any component using `useSearchParams()` must be wrapped in `<Suspense>` at its call site or in its parent page, otherwise Next.js build fails during static prerender.
+## Monorepo layout
+- Root: `pnpm-workspace.yaml` covers `apps/*` and `packages/*`
+- `apps/api` — NestJS (port 4000), `apps/web` — Next.js (port 5000)
+- Turbo orchestrates both; root `package.json` delegates `db:*` to `@insan/api`
 
 ## Workflows
-- `INSAN API (NestJS)`: `cd apps/api && pnpm run dev` → port 4000, console
-- `Start application`: `cd apps/web && pnpm run dev` → port 5000, webview
+- `INSAN API (NestJS)`: `cd apps/api && pnpm run dev` → ts-node-dev → port 4000
+- `Start application`: `cd apps/web && pnpm run dev` → next dev → port 5000
+
+## Environment variables (shared)
+All non-secret vars set via Replit env vars (shared environment):
+NODE_ENV, PORT, JWT_ACCESS_EXPIRES, JWT_REFRESH_EXPIRES, S3_BUCKET, LLM_PROVIDER,
+CORS_ORIGIN, RATE_LIMIT_WINDOW, RATE_LIMIT_MAX, NEXT_PUBLIC_API_BASE_URL,
+NEXT_PUBLIC_DEFAULT_LOCALE, NEXT_PUBLIC_SITE_URL
+
+JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, ENCRYPTION_KEY also stored as shared env vars
+(dev-only values generated with `openssl rand -hex 32`).
+
+DATABASE_URL is runtime-managed by Replit — do not set manually.
+
+**Why:** .env files cannot be written by agent (platform restriction); all config must go through Replit env var system.
+
+## Database
+- Provider: Replit PostgreSQL (host: `helium`, db: `heliumdb`)
+- ORM: Prisma 5.x; schema at `apps/api/prisma/schema.prisma`
+- Initial migration created: `20260725085354_init` (full schema)
+- Seed run: 5 roles, super admin (`admin@insan-platform.com` / `INSAN@Admin2026!`), 30 settings, 2 hospitals, 12 medical centers, navigation, pages, news categories, AI KB, media folders, testimonials, feature flags
+
+## Post-merge script
+- Location: `scripts/post-merge.sh`
+- Configured via `setPostMergeConfig({ scriptPath: "scripts/post-merge.sh", timeoutMs: 180000 })`
+- Steps: pnpm install → db:generate → db:migrate → db:seed
+
+## Critical pre-implementation decisions (from arch review)
+- **C1**: Change `SourceEntity` enum → `String` in schema BEFORE next migration
+- **C2**: Add `PageDraft` + `DraftSection` tables BEFORE Phase 3 (Page Builder)
+- ISR revalidation: NestJS cannot call `revalidatePath` directly — must use a Next.js Route Handler webhook that NestJS calls after publish
+
+## Known issues to fix later
+- `pnpm.onlyBuiltDependencies` in per-app `package.json` has no effect; should be at workspace root
+- Cross-origin warning in Next.js dev: configure `allowedDevOrigins` in `next.config.js`
