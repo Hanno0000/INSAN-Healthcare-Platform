@@ -128,7 +128,7 @@ This document contains all executable engineering tasks for the Visual Productio
 
 | Task ID | Title | Description | Dependencies | Status | Priority | Complexity |
 |---|---|---|---|---|---|---|
-| QA-001 | Create VISUAL_QA_WORKER.md | Write the Visual QA worker prompt file | ARCH-003, DOC-006 | TODO | P0 | L |
+| QA-001 | Create VISUAL_QA_WORKER.md | Write the Visual QA worker prompt file | ARCH-003, DOC-006 | DONE | P0 | L |
 | QA-002 | Define Visual QA input fields | Define all fields the Visual QA reads from the spreadsheet | ARCH-002 | TODO | P0 | S |
 | QA-003 | Define Visual QA output fields | Define all fields the Visual QA writes to the spreadsheet | ARCH-002 | TODO | P0 | S |
 | QA-004 | Define Visual QA vocabulary | Define controlled vocabulary for Visual QA output columns | ARCH-004 | TODO | P0 | S |

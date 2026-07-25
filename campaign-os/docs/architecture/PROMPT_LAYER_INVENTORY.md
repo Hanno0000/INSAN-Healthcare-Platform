@@ -20,8 +20,8 @@ Workers are prompt-based components that read from the spreadsheet, perform proc
 
 | Worker | Prompt File | Status |
 |---|---|---|
-| Visual Planner | `prompts/workers/VISUAL_PLANNER_WORKER.md` | Active |
-| Visual QA | `prompts/workers/VISUAL_QA_WORKER.md` | Active |
+| Visual Planner | `prompts/visual/VISUAL_PLANNER_WORKER.md` | Active |
+| Visual QA | `prompts/visual/VISUAL_QA_WORKER.md` | Active |
 
 **Visual Planner Role:** Production Readiness worker. Validates the Creative Package for media generation. Selects production mode (PROJECT_ASSET or AI_GENERATED). Prepares generation brief with INSAN Visual Language instructions. Writes Asset Count, Production Mode, Reference Asset Package. Does NOT write VISUAL_STAGE (orchestration layer handles state transitions).
 
@@ -64,7 +64,9 @@ These workers are part of the Content Pipeline, not the Visual Pipeline. Listed 
 |---|---|---|
 | Content Strategy | `prompts/CONTENT_STRATEGY_WORKER.md` | Active |
 | Content Creation | `prompts/CONTENT_CREATION_WORKER.md` | Active |
-| Creative Director | `prompts/CREATIVE_DIRECTOR_WORKER.md` | Active |
+| Creative Director | `prompts/CREATIVE_DIRECTOR_WORKER.md` | Active (V2) |
+
+**Creative Director Role (V2):** The Creative Package Owner and Final Creative Authority. Produces the complete Creative Package: strategy refinement, content refinement, visual creative package, and design prompt. The Content Strategy Worker and Content Creation Worker produce first drafts. The Creative Director owns the final approved version of every creative field. The Creative Package transfers to Visual Pipeline Section A on approval. No Visual worker may recreate, reinterpret, redesign, or rewrite the Creative Package.
 
 ---
 
@@ -104,15 +106,17 @@ Visual Pipeline (Production)
 
 ## Key Principles
 
-1. **Creative Director is Source of Truth** — The Creative Package is complete. No worker recreates it.
+1. **Creative Director is Source of Truth and Creative Package Owner** — The Creative Package is complete. The Creative Director owns the final approved version of every creative field. No worker recreates it.
 
-2. **Visual Planner is Production Readiness** — Validates completeness, selects production mode, prepares generation brief. Does not create.
+2. **Content Strategy and Content Creation produce drafts** — Their outputs are first versions. The Creative Director owns the final approved version.
 
-3. **No Creative Reinterpretation** — The Creative Package flows directly from Section A to the Media Generation Service.
+3. **Visual Planner is Production Readiness** — Validates completeness, selects production mode, prepares generation brief. Does not create.
 
-4. **INSAN Visual Language is mandatory** — All generated media must conform to the visual identity. Style ratio, goals, and prohibitions are enforced at generation and validation.
+4. **No Creative Reinterpretation** — The Creative Package flows directly from Section A to the Media Generation Service.
 
-5. **Spreadsheet is Persistent Database** — Only write columns that store NEW production information.
+5. **INSAN Visual Language is mandatory** — All generated media must conform to the visual identity. Style ratio, goals, and prohibitions are enforced at generation and validation.
+
+6. **Spreadsheet is Persistent Database** — Only write columns that store NEW production information.
 
 ---
 
