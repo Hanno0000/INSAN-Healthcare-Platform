@@ -14,3 +14,14 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Archive (deprecated files)
+archive/
+
+# Generated assets (large files)
+assets/generated/
+
+# Google Drive sync folders
+Docs/
+Prompts/
+AppsScript/
