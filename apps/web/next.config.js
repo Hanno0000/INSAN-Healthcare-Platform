@@ -1,5 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Allow Replit preview and dev domains
+  allowedDevOrigins: [
+    '*.replit.dev',
+    '*.repl.co',
+    '127.0.0.1',
+    'localhost',
+  ],
   // Allow all hosts (required for Replit proxied iframe)
   async headers() {
     return [

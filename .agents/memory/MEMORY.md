@@ -1,1 +1,2 @@
 - [Foundation setup](foundation-setup.md) — monorepo layout, env vars, pnpm workspace, and workflow config decisions
+- [Content API lessons](content-api-lessons.md) — schema facts (publishedAt, enum names, model names), audit/slug/publish patterns, all 13 modules complete

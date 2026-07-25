@@ -7,6 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { Prisma } from '@prisma/client';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -32,8 +33,44 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         if (Array.isArray(message)) {
           message = message[0];
         }
+        if (resp.code) code = resp.code;
+        else code = HttpStatus[status] || code;
+      } else {
+        code = HttpStatus[status] || code;
       }
-      code = HttpStatus[status] || code;
+    } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
+      switch (exception.code) {
+        case 'P2025': // Record not found
+          status = HttpStatus.NOT_FOUND;
+          message = 'Record not found';
+          code = 'NOT_FOUND';
+          break;
+        case 'P2002': // Unique constraint violation
+          status = HttpStatus.CONFLICT;
+          message = 'A record with this value already exists';
+          code = 'CONFLICT';
+          break;
+        case 'P2003': // Foreign key constraint violation
+          status = HttpStatus.BAD_REQUEST;
+          message = 'Referenced record does not exist';
+          code = 'INVALID_REFERENCE';
+          break;
+        case 'P2014': // Relation violation
+          status = HttpStatus.BAD_REQUEST;
+          message = 'This operation would violate a required relation';
+          code = 'RELATION_VIOLATION';
+          break;
+        default:
+          this.logger.error(
+            `Unhandled Prisma error ${exception.code}: ${exception.message}`,
+            exception.stack,
+          );
+      }
+    } else if (exception instanceof Prisma.PrismaClientValidationError) {
+      status = HttpStatus.BAD_REQUEST;
+      message = 'Invalid data provided';
+      code = 'VALIDATION_ERROR';
+      this.logger.error(`Prisma validation error: ${exception.message}`);
     } else if (exception instanceof Error) {
       message = exception.message;
       this.logger.error(`Unhandled exception: ${exception.message}`, exception.stack);

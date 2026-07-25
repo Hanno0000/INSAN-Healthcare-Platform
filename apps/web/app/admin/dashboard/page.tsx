@@ -1,10 +1,2 @@
-import type { Metadata } from 'next';
 import DashboardClient from './DashboardClient';
-
-export const metadata: Metadata = {
-  title: 'لوحة التحكم | إنسان',
-};
-
-export default function DashboardPage() {
-  return <DashboardClient />;
-}
+export default function DashboardPage() { return <DashboardClient />; }

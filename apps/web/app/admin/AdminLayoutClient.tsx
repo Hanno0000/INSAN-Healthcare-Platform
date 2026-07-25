@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminHeader from '@/components/admin/AdminHeader';
 import { AdminUserContext } from '@/lib/admin-context';
+import { ToastProvider } from '@/components/admin/ui/Toast';
 import type { AdminUser } from '@/lib/auth';
 import { api, setAccessToken } from '@/lib/api-client';
 
@@ -24,7 +25,6 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
   useEffect(() => {
     if (isLoginPage) return;
 
-    // Try to restore session via refresh token
     api.auth
       .refresh()
       .then((res) => {
@@ -45,7 +45,7 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
     return (
       <QueryClientProvider client={queryClient}>
         <AdminUserContext.Provider value={{ user: null, setUser }}>
-          {children}
+          <ToastProvider>{children}</ToastProvider>
         </AdminUserContext.Provider>
       </QueryClientProvider>
     );
@@ -65,13 +65,15 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
   return (
     <QueryClientProvider client={queryClient}>
       <AdminUserContext.Provider value={{ user, setUser }}>
-        <div className="flex h-screen overflow-hidden bg-gray-50">
-          <AdminSidebar />
-          <div className="flex-1 flex flex-col overflow-hidden">
-            <AdminHeader />
-            <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <ToastProvider>
+          <div className="flex h-screen overflow-hidden bg-gray-50" dir="rtl">
+            <AdminSidebar />
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <AdminHeader />
+              <main className="flex-1 overflow-y-auto p-6">{children}</main>
+            </div>
           </div>
-        </div>
+        </ToastProvider>
       </AdminUserContext.Provider>
     </QueryClientProvider>
   );

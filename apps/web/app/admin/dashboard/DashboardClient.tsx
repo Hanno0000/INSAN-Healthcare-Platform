@@ -1,91 +1,78 @@
 'use client';
 
-import { useAdminUser } from '@/lib/admin-context';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '@/lib/api-client';
+import { Building2, Stethoscope, UserRound, Newspaper, Calendar, Mail, Quote, Users } from 'lucide-react';
+import Link from 'next/link';
 
-const stats = [
-  { label: 'المستشفيات', value: '2', icon: '🏥', color: 'bg-blue-50 text-blue-700 border-blue-100' },
-  { label: 'المراكز الطبية', value: '12', icon: '🔬', color: 'bg-teal-50 text-teal-700 border-teal-100' },
-  { label: 'الصفحات', value: '9', icon: '📄', color: 'bg-purple-50 text-purple-700 border-purple-100' },
-  { label: 'طلبات المواعيد', value: '0', icon: '📅', color: 'bg-orange-50 text-orange-700 border-orange-100' },
-];
+interface StatCard {
+  label: string;
+  value: number | string;
+  icon: React.ReactNode;
+  href: string;
+  color: string;
+}
+
+function StatCard({ label, value, icon, href, color }: StatCard) {
+  return (
+    <Link href={href} className="bg-white rounded-2xl p-5 flex items-center gap-4 border border-gray-100 hover:shadow-md transition-shadow group">
+      <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${color}`}>
+        {icon}
+      </div>
+      <div>
+        <p className="text-2xl font-bold text-gray-900 group-hover:text-[#0B1F3A] transition">{value}</p>
+        <p className="text-sm text-gray-500">{label}</p>
+      </div>
+    </Link>
+  );
+}
 
 export default function DashboardClient() {
-  const { user } = useAdminUser();
+  const { data: hospitals } = useQuery({ queryKey: ['hospitals-count'], queryFn: () => api.hospitals.list({ pageSize: 1 }) });
+  const { data: medCenters } = useQuery({ queryKey: ['med-centers-count'], queryFn: () => api.medicalCenters.list({ pageSize: 1 }) });
+  const { data: doctors } = useQuery({ queryKey: ['doctors-count'], queryFn: () => api.doctors.list({ pageSize: 1 }) });
+  const { data: news } = useQuery({ queryKey: ['news-count'], queryFn: () => api.news.listPosts({ pageSize: 1 }) });
+  const { data: appointments } = useQuery({ queryKey: ['appts-count'], queryFn: () => api.appointments.list({ pageSize: 1 }) });
+  const { data: contacts } = useQuery({ queryKey: ['contacts-count'], queryFn: () => api.contact.list({ pageSize: 1 }) });
+  const { data: testimonials } = useQuery({ queryKey: ['testimonials-count'], queryFn: () => api.testimonials.list({ pageSize: 1 }) });
+  const { data: users } = useQuery({ queryKey: ['users-count'], queryFn: () => api.users.list({ pageSize: 1 }) });
+
+  const stats: StatCard[] = [
+    { label: 'المستشفيات', value: hospitals?.meta.total ?? '—', icon: <Building2 size={22} className="text-blue-600" />, href: '/admin/hospitals', color: 'bg-blue-50' },
+    { label: 'المراكز الطبية', value: medCenters?.meta.total ?? '—', icon: <Stethoscope size={22} className="text-teal-600" />, href: '/admin/medical-centers', color: 'bg-teal-50' },
+    { label: 'الأطباء', value: doctors?.meta.total ?? '—', icon: <UserRound size={22} className="text-purple-600" />, href: '/admin/doctors', color: 'bg-purple-50' },
+    { label: 'الأخبار', value: news?.meta.total ?? '—', icon: <Newspaper size={22} className="text-orange-500" />, href: '/admin/news', color: 'bg-orange-50' },
+    { label: 'المواعيد', value: appointments?.meta.total ?? '—', icon: <Calendar size={22} className="text-emerald-600" />, href: '/admin/appointments', color: 'bg-emerald-50' },
+    { label: 'رسائل التواصل', value: contacts?.meta.total ?? '—', icon: <Mail size={22} className="text-red-500" />, href: '/admin/contact-submissions', color: 'bg-red-50' },
+    { label: 'الشهادات', value: testimonials?.meta.total ?? '—', icon: <Quote size={22} className="text-yellow-600" />, href: '/admin/testimonials', color: 'bg-yellow-50' },
+    { label: 'المستخدمون', value: users?.meta.total ?? '—', icon: <Users size={22} className="text-gray-600" />, href: '/admin/users', color: 'bg-gray-100' },
+  ];
 
   return (
-    <div className="space-y-6" dir="rtl">
-      {/* Welcome */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">
-          مرحباً، {user?.name || 'مدير النظام'} 👋
-        </h1>
-        <p className="text-gray-500 mt-1 text-sm">
-          هذه لوحة التحكم الرئيسية لمنظومة إنسان للرعاية الصحية
-        </p>
+    <div>
+      <div className="mb-6">
+        <h1 className="text-xl font-bold text-gray-900">لوحة التحكم</h1>
+        <p className="text-sm text-gray-500 mt-0.5">نظرة عامة على منظومة إنسان</p>
       </div>
-
-      {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => (
-          <div
-            key={stat.label}
-            className={`rounded-2xl border p-5 flex flex-col gap-2 ${stat.color}`}
-          >
-            <span className="text-2xl">{stat.icon}</span>
-            <div>
-              <p className="text-3xl font-bold">{stat.value}</p>
-              <p className="text-sm mt-0.5 opacity-80">{stat.label}</p>
-            </div>
-          </div>
-        ))}
+        {stats.map((s) => <StatCard key={s.href} {...s} />)}
       </div>
 
-      {/* Quick Actions */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">إجراءات سريعة</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {[
-            { label: 'إدارة الصفحات', href: '/admin/pages', icon: '📄' },
-            { label: 'إدارة المستشفيات', href: '/admin/hospitals', icon: '🏥' },
-            { label: 'إدارة المراكز', href: '/admin/medical-centers', icon: '🔬' },
-            { label: 'إدارة الأطباء', href: '/admin/doctors', icon: '👨‍⚕️' },
-            { label: 'إدارة الأخبار', href: '/admin/news', icon: '📰' },
-            { label: 'مكتبة الوسائط', href: '/admin/media', icon: '🖼️' },
-            { label: 'المواعيد', href: '/admin/appointments', icon: '📅' },
-            { label: 'الإعدادات', href: '/admin/settings', icon: '⚙️' },
-          ].map((action) => (
-            <a
-              key={action.label}
-              href={action.href}
-              className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition-all group"
-            >
-              <span className="text-xl">{action.icon}</span>
-              <span className="text-sm font-medium text-gray-700 group-hover:text-blue-700">
-                {action.label}
-              </span>
-            </a>
-          ))}
-        </div>
-      </div>
-
-      {/* System Info */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">معلومات النظام</h2>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between py-2 border-b border-gray-50">
-            <span className="text-gray-500">الدور</span>
-            <span className="font-medium text-gray-900">{user?.roleName || '—'}</span>
-          </div>
-          <div className="flex justify-between py-2 border-b border-gray-50">
-            <span className="text-gray-500">البريد الإلكتروني</span>
-            <span className="font-medium text-gray-900 ltr">{user?.email || '—'}</span>
-          </div>
-          <div className="flex justify-between py-2">
-            <span className="text-gray-500">الإصدار</span>
-            <span className="font-medium text-gray-900">1.0.0</span>
-          </div>
-        </div>
+      {/* Quick links */}
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <QuickCard title="إضافة مستشفى" desc="أضف مستشفى جديداً للمنظومة" href="/admin/hospitals" color="bg-[#0B1F3A]" />
+        <QuickCard title="نشر خبر" desc="أضف مقالاً أو خبراً جديداً" href="/admin/news" color="bg-[#0E7C86]" />
+        <QuickCard title="الإعدادات" desc="إدارة إعدادات الموقع والعلامة التجارية" href="/admin/settings" color="bg-[#0B5FFF]" />
       </div>
     </div>
+  );
+}
+
+function QuickCard({ title, desc, href, color }: { title: string; desc: string; href: string; color: string }) {
+  return (
+    <Link href={href} className={`${color} text-white rounded-2xl p-5 hover:opacity-90 transition group`}>
+      <p className="font-semibold">{title}</p>
+      <p className="text-white/70 text-sm mt-1">{desc}</p>
+    </Link>
   );
 }

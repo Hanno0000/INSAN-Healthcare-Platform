@@ -650,6 +650,73 @@ async function seedFeatureFlags() {
   console.log('    ✓ Feature flags seeded');
 }
 
+// ========================= BRANDS =========================
+
+async function seedBrands() {
+  console.log('  → Seeding brands...');
+
+  const brandDefs = [
+    {
+      code: 'INSAN',
+      displayName: { ar: 'مجموعة إنسان', en: 'INSAN Group' },
+      socialAccounts: [
+        { provider: 'facebook_page_insan', platform: 'FACEBOOK' as const, pageId: 'placeholder', pageName: 'INSAN Healthcare', isPrimary: true },
+        { provider: 'instagram_page_insan', platform: 'INSTAGRAM' as const, pageId: 'placeholder', pageName: 'INSAN Healthcare', isPrimary: false },
+        { provider: 'linkedin_page_insan', platform: 'LINKEDIN' as const, pageId: 'placeholder', pageName: 'INSAN Healthcare', isPrimary: false },
+      ],
+    },
+    {
+      code: 'FUTURE',
+      displayName: { ar: 'مستشفى المستقبل التخصصي', en: 'Future Specialized Hospital' },
+      socialAccounts: [
+        { provider: 'facebook_page_future', platform: 'FACEBOOK' as const, pageId: 'placeholder', pageName: 'Future Specialized Hospital', isPrimary: true },
+      ],
+    },
+    {
+      code: 'DELTA',
+      displayName: { ar: 'مستشفى الدلتا الدولي', en: 'Delta International Hospital' },
+      socialAccounts: [
+        { provider: 'facebook_page_delta', platform: 'FACEBOOK' as const, pageId: 'placeholder', pageName: 'Delta International Hospital', isPrimary: true },
+      ],
+    },
+  ];
+
+  for (const brandDef of brandDefs) {
+    const { socialAccounts, ...brandData } = brandDef;
+
+    const brand = await prisma.brand.upsert({
+      where: { code: brandData.code },
+      create: { ...brandData, isActive: true },
+      update: { displayName: brandData.displayName },
+    });
+
+    for (const account of socialAccounts) {
+      const { provider, ...accountData } = account;
+      const integration = await prisma.integrationSetting.findUnique({ where: { provider } });
+
+      const existing = await prisma.brandSocialAccount.findFirst({
+        where: { brandId: brand.id, platform: accountData.platform },
+      });
+
+      if (!existing) {
+        await prisma.brandSocialAccount.create({
+          data: {
+            brandId: brand.id,
+            platform: accountData.platform,
+            pageId: accountData.pageId,
+            pageName: accountData.pageName,
+            isPrimary: accountData.isPrimary,
+            isActive: false, // inactive until real page IDs are configured
+            integrationSettingId: integration?.id ?? null,
+          },
+        });
+      }
+    }
+  }
+
+  console.log('    ✓ 3 brands seeded (INSAN, FUTURE, DELTA)');
+}
+
 // ========================= MAIN =========================
 
 async function main() {
@@ -661,6 +728,7 @@ async function main() {
   await seedSuperAdmin(roles);
   await seedSettings();
   await seedIntegrationSettings();
+  await seedBrands(); // must run after seedIntegrationSettings
   await seedAiSettings();
   const hospitals = await seedHospitals();
   await seedMedicalCenters(hospitals);
