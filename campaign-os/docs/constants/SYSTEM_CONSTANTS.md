@@ -167,7 +167,7 @@ No creative rewording inside controlled fields.
 
 ## Worker Ownership
 
-### Content Strategy Worker writes:
+### Content Strategy Worker writes (proposes first version):
 - Publishing Date
 - Publishing Page
 - Calendar ID
@@ -193,6 +193,8 @@ No creative rewording inside controlled fields.
 - Do NOT Show
 - Text On Design
 - Design Notes
+
+**Note:** The Content Strategy Worker proposes the first version. The **Creative Director** owns the final approved version of all creative fields.
 
 ### Content Strategy Worker does NOT write:
 - Campaign Philosophy
@@ -225,19 +227,62 @@ No creative rewording inside controlled fields.
 
 ---
 
-### Creative Director Worker writes:
+### Content Creation Worker writes (proposes first draft):
+- Post Copy (AI)
+- Primary Hashtags
+- Secondary Hashtags
+- Design Prompt (AI)
+
+**Note:** The Content Creation Worker proposes the first draft. The **Creative Director** owns the final approved version.
+
+---
+
+### Creative Director Worker writes (final owner of complete Creative Package):
+
+**Strategy Refinement (may refine from Strategy proposal):**
+- Content Objective
+- Content Angle
+- Content Type
+- Content Format
+- Content Funnel Stage
+- Hook
+- Post Structure
+- Language Style
+- Emoji Style
+
+**Visual Creative Package (may refine from Strategy proposal):**
+- Visual Concept
+- Visual Focus
+- Visual Priority
+- Design Mood
+- Composition
+- Visual Elements
+- Do NOT Show
+- Text On Design
+- Design Notes
+
+**Content Refinement (final version from Creation draft):**
+- Creative Director Post Copy
+- Primary Hashtags
+- Secondary Hashtags
+
+**Design Prompt (final production instruction):**
+- Creative Director Design Prompt
+
+**Review Fields (own output):**
 - Creative Director Quality Score
 - Creative Director Review Status
 - Creative Director Notes
-- Creative Director Post Copy
-- Creative Director Design Prompt
 
 ### Creative Director Worker does NOT write:
-- Any Content Strategy columns (see above)
-- Post Copy (AI)
-- Design Prompt (AI)
-- Primary Hashtags
-- Secondary Hashtags
+- Any Business Context columns (Campaign Philosophy, Trust Platform, Core Message, Trust Promise, Emotional Trigger, Psychological Barrier, Target Audience, Content Pillars, Approved Content Angles, KPI, Non-Negotiable Rules, CTA Strategy)
+- Content ID
+- Revision Number
+- AI Worker
+- Publishing Status
+- Design Asset URL
+- Live Post URL
+- Notes
 
 ---
 

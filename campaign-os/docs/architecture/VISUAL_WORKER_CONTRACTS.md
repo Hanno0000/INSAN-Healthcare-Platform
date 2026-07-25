@@ -14,7 +14,9 @@ Date: July 2026
 
 This document defines the data contracts for each component in the Visual Production pipeline.
 
-**The Creative Director is the ONLY creative decision maker.** The Creative Director produces the complete Creative Package. No worker may recreate, reinterpret, redesign, or rewrite this creative work.
+**The Creative Director is the ONLY creative decision maker and the Creative Package Owner.** The Creative Director produces the complete Creative Package — strategy refinement, content refinement, visual creative package, and design prompt. No worker may recreate, reinterpret, redesign, or rewrite this creative work.
+
+The Content Strategy Worker and Content Creation Worker produce first drafts. The Creative Director owns the final approved version of every creative field.
 
 **Workers** read from Section A and write to Section B of the Visual Pipeline.
 
@@ -42,6 +44,34 @@ The VISUAL_STAGE column tracks the master production state.
 
 ---
 
+## Content Pipeline — Creative Package Production
+
+### Content Strategy Worker
+
+**Role:** Proposes the first version of strategy and visual direction fields.
+
+**Outputs (first draft):** Content Objective, Content Angle, Content Type, Content Format, Content Funnel Stage, Hook, Post Structure, Language Style, Emoji Style, Visual Concept, Visual Focus, Visual Priority, Design Mood, Composition, Visual Elements, Do NOT Show, Text On Design, Design Notes.
+
+**Authority:** Proposes. Does not own the final version.
+
+### Content Creation Worker
+
+**Role:** Produces the first draft of content fields.
+
+**Outputs (first draft):** Post Copy (AI), Primary Hashtags, Secondary Hashtags, Design Prompt (AI).
+
+**Authority:** Proposes. Does not own the final version.
+
+### Creative Director Worker
+
+**Role:** The Final Creative Authority and the Creative Package Owner.
+
+**Authority:** Owns the final approved version of every creative field.
+
+**Outputs (final):** All strategy refinement fields, all visual creative package fields, Creative Director Post Copy, Primary Hashtags, Secondary Hashtags, Creative Director Design Prompt, Creative Director Quality Score, Creative Director Review Status, Creative Director Notes.
+
+---
+
 ## Transfer Contract
 
 ### Content Pipeline → Visual Pipeline (Section A)
@@ -52,27 +82,27 @@ The VISUAL_STAGE column tracks the master production state.
 
 **Transfer Fields (17 columns, Read-Only in Visual Pipeline):**
 
-The Creative Director produces the complete Creative Package:
+The Creative Director produces the complete Creative Package. The Content Strategy Worker and Content Creation Worker produce first drafts. The Creative Director owns the final approved version of every field.
 
-| Field | Purpose |
-|---|---|
-| Content ID | Row identifier |
-| Calendar ID | Calendar event identifier |
-| Campaign Name | Campaign identifier |
-| Hospital Brand | Brand identifier |
-| Content Type | Content classification |
-| Content Format | Format constraints |
-| Post Copy (AI) | Approved post copy |
-| Creative Director Design Prompt | Approved design prompt |
-| Visual Concept | Strategic visual concept |
-| Visual Focus | Primary visual subject |
-| Visual Priority | Visual priority order |
-| Design Mood | Emotional mood |
-| Composition | Compositional approach |
-| Visual Elements | Visual elements to include |
-| Do NOT Show | Elements to exclude |
-| Text On Design | Text on visual |
-| Design Notes | Additional notes |
+| Field | Source (Draft) | Final Owner |
+|---|---|---|
+| Content ID | System | System |
+| Calendar ID | System | System |
+| Campaign Name | Campaign Strategy | Campaign Strategy |
+| Hospital Brand | Campaign Strategy | Campaign Strategy |
+| Content Type | Content Strategy Worker | **Creative Director** |
+| Content Format | Content Strategy Worker | **Creative Director** |
+| Post Copy (AI) | Content Creation Worker | **Creative Director** |
+| Creative Director Design Prompt | Content Creation Worker (draft) | **Creative Director** |
+| Visual Concept | Content Strategy Worker | **Creative Director** |
+| Visual Focus | Content Strategy Worker | **Creative Director** |
+| Visual Priority | Content Strategy Worker | **Creative Director** |
+| Design Mood | Content Strategy Worker | **Creative Director** |
+| Composition | Content Strategy Worker | **Creative Director** |
+| Visual Elements | Content Strategy Worker | **Creative Director** |
+| Do NOT Show | Content Strategy Worker | **Creative Director** |
+| Text On Design | Content Strategy Worker | **Creative Director** |
+| Design Notes | Content Strategy Worker | **Creative Director** |
 
 **Writes:** VISUAL_STAGE = "READY"
 
@@ -432,25 +462,25 @@ PUBLISHING → FAILED (on failure)
 
 ## Column Ownership Matrix
 
-| Column | Owner | Multi-Writer |
-|---|---|---|
-| Content ID | READ-ONLY | No |
-| Calendar ID | READ-ONLY | No |
-| Campaign Name | READ-ONLY | No |
-| Hospital Brand | READ-ONLY | No |
-| Content Type | READ-ONLY | No |
-| Content Format | READ-ONLY | No |
-| Post Copy (AI) | READ-ONLY | No |
-| Creative Director Design Prompt | READ-ONLY | No |
-| Visual Concept | READ-ONLY | No |
-| Visual Focus | READ-ONLY | No |
-| Visual Priority | READ-ONLY | No |
-| Design Mood | READ-ONLY | No |
-| Composition | READ-ONLY | No |
-| Visual Elements | READ-ONLY | No |
-| Do NOT Show | READ-ONLY | No |
-| Text On Design | READ-ONLY | No |
-| Design Notes | READ-ONLY | No |
+| Column | Final Owner | Draft Source | Multi-Writer |
+|---|---|---|---|
+| Content ID | READ-ONLY | System | No |
+| Calendar ID | READ-ONLY | System | No |
+| Campaign Name | READ-ONLY | Campaign Strategy | No |
+| Hospital Brand | READ-ONLY | Campaign Strategy | No |
+| Content Type | **Creative Director** | Content Strategy Worker | No |
+| Content Format | **Creative Director** | Content Strategy Worker | No |
+| Post Copy (AI) | **Creative Director** | Content Creation Worker | No |
+| Creative Director Design Prompt | **Creative Director** | Content Creation Worker (draft) | No |
+| Visual Concept | **Creative Director** | Content Strategy Worker | No |
+| Visual Focus | **Creative Director** | Content Strategy Worker | No |
+| Visual Priority | **Creative Director** | Content Strategy Worker | No |
+| Design Mood | **Creative Director** | Content Strategy Worker | No |
+| Composition | **Creative Director** | Content Strategy Worker | No |
+| Visual Elements | **Creative Director** | Content Strategy Worker | No |
+| Do NOT Show | **Creative Director** | Content Strategy Worker | No |
+| Text On Design | **Creative Director** | Content Strategy Worker | No |
+| Design Notes | **Creative Director** | Content Strategy Worker | No |
 | VISUAL_STAGE | Orchestration Layer | No — single writer |
 | Asset Count | Visual Planner | No |
 | Production Mode | Visual Planner | No |
@@ -471,23 +501,25 @@ PUBLISHING → FAILED (on failure)
 
 ## Key Architecture Principles
 
-1. **Creative Director is Source of Truth** — The Creative Package is complete. No worker recreates it.
+1. **Creative Director is Source of Truth and Creative Package Owner** — The Creative Package is complete. The Creative Director owns the final approved version of every creative field. No worker recreates it.
 
-2. **Visual Planner is Production Readiness** — Validates completeness, selects production mode, prepares generation brief. Does not create.
+2. **Content Strategy and Content Creation produce drafts** — Their outputs are first versions. The Creative Director owns the final approved version.
 
-3. **Spreadsheet is Persistent Database** — Only write columns that store NEW production information. Temporary data stays in memory.
+3. **Visual Planner is Production Readiness** — Validates completeness, selects production mode, prepares generation brief. Does not create.
 
-4. **Media Generation reads from Section A** — The Creative Package flows directly to generation. No intermediate creative reinterpretation.
+4. **Spreadsheet is Persistent Database** — Only write columns that store NEW production information. Temporary data stays in memory.
 
-5. **Visual QA validates against Creative Director** — The Creative Package is the standard, not any intermediate interpretation.
+5. **Media Generation reads from Section A** — The Creative Package flows directly to generation. No intermediate creative reinterpretation.
 
-6. **INSAN Visual Language is mandatory** — All generated media must conform to the visual identity. Style ratio, goals, and prohibitions are enforced at generation and validation.
+6. **Visual QA validates against Creative Director** — The Creative Package is the standard, not any intermediate interpretation.
 
-7. **Every column has exactly one owner** — No orphan columns. No undefined ownership.
+7. **INSAN Visual Language is mandatory** — All generated media must conform to the visual identity. Style ratio, goals, and prohibitions are enforced at generation and validation.
 
-8. **Orchestration Layer owns state transitions** — Workers report completion. The orchestration layer (WorkerRunner) performs all VISUAL_STAGE transitions. Single authoritative state machine.
+8. **Every column has exactly one owner** — No orphan columns. No undefined ownership.
 
-9. **AI Worker column is per-pipeline** — Content workers write to Content Pipeline's AI Worker column. Visual workers write to Visual Pipeline's AI Worker column. They never cross boundaries.
+9. **Orchestration Layer owns state transitions** — Workers report completion. The orchestration layer (WorkerRunner) performs all VISUAL_STAGE transitions. Single authoritative state machine.
+
+10. **AI Worker column is per-pipeline** — Content workers write to Content Pipeline's AI Worker column. Visual workers write to Visual Pipeline's AI Worker column. They never cross boundaries.
 
 ---
 

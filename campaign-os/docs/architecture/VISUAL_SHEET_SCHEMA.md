@@ -27,9 +27,9 @@ The Content Pipeline is the Source of Truth. Only approved rows transfer to the 
 
 ## Architecture Principle
 
-**The Creative Director is the Source of Truth.**
+**The Creative Director is the Source of Truth and the Creative Package Owner.**
 
-Section A contains the complete Creative Package. No Visual worker may rewrite or duplicate any Section A data.
+Section A contains the complete Creative Package. The Creative Director owns the final approved version of every creative field. No Visual worker may rewrite or duplicate any Section A data.
 
 ---
 
@@ -270,15 +270,17 @@ Each column has exactly one owner. No orphan columns.
 
 ## Key Architecture Principles
 
-1. **Creative Director is Source of Truth** — The Creative Package in Section A is complete. No worker recreates it.
+1. **Creative Director is Source of Truth and Creative Package Owner** — The Creative Package in Section A is complete. The Creative Director owns the final approved version of every creative field. No worker recreates it.
 
-2. **Visual Planner is Production Readiness** — Validates completeness, does not create.
+2. **Content Strategy and Content Creation produce drafts** — Their outputs are first versions. The Creative Director owns the final approved version.
 
-3. **Spreadsheet is Persistent Database** — Only write columns that store NEW production information. Temporary data stays in memory.
+3. **Visual Planner is Production Readiness** — Validates completeness, does not create.
 
-4. **No Duplicated Data** — Section B does not duplicate Section A. Each column stores unique information.
+4. **Spreadsheet is Persistent Database** — Only write columns that store NEW production information. Temporary data stays in memory.
 
-5. **Every column has exactly one owner** — No orphan columns. No undefined ownership.
+5. **No Duplicated Data** — Section B does not duplicate Section A. Each column stores unique information.
+
+6. **Every column has exactly one owner** — No orphan columns. No undefined ownership.
 
 ---
 

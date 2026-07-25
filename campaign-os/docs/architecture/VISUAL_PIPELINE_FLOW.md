@@ -20,9 +20,11 @@ This document is the implementation contract for Apps Script orchestration.
 
 ## Architecture Principle
 
-**The Creative Director is the ONLY creative decision maker.**
+**The Creative Director is the ONLY creative decision maker and the Creative Package Owner.**
 
-The Creative Director produces the complete Creative Package. No worker may recreate, reinterpret, redesign, or rewrite this creative work.
+The Creative Director produces the complete Creative Package — strategy refinement, content refinement, visual creative package, and design prompt. The Content Strategy Worker and Content Creation Worker produce first drafts. The Creative Director owns the final approved version.
+
+No worker may recreate, reinterpret, redesign, or rewrite this creative work.
 
 The Visual Pipeline validates, generates, and publishes. It does not create.
 
@@ -478,19 +480,21 @@ Content Pipeline
 
 ## Key Architecture Principles
 
-1. **Creative Director is Source of Truth** — The Creative Package is complete. No worker recreates it.
+1. **Creative Director is Source of Truth and Creative Package Owner** — The Creative Package is complete. The Creative Director owns the final approved version of every creative field. No worker recreates it.
 
-2. **Visual Planner is Production Readiness** — Validates completeness, selects production mode, prepares generation brief. Does not create.
+2. **Content Strategy and Content Creation produce drafts** — Their outputs are first versions. The Creative Director owns the final approved version.
 
-3. **Spreadsheet is Persistent Database** — Only write columns that store NEW production information. Temporary data stays in memory.
+3. **Visual Planner is Production Readiness** — Validates completeness, selects production mode, prepares generation brief. Does not create.
 
-4. **Media Generation reads from Section A** — The Creative Package flows directly to generation. No intermediate creative reinterpretation.
+4. **Spreadsheet is Persistent Database** — Only write columns that store NEW production information. Temporary data stays in memory.
 
-5. **Visual QA validates against Creative Director** — The Creative Package is the standard, not any intermediate interpretation.
+5. **Media Generation reads from Section A** — The Creative Package flows directly to generation. No intermediate creative reinterpretation.
 
-6. **INSAN Visual Language is mandatory** — All generated media must conform to the visual identity. Style ratio, goals, and prohibitions are enforced at generation and validation.
+6. **Visual QA validates against Creative Director** — The Creative Package is the standard, not any intermediate interpretation.
 
-7. **Orchestration Layer owns state transitions** — Single authoritative state machine. Workers report completion.
+7. **INSAN Visual Language is mandatory** — All generated media must conform to the visual identity. Style ratio, goals, and prohibitions are enforced at generation and validation.
+
+8. **Orchestration Layer owns state transitions** — Single authoritative state machine. Workers report completion.
 
 ---
 

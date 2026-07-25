@@ -30,7 +30,7 @@ The Content Pipeline is the Editorial Pipeline. The Visual Pipeline is the Produ
 
 ### AP-002: Content Pipeline is Source of Truth
 
-Only approved rows transfer from the Content Pipeline to the Visual Pipeline. The transfer happens after Creative Director approval.
+Only approved rows transfer from the Content Pipeline to the Visual Pipeline. The transfer happens after Creative Director approval. The Creative Director owns the final approved version of every creative field.
 
 ### AP-003: Visual Pipeline Section Separation
 
@@ -72,9 +72,9 @@ Every worker has a defined data contract specifying exact input and output colum
 
 The execution flow is defined in VISUAL_PIPELINE_FLOW.md. This document is the implementation contract for Apps Script orchestration.
 
-### AP-012: Creative Director Feeds Visual Pipeline
+### AP-012: Creative Director is Creative Package Owner
 
-The Creative Director produces production-quality strategic output (Design Prompt, Visual Concept, Composition, Design Mood, Visual Elements, Do NOT Show, Text On Design). This output transfers to Visual Pipeline Section A and serves as the foundation for all visual production work. The Visual Pipeline does not recreate or rewrite creative direction—it builds upon it.
+The Creative Director is the Final Creative Authority and the Creative Package Owner. The Content Strategy Worker and Content Creation Worker produce first drafts. The Creative Director owns the final approved version of every creative field — strategy refinement, content refinement, visual creative package, and design prompt. This output transfers to Visual Pipeline Section A and serves as the foundation for all visual production work. The Visual Pipeline does not recreate or rewrite creative direction — it builds upon it.
 
 ### AP-013: Visual Planner Output is Production Input
 
@@ -88,9 +88,28 @@ All generated media must conform to the INSAN Visual Language. The visual identi
 
 The Visual Planner selects the production mode (PROJECT_ASSET or AI_GENERATED) based on available project reference images. Mode A (PROJECT_ASSET) is preferred when suitable reference images exist. Mode B (AI_GENERATED) is the fallback. The selected mode is communicated to the Media Generation Service through the Reference Asset Package.
 
+### AP-016: Creative Package Owner
+
+The Creative Director is the Creative Package Owner. The Content Strategy Worker and Content Creation Worker produce first drafts. The Creative Director owns the final approved version of every creative field — strategy refinement, content refinement, visual creative package, and design prompt. This ensures a single creative authority before visual production begins.
+
 ---
 
 ## 3. Worker Responsibilities
+
+### Creative Director (Content Pipeline)
+
+**Unique Capability:** Complete Creative Package Ownership
+
+The Creative Director is the Final Creative Authority and the Creative Package Owner. The Content Strategy Worker and Content Creation Worker produce first drafts. The Creative Director owns the final approved version of every creative field:
+
+- Strategy Refinement: Content Objective, Content Angle, Content Type, Content Format, Content Funnel Stage, Hook, Post Structure, Language Style, Emoji Style
+- Visual Creative Package: Visual Concept, Visual Focus, Visual Priority, Design Mood, Composition, Visual Elements, Do NOT Show, Text On Design, Design Notes
+- Content Refinement: Creative Director Post Copy, Primary Hashtags, Secondary Hashtags
+- Design Prompt: Creative Director Design Prompt
+
+The Creative Package transfers to Visual Pipeline Section A on approval. No Visual worker may recreate, reinterpret, redesign, or rewrite the Creative Package.
+
+The Creative Director also produces: Creative Director Quality Score, Creative Director Review Status, Creative Director Notes.
 
 ### Visual Planner
 
@@ -176,7 +195,8 @@ Content Pipeline (Editorial)
 ┌─────────────────────────────────────────┐
 │ Content Strategy → Content Creation     │
 │        ↓                                │
-│ Creative Director Review                │
+│ Creative Director Reviews & Owns        │
+│ Complete Creative Package               │
 │        ↓                                │
 │ Review Status = "Approved"              │
 └─────────────────────┬───────────────────┘
@@ -187,9 +207,8 @@ Content Pipeline (Editorial)
 Visual Pipeline (Production)
 ┌─────────────────────────────────────────┐
 │ Section A: Read-Only (Auto-Populated)   │
-│   Content ID, Campaign, Brand, Format,  │
-│   Post Copy, Design Prompt, Visual      │
-│   Strategy, Composition, Elements       │
+│   Complete Creative Package from        │
+│   Creative Director                     │
 └─────────────────────┬───────────────────┘
                       │
                       ▼
@@ -200,14 +219,14 @@ Visual Pipeline (Production)
 │  │       VISUAL PLANNER            │   │
 │  │  Stage: READY → PLANNING → ...  │   │
 │  │  Input: Section A               │   │
-│  │  Output: Visual Plan            │   │
+│  │  Output: Production Brief       │   │
 │  └─────────────────┬───────────────┘   │
 │                    │                     │
 │                    ▼                     │
 │  ┌─────────────────────────────────┐   │
 │  │     IMAGE GENERATION SERVICE    │   │
 │  │  Stage: GENERATING → QA         │   │
-│  │  Receives Visual Plan           │   │
+│  │  Receives Production Brief      │   │
 │  │  Returns generated assets       │   │
 │  └─────────────────┬───────────────┘   │
 │                    │                     │
@@ -215,7 +234,8 @@ Visual Pipeline (Production)
 │  ┌─────────────────────────────────┐   │
 │  │           VISUAL QA             │   │
 │  │  Stage: QA → PUBLISHING/...     │   │
-│  │  Evaluates generated assets     │   │
+│  │  Validates against Creative     │   │
+│  │  Director's Creative Package    │   │
 │  └─────────────────┬───────────────┘   │
 │                    │                     │
 │                    ▼                     │
@@ -679,17 +699,23 @@ Logo placement is handled manually in Phase 1.
 
 **Rationale:** Healthcare advertising regulations require human verification.
 
-### AD-012: Creative Director Feeds Visual Pipeline
+### AD-012: Creative Director is Creative Package Owner
 
-The Creative Director produces production-quality strategic output that transfers to Visual Pipeline Section A. The Visual Pipeline does not recreate or rewrite creative direction—it builds upon it.
+The Creative Director is the Final Creative Authority and the Creative Package Owner. The Content Strategy Worker and Content Creation Worker produce first drafts. The Creative Director owns the final approved version of every creative field. This output transfers to Visual Pipeline Section A and serves as the foundation for all visual production work. The Visual Pipeline does not recreate or rewrite creative direction — it builds upon it.
 
-**Rationale:** The Creative Director already produces Design Prompt, Visual Concept, Composition, Design Mood, Visual Elements, Do NOT Show, and Text On Design. The Visual Pipeline's job is to adapt this strategic output for specific formats—not to redo creative work.
+**Rationale:** The Creative Director already produces the complete Creative Package: strategy refinement, content refinement, visual direction (Visual Concept, Design Mood, Composition, Visual Elements, Do NOT Show, Text On Design, Design Notes), and the Design Prompt. The Visual Pipeline's job is to adapt this strategic output for specific formats — not to redo creative work.
 
 ### AD-013: Visual Planner Output is Production Input
 
 The Visual Planner's format-specific visual plan becomes the direct input to the Image Generation Service. There is no intermediate worker between planning and generation.
 
 **Rationale:** The Visual Planner already produces sufficient information for image generation. An intermediate worker would add complexity without adding value. Visual QA validates the final output against the approved strategy and plan.
+
+### AD-014: Creative Package Owner
+
+The Creative Director is the Creative Package Owner. The Content Strategy Worker and Content Creation Worker produce first drafts. The Creative Director owns the final approved version of every creative field.
+
+**Rationale:** Having a single creative authority for the complete Creative Package ensures consistency across all creative decisions — copy, visual direction, and design prompt. It prevents fragmented creative ownership and ensures the Visual Pipeline receives a coherent, internally consistent creative brief.
 
 ---
 
