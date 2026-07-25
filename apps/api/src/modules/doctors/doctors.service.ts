@@ -27,7 +27,14 @@ export class DoctorsService {
     if (!isAdmin) where.status = 'PUBLISHED';
     if (isAdmin && statuses?.length) where.status = { in: statuses };
     if (query.isFeatured === 'true') where.isFeatured = true;
-    if (query.search) where.slug = { contains: query.search, mode: 'insensitive' };
+    if (query.search) {
+      where.OR = [
+        { slug: { contains: query.search, mode: 'insensitive' } },
+        { name: { path: ['ar'], string_contains: query.search } },
+        { name: { path: ['en'], string_contains: query.search } },
+        { specialty: { path: ['ar'], string_contains: query.search } },
+      ];
+    }
 
     const [data, total] = await Promise.all([
       this.prisma.doctor.findMany({

@@ -73,7 +73,14 @@ export class NewsService {
     if (isAdmin && statuses?.length) where.status = { in: statuses };
     if (filter?.sourceType) where.sourceType = filter.sourceType.toUpperCase();
     if (filter?.sourceBrandId) where.sourceBrandId = filter.sourceBrandId;
-    if (query.search) where.slug = { contains: query.search, mode: 'insensitive' };
+    if (query.search) {
+      where.OR = [
+        { slug: { contains: query.search, mode: 'insensitive' } },
+        { title: { path: ['ar'], string_contains: query.search } },
+        { title: { path: ['en'], string_contains: query.search } },
+        { excerpt: { path: ['ar'], string_contains: query.search } },
+      ];
+    }
     if (filter?.dateFrom || filter?.dateTo) {
       where.publishedAt = {};
       if (filter.dateFrom) where.publishedAt.gte = new Date(filter.dateFrom);

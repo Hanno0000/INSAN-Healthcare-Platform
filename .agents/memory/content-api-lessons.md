@@ -1,6 +1,6 @@
 ---
 name: Content API implementation lessons
-description: Schema facts and patterns discovered while building the 13 content-API modules — prevents repeating investigation.
+description: Schema facts and patterns discovered while building all API modules and the public website — prevents repeating investigation.
 ---
 
 ## Schema facts (check before writing code)
@@ -12,9 +12,15 @@ description: Schema facts and patterns discovered while building the 13 content-
 - `TestimonialAudience` enum exists; `Testimonial` has no `publishedAt` — publish just sets `status = PUBLISHED`
 - `@nestjs/mapped-types` must be explicitly installed (not bundled) — `pnpm add @nestjs/mapped-types` in `apps/api`
 
+## Publish API routes — all POST, not PATCH
+
+All publish/unpublish routes use `@Post` not `@Patch`:
+`POST /admin/{entity}/:id/publish` and `POST /admin/{entity}/:id/unpublish`
+Frontend api-client must use `method: 'POST'` for these calls.
+
 ## Audit interceptor pattern
 
-`AuditInterceptor` reads `AUDIT_ACTION_KEY` from the **handler only** (`.get`, not `.getAllAndOverride`), so `@AuditAction` at method level is correct; putting it at class level does nothing. Apply `@UseInterceptors(AuditInterceptor)` at class level (safe — skips non-annotated handlers) and `@AuditAction('Entity', 'action')` at each write method.
+`AuditInterceptor` reads `AUDIT_ACTION_KEY` from the **handler only** (`.get`, not `.getAllAndOverride`), so `@AuditAction` at method level is correct; putting it at class level does nothing.
 
 ## Multi-junction table pattern (Hospitals / Doctors)
 
@@ -31,29 +37,47 @@ Every publishable entity must validate before setting `PUBLISHED`:
 - Entities that need a hospital link: MedicalCenter (≥1 hospital), Doctor (≥1 hospital)
 - Throw `BadRequestException({ code: 'INCOMPLETE_CONTENT', message: '...' })`
 
+## Arabic search in JSON fields (Prisma)
+
+Services originally searched slug only (English). Must use JSON path search for bilingual fields:
+```typescript
+where.OR = [
+  { slug: { contains: query.search, mode: 'insensitive' } },
+  { name: { path: ['ar'], string_contains: query.search } },
+  { name: { path: ['en'], string_contains: query.search } },
+];
+```
+Arabic doesn't need `mode: 'insensitive'` (no case distinction). JSON path `string_contains` works for partial match inside JSON string values. Applied to: hospitals, medical-centers, doctors, news services.
+
 ## `filter[field]=value` query parsing
 
-Express parses `?filter[status]=PUBLISHED` as `req.query.filter = { status: 'PUBLISHED' }`. Use `@Query('filter') filter: any` as a separate parameter. The `parseStatusFilter(filter, validStatuses)` helper in `pagination.helper.ts` handles extraction.
+Express parses `?filter[status]=PUBLISHED` as `req.query.filter = { status: 'PUBLISHED' }`. Use `@Query('filter') filter: any` as a separate parameter.
 
 ## Settings controller route ordering
 
-`GET /admin/settings/feature-flags` and `PATCH /admin/settings/feature-flags/:key` must be declared **before** `PATCH /admin/settings/:key` so "feature-flags" is not captured as `:key`. NestJS matches literal segments before parameterised ones within the same controller when declared first.
+`GET /admin/settings/feature-flags` and `PATCH /admin/settings/feature-flags/:key` must be declared **before** `PATCH /admin/settings/:key`.
 
-## Admin Dashboard architecture
+## Public Website Architecture (apps/web)
 
-- **Stack:** Next.js 14 App Router + Tailwind CSS + React Query v5 + React Hook Form + Zod
-- **Auth flow:** Access token in memory (`setAccessToken`), refresh token in httpOnly cookie, auto-refresh on 401 in `api-client.ts`
-- **Shared UI components:** `DataTable`, `Modal`, `ConfirmDialog`, `StatusBadge`, `Pagination`, `SearchBar`, `PageHeader`, `FormField`, `BilingualInput`, `Toast` (ToastProvider) — all in `apps/web/components/admin/ui/`
-- **Pattern:** Each screen = `{Module}Client.tsx` (list + state) + `{Module}Modal.tsx` (form); `page.tsx` is a thin wrapper
-- **ToastProvider** must wrap children in `AdminLayoutClient` for `useToast()` to work anywhere
+**Foundation:**
+- `lib/public-api.ts` — server-side only fetch utility, ISR revalidate=60s, returns null on error
+- `lib/utils.ts` — `t(bilingual, locale)`, `formatDate`, `truncate`, `qs` helpers
+- `components/public/PublicLayout.tsx` — async server component, fetches header+footer nav, wraps with `<html lang="ar" dir="rtl">`
+- Root `app/layout.tsx` returns `children` only (no html tag) — each layout provides its own html wrapper
 
-## Publish API routes (PATCH not POST)
+**Component locations:** `apps/web/components/public/` (inside the web app, matching `@/*` alias)
 
-The API uses `PATCH /{entity}/:id/publish` and `PATCH /{entity}/:id/unpublish`. Frontend `api-client.ts` uses PATCH for these. Pages controller uses POST — note the mismatch (see `pages.controller.ts`).
+**Pages (all server components except forms):**
+- `/` — home with hero, hospital/center/doctor/news/testimonials sections
+- `/hospitals`, `/hospitals/[slug]` — listing + detail
+- `/medical-centers`, `/medical-centers/[slug]` — listing + detail
+- `/doctors`, `/doctors/[slug]` — listing + detail
+- `/news`, `/news/[slug]` — listing + detail with category filter
+- `/book` — appointment booking form (server page + AppointmentForm client component)
+- `/contact` — contact form (server page + ContactForm client component)
+- `/search` — cross-entity search (hospitals, centers, doctors, news)
+- `/[slug]` — CMS page catch-all (handles: text, hero, cta, faq sections)
+- `not-found.tsx`, `sitemap.ts`, `robots.ts`
 
-## Module status at completion
-
-All 13 modules fully implemented, seeded, and smoke-tested:
-Hospitals, MedicalCenters (+ Clinics nested), Doctors, Pages (+ Sections), News (Categories + Posts), Settings (+ FeatureFlags), Navigation, Testimonials, Leads (Appointments + ContactSubmission), Users (+ Roles), Brands (+ BrandSocialAccount), Audit.
-
-Admin Dashboard: 14 screens built (Dashboard, Hospitals, Medical Centers, Doctors, News, Pages, Settings, Navigation, Testimonials, Appointments, Contact Submissions, Users, Brands, Audit Log) + 2 placeholders (Media, AI Assistant).
+**Module status:**
+All 13 API modules complete. Admin Dashboard 14 screens + 2 placeholders. Public Website all 16 requirements delivered.

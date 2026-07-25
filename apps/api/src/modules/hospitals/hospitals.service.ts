@@ -29,6 +29,9 @@ export class HospitalsService {
     if (query.search) {
       where.OR = [
         { slug: { contains: query.search, mode: 'insensitive' } },
+        { name: { path: ['ar'], string_contains: query.search } },
+        { name: { path: ['en'], string_contains: query.search } },
+        { shortDescription: { path: ['ar'], string_contains: query.search } },
       ];
     }
 

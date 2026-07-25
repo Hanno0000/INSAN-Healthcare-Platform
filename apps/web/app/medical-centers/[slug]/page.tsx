@@ -1,0 +1,93 @@
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import Link from 'next/link';
+import PublicLayout from '@/components/public/PublicLayout';
+import Breadcrumb from '@/components/public/Breadcrumb';
+import { getMedicalCenter } from '@/lib/public-api';
+import { t } from '@/lib/utils';
+
+interface Props { params: { slug: string } }
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const res = await getMedicalCenter(params.slug);
+  if (!res?.data) return { title: 'مركز طبي | منظومة إنسان' };
+  return {
+    title: t(res.data.metaTitle) || `${t(res.data.name)} | منظومة إنسان`,
+    description: t(res.data.metaDescription) || t(res.data.shortDescription),
+  };
+}
+
+export default async function MedicalCenterDetailPage({ params }: Props) {
+  const res = await getMedicalCenter(params.slug);
+  if (!res?.data) notFound();
+  const c = res.data;
+  const color = c.brandColor || '#0E7C86';
+
+  return (
+    <PublicLayout>
+      {/* Hero */}
+      <section className="relative bg-primary-900 text-white py-20 overflow-hidden">
+        {c.heroImage && (
+          <div className="absolute inset-0">
+            <img src={c.heroImage} alt="" className="w-full h-full object-cover opacity-20" />
+          </div>
+        )}
+        <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, #0B1F3A 60%, ${color}40)` }} />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
+          <Breadcrumb crumbs={[
+            { label: 'الرئيسية', href: '/' },
+            { label: 'المراكز الطبية', href: '/medical-centers' },
+            { label: t(c.name) },
+          ]} />
+          <div className="flex items-start gap-5 mt-4">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold border border-white/20 shrink-0" style={{ backgroundColor: `${color}40` }}>
+              {t(c.name).charAt(0)}
+            </div>
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-bold">{t(c.name)}</h1>
+              {c.shortDescription && <p className="text-white/70 text-base mt-2 max-w-xl">{t(c.shortDescription)}</p>}
+              {c.hospitals && c.hospitals.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {c.hospitals.map(h => (
+                    <Link key={h.id} href={`/hospitals/${h.slug}`} className="inline-block text-xs bg-white/10 hover:bg-white/20 rounded-full px-3 py-1 border border-white/20 transition-colors">
+                      {t(h.name)}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="mt-8">
+            <Link
+              href={`/book?medicalCenterId=${c.id}`}
+              className="bg-secondary-500 hover:bg-secondary-500/90 text-white font-semibold px-6 py-3 rounded-xl transition-colors inline-block"
+            >
+              احجز موعداً هنا
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Content */}
+      <section className="py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          {c.description && (
+            <div className="max-w-3xl mb-12">
+              <h2 className="text-xl font-bold text-primary-900 mb-4">عن المركز</h2>
+              <p className="text-gray-600 leading-relaxed">{t(c.description)}</p>
+            </div>
+          )}
+
+          {/* Clinics will be added when API returns them */}
+          <div className="mt-8 p-6 bg-gray-50 rounded-2xl border border-gray-100">
+            <h2 className="text-lg font-bold text-primary-900 mb-2">العيادات والتخصصات</h2>
+            <p className="text-gray-500 text-sm">تواصل مع فريقنا لمعرفة العيادات والمواعيد المتاحة.</p>
+            <Link href="/contact" className="mt-4 inline-block text-secondary-500 hover:underline text-sm font-medium">
+              تواصل معنا
+            </Link>
+          </div>
+        </div>
+      </section>
+    </PublicLayout>
+  );
+}
