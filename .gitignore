@@ -21,7 +21,7 @@ archive/
 # Generated assets (large files)
 assets/generated/
 
-# Google Drive sync folders
-Docs/
-Prompts/
-AppsScript/
+# Google Drive sync folders (root only)
+/Docs/
+/Prompts/
+/AppsScript/
