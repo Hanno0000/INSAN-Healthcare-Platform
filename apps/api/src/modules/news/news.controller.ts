@@ -125,6 +125,15 @@ export class NewsController {
     return ApiResponse.success(await this.newsService.publishPost(id));
   }
 
+  @Post('admin/news/:id/unpublish')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermission('news', 'publish')
+  @AuditAction('NewsPost', 'unpublish')
+  @HttpCode(HttpStatus.OK)
+  async unpublishPost(@Param('id') id: string) {
+    return ApiResponse.success(await this.newsService.unpublishPost(id));
+  }
+
   @Delete('admin/news/:id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermission('news', 'delete')

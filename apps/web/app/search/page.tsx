@@ -6,6 +6,8 @@ import DoctorCard from '@/components/public/DoctorCard';
 import NewsCard from '@/components/public/NewsCard';
 import { getHospitals, getMedicalCenters, getDoctors, getNewsPosts } from '@/lib/public-api';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'بحث | منظومة إنسان',
 };

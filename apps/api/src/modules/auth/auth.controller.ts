@@ -8,6 +8,7 @@ import {
   HttpCode,
   HttpStatus,
   Get,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
@@ -58,10 +59,7 @@ export class AuthController {
       req.cookies?.refreshToken || req.body?.refreshToken;
 
     if (!rawRefreshToken) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        success: false,
-        error: { message: 'Refresh token missing', code: 'UNAUTHORIZED' },
-      });
+      throw new UnauthorizedException('Refresh token missing');
     }
 
     // Decode payload without verifying signature — just to extract userId.
@@ -74,10 +72,7 @@ export class AuthController {
       userId = payload?.sub;
       if (!userId) throw new Error('missing sub');
     } catch {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        success: false,
-        error: { message: 'Invalid refresh token', code: 'UNAUTHORIZED' },
-      });
+      throw new UnauthorizedException('Invalid refresh token');
     }
 
     const tokens = await this.authService.refresh(rawRefreshToken, userId);

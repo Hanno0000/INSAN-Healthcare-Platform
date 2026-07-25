@@ -117,6 +117,16 @@ export class PagesService {
     return { status: updated.status, publishedAt: updated.publishedAt };
   }
 
+  async unpublish(id: string) {
+    const page = await this.prisma.page.findUnique({ where: { id } });
+    if (!page) throw new NotFoundException('Page not found');
+    const updated = await this.prisma.page.update({
+      where: { id },
+      data: { status: 'DRAFT', publishedAt: null },
+    });
+    return { status: updated.status };
+  }
+
   async remove(id: string) {
     const page = await this.prisma.page.findUnique({ where: { id } });
     if (!page) throw new NotFoundException('Page not found');

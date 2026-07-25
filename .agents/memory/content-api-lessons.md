@@ -12,6 +12,13 @@ description: Schema facts and patterns discovered while building all API modules
 - `TestimonialAudience` enum exists; `Testimonial` has no `publishedAt` — publish just sets `status = PUBLISHED`
 - `@nestjs/mapped-types` must be explicitly installed (not bundled) — `pnpm add @nestjs/mapped-types` in `apps/api`
 
+## Unpublish routes — were missing, now added
+
+All 6 entities (hospitals, medical-centers, doctors, news, pages, testimonials) were missing their `unpublish` route and service method. Both were added:
+- Services: `unpublish()` sets `status: 'DRAFT'` (news/pages also clear `publishedAt: null`)
+- Controllers: `@Post('admin/{entity}/:id/unpublish')` with same `publish` permission guard
+Pattern to follow for any future entity that needs publish/unpublish.
+
 ## Publish API routes — all POST, not PATCH
 
 All publish/unpublish routes use `@Post` not `@Patch`:
@@ -36,6 +43,14 @@ Every publishable entity must validate before setting `PUBLISHED`:
 - All bilingual text required: at minimum `name.ar` (hospitals, centers, doctors, testimonials) or `title.ar` (pages, posts)
 - Entities that need a hospital link: MedicalCenter (≥1 hospital), Doctor (≥1 hospital)
 - Throw `BadRequestException({ code: 'INCOMPLETE_CONTENT', message: '...' })`
+
+## Auth controller — refresh endpoint crash bug (fixed)
+
+`auth/refresh` endpoint used `@Res({ passthrough: true })` but also called `res.status(401).json()` directly for error cases. This sends the response twice: Express sends it once, NestJS tries to JSON-serialize the returned `Response` object (circular Socket reference), crashes the process. Fix: replace `return res.status().json()` with `throw new UnauthorizedException()` and let the GlobalExceptionFilter handle it.
+
+## Admin credentials (seeded)
+
+Email: `admin@insan-platform.com`, Password: `INSAN@Admin2026!` — in `apps/api/prisma/seed.ts` as `TEMP_PASSWORD`.
 
 ## Arabic search in JSON fields (Prisma)
 

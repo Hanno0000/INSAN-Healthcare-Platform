@@ -73,6 +73,15 @@ export class TestimonialsController {
     return ApiResponse.success(await this.testimonialsService.publish(id));
   }
 
+  @Post('admin/testimonials/:id/unpublish')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermission('testimonials', 'edit')
+  @AuditAction('Testimonial', 'unpublish')
+  @HttpCode(HttpStatus.OK)
+  async unpublish(@Param('id') id: string) {
+    return ApiResponse.success(await this.testimonialsService.unpublish(id));
+  }
+
   @Delete('admin/testimonials/:id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermission('testimonials', 'delete')

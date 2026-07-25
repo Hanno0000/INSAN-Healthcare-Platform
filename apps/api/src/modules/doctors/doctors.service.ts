@@ -194,6 +194,16 @@ export class DoctorsService {
     return { status: updated.status };
   }
 
+  async unpublish(id: string) {
+    const doctor = await this.prisma.doctor.findUnique({ where: { id } });
+    if (!doctor) throw new NotFoundException('Doctor not found');
+    const updated = await this.prisma.doctor.update({
+      where: { id },
+      data: { status: 'DRAFT' },
+    });
+    return { status: updated.status };
+  }
+
   async remove(id: string) {
     const doctor = await this.prisma.doctor.findUnique({ where: { id } });
     if (!doctor) throw new NotFoundException('Doctor not found');

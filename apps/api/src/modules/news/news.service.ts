@@ -200,6 +200,16 @@ export class NewsService {
     return { status: updated.status, publishedAt: updated.publishedAt };
   }
 
+  async unpublishPost(id: string) {
+    const post = await this.prisma.newsPost.findUnique({ where: { id } });
+    if (!post) throw new NotFoundException('News post not found');
+    const updated = await this.prisma.newsPost.update({
+      where: { id },
+      data: { status: 'DRAFT', publishedAt: null },
+    });
+    return { status: updated.status };
+  }
+
   async removePost(id: string) {
     const post = await this.prisma.newsPost.findUnique({ where: { id } });
     if (!post) throw new NotFoundException('News post not found');

@@ -128,6 +128,16 @@ export class HospitalsService {
     return { status: updated.status };
   }
 
+  async unpublish(id: string) {
+    const hospital = await this.prisma.hospital.findUnique({ where: { id } });
+    if (!hospital) throw new NotFoundException('Hospital not found');
+    const updated = await this.prisma.hospital.update({
+      where: { id },
+      data: { status: 'DRAFT' },
+    });
+    return { status: updated.status };
+  }
+
   async remove(id: string) {
     const hospital = await this.prisma.hospital.findUnique({ where: { id } });
     if (!hospital) throw new NotFoundException('Hospital not found');

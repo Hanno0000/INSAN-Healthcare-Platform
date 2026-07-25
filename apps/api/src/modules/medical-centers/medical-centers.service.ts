@@ -175,6 +175,16 @@ export class MedicalCentersService {
     return { status: updated.status };
   }
 
+  async unpublish(id: string) {
+    const center = await this.prisma.medicalCenter.findUnique({ where: { id } });
+    if (!center) throw new NotFoundException('Medical center not found');
+    const updated = await this.prisma.medicalCenter.update({
+      where: { id },
+      data: { status: 'DRAFT' },
+    });
+    return { status: updated.status };
+  }
+
   async remove(id: string) {
     const center = await this.prisma.medicalCenter.findUnique({ where: { id } });
     if (!center) throw new NotFoundException('Medical center not found');

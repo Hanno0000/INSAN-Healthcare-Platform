@@ -48,8 +48,8 @@ export default async function MedicalCenterDetailPage({ params }: Props) {
               {c.shortDescription && <p className="text-white/70 text-base mt-2 max-w-xl">{t(c.shortDescription)}</p>}
               {c.hospitals && c.hospitals.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {c.hospitals.map(h => (
-                    <Link key={h.id} href={`/hospitals/${h.slug}`} className="inline-block text-xs bg-white/10 hover:bg-white/20 rounded-full px-3 py-1 border border-white/20 transition-colors">
+                  {c.hospitals.map((h, i) => (
+                    <Link key={h.id || h.slug || i} href={`/hospitals/${h.slug}`} className="inline-block text-xs bg-white/10 hover:bg-white/20 rounded-full px-3 py-1 border border-white/20 transition-colors">
                       {t(h.name)}
                     </Link>
                   ))}

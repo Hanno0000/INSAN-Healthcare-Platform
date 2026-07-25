@@ -78,6 +78,15 @@ export class DoctorsController {
     return ApiResponse.success(await this.doctorsService.publish(id));
   }
 
+  @Post('admin/doctors/:id/unpublish')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermission('doctors', 'publish')
+  @AuditAction('Doctor', 'unpublish')
+  @HttpCode(HttpStatus.OK)
+  async unpublish(@Param('id') id: string) {
+    return ApiResponse.success(await this.doctorsService.unpublish(id));
+  }
+
   @Delete('admin/doctors/:id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermission('doctors', 'delete')

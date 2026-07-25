@@ -53,6 +53,11 @@ export class TestimonialsService {
     return this.prisma.testimonial.update({ where: { id }, data: { status: 'PUBLISHED' } });
   }
 
+  async unpublish(id: string) {
+    await this.findOne(id);
+    return this.prisma.testimonial.update({ where: { id }, data: { status: 'DRAFT' } });
+  }
+
   async remove(id: string) {
     await this.findOne(id);
     await this.prisma.testimonial.delete({ where: { id } });

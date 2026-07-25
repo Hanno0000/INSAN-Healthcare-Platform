@@ -93,6 +93,16 @@ export class MedicalCentersController {
     return ApiResponse.success(data);
   }
 
+  @Post('admin/medical-centers/:id/unpublish')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermission('medical-centers', 'publish')
+  @AuditAction('MedicalCenter', 'unpublish')
+  @HttpCode(HttpStatus.OK)
+  async unpublish(@Param('id') id: string) {
+    const data = await this.medicalCentersService.unpublish(id);
+    return ApiResponse.success(data);
+  }
+
   @Delete('admin/medical-centers/:id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermission('medical-centers', 'delete')

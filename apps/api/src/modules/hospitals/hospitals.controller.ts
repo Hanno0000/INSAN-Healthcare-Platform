@@ -87,6 +87,16 @@ export class HospitalsController {
     return ApiResponse.success(data);
   }
 
+  @Post('admin/hospitals/:id/unpublish')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermission('hospitals', 'publish')
+  @AuditAction('Hospital', 'unpublish')
+  @HttpCode(HttpStatus.OK)
+  async unpublish(@Param('id') id: string) {
+    const data = await this.hospitalsService.unpublish(id);
+    return ApiResponse.success(data);
+  }
+
   @Delete('admin/hospitals/:id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermission('hospitals', 'delete')

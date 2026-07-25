@@ -84,6 +84,15 @@ export class PagesController {
     return ApiResponse.success(await this.pagesService.publish(id, user?.id));
   }
 
+  @Post('admin/pages/:id/unpublish')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermission('pages', 'publish')
+  @AuditAction('Page', 'unpublish')
+  @HttpCode(HttpStatus.OK)
+  async unpublish(@Param('id') id: string) {
+    return ApiResponse.success(await this.pagesService.unpublish(id));
+  }
+
   @Delete('admin/pages/:id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermission('pages', 'delete')
