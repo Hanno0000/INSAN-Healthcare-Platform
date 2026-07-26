@@ -1,8 +1,8 @@
 # Campaign OS -- Current State
 
-> **Version:** 1.1
+> **Version:** 1.2
 > **Date:** 2026-07-26
-> **Status:** Sprint 1 -- In Progress (Visual Planner Completion Pass)
+> **Status:** Sprint 1 -- In Progress (Production Validation Run)
 > **Canonical Handoff Document** -- Primary entry point for Campaign OS development.
 > **Scope:** Campaign OS only. For Website Platform, see `website/Docs/CURRENT_STATE.md`.
 
@@ -15,12 +15,12 @@
 | **Project Phase** | Sprint 1 -- Visual Production Quality & Workflow Hardening |
 | **Documentation** | Complete (architecture, contracts, prompts, roadmap) |
 | **Apps Script Code** | Implemented (12 source files in `src/`) |
-| **Workers** | 4 workers rewritten (Creative Director, Visual QA, Media Generation, Visual Planner in progress) |
+| **Workers** | 4 workers rewritten (Creative Director, Visual QA, Media Generation, Visual Planner) |
 | **Production Pipeline** | Operational (Content Pipeline + Visual Pipeline) |
-| **Current Sprint** | Visual Planner Completion Pass (Step 4) |
+| **Current Sprint** | Production Validation Run (Step 5) |
 | **Visual Language** | Implemented (INSAN Visual Language spec, CONFIG.gs) |
 
-**Overall:** Campaign OS is a Google Apps Script AI Operating System that transforms strategic content into publishable social media assets using AI Workers. Sprint 1 is focused on improving production quality. Steps 1-3 (Creative Direction, Media Generation, Visual QA) are complete. The Visual Planner is undergoing its completion pass to bring it to the same production quality level as the other workers before executing the Production Validation Run.
+**Overall:** Campaign OS is a Google Apps Script AI Operating System that transforms strategic content into publishable social media assets using AI Workers. Sprint 1 is focused on improving production quality. Steps 1-4 (Creative Direction, Media Generation, Visual QA, Visual Planner Completion Pass) are complete. The system is ready for the Production Validation Run to execute the full pipeline and provide evidence of improvement.
 
 ---
 
@@ -55,8 +55,8 @@ The sprint addresses four root causes:
 | Step 1 | Creative Direction | COMPLETE |
 | Step 2 | Media Generation | COMPLETE |
 | Step 3 | Visual QA | COMPLETE |
-| Step 4 | Visual Planner Completion Pass | CURRENT |
-| Step 5 | Production Validation Run | Pending |
+| Step 4 | Visual Planner Completion Pass | COMPLETE |
+| Step 5 | Production Validation Run | CURRENT |
 | Step 6 | Post-Run Review | Pending |
 
 ---
@@ -80,6 +80,15 @@ The sprint addresses four root causes:
 
 - Visual QA Worker rewritten (`VISUAL_QA_WORKER.md` V2, 590 lines)
 - AI Coaching philosophy, Hard Gates, Branding validation, Quality validation
+
+### Step 4: Visual Planner Completion Pass -- COMPLETE
+
+- Visual Planner prompt updated (`VISUAL_PLANNER_WORKER.md`, 685 lines)
+- Added Revision Loop Handling (was missing -- blocking issue)
+- Added format-specific completeness checklist in Stage 1
+- Completed Input list (Content Format, Visual Format, Visual Angle)
+- Clarified VISUAL_STAGE ownership (WorkerRunner, not Planner)
+- Added Mode B fallback note when PROJECT_ASSETS_FOLDER_ID is empty
 
 ---
 
@@ -138,7 +147,7 @@ Section B: Visual Production
 
 | Worker | Status | Notes |
 |--------|--------|-------|
-| Visual Planner | Under Sprint 1 Completion Pass | Final production-readiness review before Validation Run -- completion pass to bring to same quality as CD, MGS, VQA |
+| Visual Planner | Completion Pass Complete | Production-readiness review with revision loop handling |
 | Media Generation Service | Rewritten (V3) | Executes Creative Package, generates assets via Gemini API |
 | Visual QA | Rewritten (V2) | Validates against Creative Package, enforces Visual Language |
 | Publishing Service | RESERVED | Not yet implemented, columns reserved |
@@ -220,9 +229,9 @@ All configuration is centralized in `CONFIG.gs`:
 
 ### Sprint 1 Progress
 
-- Steps 1-3: All core workers rewritten, architecture documents updated
-- Step 4: Visual Planner Completion Pass -- final production-readiness review before Validation Run
-- Step 5: Production Validation Run -- pending (after Visual Planner completion)
+- Steps 1-4: All core workers rewritten and reviewed
+- Step 5: Production Validation Run -- ready to execute
+- Step 6: Post-Run Review -- pending (after validation run)
 - No validation run has been executed yet after the Sprint 1 rewrites
 
 ### What Needs Validation
@@ -267,13 +276,20 @@ All configuration is centralized in `CONFIG.gs`:
 
 ## Next Immediate Step
 
-**Step 4: Visual Planner Completion Pass**
+**Step 5: Production Validation Run**
 
-The Visual Planner is the only worker that has not yet received the same level of Sprint 1 review and completion as the Creative Director, Media Generation Service, and Visual QA. This completion pass will improve prompt quality, worker contract alignment, runtime consistency, revision loop behavior, and input/output contract clarity.
+Execute the full pipeline with test content and provide evidence of improvement. This run will validate:
+- Generated images clearly avoid AI appearance
+- Generated images follow INSAN Visual Language (style ratio, prohibited styles)
+- Generated images communicate Trust, Warmth, and Modernity simultaneously
+- No unwanted logos, text, or watermarks
+- Creative Director produces production-ready Design Prompts
+- Visual QA catches Visual Language violations
+- Visual Planner correctly selects production mode and handles revision loop
+- Media Generation executes without reinterpretation
+- Revision loop functions correctly
 
-This is NOT a redesign. This is a Completion Pass. It must not introduce unrelated features, activate Project Assets, or redesign the architecture.
-
-After the completion pass, Step 5 (Production Validation Run) will execute the full pipeline and provide evidence of improvement. Step 6 (Post-Run Review) will analyze results and inform future work.
+After the validation run, Step 6 (Post-Run Review) will analyze results and inform future work.
 
 ---
 
@@ -310,8 +326,7 @@ Campaign OS architecture is defined across these documents in `docs/architecture
 ### Do NOT Modify Without Review
 
 - `CONFIG.gs` production configuration section (frozen)
-- Worker prompts (Creative Director, Visual QA, Media Generation) -- all were rewritten in Sprint 1
-- Visual Planner prompt -- currently under Sprint 1 Completion Pass
+- Worker prompts (Creative Director, Visual QA, Media Generation, Visual Planner) -- all were rewritten in Sprint 1
 - INSAN Visual Language definition
 - Pipeline architecture (Section A/B separation, transfer mechanism)
 
