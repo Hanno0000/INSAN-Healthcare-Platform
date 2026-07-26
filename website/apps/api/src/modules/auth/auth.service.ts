@@ -33,25 +33,38 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Update last login
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: { lastLoginAt: new Date() },
-    });
-
-    // Log login action
-    await this.prisma.auditLog.create({
-      data: {
-        userId: user.id,
-        action: 'login',
-        entity: 'User',
-        entityId: user.id,
-        ipAddress,
-      },
-    });
-
+    // Generate tokens first (they don't depend on any DB write below).
+    // Then wrap the three writes (lastLogin, audit log, refresh token)
+    // in a single transaction (TD-002).
     const tokens = await this.generateTokens(user.id, user.email, user.roleId, user.role.name);
-    await this.storeRefreshToken(user.id, tokens.refreshToken, ipAddress, userAgent);
+    const tokenHash = this.hashToken(tokens.refreshToken);
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: user.id },
+        data: { lastLoginAt: new Date() },
+      }),
+      this.prisma.auditLog.create({
+        data: {
+          userId: user.id,
+          action: 'login',
+          entity: 'User',
+          entityId: user.id,
+          ipAddress,
+        },
+      }),
+      this.prisma.refreshToken.create({
+        data: {
+          userId: user.id,
+          tokenHash,
+          ipAddress,
+          userAgent,
+          expiresAt,
+        },
+      }),
+    ]);
 
     return {
       accessToken: tokens.accessToken,
@@ -67,7 +80,6 @@ export class AuthService {
   }
 
   async refresh(rawRefreshToken: string, userId: string) {
-    // Hash the incoming token and look it up
     const tokenHash = this.hashToken(rawRefreshToken);
     const storedToken = await this.prisma.refreshToken.findFirst({
       where: { userId, tokenHash, revoked: false },
@@ -106,7 +118,6 @@ export class AuthService {
         data: { revoked: true },
       });
     } else {
-      // Revoke all refresh tokens for user
       await this.prisma.refreshToken.updateMany({
         where: { userId, revoked: false },
         data: { revoked: true },
@@ -150,7 +161,7 @@ export class AuthService {
   ) {
     const tokenHash = this.hashToken(rawToken);
     const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7); // 7 days
+    expiresAt.setDate(expiresAt.getDate() + 7);
 
     await this.prisma.refreshToken.create({
       data: {

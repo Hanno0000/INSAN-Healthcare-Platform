@@ -18,6 +18,7 @@ import { CreateMedicalCenterDto } from './dto/create-medical-center.dto';
 import { UpdateMedicalCenterDto } from './dto/update-medical-center.dto';
 import { CreateClinicDto } from './dto/create-clinic.dto';
 import { UpdateClinicDto } from './dto/update-clinic.dto';
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../common/guards/permissions.guard';
 import { RequirePermission } from '../../common/decorators/require-permission.decorator';
@@ -35,7 +36,7 @@ export class MedicalCentersController {
   // ─── Medical Centers Public ────────────────────────────────────────────────
 
   @Get('medical-centers')
-  async listPublic(@Query() query: any, @Query('filter') filter: any) {
+  async listPublic(@Query() query: PaginationQueryDto, @Query('filter') filter: any) {
     const result = await this.medicalCentersService.findAll(query, filter, false);
     return ApiResponse.paginated(result.data, result.page, result.pageSize, result.total);
   }
@@ -51,7 +52,7 @@ export class MedicalCentersController {
   @Get('admin/medical-centers')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermission('medical-centers', 'view')
-  async listAdmin(@Query() query: any, @Query('filter') filter: any) {
+  async listAdmin(@Query() query: PaginationQueryDto, @Query('filter') filter: any) {
     const result = await this.medicalCentersService.findAll(query, filter, true);
     return ApiResponse.paginated(result.data, result.page, result.pageSize, result.total);
   }

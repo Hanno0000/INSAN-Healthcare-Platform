@@ -11,6 +11,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { SettingsService } from './settings.service';
+import { UpdateSettingDto } from './dto/update-setting.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../common/guards/permissions.guard';
 import { RequirePermission } from '../../common/decorators/require-permission.decorator';
@@ -40,7 +41,7 @@ export class SettingsController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermission('settings', 'manage')
   @AuditAction('Setting', 'update')
-  async update(@Param('key') key: string, @Body() body: { value: any }) {
+  async update(@Param('key') key: string, @Body() body: UpdateSettingDto) {
     return ApiResponse.success(await this.settingsService.update(key, body.value));
   }
 

@@ -15,6 +15,7 @@ import { LeadsService } from './leads.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateAppointmentStatusDto, MarkContactReadDto } from './dto/update-lead-status.dto';
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../common/guards/permissions.guard';
 import { RequirePermission } from '../../common/decorators/require-permission.decorator';
@@ -40,7 +41,7 @@ export class LeadsController {
   @Get('admin/appointments')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermission('appointments', 'view')
-  async listAppointments(@Query() query: any, @Query('filter') filter: any) {
+  async listAppointments(@Query() query: PaginationQueryDto, @Query('filter') filter: any) {
     const result = await this.leadsService.findAllAppointments(query, filter);
     return ApiResponse.paginated(result.data, result.page, result.pageSize, result.total);
   }
@@ -74,7 +75,7 @@ export class LeadsController {
   @Get('admin/contact')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermission('contact', 'view')
-  async listContacts(@Query() query: any, @Query('filter') filter: any) {
+  async listContacts(@Query() query: PaginationQueryDto, @Query('filter') filter: any) {
     const result = await this.leadsService.findAllContacts(query, filter);
     return ApiResponse.paginated(result.data, result.page, result.pageSize, result.total);
   }

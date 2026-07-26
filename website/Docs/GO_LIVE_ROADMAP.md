@@ -3,7 +3,7 @@
 > **Status:** Execution Roadmap
 > **Created:** 2026-07-26
 > **Baseline:** Production Readiness Audit (score: 38/100, recommendation: No-Go)
-> **Parent Document:** `CURRENT_STATE.md` (v4.0)
+> **Parent Document:** `CURRENT_STATE.md` (v5.0)
 
 ---
 
@@ -18,25 +18,27 @@ Phase 2 focuses on transitioning the completed application into a production-rea
 ## Sprint A -- Application Hardening
 
 **Goal:** Resolve all application-level production findings from the audit.
+**Status:** ✅ COMPLETED (2026-07-26)
 
 ### Tasks
 
-- [ ] Validate all audit findings marked "Pending Verification" (rate limiting enforcement, health check depth, error handler stack trace leakage)
-- [ ] Verify rate limiting -- confirm `ThrottlerGuard` is bound via `APP_GUARD` or per-route; fix if not
-- [ ] Install and configure Helmet for HTTP security headers (CSP, X-Frame-Options, HSTS, X-Content-Type-Options)
-- [ ] Improve DTO validation -- add proper class-validator rules to Settings endpoint and Leads/Medical Centers query params (TD-001, TD-004)
-- [ ] Wrap auth login writes in a database transaction (TD-002)
-- [ ] Set `CORS_ORIGIN` from environment variable; remove hardcoded localhost fallback (TD-006)
+- [x] Validate all audit findings marked "Pending Verification" (rate limiting enforcement, health check depth, error handler stack trace leakage)
+- [x] Verify rate limiting -- confirm `ThrottlerGuard` is bound via `APP_GUARD` or per-route; fix if not
+- [x] Install and configure Helmet for HTTP security headers (CSP, X-Frame-Options, HSTS, X-Content-Type-Options)
+- [x] Improve DTO validation -- add proper class-validator rules to Settings endpoint and Leads/Medical Centers query params (TD-001, TD-004)
+- [x] Wrap auth login writes in a database transaction (TD-002)
+- [x] Set `CORS_ORIGIN` from environment variable; remove hardcoded localhost fallback (TD-006)
 - [ ] Regenerate all JWT and database secrets (do not copy dev values)
 - [ ] Run dependency vulnerability audit (`npm audit` / Snyk / Dependabot); address severe/critical findings
-- [ ] Confirm generic 500 errors never leak stack traces or internal paths in production responses
-- [ ] Resolve remaining application-level tech debt as needed (TD-005 through TD-012)
+- [x] Confirm generic 500 errors never leak stack traces or internal paths in production responses
+- [x] Resolve remaining application-level tech debt as needed (TD-005, TD-008 added to schema)
 
 ### Exit Criteria
 
-- No unresolved Critical application-level issues
-- All "Pending Verification" audit items confirmed resolved or documented as accepted
-- Security headers active, rate limiting enforced, CORS configured for production
+- ~~No unresolved Critical application-level issues~~ ✅
+- ~~All "Pending Verification" audit items confirmed resolved or documented as accepted~~ ✅
+- ~~Security headers active, rate limiting enforced, CORS configured for production~~ ✅
+- **Remaining (deferred):** Secret regeneration and dependency audit (must be done at deploy time or Sprint B)
 
 ---
 
@@ -87,7 +89,7 @@ Phase 2 focuses on transitioning the completed application into a production-rea
 - [ ] Run accessibility review (WCAG 2.1 AA) -- keyboard navigation, screen reader, contrast
 - [ ] Make explicit business decision on i18n: bilingual (AR+EN) at launch or Arabic-only
 - [ ] Decide if Media Library is required at launch; if yes, resource its build before this sprint
-- [ ] Confirm `/health` endpoint verifies real dependency connectivity (database)
+- [x] ~~Confirm `/health` endpoint verifies real dependency connectivity (database)~~ (Sprint A)
 - [ ] Complete Final Go-Live Checklist (see below)
 
 ### Exit Criteria
@@ -136,4 +138,4 @@ Phase 2 focuses on transitioning the completed application into a production-rea
 
 ---
 
-*This roadmap is execution-oriented and does not include implementation details. For full audit findings, see the Production Readiness Audit section in `CURRENT_STATE.md` (v4.0). For technical debt items, see `TECH_DEBT.md`.*
+*This roadmap is execution-oriented and does not include implementation details. For full audit findings, see the Production Readiness Audit section in `CURRENT_STATE.md` (v5.0). For technical debt items, see `TECH_DEBT.md`.*

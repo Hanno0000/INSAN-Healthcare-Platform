@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Prisma } from '@prisma/client';
+import { randomUUID } from 'crypto';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -21,6 +22,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
     let code = 'INTERNAL_SERVER_ERROR';
+    let requestId: string | undefined;
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
@@ -61,19 +63,27 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           code = 'RELATION_VIOLATION';
           break;
         default:
+          requestId = randomUUID();
           this.logger.error(
-            `Unhandled Prisma error ${exception.code}: ${exception.message}`,
+            `[${requestId}] Unhandled Prisma error ${exception.code}: ${exception.message}`,
             exception.stack,
           );
+          message = 'Internal server error';
+          code = 'INTERNAL_SERVER_ERROR';
       }
     } else if (exception instanceof Prisma.PrismaClientValidationError) {
       status = HttpStatus.BAD_REQUEST;
       message = 'Invalid data provided';
       code = 'VALIDATION_ERROR';
       this.logger.error(`Prisma validation error: ${exception.message}`);
-    } else if (exception instanceof Error) {
-      message = exception.message;
-      this.logger.error(`Unhandled exception: ${exception.message}`, exception.stack);
+    } else {
+      // Never forward raw internal error messages to the client.
+      // Full detail (message + stack) is logged server-side only.
+      requestId = randomUUID();
+      const err = exception instanceof Error ? exception : new Error(String(exception));
+      this.logger.error(`[${requestId}] Unhandled exception: ${err.message}`, err.stack);
+      message = 'Internal server error';
+      code = 'INTERNAL_SERVER_ERROR';
     }
 
     response.status(status).json({
@@ -83,6 +93,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         message,
         path: request.url,
         timestamp: new Date().toISOString(),
+        ...(requestId ? { requestId } : {}),
       },
     });
   }

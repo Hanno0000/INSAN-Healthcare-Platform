@@ -373,6 +373,8 @@ model NewsPost {
 
   @@index([status, publishedAt])
   @@index([sourceType])
+  @@index([categoryId])
+  @@index([sourceBrandId])
   @@unique([sourcePlatform, externalPostId])
 }
 
@@ -386,6 +388,8 @@ model MediaFolder {
   children  MediaFolder[] @relation("FolderTree")
   media     Media[]
   createdAt DateTime      @default(now())
+
+  @@index([parentId])
 }
 
 model Media {
@@ -420,6 +424,7 @@ model NavigationItem {
   isVisible Boolean         @default(true)
 
   @@index([location, order])
+  @@index([parentId])
 }
 
 model Setting {
@@ -459,6 +464,9 @@ model AppointmentRequest {
 
   @@index([status])
   @@index([createdAt])
+  @@index([hospitalId])
+  @@index([medicalCenterId])
+  @@index([doctorId])
 }
 
 model ContactSubmission {
@@ -505,6 +513,7 @@ model AuditLog {
   @@index([entity, entityId])
   @@index([userId])
   @@index([createdAt])
+  @@index([action])
 }
 
 // ========================= AI CHAT =========================
