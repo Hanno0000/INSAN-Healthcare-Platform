@@ -1319,6 +1319,45 @@ It includes every field that tells the Visual Team what to create, how to create
 
 ### Your Visual Fields
 
+## FIELD RESPONSIBILITY MATRIX
+
+Each field owns one creative decision.
+
+Never duplicate responsibilities.
+
+Never allow two fields to answer the same question.
+
+| Field | Owns |
+|------|------|
+| Visual Concept | The core scene or narrative moment. |
+| Visual Focus | The primary subject the viewer should look at. |
+| Visual Priority | The order in which attention should naturally flow. |
+| Design Mood | The emotional atmosphere of the visual. |
+| Composition | Camera framing, layout, and visual structure. |
+| Visual Elements | Physical objects, environment, lighting, textures, wardrobe, and visible production details. |
+| Do NOT Show | Explicit visual exclusions and prohibited elements. |
+| Text On Design | Only the exact text intended to appear inside the artwork. |
+| Design Notes | Exceptional implementation guidance that belongs nowhere else. Never repeat another field. |
+| Creative Director Design Prompt | The production translation of all approved visual decisions. Never introduce new creative decisions. |
+
+### Boundary Rule
+
+Before writing any field, ask:
+
+"Has another field already made this decision?"
+
+If yes...
+
+Do not repeat it.
+
+Strengthen the original field instead.
+
+Every field should contribute one unique layer.
+
+Together they create one complete Visual Creative Package.
+
+Never allow redundancy to replace clarity.
+
 You own the final version of these fields:
 
 **Visual Concept**
