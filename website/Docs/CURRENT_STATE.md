@@ -1,8 +1,8 @@
 # INSAN Website Platform -- Current State
 
-> **Version:** 5.0
+> **Version:** 6.0
 > **Date:** 2026-07-26
-> **Status:** Phase 2 -- Sprint A Complete (Application Hardening)
+> **Status:** Phase 2 -- Sprint B Complete (Production Infrastructure)
 > **Canonical Handoff Document** -- Primary entry point for Website Platform development only.
 > **Scope:** Website Platform only. For Campaign OS, see `campaign-os/docs/CURRENT_STATE.md`.
 
@@ -12,16 +12,16 @@
 
 | Dimension | Status |
 |-----------|--------|
-| **Project Phase** | Phase 2 -- Production Readiness (Sprint A Complete) |
+| **Project Phase** | Phase 2 -- Production Readiness (Sprint B Complete) |
 | **Documentation** | 100% complete (18 specification documents, ~4,500+ lines) |
 | **Source Code** | ~206 files across backend (NestJS) and frontend (Next.js) |
 | **Database** | Prisma schema with 28 models, 2 migrations applied, comprehensive seed data |
 | **API** | 14 modules implemented with ~106 endpoints (auth, CRUD, RBAC, audit) |
 | **Frontend** | 14 public pages + 14 admin modules implemented; 2 admin placeholders |
-| **Deployment** | Docker, CI/CD specified but not yet configured |
+| **Deployment** | Docker multi-stage, nginx, CI/CD, deployment scripts implemented |
 | **Brand Assets** | Complete (5 logo variants, multi-format) |
 
-**Overall:** The core platform is implemented and functional. The backend provides a complete REST API with JWT authentication, RBAC permissions, audit logging, and 14 NestJS modules. The frontend delivers a public website (14 pages) and admin dashboard (14 modules) built with Next.js 14, Tailwind CSS, and React Query. The database schema is applied with seed data. A Production Readiness Audit was completed (score: 38/100, No-Go), and Sprint A (Application Hardening) has been completed — resolving TD-001 through TD-006, TD-008. Remaining work is production infrastructure, deployment, monitoring, backups, compliance, and launch readiness. See `GO_LIVE_ROADMAP.md` for the execution roadmap.
+**Overall:** The core platform is implemented and functional. The backend provides a complete REST API with JWT authentication, RBAC permissions, audit logging, and 14 NestJS modules. The frontend delivers a public website (14 pages) and admin dashboard (14 modules) built with Next.js 14, Tailwind CSS, and React Query. The database schema is applied with seed data. A Production Readiness Audit was completed (score: 38/100, No-Go). Sprint A (Application Hardening) resolved TD-001 through TD-006, TD-008. Sprint B (Production Infrastructure) has added Docker multi-stage builds, docker-compose.prod.yml, nginx reverse proxy, structured request logging, environment validation, graceful shutdown, CI/CD pipeline, deployment scripts, and a Production Deployment Checklist. Remaining work is manual infrastructure provisioning (VPS, managed PostgreSQL, SSL, domain), monitoring, backups, compliance pages, and content. See `GO_LIVE_ROADMAP.md` for the execution roadmap.
 
 ---
 
@@ -29,7 +29,7 @@
 
 **Branch:** `main` (up to date with `origin/main`)
 **Remote:** `origin/main` only
-**Uncommitted changes:** Sprint A source code changes pending commit (12 files).
+**Uncommitted changes:** Sprint B infrastructure changes pending commit (20+ files).
 
 ### Recent Commits
 
@@ -913,7 +913,7 @@ A `scripts/post-merge.sh` hook exists that automatically:
 
 ## Production Readiness
 
-> **Current readiness: Sprint A Complete.** Application-level hardening resolved. Core platform is functional; remaining work is production infrastructure, deployment, monitoring, backups, compliance, and launch readiness. Audit baseline: 38/100. See `GO_LIVE_ROADMAP.md` for the execution plan.
+> **Current readiness: Sprint B Complete.** Application hardening + production infrastructure code complete. Remaining work is manual infrastructure provisioning (VPS, managed PostgreSQL, SSL, domain), monitoring setup, backup configuration, compliance pages, and content. See `GO_LIVE_ROADMAP.md` for the execution plan and `PRODUCTION_DEPLOYMENT_CHECKLIST.md` for itemized status.
 
 ### What Exists
 
@@ -925,22 +925,40 @@ A `scripts/post-merge.sh` hook exists that automatically:
 
 ### What Remains Before Production
 
-1. **Docker infrastructure** -- Dockerfiles, docker-compose.prod.yml, nginx reverse proxy.
-2. **Security hardening** -- ~~Helmet~~, ~~CORS~~, rate limit tuning (TD-007), dependency audit, penetration testing.
-3. **i18n routing** -- Wire up `next-intl`, add `/ar/` + `/en/` route segments, translate all UI strings.
-4. **Media module** -- S3 upload, folder management, bulk operations.
-5. **AI chat** -- LLM integration, knowledge base admin, conversation history.
-6. **SEO** -- Dynamic sitemap generation, structured data (JSON-LD), meta tags on all pages, robots.txt.
-7. **Performance** -- Core Web Vitals optimization, bundle analysis, image optimization, caching strategy.
-8. **Accessibility** -- WCAG 2.1 AA compliance audit, keyboard navigation, screen reader testing.
-9. **Content population** -- Real hospital/center/doctor data, news posts, testimonials.
-10. **Missing pages** -- About, Investors, Privacy Policy, Terms of Use.
-11. **Admin section editor UI** -- Page Builder drag-and-drop interface (API supports it, no UI yet).
-12. **Technical debt resolution** -- TD-003, TD-007, TD-009 through TD-012 remain.
-13. **Domain & DNS** -- Production domain configuration.
-14. **SSL certificates** -- HTTPS enforcement.
-15. **Monitoring** -- Uptime monitoring, error tracking, logging aggregation.
-16. **Backup verification** -- Test restore procedures for database and media.
+**Infrastructure provisioning (Manual):**
+1. Provision managed PostgreSQL instance (Supabase, Neon, Railway, or AWS RDS).
+2. Provision VPS or Docker hosting (DigitalOcean, Hetzner, AWS EC2).
+3. Register and configure production domain.
+4. Set up DNS A record pointing domain to server IP.
+5. Provision and configure SSL certificates (Let's Encrypt via certbot).
+
+**Configuration (Manual):**
+6. Fill in `.env.production` with real secrets (JWT, DB password, CORS_ORIGIN, etc.).
+7. Place SSL certificates in `infra/ssl/`.
+
+**Monitoring (Infrastructure):**
+8. Set up uptime monitoring (UptimeRobot, BetterStack) pointing at `/health`.
+9. Set up error tracking (Sentry) — optional but recommended.
+
+**Backup (Infrastructure):**
+10. Configure automated daily pg_dump cron job.
+11. Set up off-site backup storage (S3/R2).
+12. Test restore procedure.
+
+**Compliance (Manual):**
+13. Write and publish Privacy Policy page.
+14. Write and publish Terms of Use page.
+
+**Content (Manual):**
+15. Replace seed data with real production content.
+
+**Remaining Application Tasks (Repository):**
+16. i18n routing — Wire up `next-intl` (pending business decision).
+17. SEO — Dynamic sitemap, structured data, meta tags.
+18. Media module — S3 upload, folder management.
+19. AI chat — LLM integration.
+20. Admin section editor UI — Page Builder.
+21. TD-003, TD-007, TD-009 through TD-012 resolution.
 
 ---
 
@@ -1043,19 +1061,19 @@ All core modules are implemented and functional:
 
 ### Phase 2: Production Readiness -- IN PROGRESS
 
-The Production Readiness Audit has been completed. Sprint A (Application Hardening) has been completed, resolving all application-level critical findings (Helmet, CORS, rate limiting enforcement, DTO validation, auth transaction, FK indexes). Remaining work is production infrastructure, deployment, monitoring, backups, compliance, and launch readiness.
+The Production Readiness Audit has been completed. Sprint A (Application Hardening) and Sprint B (Production Infrastructure) are complete. Remaining work is manual infrastructure provisioning, monitoring, backups, compliance pages, and content.
 
-**Execution roadmap:** See [`GO_LIVE_ROADMAP.md`](GO_LIVE_ROADMAP.md) for the sprint-by-sprint execution plan (Sprint A: Application Hardening ✅, Sprint B: Production Infrastructure, Sprint C: Launch Readiness, Final Stage: Go Live).
+**Execution roadmap:** See [`GO_LIVE_ROADMAP.md`](GO_LIVE_ROADMAP.md) for the sprint-by-sprint execution plan (Sprint A: Application Hardening ✅, Sprint B: Production Infrastructure ✅, Sprint C: Launch Readiness, Final Stage: Go Live).
 
 | Priority | Area | Focus |
 |----------|------|-------|
 | ~~P0~~ | ~~Security~~ | ~~Helmet, CORS, rate limiting~~ ✅ Sprint A |
-| P0 | Deployment | Dockerfiles, docker-compose.prod.yml, nginx, CI/CD pipeline |
-| P0 | Infrastructure | Production PostgreSQL, domain, DNS, SSL |
-| P0 | Backup & Recovery | Database backup strategy, restore procedure, RPO/RTO targets |
-| P0 | Compliance | Privacy Policy, Terms of Use (required for PII collection) |
-| P1 | Monitoring | Uptime checks, error tracking (Sentry), structured logging |
-| P1 | ~~Auth Hardening~~ | ~~Transaction wrapping (TD-002), DTO validation (TD-001, TD-004)~~ ✅ Sprint A |
+| ~~P0~~ | ~~Deployment~~ | ~~Docker, docker-compose, nginx, CI/CD, scripts~~ ✅ Sprint B |
+| P0 | Infrastructure | Provision managed PostgreSQL, domain, DNS, SSL (manual) |
+| P0 | Backup & Recovery | Configure automated backup, test restore (manual) |
+| P0 | Compliance | Privacy Policy, Terms of Use (manual content) |
+| P1 | Monitoring | Uptime monitoring, error tracking (manual setup) |
+| ~~P1~~ | ~~Auth Hardening~~ | ~~Transaction wrapping (TD-002), DTO validation (TD-001, TD-004)~~ ✅ Sprint A |
 | P1 | Content | Replace seed data with real content |
 | P2 | i18n | Wire up `next-intl`, `/ar/` + `/en/` routing (pending business decision) |
 | P2 | SEO | Structured data, meta tags, sitemap validation |
@@ -1155,4 +1173,4 @@ If you modify any specification during development:
 
 ---
 
-*This document is the primary entry point for anyone continuing development on the INSAN Website Platform. Campaign OS documentation is maintained separately at `campaign-os/docs/CURRENT_STATE.md`. Last updated: 2026-07-26. Version 5.0 -- Sprint A (Application Hardening) completed.*
+*This document is the primary entry point for anyone continuing development on the INSAN Website Platform. Campaign OS documentation is maintained separately at `campaign-os/docs/CURRENT_STATE.md`. Last updated: 2026-07-26. Version 6.0 -- Sprint B (Production Infrastructure) completed.*

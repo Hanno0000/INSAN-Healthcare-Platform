@@ -4,11 +4,17 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
+    "start": "pnpm --filter @insan/api start",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
     "db:migrate": "pnpm --filter @insan/api db:migrate",
     "db:seed": "pnpm --filter @insan/api db:seed",
     "db:studio": "pnpm --filter @insan/api db:studio",
-    "lint": "turbo run lint",
-    "type-check": "turbo run type-check"
+    "docker:build": "docker compose -f docker-compose.prod.yml build",
+    "docker:up": "docker compose -f docker-compose.prod.yml up -d",
+    "docker:down": "docker compose -f docker-compose.prod.yml down",
+    "docker:logs": "docker compose -f docker-compose.prod.yml logs -f",
+    "deploy": "bash scripts/deploy.sh"
   },
   "devDependencies": {
     "turbo": "^2.0.0",

@@ -3,7 +3,7 @@
 > **Status:** Execution Roadmap
 > **Created:** 2026-07-26
 > **Baseline:** Production Readiness Audit (score: 38/100, recommendation: No-Go)
-> **Parent Document:** `CURRENT_STATE.md` (v5.0)
+> **Parent Document:** `CURRENT_STATE.md` (v6.0)
 
 ---
 
@@ -45,6 +45,7 @@ Phase 2 focuses on transitioning the completed application into a production-rea
 ## Sprint B -- Production Infrastructure
 
 **Goal:** Prepare the production environment and operational foundation.
+**Status:** ✅ COMPLETED (2026-07-26) — repository-side tasks done; manual provisioning remains.
 
 ### Tasks
 
@@ -53,25 +54,25 @@ Phase 2 focuses on transitioning the completed application into a production-rea
 - [ ] Register and configure production domain
 - [ ] Set up DNS records pointing to production server
 - [ ] Provision and configure SSL certificates (HTTPS enforcement)
-- [ ] Set up reverse proxy (nginx or equivalent) with TLS termination
-- [ ] Build Docker infrastructure -- Dockerfiles for API and Web, `docker-compose.prod.yml`
-- [ ] Configure production environment variables (regenerate all secrets, set real CORS_ORIGIN, NEXT_PUBLIC_SITE_URL)
+- [x] Set up reverse proxy (nginx or equivalent) with TLS termination — `infra/nginx.conf`
+- [x] Build Docker infrastructure -- Dockerfiles for API and Web, `docker-compose.prod.yml`
+- [x] Configure production environment variables — `.env.production.example` + startup validation
 - [ ] Set up uptime monitoring (e.g., UptimeRobot, BetterStack)
 - [ ] Set up error tracking service (e.g., Sentry)
-- [ ] Implement structured application logging (Pino/Winston with log levels and JSON output)
+- [x] Implement structured application logging (JSON output, request IDs, request logging interceptor)
 - [ ] Write and test database backup strategy
 - [ ] Write and test database restore procedure
 - [ ] Define RPO/RTO targets
-- [ ] Confirm seed/migration scripts cannot destructively run against a populated production database
-- [ ] Set up CI/CD pipeline (build, test, deploy automation)
+- [x] Confirm seed/migration scripts cannot destructively run against a populated production database — seed refuses in production
+- [x] Set up CI/CD pipeline (build, test, deploy automation) — GitHub Actions
 
 ### Exit Criteria
 
-- Production infrastructure fully operational
-- Database backed up and restore tested
-- Monitoring and error tracking active
-- Structured logging operational
-- Deployment pipeline functional
+- ~~Production infrastructure fully operational~~ — Repository-side complete; manual provisioning remains
+- Database backed up and restore tested — Not started (requires managed PG)
+- ~~Monitoring and error tracking active~~ — Not started (requires external services)
+- ~~Structured logging operational~~ ✅
+- ~~Deployment pipeline functional~~ ✅
 
 ---
 
@@ -138,4 +139,4 @@ Phase 2 focuses on transitioning the completed application into a production-rea
 
 ---
 
-*This roadmap is execution-oriented and does not include implementation details. For full audit findings, see the Production Readiness Audit section in `CURRENT_STATE.md` (v5.0). For technical debt items, see `TECH_DEBT.md`.*
+*This roadmap is execution-oriented and does not include implementation details. For full audit findings, see the Production Readiness Audit section in `CURRENT_STATE.md` (v6.0). For itemized status, see `Docs/deployment/PRODUCTION_DEPLOYMENT_CHECKLIST.md`. For technical debt items, see `TECH_DEBT.md`.*

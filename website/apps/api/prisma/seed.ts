@@ -720,6 +720,11 @@ async function seedBrands() {
 // ========================= MAIN =========================
 
 async function main() {
+  if (process.env.NODE_ENV === 'production') {
+    console.error('❌ Seed refuses to run in production. Set NODE_ENV=development or remove NODE_ENV.');
+    process.exit(1);
+  }
+
   console.log('🌱 Starting database seed...');
   console.log('');
 
