@@ -215,17 +215,17 @@ var SheetWriter = {
   },
 
   writeCell: function(rowNumber, columnName, value, sheetName) {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName(sheetName || CONFIG.SHEET_NAME);
-    var columnMap = SheetSchema._getColumnMap(sheetName || CONFIG.SHEET_NAME);
+    var resolvedSheet = sheetName || CONFIG.SHEET_NAME;
+    var sheet = this._getSheet(resolvedSheet);
+    var columnMap = SheetSchema._getColumnMap(resolvedSheet);
     var col = columnMap[columnName];
 
     if (!col) {
       throw new Error('Column not found: ' + columnName);
     }
 
-    sheet.getRange(rowNumber, col).setValue(value);
-    SpreadsheetApp.flush();
+    var range = sheet.getRange(rowNumber, col);
+    this._writeCellSafe(range, value, rowNumber, columnName, col);
   },
 
   writeWorkflowStatus: function(rowNumber, status, sheetName) {
