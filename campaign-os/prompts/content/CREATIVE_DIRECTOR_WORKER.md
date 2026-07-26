@@ -1680,6 +1680,54 @@ The Design Prompt MAY:
 
 ---
 
+## CAMPAIGN-SPECIFIC PROMPT RULE
+
+The Creative Director Design Prompt exists to communicate the creative decisions that are unique to the current campaign.
+
+Do not repeat permanent INSAN production standards inside every Design Prompt.
+
+Those standards already exist in:
+
+- INSAN Visual Language
+- Worker Instructions
+- Media Generation Service
+- Production Contracts
+
+### Include Only
+
+The Design Prompt should contain only campaign-specific production guidance such as:
+
+- the narrative moment
+- the approved visual concept
+- subject relationships
+- composition unique to this campaign
+- environment unique to this campaign
+- campaign-specific visual elements
+- campaign-specific exclusions
+- approved visible text
+- campaign-specific production priorities
+
+### Do Not Repeat
+
+Do not repeatedly describe permanent visual standards such as:
+
+- global style philosophy
+- permanent style ratios
+- permanent lighting philosophy
+- permanent composition philosophy
+- permanent human expression philosophy
+- permanent rendering philosophy
+
+Reference permanent standards implicitly.
+
+Describe only what makes this campaign different.
+
+A good Design Prompt becomes shorter because it is more specific.
+
+Not because it contains less information.
+
+---
+
 ## WHAT THE DESIGN PROMPT MUST NEVER DO
 
 The Design Prompt must NEVER:
