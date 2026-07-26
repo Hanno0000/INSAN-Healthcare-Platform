@@ -1,6 +1,6 @@
 # Campaign OS -- Current State
 
-> **Version:** 1.4
+> **Version:** 1.5
 > **Date:** 2026-07-26
 > **Status:** Sprint 2 -- In Progress (Creative Director Complete)
 > **Canonical Handoff Document** -- Primary entry point for Campaign OS development.
@@ -20,7 +20,7 @@
 | **Current Sprint** | Sprint 2 -- Branch A Complete (Creative Director) + Branch B Complete (Visual Planner & Visual QA) |
 | **Visual Language** | Implemented (INSAN Visual Language spec, CONFIG.gs) |
 
-**Overall:** Campaign OS is a Google Apps Script AI Operating System that transforms strategic content into publishable social media assets using AI Workers. Sprint 2 is focused on visual production quality hardening based on Validation Run #001 findings. Branch A (Creative Director) is complete with all 8 assigned DP findings implemented and compliance audit passed. Branch B (Visual Planner & Visual QA) is also complete with all assigned Sprint 2 findings implemented and consistency audit passed.
+**Overall:** Campaign OS is a Google Apps Script AI Operating System that transforms strategic content into publishable social media assets using AI Workers. The system has reached an architectural milestone: it has evolved from prompt-based workers into a Contract-Driven AI Operating System with stabilized ownership, boundaries, and decision flow. Sprint 2 is focused on visual production quality hardening based on Validation Run #001 findings. Branch A (Creative Director) is complete with all 8 assigned DP findings implemented and compliance audit passed. Branch B (Visual Planner & Visual QA) is also complete with all assigned Sprint 2 findings implemented and consistency audit passed.
 
 ---
 
@@ -53,6 +53,48 @@ Sprint 2 was created after the first Production Validation Run revealed 20 findi
 - All assigned Sprint 2 findings implemented
 - Prompt propagation completed across architecture documentation
 - Consistency Audit passed
+
+---
+
+## Architectural Milestone
+
+The project has reached a significant architectural milestone.
+
+The system has evolved from:
+
+> **Prompt-based Workers**
+
+into:
+
+> **A Contract-Driven AI Operating System.**
+
+### What Is Now Stable
+
+The following architectural elements are considered settled and should not be redesigned without production evidence:
+
+| Element | Status | Description |
+|---------|--------|-------------|
+| Worker Ownership | Stabilized | Every worker owns a defined set of decisions. No decision shared across workers. |
+| Responsibility Boundaries | Stabilized | Each field owns exactly one creative decision. Field Responsibility Matrix defines separation. |
+| Creative Package Architecture | Stabilized | Creative Director owns all creative decisions. Design Prompt is execution layer only. Visual Package is Source of Truth. |
+| Prompt / Contract / Schema Alignment | Stabilized | Worker prompts, data contracts, and sheet schema are synchronized. Single source of truth for each concept. |
+| Cross-Worker Decision Flow | Stabilized | Creative Director → Visual Planner → Media Generation → Visual QA. No worker invents missing decisions. |
+| Visual Production Pipeline | Stabilized | Six-stage pipeline with clear ownership and stage transitions orchestrated by WorkerRunner. |
+| Source of Truth Architecture | Stabilized | Content Pipeline owns creative data. Visual Pipeline owns production data. No reverse writes. |
+| Single Owner per Decision | Stabilized | Every creative decision exists in exactly one field. One Decision. One Owner. One Field. |
+
+### What This Means
+
+The architecture no longer requires speculative redesign.
+
+Future improvements should be driven by:
+
+- Validation Run results
+- Production metrics
+- Operational experience
+- Real production data
+
+Not by rewriting prompts or redesigning worker responsibilities.
 
 ---
 
@@ -128,6 +170,31 @@ Sprint 2 was created after the first Production Validation Run revealed 20 findi
 - All 13 assigned Sprint 2 findings implemented (VP-001 through VP-010, DP-003, DP-004, DP-008, DP-009)
 - Prompt propagation completed across architecture documentation
 - Consistency audit passed
+
+---
+
+## Architecture Review Conclusion
+
+An independent post-Sprint 2 architecture review was conducted.
+
+### Major Conclusion
+
+**The current architecture does NOT require another redesign before production.**
+
+The system has reached a stable contract-driven state. All worker responsibilities, ownership boundaries, and decision flows are defined and aligned across prompts, contracts, and schema.
+
+### Guiding Principle for Future Work
+
+> Future architectural evolution should be driven by Validation Runs, production metrics, operational experience, and real production data—not by rewriting prompts or redesigning worker responsibilities.
+
+### Why the Architecture Stopped Changing
+
+1. **Ownership is frozen.** Every decision has exactly one owner. No worker needs to invent missing decisions.
+2. **Boundaries are defined.** The Field Responsibility Matrix, Language Policy, and Design Prompt rules eliminate duplication.
+3. **Contracts are aligned.** Worker prompts, data contracts, and sheet schema share the same source of truth.
+4. **The pipeline is complete.** Creative Director → Visual Planner → Media Generation → Visual QA covers the full production flow with clear stage transitions.
+
+Any future architectural change must be justified by production evidence, not by speculative redesign.
 
 ---
 
@@ -308,6 +375,43 @@ All configuration is centralized in `CONFIG.gs`:
 - Project Assets activation (folder ID placeholder exists but folder is empty)
 - Advanced Visual Planner intelligence
 
+### Technical Debt (Architecture Maturity)
+
+These items are intentionally deferred. They represent architectural maturity, not missing functionality. None are production blockers.
+
+#### TD-001 — Failure Architecture
+
+Define failure handling policies:
+- Retry policy
+- Timeout policy
+- Recovery workflow
+- Failure classification (transient vs permanent)
+- Production recovery strategy
+
+#### TD-002 — System Invariants
+
+Create a formal invariants document (e.g., `SYSTEM_INVARIANTS.md`) recording permanent rules:
+- Creative Package never changes after approval.
+- Section A is immutable.
+- Workers never write foreign columns.
+- Orchestration exclusively owns VISUAL_STAGE.
+- Media Generation executes but never redesigns.
+- Visual QA validates but never creates.
+
+#### TD-003 — Architecture Decision Records
+
+Introduce ADRs (Architecture Decision Records) for future major architectural decisions. Formalize decision capture with context, options, decision, and consequences.
+
+#### TD-004 — Definition of Done
+
+Define a formal Definition of Done for every Worker covering: prompt alignment, contract compliance, schema compatibility, evidence of passing output, and documentation.
+
+#### TD-005 — End-to-End Validation Checklist
+
+Create one production release checklist covering the complete pipeline:
+
+Strategy → Creative → Transfer → Visual Planner → Media Generation → Visual QA → Publishing
+
 ### Reserved Hooks (Production-Ready but Not Active)
 
 | Hook | Location | Status |
@@ -374,12 +478,32 @@ Campaign OS architecture is defined across these documents in `docs/architecture
 5. Media Generation executes, does not reinterpret -- it is a production utility, not a creative collaborator.
 6. Every Section B column has exactly one owner -- no orphan columns.
 
+### Architectural History
+
+The system evolved through these phases:
+
+1. **Sprint 1 — Foundation:** Prompt-based workers, INSAN Visual Language, two-pipeline architecture, worker contracts, schema alignment.
+2. **Sprint 2 — Hardening:** Validation Run #001 revealed 20 findings. The system evolved from prompt-based workers into a Contract-Driven AI Operating System. Worker ownership, responsibility boundaries, and cross-worker decision flow were stabilized.
+3. **Post-Sprint 2:** Architecture is considered stable. No redesign needed before production. Future evolution should be driven by production data, not speculative redesign.
+
+### Why the Architecture Stopped Changing
+
+The architecture reached stability because:
+- Every creative decision now has exactly one owner and one field.
+- Design Prompt is explicitly the execution layer of the Visual Package — not a second creative document.
+- Permanent visual standards are separated from campaign-specific instructions.
+- Contracts, prompts, and schema are aligned to the same source of truth.
+- Visual QA has hard gates that enforce production-quality requirements.
+
+Further redesign without production evidence would introduce risk without justification.
+
 ### Do NOT Modify Without Review
 
 - `CONFIG.gs` production configuration section (frozen)
 - Worker prompts (Visual QA, Media Generation, Visual Planner) — all were rewritten in Sprint 1
 - INSAN Visual Language definition
 - Pipeline architecture (Section A/B separation, transfer mechanism)
+- Worker ownership assignments and responsibility boundaries (frozen in Sprint 2)
 
 ### Modified in Sprint 2
 
