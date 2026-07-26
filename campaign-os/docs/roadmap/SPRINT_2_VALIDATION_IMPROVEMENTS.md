@@ -342,6 +342,317 @@ Visual success criteria are based on drawing quality, not Facebook Feed performa
 
 ---
 
+## Pipeline Data Validation Findings
+
+---
+
+### DP-001 — Mixed Language Creative Package
+
+**Status:** TODO
+
+**Description**
+
+The Creative Package contains inconsistent language usage across fields.
+
+Examples:
+- Strategy fields in English.
+- Post Copy in Arabic.
+- Design Prompt in English.
+- Text On Design in English.
+
+There is no unified language policy across the package.
+
+**Impact:** Critical
+
+**Root Cause**
+
+Creative Director does not enforce a package-wide language policy.
+
+**Primary Owner:** Creative Director
+
+**Supporting Workers:** Content Strategy
+
+**Resolution Plan**
+
+| Worker | Change |
+|--------|--------|
+| Creative Director | Enforce a single language policy across the entire Creative Package. |
+| Content Strategy | Ensure strategy fields follow the selected language policy where applicable. |
+
+**Acceptance Criteria:** All Creative Package fields follow a consistent language policy appropriate for the campaign.
+
+---
+
+### DP-002 — Design Prompt Isolated From Visual Package
+
+**Status:** TODO
+
+**Description**
+
+The Creative Director Design Prompt behaves like an independent document instead of being the execution layer of the Visual Package.
+
+Visual Concept, Visual Elements, Design Notes and Design Prompt partially duplicate each other.
+
+The system currently has multiple creative sources of truth.
+
+**Impact:** Critical
+
+**Root Cause**
+
+Design Prompt reconstructs the creative direction instead of translating existing visual fields into production instructions.
+
+**Primary Owner:** Creative Director
+
+**Supporting Workers:** Visual Planner
+
+**Resolution Plan**
+
+| Worker | Change |
+|--------|--------|
+| Creative Director | Redefine the Design Prompt as the execution layer of the Visual Package instead of a second creative document. |
+| Visual Planner | Consume structured visual fields without relying on duplicated prompt content. |
+
+**Acceptance Criteria:** The Design Prompt becomes a production translation of the Visual Package rather than an independent creative specification.
+
+---
+
+### DP-003 — Text On Design Contains Production Instructions
+
+**Status:** TODO
+
+**Description**
+
+Text On Design contains production scripting such as:
+- Slide 1
+- Slide 2
+- Card 1
+
+instead of the exact text intended to appear inside the artwork.
+
+This likely contributed to the rendered "Slide 1" problem.
+
+**Impact:** Critical
+
+**Root Cause**
+
+Creative Director outputs production scripting instead of publish-ready design text.
+
+**Primary Owner:** Creative Director
+
+**Supporting Workers:** Media Generation, Visual QA
+
+**Resolution Plan**
+
+| Worker | Change |
+|--------|--------|
+| Creative Director | Text On Design must contain only the final visible text. |
+| Media Generation | Ignore any production scripting if present. |
+| Visual QA | Reject artwork containing slide labels or production metadata. |
+
+**Acceptance Criteria:** Text On Design contains only publish-ready visible text.
+
+---
+
+### DP-004 — Egyptian Identity Not Explicitly Encoded
+
+**Status:** TODO
+
+**Description**
+
+The Visual Package does not consistently encode Egyptian healthcare identity requirements.
+
+The package relies on implication instead of explicit production rules.
+
+**Impact:** High
+
+**Primary Owner:** Creative Director
+
+**Supporting Workers:** Visual Planner, Media Generation, Visual QA
+
+**Resolution Plan**
+
+| Worker | Change |
+|--------|--------|
+| Creative Director | Encode mandatory Egyptian healthcare identity rules directly into the Visual Package. |
+| Visual Planner | Preserve these rules inside the Generation Brief. |
+| Media Generation | Apply them during generation. |
+| Visual QA | Reject generic international environments. |
+
+**Acceptance Criteria:** Egyptian identity is explicitly represented throughout the Creative Package.
+
+---
+
+### DP-005 — Visual Package Field Duplication
+
+**Status:** TODO
+
+**Description**
+
+Several visual fields repeat the same information:
+- Visual Concept
+- Visual Elements
+- Design Notes
+- Design Prompt
+
+instead of serving distinct responsibilities.
+
+**Impact:** High
+
+**Root Cause**
+
+Field ownership is insufficiently separated.
+
+**Primary Owner:** Creative Director
+
+**Supporting Workers:** Visual Planner
+
+**Resolution Plan**
+
+| Worker | Change |
+|--------|--------|
+| Creative Director | Clearly separate responsibilities for each visual field. |
+| Visual Planner | Consume each field according to its intended responsibility only. |
+
+**Acceptance Criteria:** Each visual field contributes unique information without unnecessary duplication.
+
+---
+
+### DP-006 — Excessive Prompt Boilerplate
+
+**Status:** TODO
+
+**Description**
+
+Design Prompts repeat large blocks of identical boilerplate across campaigns.
+
+Campaign-specific creative decisions become diluted.
+
+**Impact:** High
+
+**Primary Owner:** Creative Director
+
+**Supporting Workers:** Media Generation
+
+**Resolution Plan**
+
+| Worker | Change |
+|--------|--------|
+| Creative Director | Move permanent visual standards into the Worker Prompt and keep row-level prompts campaign-specific. |
+| Media Generation | Rely on worker-level standards rather than repeated prompt boilerplate. |
+
+**Acceptance Criteria:** Row-level Design Prompts contain only campaign-specific creative direction.
+
+---
+
+### DP-007 — Visual Package Prioritizes Scene Over Moment
+
+**Status:** TODO
+
+**Description**
+
+Visual Packages describe environments well but often fail to encode a clear human moment.
+
+**Impact:** Medium
+
+**Primary Owner:** Creative Director
+
+**Supporting Workers:** Visual Planner, Media Generation
+
+**Resolution Plan**
+
+| Worker | Change |
+|--------|--------|
+| Creative Director | Make the narrative moment mandatory within the Visual Package. |
+| Visual Planner | Preserve the narrative moment during generation planning. |
+| Media Generation | Generate the defined human moment rather than only the environment. |
+
+**Acceptance Criteria:** Every Visual Package defines a recognizable human moment.
+
+---
+
+### DP-008 — Missing Visual Text Safety Rules
+
+**Status:** TODO
+
+**Description**
+
+The Creative Package does not explicitly prohibit:
+- Metadata
+- Extra generated text
+- Platform names
+- Slide numbers
+- Internal labels
+
+**Impact:** High
+
+**Primary Owner:** Creative Director
+
+**Supporting Workers:** Media Generation, Visual QA
+
+**Resolution Plan**
+
+| Worker | Change |
+|--------|--------|
+| Creative Director | Add explicit text safety rules to the Creative Package. |
+| Media Generation | Never generate forbidden text elements. |
+| Visual QA | Reject forbidden visible text immediately. |
+
+**Acceptance Criteria:** Forbidden text rules become part of every Creative Package.
+
+---
+
+### DP-009 — Visual QA Validation Too Permissive
+
+**Status:** TODO
+
+**Description**
+
+Visual QA approved packages that produced images with major production failures.
+
+QA evaluation is not aligned with actual production quality.
+
+**Impact:** Critical
+
+**Primary Owner:** Visual QA
+
+**Supporting Workers:** Creative Director, Media Generation
+
+**Resolution Plan**
+
+| Worker | Change |
+|--------|--------|
+| Visual QA | Expand validation criteria to reflect real production outcomes. |
+| Creative Director | Provide stronger production expectations. |
+| Media Generation | Produce outputs compatible with QA rules. |
+
+**Acceptance Criteria:** QA approval accurately predicts production quality.
+
+---
+
+### DP-010 — Worker Execution Log Redundancy
+
+**Status:** TODO
+
+**Description**
+
+Worker execution logs contain repeated worker names, reducing audit readability.
+
+**Impact:** Low
+
+**Primary Owner:** System Logging
+
+**Supporting Workers:** All Workers
+
+**Resolution Plan**
+
+| Worker | Change |
+|--------|--------|
+| System Logging | Normalize worker execution logging and remove redundant entries. |
+
+**Acceptance Criteria:** Execution logs clearly represent worker execution history without duplication.
+
+---
+
 ## Sprint Execution Strategy
 
 Sprint is executed by Ownership, not by problem.
@@ -353,13 +664,24 @@ Each worker is completed fully before moving to the next.
 ### Step 1 — Creative Director Worker
 
 **Responsible For:**
-- VP-003
-- VP-005
-- VP-006
-- VP-010
-- Part of VP-001
-- Part of VP-002
-- Part of VP-009
+
+| Finding | Type | Ownership |
+|---------|------|-----------|
+| VP-001 | Visual | Part of (Design Prompt clarity) |
+| VP-002 | Visual | Part of (language specification) |
+| VP-003 | Visual | Full (Egyptian identity rules) |
+| VP-005 | Visual | Full (storytelling moments) |
+| VP-006 | Visual | Full (composition diversity) |
+| VP-009 | Visual | Part of (final artwork requirement) |
+| VP-010 | Visual | Full (Feed performance criteria) |
+| DP-001 | Data | Full (language policy enforcement) |
+| DP-002 | Data | Full (Design Prompt as execution layer) |
+| DP-003 | Data | Full (Text On Design = visible text only) |
+| DP-004 | Data | Full (Egyptian identity encoding) |
+| DP-005 | Data | Full (field responsibility separation) |
+| DP-006 | Data | Full (boilerplate reduction) |
+| DP-007 | Data | Full (narrative moment mandatory) |
+| DP-008 | Data | Full (text safety rules) |
 
 **Status:** TODO
 
@@ -368,10 +690,17 @@ Each worker is completed fully before moving to the next.
 ### Step 2 — Visual Planner Worker
 
 **Responsible For:**
-- VP-001
-- VP-003
-- VP-006
-- VP-009
+
+| Finding | Type | Ownership |
+|---------|------|-----------|
+| VP-001 | Visual | Part of (Generation Brief distinction) |
+| VP-003 | Visual | Part of (transfer Egyptian rules) |
+| VP-006 | Visual | Part of (enforce composition variety) |
+| VP-009 | Visual | Part of (enforce final output) |
+| DP-002 | Data | Part of (consume structured fields) |
+| DP-004 | Data | Part of (preserve Egyptian rules) |
+| DP-005 | Data | Part of (consume fields by responsibility) |
+| DP-007 | Data | Part of (preserve narrative moment) |
 
 **Status:** TODO
 
@@ -380,13 +709,22 @@ Each worker is completed fully before moving to the next.
 ### Step 3 — Media Generation Service
 
 **Responsible For:**
-- VP-001
-- VP-002
-- VP-004
-- VP-007
-- VP-008
-- VP-009
-- VP-010
+
+| Finding | Type | Ownership |
+|---------|------|-----------|
+| VP-001 | Visual | Full (prevent metadata rendering) |
+| VP-002 | Visual | Full (enforce language compliance) |
+| VP-004 | Visual | Full (suppress branding generation) |
+| VP-007 | Visual | Full (text layout quality) |
+| VP-008 | Visual | Full (Arabic rendering quality) |
+| VP-009 | Visual | Full (final artwork only) |
+| VP-010 | Visual | Part of (Feed attention optimization) |
+| DP-003 | Data | Part of (ignore production scripting) |
+| DP-004 | Data | Part of (apply Egyptian identity) |
+| DP-006 | Data | Part of (rely on worker-level standards) |
+| DP-007 | Data | Part of (generate defined moment) |
+| DP-008 | Data | Part of (never generate forbidden text) |
+| DP-009 | Data | Part of (produce QA-compatible outputs) |
 
 **Status:** TODO
 
@@ -395,15 +733,46 @@ Each worker is completed fully before moving to the next.
 ### Step 4 — Visual QA Worker
 
 **Responsible For:**
-- VP-001
-- VP-002
-- VP-003
-- VP-004
-- VP-005
-- VP-007
-- VP-008
-- VP-009
-- VP-010
+
+| Finding | Type | Ownership |
+|---------|------|-----------|
+| VP-001 | Visual | Part of (automatic reject on metadata) |
+| VP-002 | Visual | Part of (reject wrong language) |
+| VP-003 | Visual | Part of (reject generic environment) |
+| VP-004 | Visual | Part of (reject generated branding) |
+| VP-005 | Visual | Part of (evaluate narrative moment) |
+| VP-007 | Visual | Part of (verify text layout) |
+| VP-008 | Visual | Part of (check Arabic spelling) |
+| VP-009 | Visual | Part of (reject mockups) |
+| VP-010 | Visual | Part of (evaluate Feed power) |
+| DP-003 | Data | Part of (reject production metadata in art) |
+| DP-004 | Data | Part of (reject generic international) |
+| DP-008 | Data | Part of (reject forbidden visible text) |
+| DP-009 | Data | Full (expand validation criteria) |
+
+**Status:** TODO
+
+---
+
+### Step 5 — Content Strategy Worker
+
+**Responsible For:**
+
+| Finding | Type | Ownership |
+|---------|------|-----------|
+| DP-001 | Data | Part of (follow language policy) |
+
+**Status:** TODO
+
+---
+
+### Step 6 — System Logging
+
+**Responsible For:**
+
+| Finding | Type | Ownership |
+|---------|------|-----------|
+| DP-010 | Data | Full (normalize execution logging) |
 
 **Status:** TODO
 
