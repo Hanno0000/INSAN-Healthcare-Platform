@@ -20,9 +20,165 @@ function onOpen() {
     .addSeparator()
     .addItem('Resume Last Run', 'resumeLastRun')
     .addSeparator()
+    .addSubMenu(SpreadsheetApp.getUi()
+      .createMenu('Maintenance')
+      .addItem('Preflight Check', 'preflightCheck')
+      .addItem('Unblock Dropdowns (run once)', 'relaxDataValidation')
+      .addItem('Review Vocabulary Gaps', 'showVocabularyGaps'))
+    .addSeparator()
     .addItem('Refresh Cache', 'refreshCache')
     .addItem('System Status', 'systemStatus')
     .addToUi();
+}
+
+
+// Cheap sanity check on the strategic inputs before spending a run.
+//
+// A column-offset in the Content Pipeline transfer formula silently fed every
+// worker the wrong field for months: Target Audience received a number, and
+// Emotional Trigger received a psychological barrier. Nothing failed loudly —
+// the output was simply built on scrambled inputs. This catches that class of
+// problem in seconds instead of after a paid run.
+function preflightCheck() {
+  var ui = SpreadsheetApp.getUi();
+
+  try {
+    var sheetName = CONFIG.SHEET_NAME;
+    var lastRow = SheetSchema.getLastRow(sheetName);
+    var problems = [];
+    var checked = 0;
+
+    for (var row = CONFIG.DATA_START_ROW; row <= Math.min(lastRow, 20); row++) {
+      var data = SheetSchema.getRowData(row, sheetName);
+
+      if (!data['Campaign Name'] && !data['Content Angle']) {
+        continue;
+      }
+
+      checked++;
+
+      var audience = String(data['Target Audience'] || '').trim();
+      if (!audience) {
+        problems.push('Row ' + row + ': Target Audience is empty');
+      } else if (/^\d+([.,]\d+)?$/.test(audience)) {
+        problems.push('Row ' + row + ': Target Audience contains a number ("' +
+          audience + '") — the transfer formula is almost certainly off by a column');
+      }
+
+      var kpi = String(data['Primary KPI'] || '').trim();
+      if (/primary\s*:/i.test(kpi) || /secondary\s*:/i.test(kpi)) {
+        problems.push('Row ' + row + ': Primary KPI holds audience data ("' +
+          kpi.substring(0, 60) + '") — columns are shifted');
+      }
+
+      var cta = String(data['CTA Strategy'] || '').trim();
+      if (cta && CONFIG.CONTROLLED_VOCABULARY['CTA Strategy'].indexOf(cta) === -1 &&
+          cta.indexOf('|') === -1) {
+        problems.push('Row ' + row + ': CTA Strategy is "' + cta.substring(0, 40) +
+          '", which is not a CTA');
+      }
+    }
+
+    var lines;
+
+    if (!problems.length) {
+      lines = [
+        'Checked ' + checked + ' row(s). No input problems detected.',
+        '',
+        'Strategic inputs look correctly aligned.'
+      ];
+    } else {
+      lines = ['Checked ' + checked + ' row(s). Found ' + problems.length + ' problem(s):', ''];
+      for (var i = 0; i < Math.min(problems.length, 15); i++) {
+        lines.push('• ' + problems[i]);
+      }
+      if (problems.length > 15) {
+        lines.push('… and ' + (problems.length - 15) + ' more.');
+      }
+      lines.push('');
+      lines.push('If columns are shifted, check the transfer formula in the first');
+      lines.push('Campaign-Cards-sourced column of Content Pipeline. Fix the data');
+      lines.push('before running workers — they cannot detect scrambled inputs.');
+    }
+
+    ui.alert('Preflight Check', lines.join('\n'), ui.ButtonSet.OK);
+
+  } catch (e) {
+    ui.alert('Preflight Check', 'Failed: ' + e.toString(), ui.ButtonSet.OK);
+  }
+}
+
+
+// Converts every "reject input" dropdown in both pipelines into a "show warning"
+// dropdown, so a worker is never blocked from writing a value that is missing
+// from the controlled vocabulary. The list stays visible for human editors.
+function relaxDataValidation() {
+  var ui = SpreadsheetApp.getUi();
+
+  try {
+    var results = SheetWriter.relaxAllPipelineValidation();
+    var lines = ['Dropdowns converted to warn-only:', ''];
+    var total = 0;
+
+    for (var i = 0; i < results.length; i++) {
+      var r = results[i];
+      if (r.error) {
+        lines.push('• ' + r.sheet + ' — ' + r.error);
+        continue;
+      }
+      lines.push('• ' + r.sheet + ' — ' + r.relaxed + ' of ' + r.scanned + ' rules changed');
+      total += r.relaxed;
+    }
+
+    lines.push('');
+    lines.push(total > 0
+      ? 'Workers can no longer be blocked by a missing vocabulary value. ' +
+        'Out-of-vocabulary values are recorded in the Execution Log for review.'
+      : 'Nothing to change — no rejecting dropdowns were found.');
+
+    ui.alert('Data Validation', lines.join('\n'), ui.ButtonSet.OK);
+
+  } catch (e) {
+    ui.alert('Data Validation', 'Failed: ' + e.toString(), ui.ButtonSet.OK);
+  }
+}
+
+
+// Lists every value a worker produced that was outside the controlled
+// vocabulary, grouped by column — the raw material for updating SYSTEM_CONSTANTS.
+function showVocabularyGaps() {
+  var ui = SpreadsheetApp.getUi();
+
+  try {
+    var grouped = Logger.getVocabularyDeviations();
+    var columns = Object.keys(grouped);
+
+    if (!columns.length) {
+      ui.alert('Vocabulary Gaps',
+        'No out-of-vocabulary values recorded yet.', ui.ButtonSet.OK);
+      return;
+    }
+
+    var lines = ['Values produced that are missing from SYSTEM_CONSTANTS:', ''];
+
+    for (var i = 0; i < columns.length; i++) {
+      var col = columns[i];
+      lines.push(col + ':');
+
+      var values = grouped[col];
+      for (var value in values) {
+        lines.push('   "' + value + '"  (seen ' + values[value] + 'x)');
+      }
+      lines.push('');
+    }
+
+    lines.push('Add the values worth keeping to SYSTEM_CONSTANTS and CONFIG.gs.');
+
+    ui.alert('Vocabulary Gaps', lines.join('\n'), ui.ButtonSet.OK);
+
+  } catch (e) {
+    ui.alert('Vocabulary Gaps', 'Failed: ' + e.toString(), ui.ButtonSet.OK);
+  }
 }
 
 
@@ -584,11 +740,48 @@ function runWorker(workerName, rowNumber) {
 
     var context = ContextBuilder.buildContext(upperName, rowData);
 
-    var aiResponse = AIProvider.call(context, {
+    var callOptions = {
       temperature: workerConfig.temperature
-    });
+    };
+
+    // Visual QA evaluates artwork, so it must receive the artwork. Without this
+    // it only ever saw the Drive URL as text and graded the brief, not the image.
+    if (upperName === 'VISUAL_QA_WORKER') {
+      var qaImages = DriveLoader.loadImagesFromCell(rowData['Generated Assets']);
+
+      if (!qaImages.length) {
+        throw new Error(
+          'Visual QA cannot run: no readable image found in "Generated Assets" ' +
+          'for row ' + rowNumber + '. QA must never grade an asset it cannot see.'
+        );
+      }
+
+      callOptions.images = qaImages;
+      context += '\n\n=== GENERATED ASSETS ===\n\n' +
+        qaImages.length + ' generated image(s) are attached above. ' +
+        'Evaluate ONLY what is visibly present in those images. ' +
+        'Do not restate or paraphrase the Creative Package as if it were an ' +
+        'observation. Every statement in your evaluation must describe something ' +
+        'you can actually see in the attached artwork.\n\n' +
+        '=== END OF GENERATED ASSETS ===';
+    }
+
+    var aiResponse = AIProvider.call(context, callOptions);
 
     var parsed = ResponseParser.parse(aiResponse.text, upperName);
+
+    // Vocabulary gaps are recorded, never fatal. Reviewing these after a run is
+    // how SYSTEM_CONSTANTS gets corrected from evidence instead of assumption.
+    if (parsed.deviations && parsed.deviations.length) {
+      for (var d = 0; d < parsed.deviations.length; d++) {
+        Logger.logVocabularyDeviation(
+          upperName, rowNumber,
+          parsed.deviations[d].field,
+          parsed.deviations[d].value,
+          parsed.deviations[d].vocabulary
+        );
+      }
+    }
 
     var writeResult = SheetWriter.writeToRow(
       rowNumber,
@@ -970,6 +1163,32 @@ function askForRowRange(sheetName) {
 // VISUAL QA STAGE MAPPING
 // ================================
 
+// Revision cycles are counted per Content ID in Script Properties so the cap
+// survives separate menu invocations without requiring a new sheet column.
+function _revisionKey(contentId) {
+  return 'visual_revision_' + String(contentId || '').trim();
+}
+
+function _getRevisionCount(contentId) {
+  if (!contentId) return 0;
+  var raw = PropertiesService.getScriptProperties().getProperty(_revisionKey(contentId));
+  var count = parseInt(raw, 10);
+  return isNaN(count) ? 0 : count;
+}
+
+function _bumpRevisionCount(contentId) {
+  if (!contentId) return 0;
+  var next = _getRevisionCount(contentId) + 1;
+  PropertiesService.getScriptProperties()
+    .setProperty(_revisionKey(contentId), String(next));
+  return next;
+}
+
+function _clearRevisionCount(contentId) {
+  if (!contentId) return;
+  PropertiesService.getScriptProperties().deleteProperty(_revisionKey(contentId));
+}
+
 function _applyVisualStageMapping(rowNumber, parsedValues, sheetName) {
   var qaDecision = parsedValues['Visual QA Decision'];
   if (!qaDecision) {
@@ -988,18 +1207,37 @@ function _applyVisualStageMapping(rowNumber, parsedValues, sheetName) {
     return;
   }
 
+  var qaRowData = SheetSchema.getRowData(rowNumber, sheetName);
+  var qaContentId = qaRowData[CONFIG.COLUMN_NAMES.CONTENT_ID];
+  var maxCycles = CONFIG.VISUAL_PIPELINE.MAX_REVISION_CYCLES || 3;
+
+  if (qaDecision === 'Revision Required') {
+    var cycles = _bumpRevisionCount(qaContentId);
+
+    if (cycles >= maxCycles) {
+      _clearRevisionCount(qaContentId);
+      _transitionVisualStage(rowNumber, 'FAILED', sheetName);
+      SpreadsheetApp.flush();
+
+      Logger.logFailure('VISUAL_QA_WORKER', rowNumber, 0,
+        'Revision limit reached (' + cycles + '/' + maxCycles + ') for ' +
+        qaContentId + '. Stopped at FAILED instead of regenerating again. ' +
+        'Creative Director review required.');
+      return;
+    }
+
+    Logger.logSuccess('VISUAL_QA_WORKER', rowNumber, 0, 0, 0,
+      'Revision cycle ' + cycles + '/' + maxCycles + ' for ' + qaContentId);
+  } else {
+    _clearRevisionCount(qaContentId);
+  }
+
   _transitionVisualStage(rowNumber, nextStage, sheetName);
 
   if (qaDecision === 'Approved') {
-    var rowData = SheetSchema.getRowData(rowNumber, sheetName);
-    var generatedAssets = rowData['Generated Assets'];
+    var generatedAssets = qaRowData['Generated Assets'];
     if (generatedAssets) {
-      var columnMap = SheetSchema._getColumnMap(sheetName);
-      var finalAssetCol = columnMap['Final Asset URL'];
-      if (finalAssetCol) {
-        var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-        sheet.getRange(rowNumber, finalAssetCol).setValue(generatedAssets);
-      }
+      SheetWriter.writeCell(rowNumber, 'Final Asset URL', generatedAssets, sheetName);
     }
   }
 
@@ -1016,17 +1254,26 @@ function _applyVisualStageMapping(rowNumber, parsedValues, sheetName) {
 // ================================
 
 function _transitionVisualStage(rowNumber, nextStage, sheetName) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
   var columnMap = SheetSchema._getColumnMap(sheetName);
   var stageCol = columnMap['VISUAL_STAGE'];
 
   if (!stageCol) {
     Logger.logFailure('ORCHESTRATOR', rowNumber, 0,
       'VISUAL_STAGE column not found in sheet: ' + sheetName);
-    return;
+    return false;
   }
 
-  sheet.getRange(rowNumber, stageCol).setValue(nextStage);
+  // Routed through the safe writer: a dropdown on VISUAL_STAGE that refuses a
+  // value would otherwise halt the entire state machine.
+  var ok = SheetWriter.writeCell(rowNumber, 'VISUAL_STAGE', nextStage, sheetName);
+
+  if (!ok) {
+    Logger.logFailure('ORCHESTRATOR', rowNumber, 0,
+      'Failed to write VISUAL_STAGE = "' + nextStage + '" on row ' + rowNumber +
+      '. The row is stranded at its previous stage and needs manual review.');
+  }
+
+  return ok;
 }
 
 

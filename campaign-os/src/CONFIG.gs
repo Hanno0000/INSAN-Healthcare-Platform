@@ -186,7 +186,12 @@ var CONFIG = {
       PUBLISHING: 'PUBLISHING',
       COMPLETED: 'COMPLETED',
       FAILED: 'FAILED'
-    }
+    },
+
+    // Hard ceiling on the QA -> PLANNING -> GENERATING -> QA loop.
+    // Each cycle re-generates every asset for the row, so an uncapped loop is
+    // an uncapped bill. Specified in VISUAL_PIPELINE_FLOW.md, enforced here.
+    MAX_REVISION_CYCLES: 3
   },
 
   WORKERS: {

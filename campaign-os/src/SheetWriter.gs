@@ -10,69 +10,132 @@ var SheetWriter = {
     return this._getSheet(CONFIG.VISUAL_PIPELINE.SHEET_NAME);
   },
 
-  _isValidationError: function(e) {
-    var msg = e.message || '';
-    var str = e.toString() || '';
-    var combined = (msg + ' ' + str).toLowerCase();
-    return combined.indexOf('data validation') !== -1;
+  // Sheets coerces some written values ("4.0" -> 4, collapsed whitespace,
+  // trimmed newlines). Those are successful writes, not failures.
+  _valuesMatch: function(expected, actual) {
+    if (expected instanceof Date && actual instanceof Date) {
+      return expected.getTime() === actual.getTime();
+    }
+
+    var e = String(expected).trim();
+    var a = String(actual).trim();
+
+    if (e === a) {
+      return true;
+    }
+
+    var eNum = parseFloat(e);
+    var aNum = parseFloat(a);
+    if (!isNaN(eNum) && !isNaN(aNum) && eNum === aNum) {
+      return true;
+    }
+
+    return e.replace(/\s+/g, ' ') === a.replace(/\s+/g, ' ');
+  },
+
+  // Keeps the dropdown, but stops it rejecting input. This is preferred over
+  // clearDataValidations(), which destroys the dropdown permanently and quietly
+  // degrades the sheet one cell at a time.
+  _relaxValidation: function(range) {
+    try {
+      var rule = range.getDataValidation();
+
+      if (!rule) {
+        return false;
+      }
+
+      range.setDataValidation(rule.copy().setAllowInvalid(true).build());
+      return true;
+
+    } catch (e) {
+      return false;
+    }
   },
 
   _safeClearValidation: function(range) {
     try {
       range.clearDataValidations();
+      return true;
     } catch (e) {
+      return false;
     }
   },
 
+  // A worker must never halt because a value is missing from the controlled
+  // vocabulary. Deviations are written through and recorded, so the vocabulary
+  // can be corrected later from real production evidence.
   _writeCellSafe: function(range, value, rowNumber, colName, colIndex) {
-    try {
+    var attempt = function() {
       range.setValue(value);
       SpreadsheetApp.flush();
-      var actualRaw = range.getValue();
-      var expectedTime, actualTime, isDateComparison = false;
-      if (value instanceof Date && actualRaw instanceof Date) {
-        expectedTime = value.getTime();
-        actualTime = actualRaw.getTime();
-        isDateComparison = true;
-      }
-      var match = isDateComparison
-        ? (expectedTime === actualTime)
-        : (String(actualRaw) === String(value));
-      Logger.log(
-        'VERIFY_WRITE | Row: ' + rowNumber +
-        ' | Column: ' + colName +
-        ' | Expected: [' + String(value).substring(0, 100) + ']' +
-        ' | Actual: [' + String(actualRaw).substring(0, 100) + ']' +
-        ' | Match: ' + match
-      );
-      if (!match) {
-        throw new Error(
-          'WRITE_VERIFICATION_FAILED | Row: ' + rowNumber +
-          ' | Column: ' + colName +
-          ' | Expected: [' + String(value).substring(0, 200) + ']' +
-          ' | Actual: [' + String(actualRaw).substring(0, 200) + ']'
-        );
-      }
-      Logger.log('WRITE_SUCCESS | Row: ' + rowNumber + ' | Column: ' + colName);
-      return true;
+    };
+
+    try {
+      attempt();
+
     } catch (e) {
-      if (this._isValidationError(e)) {
-        this._safeClearValidation(range);
+      // Error text is locale-dependent, so never branch on its wording.
+      // Any write failure is treated as potentially validation-related.
+      var recovered = false;
+
+      if (this._relaxValidation(range)) {
         try {
-          range.setValue(value);
-          Logger.log(
-            'DATA_VALIDATION_BYPASSED | Row: ' + rowNumber +
-            ' | Column: ' + colName + ' (col ' + colIndex + ')' +
-            ' | Value: ' + String(value).substring(0, 100)
+          attempt();
+          recovered = true;
+          Logger.logValidationBypass(
+            rowNumber, colName, value, 'relaxed to warn-only (dropdown kept)'
           );
-          return true;
-        } catch (retryError) {
-          return false;
+        } catch (relaxErr) {
+          recovered = false;
         }
-      } else {
-        throw e;
+      }
+
+      if (!recovered && this._safeClearValidation(range)) {
+        try {
+          attempt();
+          recovered = true;
+          Logger.logValidationBypass(
+            rowNumber, colName, value, 'validation cleared on this cell'
+          );
+        } catch (clearErr) {
+          recovered = false;
+        }
+      }
+
+      if (!recovered) {
+        Logger.log(
+          'WRITE_FAILED | Row: ' + rowNumber + ' | Column: ' + colName +
+          ' (col ' + colIndex + ') | ' + e.toString()
+        );
+        return false;
       }
     }
+
+    var actualRaw = range.getValue();
+    var match = this._valuesMatch(value, actualRaw);
+
+    Logger.log(
+      'VERIFY_WRITE | Row: ' + rowNumber +
+      ' | Column: ' + colName +
+      ' | Expected: [' + String(value).substring(0, 100) + ']' +
+      ' | Actual: [' + String(actualRaw).substring(0, 100) + ']' +
+      ' | Match: ' + match
+    );
+
+    if (!match) {
+      // Report it, do not throw. A mismatched cell is a data issue to review
+      // later; it is not a reason to abort the run.
+      Logger.log(
+        'WRITE_VERIFICATION_MISMATCH | Row: ' + rowNumber +
+        ' | Column: ' + colName +
+        ' | Expected: [' + String(value).substring(0, 200) + ']' +
+        ' | Actual: [' + String(actualRaw).substring(0, 200) + ']'
+      );
+      return false;
+    }
+
+    Logger.log('WRITE_SUCCESS | Row: ' + rowNumber + ' | Column: ' + colName);
+    return true;
   },
 
   writeToRow: function(rowNumber, columnValues, workerName) {
@@ -221,15 +284,88 @@ var SheetWriter = {
     var col = columnMap[columnName];
 
     if (!col) {
-      throw new Error('Column not found: ' + columnName);
+      Logger.log('WRITE_CELL_SKIPPED | Column not found: ' + columnName +
+        ' in sheet "' + resolvedSheet + '"');
+      return false;
     }
 
-    var range = sheet.getRange(rowNumber, col);
-    this._writeCellSafe(range, value, rowNumber, columnName, col);
+    return this._writeCellSafe(
+      sheet.getRange(rowNumber, col), value, rowNumber, columnName, col
+    );
   },
 
   writeWorkflowStatus: function(rowNumber, status, sheetName) {
     var resolvedSheet = sheetName || CONFIG.SHEET_NAME;
-    this.writeCell(rowNumber, CONFIG.COLUMN_NAMES.WORKFLOW_STATUS, status, resolvedSheet);
+    return this.writeCell(
+      rowNumber, CONFIG.COLUMN_NAMES.WORKFLOW_STATUS, status, resolvedSheet
+    );
+  },
+
+  // One-time repair: converts every "reject input" dropdown on a sheet into a
+  // "show warning" dropdown. The list still appears for human editors and the
+  // cell is still flagged when it holds an unexpected value — but a worker can
+  // no longer be blocked from writing.
+  //
+  // This is the root-cause fix. _writeCellSafe is the per-cell safety net for
+  // anything added to the sheet afterwards.
+  relaxSheetValidation: function(sheetName) {
+    var resolvedSheet = sheetName || CONFIG.SHEET_NAME;
+    var sheet = this._getSheet(resolvedSheet);
+
+    if (!sheet) {
+      return { sheet: resolvedSheet, error: 'Sheet not found' };
+    }
+
+    var lastRow = Math.max(sheet.getLastRow(), CONFIG.DATA_START_ROW);
+    var lastCol = sheet.getLastColumn();
+
+    if (lastRow < 1 || lastCol < 1) {
+      return { sheet: resolvedSheet, relaxed: 0, scanned: 0 };
+    }
+
+    var range = sheet.getRange(1, 1, lastRow, lastCol);
+    var rules = range.getDataValidations();
+    var relaxed = 0;
+    var scanned = 0;
+    var changed = false;
+
+    for (var r = 0; r < rules.length; r++) {
+      for (var c = 0; c < rules[r].length; c++) {
+        var rule = rules[r][c];
+
+        if (!rule) {
+          continue;
+        }
+
+        scanned++;
+
+        if (rule.getAllowInvalid()) {
+          continue;
+        }
+
+        rules[r][c] = rule.copy().setAllowInvalid(true).build();
+        relaxed++;
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      range.setDataValidations(rules);
+      SpreadsheetApp.flush();
+    }
+
+    Logger.log(
+      'VALIDATION_RELAXED | Sheet: ' + resolvedSheet +
+      ' | Rules scanned: ' + scanned + ' | Converted to warn-only: ' + relaxed
+    );
+
+    return { sheet: resolvedSheet, relaxed: relaxed, scanned: scanned };
+  },
+
+  relaxAllPipelineValidation: function() {
+    return [
+      this.relaxSheetValidation(CONFIG.SHEET_NAME),
+      this.relaxSheetValidation(CONFIG.VISUAL_PIPELINE.SHEET_NAME)
+    ];
   }
 };

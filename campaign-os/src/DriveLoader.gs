@@ -111,6 +111,66 @@ var DriveLoader = {
     }
   },
 
+  // Accepts a Drive file URL or a bare file ID and returns the image as
+  // inline data for multimodal AI requests. Returns null on any failure so a
+  // single unreadable asset never aborts the whole worker run.
+  loadImageAsInlineData: function(fileRef) {
+    var ref = String(fileRef || '').trim();
+
+    if (!ref) {
+      return null;
+    }
+
+    var idMatch = ref.match(/[-\w]{25,}/);
+    var fileId = idMatch ? idMatch[0] : ref;
+
+    try {
+      var blob = DriveApp.getFileById(fileId).getBlob();
+      var mimeType = blob.getContentType() || '';
+
+      if (mimeType.indexOf('image/') !== 0) {
+        Logger.log('Skipping non-image Drive file: ' + fileId + ' (' + mimeType + ')');
+        return null;
+      }
+
+      return {
+        base64: Utilities.base64Encode(blob.getBytes()),
+        mimeType: mimeType
+      };
+
+    } catch (e) {
+      Logger.log('loadImageAsInlineData failed for ' + fileId + ': ' + e.toString());
+      return null;
+    }
+  },
+
+  // Splits a comma-separated Generated Assets cell into inline image payloads.
+  loadImagesFromCell: function(cellValue, maxImages) {
+    var value = String(cellValue || '').trim();
+
+    if (!value) {
+      return [];
+    }
+
+    var refs = value.split(',');
+    var limit = maxImages || 4;
+    var images = [];
+
+    for (var i = 0; i < refs.length && images.length < limit; i++) {
+      var ref = refs[i].trim();
+      if (!ref) {
+        continue;
+      }
+
+      var image = this.loadImageAsInlineData(ref);
+      if (image) {
+        images.push(image);
+      }
+    }
+
+    return images;
+  },
+
   invalidateCache: function(fileName, folderId) {
     var targetFolder = folderId || CONFIG.DOCS_FOLDER_ID;
     var cacheKey = 'drive_' + targetFolder + '_' + fileName;

@@ -22,7 +22,7 @@ var ResponseParser = {
 
     Logger.log('PARSER_EXTRACTED_JSON | Keys: ' + Object.keys(json).join(', '));
 
-    var validated = this._validateFields(json, workerConfig);
+    var validated = this._validateFields(json, workerConfig, workerName);
 
     Logger.log('PARSER_VALIDATED_VALUES | Values: ' + JSON.stringify(validated.values).substring(0, 500));
     Logger.log('PARSER_WARNINGS | Warnings: ' + validated.warnings.join('; '));
@@ -30,6 +30,7 @@ var ResponseParser = {
     return {
       values: validated.values,
       warnings: validated.warnings,
+      deviations: validated.deviations || [],
       isPartial: validated.warnings.length > 0
     };
   },
@@ -78,10 +79,11 @@ var ResponseParser = {
     return null;
   },
 
-  _validateFields: function(json, workerConfig) {
+  _validateFields: function(json, workerConfig, workerName) {
     var outputFields = workerConfig.outputFields;
     var values = {};
     var warnings = [];
+    var deviations = [];
 
     for (var fieldName in outputFields) {
       var fieldType = outputFields[fieldName];
@@ -108,6 +110,17 @@ var ResponseParser = {
             'Corrected "' + fieldName + '": "' +
             rawValue + '" -> "' + corrected.value + '"'
           );
+        } else if (corrected.isOutOfVocabulary) {
+          // Accepted as-is. The vocabulary is treated as guidance, not as a gate:
+          // a value nobody anticipated is production evidence, not a reason to stop.
+          warnings.push(
+            'Out-of-vocabulary "' + fieldName + '": "' + corrected.value + '" (accepted)'
+          );
+          deviations.push({
+            field: fieldName,
+            value: corrected.value,
+            vocabulary: CONFIG.CONTROLLED_VOCABULARY[fieldName] || []
+          });
         }
 
         values[fieldName] = corrected.value;
@@ -118,7 +131,9 @@ var ResponseParser = {
 
     return {
       values: values,
-      warnings: warnings
+      warnings: warnings,
+      deviations: deviations,
+      worker: workerName
     };
   },
 
@@ -147,7 +162,8 @@ var ResponseParser = {
       return { value: bestMatch, wasCorrected: true };
     }
 
-    return { value: value, wasCorrected: false };
+    // No match and no near-match. Keep the worker's value and flag it.
+    return { value: value, wasCorrected: false, isOutOfVocabulary: true };
   },
 
   _findBestMatch: function(input, options) {

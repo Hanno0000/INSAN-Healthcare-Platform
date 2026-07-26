@@ -44,12 +44,28 @@ var GeminiProvider = {
 
     var url = this.API_BASE + model + ':generateContent?key=' + apiKey;
 
+    // Multimodal input: images precede the instruction so the model grounds its
+    // answer in what it can see rather than in the surrounding text.
+    var parts = [];
+    var images = options.images || [];
+
+    for (var i = 0; i < images.length; i++) {
+      if (images[i] && images[i].base64) {
+        parts.push({
+          inlineData: {
+            mimeType: images[i].mimeType || 'image/png',
+            data: images[i].base64
+          }
+        });
+      }
+    }
+
+    parts.push({ text: prompt });
+
     var payload = {
       contents: [
         {
-          parts: [
-            { text: prompt }
-          ]
+          parts: parts
         }
       ],
       generationConfig: {

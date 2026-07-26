@@ -105,6 +105,75 @@ var Logger = {
     });
   },
 
+  // A worker produced a value the sheet's data validation refused. The value is
+  // written anyway; this records it so the controlled vocabulary can be widened
+  // later from real production evidence instead of guesswork.
+  logValidationBypass: function(row, columnName, value, action) {
+    this.logExecution({
+      worker: 'DATA_VALIDATION',
+      row: row,
+      status: 'PARTIAL',
+      details: 'Value rejected by sheet validation and written anyway | Column: ' +
+        columnName + ' | Value: "' + String(value).substring(0, 200) + '" | ' +
+        'Recovery: ' + action
+    });
+  },
+
+  // A controlled field came back with a value outside CONTROLLED_VOCABULARY.
+  // Logged rather than blocked, so the run continues and the vocabulary gap is
+  // visible afterwards.
+  logVocabularyDeviation: function(worker, row, columnName, value, vocabulary) {
+    this.logExecution({
+      worker: worker,
+      row: row,
+      status: 'PARTIAL',
+      details: 'Out-of-vocabulary value accepted | Column: ' + columnName +
+        ' | Produced: "' + String(value).substring(0, 120) + '"' +
+        ' | Allowed: ' + (vocabulary || []).join(' / ')
+    });
+  },
+
+  // Collects every out-of-vocabulary value seen so far, grouped by column, so a
+  // production run can be turned into concrete SYSTEM_CONSTANTS updates.
+  getVocabularyDeviations: function() {
+    var sheet = this._getLogSheet();
+    var lastRow = sheet.getLastRow();
+
+    if (lastRow < 2) {
+      return {};
+    }
+
+    var rows = sheet.getRange(2, 1, lastRow - 1, 9).getValues();
+    var grouped = {};
+
+    for (var i = 0; i < rows.length; i++) {
+      var details = String(rows[i][8] || '');
+
+      if (details.indexOf('Out-of-vocabulary value accepted') === -1 &&
+          details.indexOf('rejected by sheet validation') === -1) {
+        continue;
+      }
+
+      var colMatch = details.match(/Column:\s*([^|]+)/);
+      var valMatch = details.match(/(?:Produced|Value):\s*"([^"]*)"/);
+
+      if (!colMatch || !valMatch) {
+        continue;
+      }
+
+      var column = colMatch[1].trim();
+      var value = valMatch[1].trim();
+
+      if (!grouped[column]) {
+        grouped[column] = {};
+      }
+
+      grouped[column][value] = (grouped[column][value] || 0) + 1;
+    }
+
+    return grouped;
+  },
+
   getExecutionLog: function(limit) {
     var sheet = this._getLogSheet();
     var lastRow = sheet.getLastRow();

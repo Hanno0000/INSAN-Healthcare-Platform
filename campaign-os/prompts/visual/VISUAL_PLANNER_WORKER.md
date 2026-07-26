@@ -415,38 +415,76 @@ Record the selected mode as your output.
 
 ### Stage 6 — Generation Brief Preparation
 
-Prepare a structured generation brief for the Media Generation Service.
+Write the **Reference Asset Package**.
 
-The brief must contain:
+Understand what this field now is, because it changed:
 
-1. **Production Mode**
-   - PROJECT_ASSET or AI_GENERATED
+**The text you write here is passed directly into the prompt that generates the artwork.**
 
-2. **Reference Source**
-   - Project Asset folder information (if available)
-   - Otherwise explicitly state that AI generation will be used.
+It is not a status report. It is not a summary for a reviewer. No human reads it. Every word you write is read by an image generation model as a description of what to draw.
 
-3. **Creative Preservation Confirmation**
-   Confirm that the execution plan preserves all approved production-critical creative decisions, including:
+That single fact determines how to write it.
 
-   - Narrative Moment
-   - Egyptian Identity requirements (when specified)
-   - Composition Intent
-   - Visible vs Internal Instruction separation
-   - Final Publish-Ready Artwork requirement
+---
 
-   These items are confirmations only.
+#### Write image direction, not process documentation
 
-   Do not reinterpret, rewrite or expand them.
+Anything that describes the *workflow* rather than the *picture* is noise at best, and rendered text at worst.
 
-4. **Execution Constraints**
-   - Operational production limitations only.
-   - Never introduce new creative instructions.
+**Do not write:**
 
-5. **Visual Language Reference**
-   - Confirm that generation must follow the INSAN Visual Language Specification.
+```
+PRODUCTION MODE: AI_GENERATED
+VISUAL LANGUAGE: Must strictly align with the INSAN Visual Language specification.
+EXECUTION CONSTRAINTS: 1. Generate a cohesive 4-part carousel asset series.
+PRODUCTION READINESS: Confirmed. The Creative Package is complete.
+```
 
-The brief must be clear enough that the Media Generation Service requires zero interpretation.
+Every line there fails. `PRODUCTION MODE` and `AI_GENERATED` are system tokens a model may draw. "Must strictly align with the specification" describes a compliance requirement, not an image. "Generate a cohesive 4-part series" is an instruction to the pipeline, not a scene. "Production readiness: confirmed" is a status that has no visual meaning whatsoever.
+
+Production Mode already has its own column. Never repeat it here.
+
+**Write instead:**
+
+```
+Warm directional daylight from a side window, soft shadows, no harsh overhead
+lighting. Deep navy, warm grey and clean white palette. Egyptian medical staff
+and patients, contemporary Cairo hospital interior, Arabic signage visible on
+wall fittings. Unhurried, composed atmosphere. Consistent grade and lens
+character across the set.
+```
+
+Concrete, visual, in English, drawable.
+
+---
+
+#### What belongs in the brief
+
+Only the production-critical direction that is **not already carried** by another field. You are adding the execution layer, not restating the Creative Package.
+
+- **Light** — direction, quality, warmth, time of day
+- **Palette** — the actual colours, named
+- **Egyptian specificity** — the concrete markers that make the setting recognisably Egyptian: local staff and patients, contemporary Cairo hospital interiors, Arabic signage, hijab where contextually natural. Never the word "diverse". Never a flag or a landmark.
+- **The human moment** — restate the approved narrative moment in one plain clause so it cannot be lost. An image of a place is not an image of a moment.
+- **Set consistency** — for multi-asset formats, what must stay identical across the set (grade, lighting, lens, palette) as distinct from what must vary (scene, framing, distance)
+- **Rendering character** — stylised realism, clearly designed artwork rather than photography
+
+#### What must never appear in the brief
+
+- The words `PRODUCTION`, `MODE`, `EXECUTION`, `CONSTRAINTS`, `READINESS`, `AI_GENERATED`, `PROJECT_ASSET`
+- Numbered lists — a model reads `1.` `2.` as content to draw
+- Slide, card, panel or frame numbering
+- Any Arabic text. This field is scene description; Arabic here risks being rendered into the artwork. Approved visible Arabic lives in **Text On Design** and only there.
+- Compliance language: "must comply", "as specified", "confirmed", "approved"
+- Any restatement of Visual Concept or Design Prompt — those fields are already in the prompt. Repetition dilutes them.
+
+---
+
+#### Language
+
+Write the entire brief in **English**, in plain descriptive prose. Complete sentences or comma-separated clauses. No headers, no labels, no colons introducing sections.
+
+If you cannot say it as something a camera could see, it does not belong in this field.
 
 --------------------------------------------------
 
@@ -658,7 +696,7 @@ The Reference Asset Package must include the source folder name and reference im
 
 For Mode B (AI_GENERATED):
 
-The Reference Asset Package must include the INSAN Visual Language instructions and generation brief.
+The Reference Asset Package must contain the English scene direction described in Stage 6 — light, palette, Egyptian specificity, the human moment, set consistency and rendering character — written as plain descriptive prose with no headers, numbering, status lines or system tokens.
 
 If production is not ready,
 

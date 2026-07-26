@@ -94,16 +94,13 @@ var ServiceRunner = {
         };
       }
 
-      var generationPrompt = this._buildGenerationPrompt(rowData);
       var specs = this._getMediaSpecs(contentFormat);
       var assetCount = this._getAssetCount(rowData);
 
       var allUrls = [];
 
       for (var i = 0; i < assetCount; i++) {
-        var slidePrompt = assetCount > 1
-          ? generationPrompt + '. Slide ' + (i + 1) + ' of ' + assetCount
-          : generationPrompt;
+        var slidePrompt = this._buildGenerationPrompt(rowData, i, assetCount);
 
         var imageResult = ImageProvider.generate(slidePrompt, {
           aspectRatio: specs.aspectRatio
@@ -169,45 +166,236 @@ var ServiceRunner = {
     }
   },
 
-  _buildGenerationPrompt: function(rowData) {
+  // Production terminology that must never reach the image model as renderable
+  // text. Column data still carries it (Creative Director writes "Slide 1:" /
+  // "شريحة 1:" inside Design Prompt and Text On Design), so it is stripped here.
+  _INTERNAL_LABEL_RE: /(?:^|[\s.;,\-–—(])\s*(?:slide|card|panel|frame|شريحة|كارت|لوحة)\s*#?\s*\d+\s*(?:of\s*\d+\s*)?[:\-–—.)]?\s*/gi,
+
+  _stripInternalLabels: function(text) {
+    if (!text) {
+      return '';
+    }
+    return String(text)
+      .replace(this._INTERNAL_LABEL_RE, ' ')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+  },
+
+  // Per-asset segmentation. The Creative Director now separates multi-asset
+  // direction with "|". Legacy rows still carry "Slide 1:" / "شريحة 1:" style
+  // numbering, so both shapes are supported and both are stripped of labels.
+  // Returns { preamble, segments } or null when the text is not segmented.
+  _segmentByAsset: function(text) {
+    var raw = String(text || '');
+
+    if (!raw.trim()) {
+      return null;
+    }
+
+    if (raw.indexOf('|') !== -1) {
+      var piped = [];
+      var pieces = raw.split('|');
+
+      for (var p = 0; p < pieces.length; p++) {
+        var piece = this._stripInternalLabels(pieces[p]);
+        if (piece) {
+          piped.push(piece);
+        }
+      }
+
+      return piped.length > 1 ? { preamble: '', segments: piped } : null;
+    }
+
+    var markerRe = /(?:^|[\s.;,\-–—(])(?:slide|card|panel|frame|شريحة|كارت|لوحة)\s*#?\s*(\d+)\s*[:\-–—.)]/gi;
+    var marks = [];
+    var m;
+
+    while ((m = markerRe.exec(raw)) !== null) {
+      marks.push({ start: m.index, end: markerRe.lastIndex });
+    }
+
+    if (marks.length < 2) {
+      return null;
+    }
+
+    var segments = [];
+    for (var i = 0; i < marks.length; i++) {
+      var sliceEnd = (i + 1 < marks.length) ? marks[i + 1].start : raw.length;
+      var body = this._stripInternalLabels(raw.substring(marks[i].end, sliceEnd));
+      if (body) {
+        segments.push(body);
+      }
+    }
+
+    if (!segments.length) {
+      return null;
+    }
+
+    return {
+      preamble: this._stripInternalLabels(raw.substring(0, marks[0].start)),
+      segments: segments
+    };
+  },
+
+  // Each carousel asset gets its own scene instead of N copies of one prompt.
+  _extractSlideSegment: function(designPrompt, index, assetCount) {
+    var text = String(designPrompt || '');
+
+    if (assetCount <= 1) {
+      return this._stripInternalLabels(text);
+    }
+
+    var split = this._segmentByAsset(text);
+
+    if (!split) {
+      return this._stripInternalLabels(text);
+    }
+
+    var segment = split.segments[Math.min(index, split.segments.length - 1)];
+    return split.preamble ? (split.preamble + ' ' + segment) : segment;
+  },
+
+  // Approved visible text for this asset. Carousel Text On Design is often
+  // enumerated per slide; each asset renders only its own line.
+  _resolveVisibleText: function(rowData, index, assetCount) {
+    var raw = rowData['Text On Design'];
+
+    if (!raw) {
+      return '';
+    }
+
+    var text = String(raw).trim();
+
+    if (!text || /^none$/i.test(text) || text === 'لا يوجد') {
+      return '';
+    }
+
+    if (assetCount <= 1) {
+      return this._stripInternalLabels(text);
+    }
+
+    var split = this._segmentByAsset(text);
+
+    if (!split) {
+      return this._stripInternalLabels(text);
+    }
+
+    return split.segments[Math.min(index, split.segments.length - 1)];
+  },
+
+  // The Reference Asset Package is written for the production system, not for an
+  // image model: it carries ALL-CAPS section headers and status lines that would
+  // otherwise be candidates for rendering as artwork text.
+  _sanitizeBrief: function(text) {
+    var brief = String(text || '').trim();
+
+    if (!brief) {
+      return '';
+    }
+
+    return brief
+      // Status/meta sections carry no visual direction.
+      .replace(/PRODUCTION\s+READINESS\s*:[\s\S]*$/i, ' ')
+      .replace(/PRODUCTION\s+MODE\s*:\s*(?:AI_GENERATED|PROJECT_ASSET)?/gi, ' ')
+      // Keep the body of remaining sections, drop the shouted header.
+      .replace(/\b[A-Z][A-Z_ ]{3,}\s*:/g, ' ')
+      // Numbered constraint lists read as slide numbering to an image model.
+      .replace(/(?:^|\s)\d+\s*[.)]\s+/g, ' ')
+      .replace(/\bAI_GENERATED\b|\bPROJECT_ASSET\b/g, ' ')
+      .replace(/\s{2,}/g, ' ')
+      .replace(/\s+([.,;])/g, '$1')
+      .trim();
+  },
+
+  _buildGenerationPrompt: function(rowData, index, assetCount) {
+    index = index || 0;
+    assetCount = assetCount || 1;
+
     var parts = [];
 
-    var designPrompt = rowData['Creative Director Design Prompt'];
-    if (designPrompt) {
-      parts.push('Design Prompt: ' + String(designPrompt).trim());
+    var scene = this._extractSlideSegment(
+      rowData['Creative Director Design Prompt'], index, assetCount
+    );
+    if (scene) {
+      parts.push(scene);
     }
 
-    var visualConcept = rowData['Visual Concept'];
-    if (visualConcept) {
-      parts.push('Visual Concept: ' + String(visualConcept).trim());
+    var concept = this._stripInternalLabels(rowData['Visual Concept']);
+    if (concept) {
+      parts.push(concept);
     }
 
-    var visualFocus = rowData['Visual Focus'];
-    if (visualFocus) {
-      parts.push('Visual Focus: ' + String(visualFocus).trim());
+    var elements = this._stripInternalLabels(rowData['Visual Elements']);
+    if (elements) {
+      parts.push(elements);
     }
 
+    var focus = rowData['Visual Focus'];
     var composition = rowData['Composition'];
-    if (composition) {
-      parts.push('Composition: ' + String(composition).trim());
+    if (focus || composition) {
+      var framing = [];
+      if (focus) {
+        framing.push('the ' + String(focus).trim().toLowerCase() +
+          ' is the primary subject and focal point');
+      }
+      if (composition) {
+        framing.push(String(composition).trim().toLowerCase() + ' framing');
+      }
+      parts.push(framing.join(', '));
     }
 
-    var visualElements = rowData['Visual Elements'];
-    if (visualElements) {
-      parts.push('Visual Elements: ' + String(visualElements).trim());
+    // Visual Planner's Reference Asset Package is the approved production brief.
+    // Previously written to the sheet and never read.
+    var brief = this._sanitizeBrief(rowData['Reference Asset Package']);
+    if (brief) {
+      parts.push(brief);
     }
 
-    var doNotShow = rowData['Do NOT Show'];
-    if (doNotShow) {
-      parts.push('Do NOT show: ' + String(doNotShow).trim());
+    if (assetCount > 1) {
+      parts.push(
+        'This is one image in a set of ' + assetCount +
+        ' that must read as a single visual family: identical art direction, ' +
+        'colour grading, lighting and rendering style across the set, with a ' +
+        'distinct scene and camera framing in each'
+      );
     }
 
-    var textOnDesign = rowData['Text On Design'];
-    if (textOnDesign) {
-      parts.push('Text on design: ' + String(textOnDesign).trim());
+    var visibleText = this._resolveVisibleText(rowData, index, assetCount);
+    if (visibleText) {
+      parts.push(
+        'The only text rendered anywhere in the image is exactly this wording, ' +
+        'set as clean well-spaced typography with strong contrast, comfortably ' +
+        'legible at mobile size, integrated into the composition and not ' +
+        'overlapping any subject: "' + visibleText + '"'
+      );
+    } else {
+      parts.push('The image contains no text, lettering, numerals or captions of any kind');
     }
 
-    return parts.join('. ') + '.';
+    parts.push(this._buildExclusions(rowData['Do NOT Show']));
+
+    return parts.join('. ').replace(/\.\s*\./g, '.') + '.';
+  },
+
+  // Image models follow trailing exclusion clauses far more reliably than
+  // negation woven through the descriptive body.
+  _buildExclusions: function(doNotShow) {
+    var banned = [
+      'no logos, brand marks, hospital names, platform names or watermarks',
+      'no slide numbers, card numbers, page numbers or production labels',
+      'no placeholder or lorem ipsum text, no UI chrome, no file names',
+      'no mockups, device frames, presentation boards, mood boards or concept sheets',
+      'no duplicated or repeated text blocks',
+      'no cartoon, anime, Pixar or comic-book styling',
+      'no photorealistic photography, uncanny faces, plastic skin or visible AI artifacts'
+    ];
+
+    var campaign = String(doNotShow || '').trim();
+    if (campaign) {
+      banned.push(campaign);
+    }
+
+    return 'Deliver final publish-ready artwork. Strictly exclude: ' + banned.join('; ');
   },
 
   _getAspectRatio: function(contentFormat) {
@@ -329,15 +517,16 @@ var ServiceRunner = {
         value = '';
       }
 
-      var range = sheet.getRange(rowNumber, colIndex);
+      // Routed through the safe writer so a dropdown on Generation Status
+      // cannot silently drop the result of a completed generation.
+      var ok = SheetWriter._writeCellSafe(
+        sheet.getRange(rowNumber, colIndex), value, rowNumber, colName, colIndex
+      );
 
-      try {
-        range.setValue(value);
-        SpreadsheetApp.flush();
-      } catch (e) {
+      if (!ok) {
         Logger.log(
-          'MEDIA_GENERATION_WRITE_ERROR | Row: ' + rowNumber +
-          ' | Column: ' + colName + ' | Error: ' + e.toString()
+          'MEDIA_GENERATION_WRITE_FAILED | Row: ' + rowNumber +
+          ' | Column: ' + colName + ' | Value: ' + String(value).substring(0, 100)
         );
       }
     }

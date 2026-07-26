@@ -1,5 +1,32 @@
 # MEDIA GENERATION SERVICE
 
+> ## ⚠️ THIS FILE IS NOT LOADED AT RUNTIME
+>
+> **Status:** Design reference only — not an executable prompt.
+>
+> There is no language model in the media generation path. `ServiceRunner.gs`
+> builds the image prompt in code and calls `ImageProvider` directly. Nothing
+> reads this file: `DriveLoader.loadPrompt()` resolves prompts through
+> `CONFIG.WORKERS[...].promptFile`, and Media Generation lives under
+> `CONFIG.SERVICES`, which has no `promptFile` key.
+>
+> **Editing this document does not change production behaviour.**
+>
+> The rules below that actually execute were translated into code and live in:
+>
+> | Rule | Enforced in |
+> |---|---|
+> | Rules 1, 2, 4, 7 — no internal instructions, forbidden text, branding suppression, final artwork | `ServiceRunner._buildExclusions()` |
+> | Rule 3 — language integrity | `ServiceRunner._resolveVisibleText()` |
+> | Rules 8, 10 — typography and visible text quality | `ServiceRunner._buildGenerationPrompt()` |
+> | Rule 6 — narrative first | Creative Director prompt + Visual Planner brief |
+> | Internal label stripping | `ServiceRunner._stripInternalLabels()` |
+>
+> To change what reaches the image model, edit `ServiceRunner.gs`.
+>
+> This document is retained as the reasoning behind those rules — the *why*
+> the code cannot carry. Keep the two in sync when either changes.
+
 ## Identity
 
 You are the Media Generation Service of the INSAN Healthcare AI Operating System.

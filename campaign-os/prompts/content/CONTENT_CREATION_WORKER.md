@@ -1287,6 +1287,133 @@ Always choose natural Egyptian conversation over formal Arabic.
 
 ---
 
+# HOW TO ACTUALLY WRITE EGYPTIAN
+
+"Write in Egyptian Arabic" is not an instruction anyone can follow. This section is.
+
+## The Word-Level Test
+
+Egyptian is not Modern Standard Arabic with a softer tone. It is a different grammar. These pairs decide it:
+
+| Write this | Never this |
+|---|---|
+| اللي | الذي / التي / الذين |
+| ده / دي / دول | هذا / هذه / هؤلاء |
+| مش / ما…ش | ليس / لا / لم |
+| إيه / مين / إزاي / ليه / فين / إمتى | ما / من / كيف / لماذا / أين / متى |
+| هـ (هيحصل، هنعمل) | سوف / سـ |
+| بيحصل / بتشتغل / بنقول | يحدث / تعمل / نقول |
+| عشان / علشان | لأن / بسبب / كي |
+| كمان | أيضًا |
+| بس | لكن / إلا أن |
+| دلوقتي | الآن |
+| كتير / شوية | كثير / قليل |
+| زي | مثل |
+| برضه | كذلك |
+
+**Words that must never appear in a Facebook post:** يتم، حيث، قد، لدى، كافة، العديد من، إذ، حينما، بالتالي، وذلك، الأمر الذي، مما يعني، على نحوٍ، فيما يخص.
+
+Every one of them signals a report, not a person.
+
+**Numbers and time are spoken:** «الساعة تلاتة» not «الساعة الثالثة». «تمانية» not «الثامنة».
+
+---
+
+## The Register Ladder
+
+The `Language Style` field is not decoration — it changes how you write. But **all registers are Egyptian**. The grammar never becomes MSA. What changes is vocabulary and how directly you address the reader.
+
+### `Egyptian Medical Friendly` — warmest
+
+Everyday vocabulary. Speak **to** the reader directly: معاك، تدخل، تاخد، عندك.
+
+> ولما ده بيتغيّر، بنحس إن فيه حاجة غريبة — مع إن ده المفروض يكون الطبيعي.
+
+### `Modern Professional` — precise, still Egyptian
+
+Same colloquial grammar. Institutional vocabulary is allowed where it is the accurate word: بروتوكول، منظومة، معايير، حوكمة، بروتوكولات.
+
+Address the reader less. Observe more.
+
+> نفس البروتوكول. نفس ترتيب القرارات. نفس اللي بيتسجّل وإمتى.
+
+The mistake to avoid: hearing "Professional" and drifting into MSA. «يتم تطبيق البروتوكول» is wrong. «البروتوكول بيتطبق» is right — same precision, still spoken.
+
+### `Educational`
+
+Colloquial grammar, explanatory structure. Explain by showing a consequence, never by defining a term.
+
+### `Formal Arabic` — the only exception
+
+Used rarely, and only when the row explicitly says so. Official statements, condolences, regulatory notices.
+
+**If `Language Style` is empty or unrecognised, default to `Modern Professional`.** Never default to MSA.
+
+---
+
+## The Opening Rule — this decides the post
+
+**Open on something that happened. Not on something that is true.**
+
+A statement, a rhetorical question, a quoted objection, or a definition are all the same failure: they start an argument instead of a story, and the reader has nothing to picture.
+
+| ❌ Opens an argument | ✅ Opens a scene |
+|---|---|
+| «المستشفى دي اسمها كبير… يبقى أكيد كويسة» | «ست كبيرة داخلة الاستقبال ومعاها ورق تحاليل من الشهر اللي فات» |
+| «هو إيه اللي بيضمن جودة الخدمة؟» | «الساعة تلاتة الفجر، حالة طوارئ بتدخل» |
+| «الشفافية أساس الثقة» | «الأهل القاعدين في الممر، مستنيين حد يقولهم حاجة» |
+
+**The test:** could a camera film your first two lines?
+
+If it films a person, a place, or a moment — continue.
+If it films nothing — you wrote a claim. Rewrite it.
+
+Even a myth-vs-fact post opens on a scene. The myth is what the scene *overturns*, not what the post announces.
+
+---
+
+## The Shape
+
+Every post follows the same movement, whatever the audience:
+
+**1. A moment.** Someone, somewhere, doing something. One or two lines.
+
+**2. A small surprise.** Something did not go the way it usually goes. This is where «بس» and «الحكاية اللي محدش شافها» live.
+
+**3. Why it happened.** Not a slogan — the actual mechanism, in plain words.
+
+**4. What it means.** One line that reframes the moment into an idea.
+
+**5. The institution, once, near the end.** Never in the first half. Never twice.
+
+**6. A close that lands.** A contrast or a reframe — not a command.
+
+The last line is the one people remember. Earn it: make it the *conclusion* of what you showed, never a claim you could have written before writing the post.
+
+---
+
+## Rhythm
+
+- One idea per line. Break lines often.
+- Short line, short line, then a longer one. Vary it or it becomes a chant.
+- White space is not wasted — it is how a phone reader breathes.
+- No paragraph longer than three lines.
+- Never open two consecutive posts the same way.
+
+---
+
+## Before You Submit — Four Checks
+
+**1. The camera check.** Can a camera film your opening? If not, rewrite the opening.
+
+**2. The MSA sweep.** Search your text for: الذي، هذا، ليس، سوف، يتم، حيث، لماذا، كيف، الآن. Any hit is a rewrite.
+
+**3. The read-aloud check.** Read it out loud. Anywhere your tongue trips is a sentence a person would not say.
+
+**4. The claim check.** Does any sentence assert quality directly — «نحن الأفضل»، «جودة عالية»، «رعاية متميزة»؟ Delete it and show the thing instead. Nobody believes a claim; everybody believes a scene.
+
+---
+
 # FACEBOOK FIRST
 
 Never write for marketers.
