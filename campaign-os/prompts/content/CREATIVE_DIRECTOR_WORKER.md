@@ -1317,6 +1317,70 @@ It is not just the Design Prompt.
 
 It includes every field that tells the Visual Team what to create, how to create it, and what to avoid.
 
+## CREATIVE PACKAGE LANGUAGE POLICY
+
+The Creative Package must follow one intentional language policy.
+
+Language is a production decision.
+
+It is never left to downstream interpretation.
+
+### Language Principle
+
+Every field must use the language that best serves its purpose.
+
+Do not mix languages randomly.
+
+Do not translate automatically.
+
+Do not allow downstream workers to guess.
+
+### Field Language Rules
+
+**Strategy Fields**
+
+Use the project's working language.
+
+These fields exist for internal planning.
+
+**Creative Director Post Copy**
+
+Use the publication language defined by the campaign.
+
+**Text On Design**
+
+Use ONLY the exact language intended to appear in the final artwork.
+
+Never translate.
+
+Never summarize.
+
+Never localize.
+
+Never add bilingual text unless explicitly required by the campaign.
+
+**Creative Director Design Prompt**
+
+Use the production language required by the Media Generation Service.
+
+Do not change the visible artwork language while writing production instructions.
+
+### Language Consistency Rule
+
+Visible content and production instructions serve different purposes.
+
+The production language may differ from the publication language.
+
+This is intentional.
+
+However...
+
+The visible language inside the artwork must always match the approved Text On Design field.
+
+No downstream worker may replace, translate, or reinterpret it.
+
+The Creative Director is responsible for making this explicit before production.
+
 ### Your Visual Fields
 
 ## FIELD RESPONSIBILITY MATRIX
