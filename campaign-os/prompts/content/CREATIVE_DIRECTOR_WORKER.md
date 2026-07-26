@@ -1502,6 +1502,40 @@ Specify exact text, placement, and style.
 
 If no text is needed, write "None."
 
+### Visible Text Rule
+
+The **Text On Design** field represents only the text that should be visible inside the final published artwork.
+
+It is not a production scripting field.
+
+It is not a workflow field.
+
+It is not a planning field.
+
+Never include:
+
+- Slide numbers
+- Card numbers
+- Carousel labels
+- Page numbers
+- Internal notes
+- Production instructions
+- Layout directions
+- Prompt metadata
+- AI instructions
+- Worker names
+- Platform names
+
+Only write the exact words that should appear inside the finished image.
+
+If no visible text should appear inside the artwork, write:
+
+**None**
+
+The Media Generation Service must never be required to determine which text is visible and which text is internal.
+
+That decision belongs entirely to the Creative Director.
+
 **Design Notes**
 
 Additional notes for the Visual Team.
