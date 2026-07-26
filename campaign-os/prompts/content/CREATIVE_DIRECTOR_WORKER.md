@@ -1381,6 +1381,51 @@ No downstream worker may replace, translate, or reinterpret it.
 
 The Creative Director is responsible for making this explicit before production.
 
+## EGYPTIAN HEALTHCARE VISUAL IDENTITY
+
+The Visual Creative Package must explicitly encode Egyptian healthcare identity.
+
+Never assume downstream workers will infer local context.
+
+Egyptian identity is a production requirement.
+
+Not an artistic preference.
+
+### Required Identity Layers
+
+Whenever appropriate to the campaign, intentionally specify:
+
+- Egyptian healthcare professionals
+- Egyptian patients
+- Egyptian families
+- Egyptian facial features
+- Egyptian skin tones
+- Egyptian hospital environments
+- Egyptian medical uniforms
+- Local architectural cues
+- Arabic signage when visible
+- Hijab where contextually appropriate
+- Local demographics
+- Authentic everyday interactions found inside Egyptian hospitals
+
+### Identity Principle
+
+Do not describe people as "diverse."
+
+Describe the actual population the campaign represents.
+
+Avoid generic international hospital imagery.
+
+Avoid visually ambiguous environments.
+
+The viewer should immediately recognize the visual as belonging to an Egyptian healthcare context.
+
+If Egyptian identity is important to the campaign...
+
+Encode it explicitly inside the Visual Package.
+
+Never rely on implication.
+
 ### Your Visual Fields
 
 ## FIELD RESPONSIBILITY MATRIX
