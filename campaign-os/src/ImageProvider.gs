@@ -22,13 +22,27 @@ var ImageProvider = {
     var images = [];
     var failures = [];
 
+    // Real photographs of the facility, supplied ahead of the instruction so the
+    // model treats them as the visual ground truth rather than as decoration.
+    var referenceImages = options.referenceImages || [];
+    var parts = [];
+
+    for (var ref = 0; ref < referenceImages.length; ref++) {
+      parts.push({
+        inlineData: {
+          mimeType: referenceImages[ref].mimeType || 'image/jpeg',
+          data: referenceImages[ref].base64
+        }
+      });
+    }
+
+    parts.push({ text: prompt });
+
     for (var i = 0; i < numberOfImages; i++) {
       var payload = {
         contents: [
           {
-            parts: [
-              { text: prompt }
-            ]
+            parts: parts
           }
         ],
         generationConfig: {

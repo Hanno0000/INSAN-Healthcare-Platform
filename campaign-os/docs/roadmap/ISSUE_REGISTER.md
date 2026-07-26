@@ -27,10 +27,11 @@ Every issue carries the evidence it was found from. Nothing here is speculative.
 **Fix applied:** `ExecutionBudget` — one allowance per invocation, shared by all workers. Stops *before* starting a row it cannot finish, checkpoints, and names the resume row. Estimates from a rolling average of actual row times, biased 25% high. Inter-row pause cut 1500ms → 400ms.
 **Note:** For 20 rows this still needs several passes. That is correct behaviour — see A4.
 
-### A4 — No unattended multi-pass execution ⏳
-**Problem:** With a 6-minute ceiling and ~100s/row, 20 rows needs ~4 invocations. The operator must press Resume each time.
-**Suggested fix:** A time-driven trigger that self-schedules: run until the budget is nearly spent, install a trigger for ~1 minute later, exit, resume automatically. Delete the trigger when the range completes. Turns a 20-row job into one click.
-**Effort:** moderate. **Value:** high for production.
+### A4 — No unattended multi-pass execution ✅
+**Problem:** With a 6-minute ceiling and ~100s/row, 20 rows needs ~4 invocations. The operator had to press Resume each time.
+**Fix applied:** An interrupted job records what remains and installs a one-shot trigger for ~1 minute later. `continueActiveJob()` resumes without any dialog. Repeats until the range is done, then removes itself. Works for both the content and visual pipelines; the visual pipeline carries `MEDIA_GENERATION` as a step so the service is resumed in the right order.
+**Guards:** at most 25 passes; abandoned after two consecutive passes with no progress; only one continuation trigger can exist. `Maintenance → Background Job Status` and `Cancel Background Job` give manual control.
+**Result:** a 20-row job is one click.
 
 ### A5 — Strategy can select unbuildable formats ✅
 **Evidence:** Row 2 = `Video`; Media Generation failed with "Video generation not yet implemented" after strategy, copy and creative direction had already been paid for.
@@ -109,10 +110,20 @@ Every issue carries the evidence it was found from. Nothing here is speculative.
 
 ## C. Architecture
 
-### C1 — Project Assets lookup does not exist ⏳ **← operator question, answered**
-**Evidence:** `CONFIG.PROJECT_ASSETS` and `DOMAIN_FOLDERS` are defined and **read by no code anywhere**. `ServiceRunner` never reads the `Production Mode` column — the only mentions are in the sanitiser that strips those words. `DriveLoader` has no asset-lookup function. `FOLDER_ID` is empty.
-**Consequence:** 100% of media is generated with no photographic reference. Mode A cannot be selected even if the folder were populated, because nothing consumes the decision.
-**Suggested fix:** Implement `DriveLoader.loadProjectAssets(domain)`, have the Visual Planner match campaign subject to a domain folder, and have `ServiceRunner` pass matched images to `ImageProvider` as reference input. Substantial work, and likely the single largest lever on "generic-looking design".
+### C1 — Project Assets lookup did not exist 🔧 **← implemented, needs photos**
+**Evidence:** `CONFIG.PROJECT_ASSETS` and `DOMAIN_FOLDERS` were defined and **read by no code anywhere**. `ServiceRunner` never read the `Production Mode` column — the only mentions were in the sanitiser that strips those words. `DriveLoader` had no asset-lookup function.
+**Consequence:** 100% of media was generated with no photographic reference. Mode A could not be selected even with a populated folder, because nothing consumed the decision.
+
+**Fix applied — the full path now exists:**
+1. `DriveLoader.resolveAssetDomain()` matches the row to a domain by keyword. Deterministic, no model call, Arabic-aware — text is normalised for the definite article, alef and taa-marbuta variants, so «العناية المركزة» matches the keyword «عناية مركزة». 20 unit tests.
+2. `DriveLoader.listProjectAssets()` / `loadProjectAssets()` read the domain subfolder.
+3. The Visual Planner is told in its context which photographs actually exist, so its Production Mode decision is grounded rather than guessed.
+4. `ServiceRunner` resolves the domain, loads the images, and passes them to `ImageProvider`.
+5. `ImageProvider` sends them as `inlineData` parts ahead of the instruction, with prompt guidance to match the real architecture, finishes, equipment and uniforms — and to copy no person, text or logo from them.
+
+**To activate:** set `CONFIG.PROJECT_ASSETS.FOLDER_ID`, create subfolders named exactly as the `folder` values in `CONFIG.PROJECT_ASSETS.DOMAINS`, add real photographs. Nothing else. A missing or empty folder falls back to AI generation silently.
+
+**Expected impact:** the largest single lever on "generic-looking design" — but only once real photographs are in place. Until then behaviour is unchanged.
 
 ### C2 — Publishing Service not implemented 💤
 Columns reserved. The pipeline stops at "ready to publish".
@@ -144,9 +155,11 @@ Rendered text is only ever checked by a vision model.
 
 ## Priority for the next run
 
-**Done — no action needed:** A1, A2, A3, A5, A6, A7, B1, B2
+**Done — no action needed:** A1, A2, A3, A4, A5, A6, A7, B1, B2
 
-**Worth doing before scaling to production:** A4 (unattended multi-pass), C1 (project assets), B5 and B8 (QA gates)
+**Ready, waiting on you:** C1 — add real facility photographs to the Drive folder and set `FOLDER_ID`. The code path is complete and tested.
+
+**Worth doing next:** B5 and B8 (QA gates for gibberish screen text and posed team shots)
 
 **Needs an operator decision:** C4 (API key), C5 (cost), A5 remainder (restrict or implement video)
 

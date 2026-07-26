@@ -100,15 +100,38 @@ var ServiceRunner = {
       var allUrls = [];
       var assetFailures = [];
 
+      // Mode A: if real photographs of this facility exist, they become the
+      // visual reference. Previously the Production Mode column was written by
+      // the Visual Planner and then read by nothing at all, so every asset was
+      // invented from a text description with no photographic ground truth.
+      var assetDomain = DriveLoader.resolveAssetDomain(rowData);
+      var referenceImages = DriveLoader.loadProjectAssets(assetDomain);
+      var usingReference = referenceImages.length > 0;
+
+      if (usingReference) {
+        Logger.log(
+          'MEDIA_GENERATION | Row ' + rowNumber + ' | PROJECT_ASSET mode | domain "' +
+          assetDomain.key + '" | ' + referenceImages.length + ' reference image(s)'
+        );
+      } else if (assetDomain) {
+        Logger.log(
+          'MEDIA_GENERATION | Row ' + rowNumber + ' | domain "' + assetDomain.key +
+          '" matched but no usable images found — generating without reference'
+        );
+      }
+
       for (var i = 0; i < assetCount; i++) {
-        var slidePrompt = this._buildGenerationPrompt(rowData, i, assetCount);
+        var slidePrompt = this._buildGenerationPrompt(
+          rowData, i, assetCount, usingReference
+        );
 
         // One failed asset must not discard the assets already generated for
         // this row. Keep going, and report the shortfall rather than claiming
         // a clean SUCCESS on an incomplete set.
         try {
           var imageResult = ImageProvider.generate(slidePrompt, {
-            aspectRatio: specs.aspectRatio
+            aspectRatio: specs.aspectRatio,
+            referenceImages: referenceImages
           });
 
           var fileUrl = this._storeGeneratedImages(
@@ -335,11 +358,24 @@ var ServiceRunner = {
       .trim();
   },
 
-  _buildGenerationPrompt: function(rowData, index, assetCount) {
+  _buildGenerationPrompt: function(rowData, index, assetCount, usingReference) {
     index = index || 0;
     assetCount = assetCount || 1;
 
     var parts = [];
+
+    // Stated first so the attached photographs are read as the environment to
+    // reproduce, not as loose inspiration.
+    if (usingReference) {
+      parts.push(
+        'Use the attached photographs as the visual reference for the real ' +
+        'environment: match the architecture, interior finishes, equipment, ' +
+        'uniforms and lighting character shown in them. Reproduce this specific ' +
+        'facility rather than a generic hospital. Do not copy any person from ' +
+        'the references, and do not reproduce any text, signage or logo visible ' +
+        'in them'
+      );
+    }
 
     var scene = this._extractSlideSegment(
       rowData['Creative Director Design Prompt'], index, assetCount

@@ -64,21 +64,47 @@ var CONFIG = {
   // Currently a workflow hook — folder is empty.
   // ================================
 
+  // ================================
+  // PROJECT ASSETS
+  // Real photographs of the actual facilities, used as visual reference so the
+  // model renders these hospitals rather than a generic idea of a hospital.
+  //
+  // To activate: put the Drive folder ID below, and create subfolders inside it
+  // named exactly as the `folder` values here. Drop real photos in. Nothing else
+  // is required — an empty or missing subfolder falls back to AI_GENERATED.
+  // ================================
+
   PROJECT_ASSETS: {
     FOLDER_ID: '',
     SUPPORTED_IMAGE_TYPES: ['image/jpeg', 'image/png', 'image/webp'],
-    DOMAIN_FOLDERS: {
-      'icu': 'Intensive Care Unit',
-      'nicu': 'Neonatal Intensive Care Unit',
-      'emergency': 'Emergency Department',
-      'operating-room': 'Operating Room',
-      'outpatient-clinic': 'Outpatient Clinic',
-      'radiology': 'Radiology Department',
-      'laboratory': 'Laboratory',
-      'physiotherapy': 'Physiotherapy',
-      'pharmacy': 'Pharmacy',
-      'branding': 'Brand Identity'
-    }
+    MAX_REFERENCE_IMAGES: 3,
+
+    // Keywords are matched against Campaign Name, Visual Concept, Visual Focus
+    // and Visual Elements. Matching is deterministic and needs no model call.
+    // Order matters: the first domain with a keyword hit wins, so the more
+    // specific domains are listed first.
+    DOMAINS: [
+      { key: 'nicu', folder: 'Neonatal Intensive Care Unit',
+        keywords: ['nicu', 'neonatal', 'newborn', 'حضانة', 'حديثي الولادة'] },
+      { key: 'icu', folder: 'Intensive Care Unit',
+        keywords: ['icu', 'intensive care', 'critical care', 'عناية مركزة', 'رعاية حرجة'] },
+      { key: 'emergency', folder: 'Emergency Department',
+        keywords: ['emergency', 'triage', 'ambulance', 'طوارئ', 'إسعاف'] },
+      { key: 'operating-room', folder: 'Operating Room',
+        keywords: ['operating', 'surgery', 'surgical', 'theatre', 'عمليات', 'جراحة'] },
+      { key: 'radiology', folder: 'Radiology Department',
+        keywords: ['radiology', 'imaging', 'x-ray', 'mri', 'ct scan', 'أشعة'] },
+      { key: 'laboratory', folder: 'Laboratory',
+        keywords: ['laboratory', 'lab ', 'specimen', 'blood test', 'معمل', 'تحاليل'] },
+      { key: 'physiotherapy', folder: 'Physiotherapy',
+        keywords: ['physiotherapy', 'rehabilitation', 'physical therapy', 'علاج طبيعي', 'تأهيل'] },
+      { key: 'pharmacy', folder: 'Pharmacy',
+        keywords: ['pharmacy', 'pharmacist', 'medication', 'صيدلية', 'دواء'] },
+      { key: 'outpatient-clinic', folder: 'Outpatient Clinic',
+        keywords: ['outpatient', 'clinic', 'consultation', 'reception', 'عيادة', 'استقبال', 'كشف'] },
+      { key: 'branding', folder: 'Brand Identity',
+        keywords: ['brand', 'identity', 'logo', 'هوية'] }
+    ]
   },
 
   // ================================

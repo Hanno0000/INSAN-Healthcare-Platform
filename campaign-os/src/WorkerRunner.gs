@@ -82,11 +82,69 @@ function onOpen() {
       .createMenu('Maintenance')
       .addItem('Preflight Check', 'preflightCheck')
       .addItem('Unblock Dropdowns (run once)', 'relaxDataValidation')
-      .addItem('Review Vocabulary Gaps', 'showVocabularyGaps'))
+      .addItem('Review Vocabulary Gaps', 'showVocabularyGaps')
+      .addSeparator()
+      .addItem('Background Job Status', 'showJobStatus')
+      .addItem('Cancel Background Job', 'cancelActiveJob'))
     .addSeparator()
     .addItem('Refresh Cache', 'refreshCache')
     .addItem('System Status', 'systemStatus')
     .addToUi();
+}
+
+
+function showJobStatus() {
+  var ui = SpreadsheetApp.getUi();
+  var job = _loadJob();
+
+  if (!job) {
+    ui.alert('Background Job', 'No job is running.', ui.ButtonSet.OK);
+    return;
+  }
+
+  var pending = job.workers.filter(function(w) {
+    return job.completed.indexOf(w) === -1;
+  });
+
+  var lines = [
+    'Rows ' + job.start + ' to ' + job.end,
+    'Pass ' + (job.passes || 1) + ' of at most ' + MAX_JOB_PASSES,
+    '',
+    'Done: ' + (job.completed.length ? job.completed.map(toDisplayName).join(', ') : 'none yet'),
+    'Pending: ' + pending.map(toDisplayName).join(', '),
+    '',
+    'It continues on its own about a minute after each pass.',
+    'You do not need to keep the sheet open.'
+  ];
+
+  ui.alert('Background Job', lines.join('\n'), ui.ButtonSet.OK);
+}
+
+
+function cancelActiveJob() {
+  var ui = SpreadsheetApp.getUi();
+  var job = _loadJob();
+
+  if (!job) {
+    _removeContinuationTriggers();
+    ui.alert('Background Job', 'Nothing to cancel.', ui.ButtonSet.OK);
+    return;
+  }
+
+  var answer = ui.alert(
+    'Cancel Background Job',
+    'Stop the job on rows ' + job.start + '–' + job.end + '?\n\n' +
+    'Work already written to the sheet is kept. Row checkpoints are kept too, ' +
+    'so "Resume Last Run" can still pick up where it stopped.',
+    ui.ButtonSet.YES_NO
+  );
+
+  if (answer !== ui.Button.YES) {
+    return;
+  }
+
+  _clearJob();
+  ui.alert('Background Job', 'Cancelled. Automatic continuation is off.', ui.ButtonSet.OK);
 }
 
 
@@ -421,14 +479,22 @@ function runTeamPipeline(workerNames, pipelineName) {
     summary.push(line);
 
     if (result.interrupted) {
-      var remaining = workerNames.slice(i + 1);
-      summary.push('\nTime budget reached. Run "Resume Last Run" to continue —');
-      summary.push('progress is checkpointed, nothing is lost.');
+      var remaining = workerNames.slice(i);
+      _saveJob({
+        workers: workerNames,
+        completed: workerNames.slice(0, i),
+        start: range.start,
+        end: range.end,
+        passes: 1,
+        stalls: 0
+      });
+      _scheduleContinuation(1);
+
+      summary.push('\nTime budget reached — this is expected on larger ranges.');
+      summary.push('The job will continue automatically in about a minute.');
+      summary.push('You can close the sheet; progress is checkpointed.');
       if (remaining.length > 0) {
-        summary.push('\nStill pending:');
-        for (var j = 0; j < remaining.length; j++) {
-          summary.push('  ' + toDisplayName(remaining[j]));
-        }
+        summary.push('\nStill pending: ' + remaining.map(toDisplayName).join(', '));
       }
       break;
     }
@@ -659,11 +725,26 @@ function runVisualPipeline() {
     summary.push('Visual QA: NOT RUN — resume the pipeline to complete it');
   }
 
+  // The visual pipeline interleaves a service between two workers, so it is
+  // resumed as a whole rather than worker by worker.
+  if (pipelineFailed) {
+    _saveJob({
+      workers: ['VISUAL_PLANNER_WORKER', 'MEDIA_GENERATION', 'VISUAL_QA_WORKER'],
+      completed: [],
+      start: range.start,
+      end: range.end,
+      passes: 1,
+      stalls: 0
+    });
+    _scheduleContinuation(1);
+    summary.push('\nThe remaining rows will be picked up automatically in about a minute.');
+  }
+
   var pipelineEnd = new Date().getTime();
   var totalDuration = ((pipelineEnd - pipelineStart) / 1000).toFixed(1);
 
   Browser.msgBox(
-    pipelineFailed ? 'Visual Pipeline Failed' : 'Visual Pipeline Complete',
+    pipelineFailed ? 'Visual Pipeline Paused' : 'Visual Pipeline Complete',
     summary.join('\n') +
     '\n\nTotal Duration: ' + totalDuration + ' seconds',
     Browser.Buttons.OK
@@ -858,6 +939,32 @@ function runWorker(workerName, rowNumber) {
     }
 
     var context = ContextBuilder.buildContext(upperName, rowData);
+
+    // The Visual Planner owns the Production Mode decision but has no way to
+    // look inside a Drive folder. Tell it what actually exists, so the decision
+    // reflects reality instead of being a guess that nothing acts on.
+    if (upperName === 'VISUAL_PLANNER_WORKER') {
+      var plannerDomain = DriveLoader.resolveAssetDomain(rowData);
+      var availableAssets = DriveLoader.listProjectAssets(plannerDomain);
+
+      context += '\n\n## PROJECT ASSET AVAILABILITY\n\n';
+
+      if (availableAssets.length) {
+        context += 'Real photographs of this facility are available for the "' +
+          plannerDomain.folder + '" domain:\n' +
+          availableAssets.slice(0, 20).map(function(n) { return '- ' + n; }).join('\n') +
+          '\n\nProduction Mode must be PROJECT_ASSET. These photographs will be ' +
+          'supplied to the generation model as visual reference. Write the brief ' +
+          'so it complements them rather than describing an environment from ' +
+          'scratch — the architecture, finishes and equipment come from the ' +
+          'photographs.\n';
+      } else {
+        context += 'No project photographs are available for this row' +
+          (plannerDomain ? ' (domain "' + plannerDomain.folder + '" is empty or unavailable)' : '') +
+          '. Production Mode must be AI_GENERATED. Describe the environment fully ' +
+          'in the brief, since nothing visual will be supplied.\n';
+      }
+    }
 
     var callOptions = {
       temperature: workerConfig.temperature
@@ -1072,6 +1179,161 @@ function runWorkerBatch(workerName, startRow, endRow) {
     nextRow: interrupted ? results[results.length - 1].row + 1 : null,
     results: results
   };
+}
+
+
+// ================================
+// UNATTENDED CONTINUATION
+//
+// Apps Script cannot run longer than ~6 minutes, so a 20-row job is
+// necessarily several executions. Rather than asking the operator to press
+// Resume for each one, an interrupted job stores what remains and installs a
+// one-shot trigger to pick it up a minute later. The job finishes on its own.
+//
+// Guards: only one continuation trigger may exist at a time, and a job that
+// stops making progress is abandoned rather than rescheduled forever.
+// ================================
+
+var JOB_KEY = 'ACTIVE_JOB';
+var CONTINUATION_HANDLER = 'continueActiveJob';
+var MAX_JOB_PASSES = 25;
+
+function _saveJob(job) {
+  PropertiesService.getScriptProperties().setProperty(JOB_KEY, JSON.stringify(job));
+}
+
+function _loadJob() {
+  var raw = PropertiesService.getScriptProperties().getProperty(JOB_KEY);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    return null;
+  }
+}
+
+function _clearJob() {
+  PropertiesService.getScriptProperties().deleteProperty(JOB_KEY);
+  _removeContinuationTriggers();
+}
+
+function _removeContinuationTriggers() {
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === CONTINUATION_HANDLER) {
+      ScriptApp.deleteTrigger(triggers[i]);
+    }
+  }
+}
+
+function _scheduleContinuation(delayMinutes) {
+  _removeContinuationTriggers();
+  ScriptApp.newTrigger(CONTINUATION_HANDLER)
+    .timeBased()
+    .after((delayMinutes || 1) * 60 * 1000)
+    .create();
+}
+
+// Entry point for the trigger. Never opens a dialog — nobody is watching.
+function continueActiveJob() {
+  var job = _loadJob();
+
+  if (!job) {
+    _removeContinuationTriggers();
+    return;
+  }
+
+  job.passes = (job.passes || 0) + 1;
+
+  if (job.passes > MAX_JOB_PASSES) {
+    Logger.logFailure('ORCHESTRATOR', job.start, 0,
+      'Job abandoned after ' + MAX_JOB_PASSES + ' passes without completing. ' +
+      'Resume manually once the cause is understood.');
+    _clearJob();
+    return;
+  }
+
+  ExecutionBudget.begin();
+
+  var progressed = false;
+
+  try {
+    for (var i = 0; i < job.workers.length; i++) {
+      var worker = job.workers[i];
+      var resume = (worker === 'MEDIA_GENERATION') ? null : getCheckpoint(worker);
+      var from = (resume && resume >= job.start && resume <= job.end) ? resume : job.start;
+
+      if (job.completed.indexOf(worker) !== -1 || from > job.end) {
+        continue;
+      }
+
+      if (!ExecutionBudget.canFitAnother(worker)) {
+        break;
+      }
+
+      var result;
+
+      if (worker === 'MEDIA_GENERATION') {
+        // A service, not a worker: no prompt, no checkpoint of its own.
+        var gen = ServiceRunner.runMediaGeneration(job.start, job.end);
+        result = {
+          success: gen.success,
+          failed: gen.failed,
+          interrupted: !!gen.interrupted
+        };
+      } else {
+        var isVisual = !!(CONFIG.WORKERS[worker] && CONFIG.WORKERS[worker].sheetName);
+        result = isVisual
+          ? runVisualWorkerBatch(worker, from, job.end)
+          : runWorkerBatch(worker, from, job.end);
+      }
+
+      if (result.success > 0 || result.failed > 0) {
+        progressed = true;
+      }
+
+      if (result.interrupted) {
+        break;
+      }
+
+      job.completed.push(worker);
+    }
+  } catch (e) {
+    Logger.logFailure('ORCHESTRATOR', job.start, 0,
+      'Continuation pass failed: ' + e.toString());
+  }
+
+  var remaining = job.workers.filter(function(w) {
+    return job.completed.indexOf(w) === -1;
+  });
+
+  if (!remaining.length) {
+    Logger.logSuccess('ORCHESTRATOR', job.start + '-' + job.end, 0, 0, 0,
+      'Job complete after ' + job.passes + ' pass(es): ' + job.workers.join(' → '));
+    _clearJob();
+    return;
+  }
+
+  // No progress twice running means something is stuck, not slow.
+  if (!progressed) {
+    job.stalls = (job.stalls || 0) + 1;
+    if (job.stalls >= 2) {
+      Logger.logFailure('ORCHESTRATOR', job.start, 0,
+        'Job made no progress on two consecutive passes. Stopping. ' +
+        'Pending: ' + remaining.join(', '));
+      _clearJob();
+      return;
+    }
+  } else {
+    job.stalls = 0;
+  }
+
+  _saveJob(job);
+  _scheduleContinuation(1);
+
+  Logger.logPartial('ORCHESTRATOR', job.start + '-' + job.end, 0,
+    'Pass ' + job.passes + ' done. Continuing automatically in ~1 min. Pending: ' +
+    remaining.join(', '));
 }
 
 

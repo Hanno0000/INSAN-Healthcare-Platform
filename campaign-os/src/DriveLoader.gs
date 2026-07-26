@@ -144,6 +144,157 @@ var DriveLoader = {
     }
   },
 
+  // ================================
+  // PROJECT ASSETS
+  // Real photographs of the actual facilities. Everything below degrades to an
+  // empty result rather than throwing: a missing folder, an unshared folder or
+  // an empty subfolder simply means this row is generated without reference.
+  // ================================
+
+  // Arabic text in the sheet carries definite articles and inconsistent letter
+  // forms, so a literal search for "عناية مركزة" never matches the way people
+  // actually write it — "العناية المركزة". Normalising both sides first is what
+  // makes keyword matching usable on real content.
+  _normalizeArabic: function(text) {
+    return String(text || '')
+      .toLowerCase()
+      .replace(/[أإآٱ]/g, 'ا')  // أ إ آ -> ا
+      .replace(/ة/g, 'ه')                       // ة -> ه
+      .replace(/[ى]/g, 'ي')                     // ى -> ي
+      .replace(/[ً-ْـ]/g, '')    // diacritics and tatweel
+      // Definite article. \b is ASCII-only in JS, so an explicit boundary is
+      // required — without it "العناية" never matches the keyword "عناية".
+      .replace(/(^|\s)ال/g, '$1')
+      .replace(/\s+/g, ' ')
+      .trim();
+  },
+
+  // Picks the domain whose keywords appear in the row's creative fields. No
+  // model call — the same row always resolves to the same domain.
+  resolveAssetDomain: function(rowData) {
+    var domains = (CONFIG.PROJECT_ASSETS && CONFIG.PROJECT_ASSETS.DOMAINS) || [];
+
+    if (!domains.length) {
+      return null;
+    }
+
+    var haystack = this._normalizeArabic([
+      rowData['Campaign Name'],
+      rowData['Visual Concept'],
+      rowData['Visual Focus'],
+      rowData['Visual Elements'],
+      rowData['Content Type']
+    ].join(' '));
+
+    if (!haystack) {
+      return null;
+    }
+
+    for (var i = 0; i < domains.length; i++) {
+      var domain = domains[i];
+      for (var k = 0; k < domain.keywords.length; k++) {
+        if (haystack.indexOf(this._normalizeArabic(domain.keywords[k])) !== -1) {
+          return domain;
+        }
+      }
+    }
+
+    return null;
+  },
+
+  _assetSubfolder: function(folderName) {
+    var rootId = CONFIG.PROJECT_ASSETS && CONFIG.PROJECT_ASSETS.FOLDER_ID;
+
+    if (!rootId || !String(rootId).trim()) {
+      return null;
+    }
+
+    try {
+      var folders = DriveApp.getFolderById(rootId).getFoldersByName(folderName);
+      return folders.hasNext() ? folders.next() : null;
+    } catch (e) {
+      Logger.log('PROJECT_ASSETS | cannot open root folder: ' + e.toString());
+      return null;
+    }
+  },
+
+  // Names only — cheap enough to call while building worker context.
+  listProjectAssets: function(domain) {
+    if (!domain) {
+      return [];
+    }
+
+    var folder = this._assetSubfolder(domain.folder);
+
+    if (!folder) {
+      return [];
+    }
+
+    var types = CONFIG.PROJECT_ASSETS.SUPPORTED_IMAGE_TYPES;
+    var names = [];
+
+    try {
+      var files = folder.getFiles();
+      while (files.hasNext()) {
+        var file = files.next();
+        if (types.indexOf(file.getMimeType()) !== -1) {
+          names.push(file.getName());
+        }
+      }
+    } catch (e) {
+      Logger.log('PROJECT_ASSETS | cannot list "' + domain.folder + '": ' + e.toString());
+      return [];
+    }
+
+    return names;
+  },
+
+  // Actual bytes, for handing to the image model as visual reference.
+  loadProjectAssets: function(domain, maxImages) {
+    if (!domain) {
+      return [];
+    }
+
+    var folder = this._assetSubfolder(domain.folder);
+
+    if (!folder) {
+      return [];
+    }
+
+    var limit = maxImages || CONFIG.PROJECT_ASSETS.MAX_REFERENCE_IMAGES || 3;
+    var types = CONFIG.PROJECT_ASSETS.SUPPORTED_IMAGE_TYPES;
+    var images = [];
+
+    try {
+      var files = folder.getFiles();
+      while (files.hasNext() && images.length < limit) {
+        var file = files.next();
+
+        if (types.indexOf(file.getMimeType()) === -1) {
+          continue;
+        }
+
+        images.push({
+          base64: Utilities.base64Encode(file.getBlob().getBytes()),
+          mimeType: file.getMimeType(),
+          name: file.getName()
+        });
+      }
+    } catch (e) {
+      Logger.log('PROJECT_ASSETS | cannot read "' + domain.folder + '": ' + e.toString());
+      return [];
+    }
+
+    if (images.length) {
+      Logger.log(
+        'PROJECT_ASSETS | domain "' + domain.key + '" supplied ' +
+        images.length + ' reference image(s)'
+      );
+    }
+
+    return images;
+  },
+
   // Splits a comma-separated Generated Assets cell into inline image payloads.
   loadImagesFromCell: function(cellValue, maxImages) {
     var value = String(cellValue || '').trim();
