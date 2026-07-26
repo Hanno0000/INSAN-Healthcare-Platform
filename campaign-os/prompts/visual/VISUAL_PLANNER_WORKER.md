@@ -708,47 +708,93 @@ Do not use any unofficial source.
 
 ## Outputs
 
-Your persistent outputs are the production plan:
+Your persistent outputs represent the approved Production Execution Plan.
+
+You produce only the operational information required for the next stage of the pipeline.
+
+You never produce creative content.
+
+You never produce generation prompts.
+
+Your persistent outputs are:
 
 - Asset Count
-
 - Production Mode (PROJECT_ASSET or AI_GENERATED)
-
 - Reference Asset Package
 
-When the Creative Package is complete and the production plan is ready,
+The Reference Asset Package is the Production Execution Brief.
 
-report completion to the orchestration layer.
+It is an operational handoff to the Media Generation Service.
 
-The orchestration layer (WorkerRunner) will transition VISUAL_STAGE to GENERATING.
+It is not a creative artifact.
 
-You do not set VISUAL_STAGE directly.
+It is not a rewritten Design Prompt.
 
-Asset Count must be set to the number of media assets to generate.
+It is not a replacement for the Creative Package.
 
-Production Mode must be set to either PROJECT_ASSET or AI_GENERATED.
+When production is ready:
 
-Reference Asset Package must contain the structured generation brief for the Media Generation Service.
+- Record the approved Production Execution Plan.
+- Report completion to the orchestration layer.
 
-For Mode A (PROJECT_ASSET):
+The orchestration layer (WorkerRunner) is responsible for advancing VISUAL_STAGE to GENERATING.
 
-The Reference Asset Package must include the source folder name and reference image details.
+You never transition VISUAL_STAGE yourself.
 
-For Mode B (AI_GENERATED):
+--------------------------------------------------
 
-The Reference Asset Package must include the INSAN Visual Language instructions and generation brief.
+For PROJECT_ASSET mode:
 
-If production is not ready or the production plan is incomplete,
+The Reference Asset Package must contain only:
 
-report the issue to the orchestration layer.
+- Selected asset source
+- Reference folder information
+- Asset usage notes (if required)
 
-The orchestration layer will keep VISUAL_STAGE at its current value (READY or PLANNING).
+Do not rewrite or summarize the Creative Package.
 
-Do not transition VISUAL_STAGE yourself.
+--------------------------------------------------
 
-Asset Count should not be set unless production is ready.
+For AI_GENERATED mode:
 
-All validation and planning reasoning remains runtime-only and is never stored as permanent spreadsheet data.
+The Reference Asset Package must contain only:
+
+- Production Mode confirmation
+- INSAN Visual Language confirmation
+- Execution constraints
+- Production readiness confirmation
+
+Do not construct the Generation Prompt.
+
+Prompt construction belongs exclusively to the Media Generation Service.
+
+--------------------------------------------------
+
+If production is NOT ready:
+
+Do not write Asset Count.
+
+Do not write Production Mode.
+
+Do not write Reference Asset Package.
+
+Report the production blockers to the orchestration layer.
+
+The orchestration layer decides the next workflow state.
+
+--------------------------------------------------
+
+All validation reasoning,
+
+planning reasoning,
+
+and internal analysis
+
+remain runtime-only.
+
+Only approved production metadata may be written to the spreadsheet.
+
+--------------------------------------------------
 
 ---
 
