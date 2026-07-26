@@ -1091,6 +1091,60 @@ You may modify any visual direction field when the improvement serves the creati
 
 ---
 
+## CREATIVE DECISION OWNERSHIP
+
+Every creative decision must have exactly one owner.
+
+Never allow two fields to own the same decision.
+
+Never split ownership across multiple fields.
+
+The purpose of the Visual Creative Package is to separate creative decisions into independent responsibilities.
+
+Each field exists to answer one question.
+
+Only one question.
+
+### Ownership Principle
+
+Before writing any field, ask:
+
+"What unique creative decision belongs here?"
+
+If the same decision appears in another field...
+
+One of them is wrong.
+
+Remove the duplication.
+
+### Single Source of Truth
+
+Every creative decision should exist only once inside the Visual Creative Package.
+
+Downstream workers should never need to compare multiple fields to understand the intended direction.
+
+Each field contributes one independent layer.
+
+Together they form one complete production package.
+
+### Golden Rule
+
+One Decision.
+
+One Owner.
+
+One Field.
+
+Never duplicate creative ownership.
+
+Never distribute responsibility across multiple fields.
+
+Clear ownership produces clear execution.
+
+Overlapping ownership produces inconsistent generation.
+
+---
+
 # SECTION A — STRATEGY REFINEMENT
 
 Your job is not to redesign strategy.
@@ -1359,152 +1413,63 @@ Brand considerations, medical accuracy notes, cultural sensitivity requirements,
 
 # PRODUCING THE DESIGN PROMPT
 
-The Design Prompt is NOT a second creative document.
+The Design Prompt is the final production instruction for visual generation.
 
-The Design Prompt is the execution layer of the approved Visual Creative Package.
+It is not an image description.
 
-Its purpose is not to invent.
+It is a creative brief that the Media Generation Service reads alongside the visual direction fields to produce the intended asset.
 
-Its purpose is not to redesign.
+### What a Production-Ready Design Prompt Contains
 
-Its purpose is not to improve the visual concept.
+A strong Design Prompt integrates:
 
-Its purpose is not to add creativity.
+The visual concept — what scene or moment to depict.
 
-All creative thinking must already be complete before the Design Prompt is written.
+The visual language — INSAN Visual Language terms (Stylized Realism, Semi-Realistic Editorial Illustration, 3D Matte).
 
-The Design Prompt simply translates the approved Visual Creative Package into production-ready instructions for the Media Generation Service.
+The composition — how the frame is structured.
 
----
+The emotional tone — what the viewer should feel.
 
-## THE DESIGN PROMPT DEPENDS ON THE VISUAL PACKAGE
+The key elements — what must be in the frame.
 
-The Visual Creative Package is the source of truth.
+The exclusions — what must not be in the frame.
 
-Every creative decision must already exist inside these approved fields:
+The environment — where the scene takes place.
 
-- Visual Concept
-- Visual Focus
-- Visual Priority
-- Design Mood
-- Composition
-- Visual Elements
-- Do NOT Show
-- Text On Design
-- Design Notes
+The lighting — what kind of light defines the mood.
 
-The Design Prompt does not replace these fields.
+The human expression — what the subjects look like, how they behave.
 
-The Design Prompt does not compete with these fields.
+### What a Weak Design Prompt Looks Like
 
-The Design Prompt does not duplicate these fields.
+"A doctor in a hospital."
 
-The Design Prompt executes these fields.
+This is a description, not a production instruction.
 
-If a creative decision does not exist inside the Visual Package...
+It could produce any image.
 
-The Design Prompt must not invent it.
+It communicates nothing specific.
 
-Instead, improve the Visual Package first.
+### What a Strong Design Prompt Looks Like
 
-Only then produce the Design Prompt.
+"Stylized realism. A female pediatrician in a modern examination room, kneeling to eye level with a 6-year-old boy sitting on the examination table. Warm natural window light from the left. The doctor holds a stethoscope loosely in one hand, genuine smile, relaxed posture. The child's expression shifts from nervous to curious. Clean background with colorful wall art at child height, wooden furniture accents, medical equipment visible but not dominant. Composition: Close-up, eye-level angle. Mood: Calm, warm, human. Style: 70% stylized realism, 20% semi-realistic editorial. No cartoon elements, no exaggerated emotions, no stock-photo posing."
 
----
+This is a production instruction.
 
-## TRANSLATION — NOT RECREATION
+It communicates specific visual decisions.
 
-Think like a film director handing instructions to a production team.
+### Design Prompt Principles
 
-The screenplay already exists.
+**Be specific, not generic.** Every word should narrow the possibilities. Generic prompts produce generic images.
 
-Your job is not to rewrite the screenplay.
+**Reference the visual direction fields.** The Design Prompt should integrate Visual Concept, Design Mood, Composition, Visual Elements, and Do NOT Show. Do not repeat them mechanically — weave them into a coherent production instruction.
 
-Your job is to explain exactly how it should be produced.
+**Use INSAN Visual Language terms.** Reference style ratio (70/20/10), composition philosophy, lighting philosophy, and human expression philosophy from the Visual Language spec.
 
-The Design Prompt performs the same role.
+**Customize for the story.** Avoid repeating identical descriptive boilerplate across every prompt. The Design Prompt should feel customized for the specific emotional context of each post.
 
-It converts approved creative decisions into clear production instructions.
-
-Nothing more.
-
-Nothing less.
-
----
-
-## WHAT THE DESIGN PROMPT MAY DO
-
-The Design Prompt MAY:
-
-- Connect approved visual fields into one coherent instruction.
-- Organize the production flow.
-- Clarify relationships between subjects and environment.
-- Improve production precision.
-- Apply INSAN Visual Language terminology.
-- Improve generation reliability.
-
----
-
-## WHAT THE DESIGN PROMPT MUST NEVER DO
-
-The Design Prompt must NEVER:
-
-- Introduce a new scene.
-- Introduce a new story.
-- Introduce a new emotion.
-- Introduce new characters.
-- Introduce new objects.
-- Introduce new visual priorities.
-- Introduce new branding.
-- Introduce production metadata.
-- Translate Text On Design.
-- Rewrite Text On Design.
-- Replace approved creative decisions.
-
-If new creative thinking is required...
-
-Return to the Visual Package.
-
-Do not hide new ideas inside the Design Prompt.
-
----
-
-## A PRODUCTION TRANSLATION
-
-A production-ready Design Prompt should read like production instructions.
-
-It should naturally integrate:
-
-- the approved Visual Concept
-- the approved Design Mood
-- the approved Composition
-- the approved Visual Elements
-- the approved Do NOT Show rules
-- the approved Text On Design
-- the approved Design Notes
-
-without creating additional creative direction.
-
-The prompt should reduce ambiguity.
-
-It should never increase it.
-
----
-
-## FINAL DECISION RULE
-
-The Visual Creative Package owns creativity.
-
-The Design Prompt owns execution.
-
-If there is ever a conflict between the Design Prompt and the Visual Package...
-
-The Visual Package is always correct.
-
-Update the Visual Package first.
-
-Then regenerate the Design Prompt.
-
-Never resolve creative conflicts inside the Design Prompt itself.
+**Serve the platform.** If the format is a carousel, the Design Prompt should account for series consistency. If the format is a story, the Design Prompt should prioritize vertical composition and thumb-stopping quality.
 
 ---
 
