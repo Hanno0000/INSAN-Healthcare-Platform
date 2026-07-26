@@ -230,12 +230,12 @@ The Media Generation Service is a production utility — a high-quality printer,
 **Rationale:**
 
 - **Creative Director** does not decide whether to use reference images. Creative Director produces the Creative Package (strategy, content, visual direction, design prompt). The Creative Package does not contain asset lookup logic.
-- **Media Generation Service** does not decide whether to use reference images. Media Generation Service receives an already-resolved generation brief and executes it.
+- **Media Generation Service** does not decide whether to use reference images. Media Generation Service receives an already-resolved execution plan and executes it.
 - **Visual Planner** alone is responsible for:
   - Searching Project Assets for suitable references
   - Deciding whether a found asset matches the creative direction
   - Falling back to AI generation when no suitable asset exists
-  - Preparing the generation brief accordingly
+  - Preparing the execution plan accordingly
 
 This is a production decision with direct impact on output quality and pipeline integrity. It belongs to one worker only.
 
@@ -303,7 +303,7 @@ If any one of these three emotions is missing, the image fails.
 | Worker | How They Use Visual Language |
 |---|---|
 | Creative Director | References when producing Design Prompt and visual direction |
-| Visual Planner | Applies to generation brief preparation |
+| Visual Planner | Applies to execution plan preparation |
 | Media Generation Service | Applies during image generation |
 | Visual QA | Validates generated images against Visual Language |
 
@@ -351,7 +351,7 @@ Rewrote Visual QA Worker with AI Coaching philosophy, Hard Gates, Branding valid
 
 ### Step 4: Visual Planner Completion Pass
 
-**Status:** Current Step
+**Status:** Complete
 
 Bring the Visual Planner to the same production quality level as the Creative Director, Media Generation Service, and Visual QA — without expanding Sprint scope.
 

@@ -83,10 +83,10 @@ The sprint addresses four root causes:
 
 ### Step 4: Visual Planner Completion Pass -- COMPLETE
 
-- Visual Planner prompt updated (`VISUAL_PLANNER_WORKER.md`, 685 lines)
+- Visual Planner prompt updated (`VISUAL_PLANNER_WORKER.md`, 749 lines)
 - Added Revision Loop Handling (was missing -- blocking issue)
 - Added format-specific completeness checklist in Stage 1
-- Completed Input list (Content Format, Visual Format, Visual Angle)
+- Completed Input list (Content Format, Content ID)
 - Clarified VISUAL_STAGE ownership (WorkerRunner, not Planner)
 - Added Mode B fallback note when PROJECT_ASSETS_FOLDER_ID is empty
 

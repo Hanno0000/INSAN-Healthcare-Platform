@@ -25,7 +25,7 @@ No downstream Visual Pipeline component may create, reinterpret, improve, rewrit
 | Strategic proposal | Content Strategy Worker | Proposes strategy and initial visual direction (first draft) |
 | Draft production | Content Creation Worker | Produces draft copy, hashtags, and draft design prompt |
 | Final creative approval | Creative Director Worker | Owns the final approved version of the complete Creative Package |
-| Production readiness | Visual Planner | Validates completeness and selects production mode only |
+| Production readiness | Visual Planner | Validates completeness and prepares execution plan |
 | Asset execution | Media Generation Service | Executes the approved package only |
 | Fidelity validation | Visual QA | Approves, rejects, or requests a new production attempt against the approved package |
 

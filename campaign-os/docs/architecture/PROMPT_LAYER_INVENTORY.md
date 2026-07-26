@@ -23,7 +23,7 @@ Workers are prompt-based components that read from the spreadsheet, perform proc
 | Visual Planner | `prompts/visual/VISUAL_PLANNER_WORKER.md` | Active |
 | Visual QA | `prompts/visual/VISUAL_QA_WORKER.md` | Active |
 
-**Visual Planner Role:** Production Readiness worker. Validates the Creative Package for media generation. Selects production mode (PROJECT_ASSET or AI_GENERATED). Prepares generation brief with INSAN Visual Language instructions. Writes Asset Count, Production Mode, Reference Asset Package. Does NOT write VISUAL_STAGE (orchestration layer handles state transitions).
+**Visual Planner Role:** Production Readiness and Planning Specialist. Validates the Creative Package for media generation. Selects production mode (PROJECT_ASSET or AI_GENERATED). Prepares execution plan with INSAN Visual Language instructions. Writes Asset Count, Production Mode, Reference Asset Package. Does NOT write VISUAL_STAGE (orchestration layer handles state transitions).
 
 **Visual QA Role:** Validates generated media against the Creative Package and INSAN Visual Language. Checks style ratio (70/20/10), prohibited styles, production mode fidelity. Writes Visual QA Score, Visual QA Decision, Visual QA Notes, Final Asset URL. Does NOT write VISUAL_STAGE (orchestration layer handles state transitions).
 
@@ -110,7 +110,7 @@ Visual Pipeline (Production)
 
 2. **Content Strategy and Content Creation produce drafts** — Their outputs are first versions. The Creative Director owns the final approved version.
 
-3. **Visual Planner is Production Readiness** — Validates completeness, selects production mode, prepares generation brief. Does not create.
+3. **Visual Planner is Production Readiness and Planning** — Validates completeness, selects production mode, prepares execution plan. Does not create creative work.
 
 4. **No Creative Reinterpretation** — The Creative Package flows directly from Section A to the Media Generation Service.
 

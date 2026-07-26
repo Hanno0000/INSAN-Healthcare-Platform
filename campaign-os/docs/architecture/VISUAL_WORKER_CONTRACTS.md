@@ -116,7 +116,7 @@ Validate and prepare the Creative Package for media generation.
 
 ### Role
 
-The Visual Planner is NOT a creative worker. It is a Production Readiness worker.
+The Visual Planner is NOT a creative worker. It is a Production Readiness and Planning Specialist.
 
 Think of the Visual Planner as the final production coordinator before manufacturing, not as a designer.
 
@@ -149,9 +149,9 @@ Reads the complete Creative Package from Section A:
 - Verify production readiness
 - Select production mode (PROJECT_ASSET or AI_GENERATED)
 - Check Project Assets folder for suitable reference images
-- Prepare generation brief for the Media Generation Service
-- Apply INSAN Visual Language guidelines to the generation brief
-- Update VISUAL_STAGE, Asset Count, Production Mode, and Reference Asset Package
+- Prepare the execution plan for the Media Generation Service
+- Apply INSAN Visual Language guidelines to the execution plan
+- Write Asset Count, Production Mode, and Reference Asset Package
 
 ### Decisions It Can Make
 
@@ -505,7 +505,7 @@ PUBLISHING → FAILED (on failure)
 
 2. **Content Strategy and Content Creation produce drafts** — Their outputs are first versions. The Creative Director owns the final approved version.
 
-3. **Visual Planner is Production Readiness** — Validates completeness, selects production mode, prepares generation brief. Does not create.
+3. **Visual Planner is Production Readiness and Planning** — Validates completeness, selects production mode, prepares execution plan. Does not create creative work.
 
 4. **Spreadsheet is Persistent Database** — Only write columns that store NEW production information. Temporary data stays in memory.
 

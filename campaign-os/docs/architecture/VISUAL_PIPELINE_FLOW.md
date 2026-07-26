@@ -116,9 +116,9 @@ Section A columns (complete Creative Package):
 2. **Verify completeness** — Check that all information required for the requested media format exists.
 3. **Verify production readiness** — Confirm the Creative Package can be executed by the Media Generation Service.
 4. **Select production mode** — Check Project Assets folder for suitable reference images. If found, select PROJECT_ASSET mode. Otherwise, select AI_GENERATED mode.
-5. **Prepare generation brief** — Create a structured brief for the Media Generation Service including INSAN Visual Language instructions.
+5. **Prepare execution plan** — Create the Production Execution Brief for the Media Generation Service including INSAN Visual Language instructions.
 6. **Add execution guidance** — If minor execution information is missing, add temporary execution-level guidance in memory only.
-7. **Pass package to Media Generation Service** — Invoke the Media Generation Service with the validated Creative Package and generation brief.
+7. **Pass package to Media Generation Service** — Invoke the Media Generation Service with the validated Creative Package and execution plan.
 
 ### Writes
 
@@ -484,7 +484,7 @@ Content Pipeline
 
 2. **Content Strategy and Content Creation produce drafts** — Their outputs are first versions. The Creative Director owns the final approved version.
 
-3. **Visual Planner is Production Readiness** — Validates completeness, selects production mode, prepares generation brief. Does not create.
+3. **Visual Planner is Production Readiness and Planning** — Validates completeness, selects production mode, prepares execution plan. Does not create creative work.
 
 4. **Spreadsheet is Persistent Database** — Only write columns that store NEW production information. Temporary data stays in memory.
 
