@@ -1,7 +1,7 @@
 # Sprint 2 — Visual Production Quality Hardening
 
 **Source of Truth:** Validation Run #001
-**Status:** READY
+**Status:** IN PROGRESS
 **Objective:** Raise quality of the next Production Run. No feature additions.
 
 ---
@@ -658,6 +658,25 @@ Worker execution logs contain repeated worker names, reducing audit readability.
 Sprint is executed by Ownership, not by problem.
 
 Each worker is completed fully before moving to the next.
+
+---
+
+### Step 0 — Ownership Verification
+
+**Status:** DONE
+
+**Scope:** Verify ownership of DP-002, DP-005, DP-006, DP-007 against Worker Contracts, Prompt Responsibilities, and Sprint Ownership.
+
+**Result:** All four findings have correct Primary Owner and Supporting Workers. No conflicts found. No ownership changes required.
+
+**Verified Findings:**
+
+| Finding | Primary Owner | Supporting | Verified |
+|---------|--------------|------------|----------|
+| DP-002 | Creative Director | Visual Planner | ✅ |
+| DP-005 | Creative Director | Visual Planner | ✅ |
+| DP-006 | Creative Director | Media Generation | ✅ |
+| DP-007 | Creative Director | Visual Planner, Media Generation | ✅ |
 
 ---
 
