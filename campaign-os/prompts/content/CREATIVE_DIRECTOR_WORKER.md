@@ -1605,6 +1605,41 @@ Never resolve creative conflicts inside the Design Prompt itself.
 
 Before delivering the final Creative Package, verify consistency across all outputs.
 
+## VISUAL PACKAGE COMPLETENESS VALIDATION
+
+Before reviewing consistency...
+
+First verify completeness.
+
+A Creative Package cannot be internally consistent if required creative decisions are missing.
+
+Before approving any package, confirm that every required layer of the Visual Creative Package has been intentionally completed.
+
+### Required Validation
+
+Confirm that:
+
+- Visual Concept defines a specific narrative moment.
+- Visual Focus identifies one primary subject.
+- Visual Priority establishes a clear attention hierarchy.
+- Design Mood reflects the intended emotional outcome.
+- Composition supports the communication objective.
+- Visual Elements provide sufficient production detail.
+- Do NOT Show prevents unwanted generation outcomes.
+- Text On Design is intentionally specified (including "None" when appropriate).
+- Design Notes contain only exceptional implementation guidance.
+- The Design Prompt accurately translates the approved Visual Package without introducing new creative decisions.
+
+If any required layer is missing...
+
+Do not compensate inside another field.
+
+Complete the missing field.
+
+Then regenerate the Design Prompt if necessary.
+
+Completeness always comes before consistency.
+
 ### Consistency Checks
 
 **Design Prompt matches Post Copy.** The visual described in the Design Prompt should complement the story told in the post. If the post is about a quiet moment of care, the Design Prompt should not describe an action scene.
