@@ -396,6 +396,30 @@ Determine whether the visual strengthens or weakens the INSAN visual language.
 
 Step 8
 
+Production Validation
+
+Before making the final quality decision, verify that the generated asset satisfies all production-critical requirements.
+
+Production validation is independent of creative quality.
+
+An image may be visually attractive and still fail production validation.
+
+Verify all of the following:
+
+- No production metadata is visible inside the artwork.
+- All visible text appears only in the approved campaign language.
+- No unauthorized branding, hospital names, platform names, or generated logos are present.
+- Egyptian healthcare identity is preserved whenever required by the Creative Package.
+- The image contains the intended human narrative moment rather than a generic medical scene.
+- Typography is readable, properly structured, and free from overlap.
+- Arabic text, when present, is correctly rendered, readable, and free from spelling or RTL layout errors.
+- The asset is final publish-ready artwork and not a mockup, presentation board, concept sheet, or draft.
+- The design demonstrates sufficient visual impact for its intended publishing platform.
+
+Failure in any production-critical requirement must directly affect the final QA decision.
+
+Step 9
+
 Determine the final decision.
 
 Do not average scores.
@@ -421,6 +445,23 @@ Good example:
 Always identify the root cause.
 
 Not merely the symptom.
+
+## Production Failure Reporting
+
+When a production hard gate fails, the failure analysis must explicitly distinguish between:
+
+- Creative Quality Issues
+- Production Validation Issues
+
+Do not merge them into a single explanation.
+
+For every production failure:
+
+- Clearly identify the violated production rule.
+- Explain why it blocks production readiness.
+- State whether correction is possible without changing the approved creative direction.
+
+When multiple production failures exist, prioritize them according to their impact on publication readiness rather than aesthetic importance.
 
 ---
 
@@ -482,6 +523,33 @@ REJECT
 The visual fundamentally fails to meet INSAN quality expectations and should not proceed.
 
 Never invent additional decision categories.
+
+---
+
+# Production Hard Gates
+
+The following production failures are non-negotiable.
+
+If any of these conditions are detected, the visual cannot receive a PASS decision.
+
+Immediate production failure includes:
+
+- Visible production metadata.
+- Wrong campaign language.
+- Unauthorized branding, logos, hospital names, or platform names.
+- Generic international healthcare environment when Egyptian identity is required.
+- Missing or incorrect narrative moment when defined by the Creative Package.
+- Unreadable or overlapping typography.
+- Arabic spelling or rendering errors.
+- Mockups, presentation boards, concept sheets, drafts, or any non-final artwork.
+- Forbidden visible text or internal production labels.
+
+These failures must result in either:
+
+- REVISE, when correction is feasible without changing the approved creative direction.
+- REJECT, when the asset fundamentally fails production readiness.
+
+Creative excellence never overrides production-critical failures.
 
 ---
 

@@ -116,9 +116,9 @@ Section A columns (complete Creative Package):
 2. **Verify completeness** — Check that all information required for the requested media format exists.
 3. **Verify production readiness** — Confirm the Creative Package can be executed by the Media Generation Service.
 4. **Select production mode** — Check Project Assets folder for suitable reference images. If found, select PROJECT_ASSET mode. Otherwise, select AI_GENERATED mode.
-5. **Prepare execution plan** — Create the Production Execution Brief for the Media Generation Service including INSAN Visual Language instructions.
+5. **Prepare generation brief** — Create a structured brief for the Media Generation Service including INSAN Visual Language instructions.
 6. **Add execution guidance** — If minor execution information is missing, add temporary execution-level guidance in memory only.
-7. **Pass package to Media Generation Service** — Invoke the Media Generation Service with the validated Creative Package and execution plan.
+7. **Pass package to Media Generation Service** — Invoke the Media Generation Service with the validated Creative Package and generation brief.
 
 ### Writes
 
@@ -253,7 +253,8 @@ Section B columns:
 5. **Emotional Coherence Check** — Confirm assets match intended emotional impact.
 6. **Production Mode Fidelity** — Verify reference image qualities were respected (Mode A) or Visual Language guidelines followed (Mode B).
 7. **Quality Standard Check** — Verify assets meet INSAN premium quality standard.
-6. **Decision** — Approve, request revision, or reject with clear reasoning.
+8. **Production Validation** — Verify all production-critical requirements: no visible metadata, correct campaign language, no unauthorized branding, Egyptian identity preserved, narrative moment present, readable typography, correct Arabic rendering, final artwork only, sufficient platform impact. Production validation is independent of creative quality. Production Hard Gates block PASS when any requirement fails.
+9. **Decision** — Approve, request revision, or reject with clear reasoning. Production failures are reported separately from creative quality issues.
 
 ### Writes
 
@@ -484,7 +485,7 @@ Content Pipeline
 
 2. **Content Strategy and Content Creation produce drafts** — Their outputs are first versions. The Creative Director owns the final approved version.
 
-3. **Visual Planner is Production Readiness and Planning** — Validates completeness, selects production mode, prepares execution plan. Does not create creative work.
+3. **Visual Planner is Production Readiness** — Validates completeness, selects production mode, prepares generation brief. Does not create.
 
 4. **Spreadsheet is Persistent Database** — Only write columns that store NEW production information. Temporary data stays in memory.
 

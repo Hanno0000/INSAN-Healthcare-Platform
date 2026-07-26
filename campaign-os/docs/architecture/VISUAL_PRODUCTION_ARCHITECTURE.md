@@ -38,7 +38,7 @@ The Visual Pipeline is divided into two sections.
 
 **Section A: Read-Only** — Auto-populated from Content Pipeline via formulas or automated transfer. No Visual worker may modify these columns.
 
-**Section B: Visual Production** — Only Visual Pipeline workers (Visual Planner, Media Generation Service, Visual QA) may write to these columns.
+**Section B: Visual Production** — Only the Designer Team may write to these columns.
 
 ### AP-004: Minimum Columns
 
@@ -56,9 +56,9 @@ Image Generation is not a Worker. It is a Production Service that receives Visua
 
 VISUAL_STAGE tracks the master production state for every row. The orchestration layer (WorkerRunner) owns all state transitions. Workers report completion status.
 
-### AP-008: Separation of Planning/Evaluation and Creative Ownership
+### AP-008: Separation of Planning and Evaluation
 
-The Visual Planner validates production readiness and prepares the execution plan. Visual QA is the only component responsible for generation quality validation and compliance approval.
+The Visual Planner is responsible only for planning. Visual QA is the only component responsible for evaluation, compliance, and approval.
 
 ### AP-009: Format-Agnostic Asset Output
 
@@ -78,7 +78,7 @@ The Creative Director is the Final Creative Authority and the Creative Package O
 
 ### AP-013: Visual Planner Output is Production Input
 
-The Visual Planner's execution plan becomes the direct input to the Image Generation Service. There is no intermediate worker between planning and generation.
+The Visual Planner's format-specific visual plan becomes the direct input to the Image Generation Service. There is no intermediate worker between planning and generation.
 
 ### AP-014: INSAN Visual Language is Mandatory
 
@@ -113,13 +113,13 @@ The Creative Director also produces: Creative Director Quality Score, Creative D
 
 ### Visual Planner
 
-**Unique Capability:** Production Mode Selection and Execution Plan Preparation
+**Unique Capability:** Production Mode Selection and Generation Brief Preparation
 
 The Visual Planner receives the Creative Director's strategic output from Section A (Design Prompt, Visual Concept, Visual Priority, Composition, Design Mood, Visual Elements, Do NOT Show, Text On Design, Design Notes). It validates production readiness and selects the appropriate production mode.
 
-The Visual Planner checks the Project Assets folder for suitable reference images. If found, it selects PROJECT_ASSET mode and prepares a reference-based execution plan. If not found, it selects AI_GENERATED mode and prepares a Visual Language-based execution plan.
+The Visual Planner checks the Project Assets folder for suitable reference images. If found, it selects PROJECT_ASSET mode and prepares a reference-based generation brief. If not found, it selects AI_GENERATED mode and prepares a Visual Language-based generation brief.
 
-The Visual Planner does not recreate or rewrite the Creative Director's direction. It validates completeness and prepares the execution plan for the Media Generation Service.
+The Visual Planner does not recreate or rewrite the Creative Director's direction. It validates completeness and prepares the generation brief for the Media Generation Service.
 
 The Visual Planner's output (Asset Count, Production Mode, Reference Asset Package) becomes the direct input to the Media Generation Service.
 
@@ -127,9 +127,9 @@ The Visual Planner is responsible only for production readiness and mode selecti
 
 ### Visual QA
 
-**Unique Capability:** Production Quality Validation and Visual Language Compliance
+**Unique Capability:** Production Quality Validation, Production-Critical Validation, and Visual Language Compliance
 
-Visual QA is the only component responsible for evaluation, compliance, and approval. It validates that generated assets faithfully represent the Creative Director's approved strategy and comply with the INSAN Visual Language.
+Visual QA is the only component responsible for evaluation, compliance, and approval. It validates that generated assets faithfully represent the Creative Director's approved strategy, comply with the INSAN Visual Language, and satisfy all production-critical requirements.
 
 Visual QA checks for:
 - Alignment with approved communication objective
@@ -141,8 +141,11 @@ Visual QA checks for:
 - Healthcare credibility
 - Technical feasibility
 - Visual coherence
+- Production-critical requirements: no visible metadata, correct campaign language, no unauthorized branding, Egyptian identity preservation, narrative moment presence, readable typography, correct Arabic rendering, final artwork only, sufficient platform impact
 
-Visual QA can approve, flag for revision, or reject the output. Every rejection includes a clear reason that helps improve the next iteration.
+Visual QA applies Production Hard Gates — non-negotiable failures that block PASS regardless of creative quality.
+
+Visual QA can approve, flag for revision, or reject the output. Every rejection includes a clear reason that helps improve the next iteration. Production failures are reported separately from creative quality issues.
 
 ### Image Generation Service
 
@@ -219,14 +222,14 @@ Visual Pipeline (Production)
 │  │       VISUAL PLANNER            │   │
 │  │  Stage: READY → PLANNING → ...  │   │
 │  │  Input: Section A               │   │
-│  │  Output: Reference Asset Package│   │
+│  │  Output: Production Brief       │   │
 │  └─────────────────┬───────────────┘   │
 │                    │                     │
 │                    ▼                     │
 │  ┌─────────────────────────────────┐   │
 │  │     IMAGE GENERATION SERVICE    │   │
 │  │  Stage: GENERATING → QA         │   │
-│  │  Receives Reference Asset Package│   │
+│  │  Receives Production Brief      │   │
 │  │  Returns generated assets       │   │
 │  └─────────────────┬───────────────┘   │
 │                    │                     │
@@ -398,7 +401,7 @@ Section B columns (Visual Planner Output):
 
 ### Unique Capability
 
-Production Mode Selection and Execution Plan Preparation
+Production Mode Selection and Generation Brief Preparation
 
 ### Stage Transition
 
@@ -410,7 +413,7 @@ VISUAL_STAGE: READY → PLANNING → GENERATING
 1. **Context Absorption** — Reads all Section A columns, focusing on Creative Director output.
 2. **Completeness Validation** — Check that all information required for the requested media format exists.
 3. **Production Mode Selection** — Check Project Assets folder for suitable reference images. Select PROJECT_ASSET or AI_GENERATED mode.
-4. **Execution Plan Preparation** — Create the Production Execution Brief including INSAN Visual Language instructions.
+4. **Generation Brief Preparation** — Create a structured brief including INSAN Visual Language instructions.
 5. **Asset Count** — Set the number of media assets to generate based on Content Format.
 6. **Constraint Check** — Validates plan against all visual constraints from Section A.
 
@@ -456,7 +459,8 @@ If rejected: VISUAL_STAGE: QA → FAILED
 5. **Emotional Coherence Check** — Confirms assets match intended emotional impact.
 6. **Production Mode Fidelity** — Verifies reference image qualities respected (Mode A) or Visual Language followed (Mode B).
 7. **Quality Standard Check** — Verifies assets meet INSAN premium quality standard.
-8. **Decision** — Approves, flags for revision, or rejects output with clear reasoning.
+8. **Production Validation** — Verifies all production-critical requirements: no visible metadata, correct campaign language, no unauthorized branding, Egyptian identity preserved, narrative moment present, readable typography, correct Arabic rendering, final artwork only, sufficient platform impact. Production validation is independent of creative quality.
+9. **Decision** — Approves, flags for revision, or rejects output with clear reasoning. Production Hard Gates block PASS when any production-critical requirement fails.
 
 ### What Visual QA Does NOT Do
 
@@ -649,7 +653,7 @@ Only approved rows transfer from Content Pipeline to Visual Pipeline after Creat
 
 Visual Pipeline is divided into Section A (Read-Only) and Section B (Visual Production).
 
-**Rationale:** Section A is auto-populated via formulas. Section B is write-only by Visual Pipeline workers. Clear access control.
+**Rationale:** Section A is auto-populated via formulas. Section B is write-only by Designer Team. Clear access control.
 
 ### AD-004: Minimum Columns
 
@@ -669,11 +673,11 @@ Image Generation is a Production Service, not a Worker.
 
 **Rationale:** Image Generation is a utility that receives plans and returns assets. It does not make creative decisions.
 
-### AD-007: Separation of Planning/Evaluation and Creative Ownership
+### AD-007: Separation of Planning and Evaluation
 
-The Visual Planner validates production readiness and prepares the execution plan. Visual QA is the only component responsible for generation quality validation and compliance approval.
+The Visual Planner is responsible only for planning. Visual QA is the only component responsible for evaluation, compliance, and approval.
 
-**Rationale:** Clean separation of concerns. Planning produces execution direction. QA validates generation quality.
+**Rationale:** Clean separation of concerns. Planning produces direction. QA validates quality.
 
 ### AD-008: Format-Agnostic Asset Output
 
@@ -707,7 +711,7 @@ The Creative Director is the Final Creative Authority and the Creative Package O
 
 ### AD-013: Visual Planner Output is Production Input
 
-The Visual Planner's execution plan becomes the direct input to the Image Generation Service. There is no intermediate worker between planning and generation.
+The Visual Planner's format-specific visual plan becomes the direct input to the Image Generation Service. There is no intermediate worker between planning and generation.
 
 **Rationale:** The Visual Planner already produces sufficient information for image generation. An intermediate worker would add complexity without adding value. Visual QA validates the final output against the approved strategy and plan.
 

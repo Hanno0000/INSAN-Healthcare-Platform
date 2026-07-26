@@ -1,8 +1,8 @@
 # Campaign OS -- Current State
 
-> **Version:** 1.2
+> **Version:** 1.3
 > **Date:** 2026-07-26
-> **Status:** Sprint 1 -- In Progress (Production Validation Run)
+> **Status:** Sprint 2 -- In Progress (Branch B Complete)
 > **Canonical Handoff Document** -- Primary entry point for Campaign OS development.
 > **Scope:** Campaign OS only. For Website Platform, see `website/Docs/CURRENT_STATE.md`.
 
@@ -12,83 +12,97 @@
 
 | Dimension | Status |
 |-----------|--------|
-| **Project Phase** | Sprint 1 -- Visual Production Quality & Workflow Hardening |
+| **Project Phase** | Sprint 2 -- Visual Production Quality Hardening |
 | **Documentation** | Complete (architecture, contracts, prompts, roadmap) |
 | **Apps Script Code** | Implemented (12 source files in `src/`) |
-| **Workers** | 4 workers rewritten (Creative Director, Visual QA, Media Generation, Visual Planner) |
+| **Workers** | 4 workers finalized (Creative Director, Visual QA, Media Generation, Visual Planner) |
 | **Production Pipeline** | Operational (Content Pipeline + Visual Pipeline) |
-| **Current Sprint** | Production Validation Run (Step 5) |
+| **Current Sprint** | Sprint 2 -- Branch B Complete (Visual Planner & Visual QA) |
 | **Visual Language** | Implemented (INSAN Visual Language spec, CONFIG.gs) |
 
-**Overall:** Campaign OS is a Google Apps Script AI Operating System that transforms strategic content into publishable social media assets using AI Workers. Sprint 1 is focused on improving production quality. Steps 1-4 (Creative Direction, Media Generation, Visual QA, Visual Planner Completion Pass) are complete. The system is ready for the Production Validation Run to execute the full pipeline and provide evidence of improvement.
+**Overall:** Campaign OS is a Google Apps Script AI Operating System that transforms strategic content into publishable social media assets using AI Workers. Sprint 2 is focused on visual production quality hardening based on Validation Run #001 findings. Branch B (Visual Planner & Visual QA) is complete with all assigned Sprint 2 findings implemented and consistency audit passed.
 
 ---
 
 ## Current Project Phase
 
-**Sprint 1 -- Visual Production Quality & Workflow Hardening**
+**Sprint 2 -- Visual Production Quality Hardening**
 
 The single goal of this sprint:
 
-> "Improve the quality of the first Production Run so that generated designs become publication-ready."
+> "Raise quality of the next Production Run. No feature additions."
 
 Every implementation decision must answer: **"Will this improve the quality of the next production run?"**
 
 ---
 
-## Sprint 1 Objective
+## Sprint 2 Objective
 
-Sprint 1 was created after the first Production Run was technically successful but the output did not meet the creative standard. The infrastructure was stable, the pipeline worked, the workers executed -- but the images were not publication-ready.
+Sprint 2 was created after the first Production Validation Run revealed 20 findings (10 Visual Production + 10 Pipeline Data). The sprint addresses these findings through targeted worker prompt updates.
 
-The sprint addresses four root causes:
-- **P1:** Obvious AI Appearance (plastic skin, uncanny faces, photorealism attempts)
-- **P2:** Unwanted Branding Generation (logos, "INSAN" text, watermarks on images)
-- **P3:** Weak Prompt Philosophy (no coherent visual identity, no style guidelines)
-- **P4:** Visual QA Approving Unacceptable Images (no Visual Language compliance checks)
+**Branch B Status:** Complete
+- Visual Planner Prompt finalized with Creative Preservation Validation
+- Visual QA Prompt finalized with Production Validation & Hard Gates
+- All assigned Sprint 2 findings implemented
+- Prompt propagation completed across architecture documentation
+- Consistency Audit passed
 
 ---
 
 ## Current Sprint Status
 
+### Sprint 2 Progress
+
 | Step | Area | Status |
 |---|---|---|
-| Step 1 | Creative Direction | COMPLETE |
-| Step 2 | Media Generation | COMPLETE |
-| Step 3 | Visual QA | COMPLETE |
-| Step 4 | Visual Planner Completion Pass | COMPLETE |
-| Step 5 | Production Validation Run | CURRENT |
-| Step 6 | Post-Run Review | Pending |
+| Step 0 | Ownership Verification | COMPLETE |
+| Step 1 | Creative Director Worker | TODO |
+| Step 2 | Visual Planner Worker | COMPLETE |
+| Step 3 | Media Generation Service | COMPLETE |
+| Step 4 | Visual QA Worker | COMPLETE |
+| Step 5 | Content Strategy Worker | TODO |
+| Step 6 | System Logging | TODO |
+
+**Branch B:** COMPLETE (Visual Planner & Visual QA)
+**Current Phase:** Step 5 — Content Strategy Worker (Pending)
 
 ---
 
 ## Completed Work
 
-### Step 1: Creative Direction -- COMPLETE
+### Step 0: Ownership Verification -- COMPLETE
 
-- INSAN Visual Language specification created (`INSAN_VISUAL_LANGUAGE_SPEC.md`)
-- Creative Director rewritten as Creative Package Owner (`CREATIVE_DIRECTOR_WORKER.md` V2)
-- Design Governance, Branding Rules, Visual Language integrated
-- All architecture documents updated and propagated
+- Verified ownership of DP-002, DP-005, DP-006, DP-007 against Worker Contracts, Prompt Responsibilities, and Sprint Ownership
+- All four findings have correct Primary Owner and Supporting Workers
+- No conflicts found. No ownership changes required.
 
-### Step 2: Media Generation -- COMPLETE
+### Step 2: Visual Planner Worker -- COMPLETE (Branch B)
 
-- Media Generation Service prompt rewritten (`MEDIA_GENERATION_SERVICE.md` V3, 1034 lines)
-- AI Coaching philosophy implemented
-- Visual Language compliance, branding protection, generation improvements
+- Visual Planner prompt updated with Stage 4 — Creative Preservation Validation
+- Added Narrative Moment, Egyptian Identity, Composition Intent, Visible vs Internal, Final Artwork preservation checks
+- Added Preservation Failure Rule (stop production, report failure, wait for Creative Director)
+- Added Creative Preservation Confirmation to Stage 6 Generation Brief
+- All 8 assigned Sprint 2 findings implemented (VP-001, VP-003, VP-006, VP-009, DP-002, DP-004, DP-005, DP-007)
+- Consistency audit passed
 
-### Step 3: Visual QA -- COMPLETE
+### Step 3: Media Generation Service -- COMPLETE
 
-- Visual QA Worker rewritten (`VISUAL_QA_WORKER.md` V2, 590 lines)
-- AI Coaching philosophy, Hard Gates, Branding validation, Quality validation
+- Media Generation Service prompt updated for Sprint 2
+- Production Execution Brief translation methodology
+- Prompt Construction Standard
+- Internal Prompt Validation
+- Production Safety & Execution Constraints
+- Typography & Visible Text Quality Standard
+- All assigned Sprint 2 findings implemented
 
-### Step 4: Visual Planner Completion Pass -- COMPLETE
+### Step 4: Visual QA Worker -- COMPLETE (Branch B)
 
-- Visual Planner prompt updated (`VISUAL_PLANNER_WORKER.md`, 749 lines)
-- Added Revision Loop Handling (was missing -- blocking issue)
-- Added format-specific completeness checklist in Stage 1
-- Completed Input list (Content Format, Content ID)
-- Clarified VISUAL_STAGE ownership (WorkerRunner, not Planner)
-- Added Mode B fallback note when PROJECT_ASSETS_FOLDER_ID is empty
+- Visual QA prompt updated with Step 8 — Production Validation (9-item checklist)
+- Added Production Hard Gates (9 non-negotiable failure conditions)
+- Added Production Failure Reporting (creative vs production distinction)
+- All 13 assigned Sprint 2 findings implemented (VP-001 through VP-010, DP-003, DP-004, DP-008, DP-009)
+- Prompt propagation completed across architecture documentation
+- Consistency audit passed
 
 ---
 
@@ -141,15 +155,15 @@ Section B: Visual Production
 |--------|--------|-------|
 | Content Strategy Worker | Operational | Produces first drafts of strategy fields |
 | Content Creation Worker | Operational | Produces first drafts of content fields |
-| Creative Director | Rewritten (V2) | Creative Package Owner -- owns final approved version of every creative field |
+| Creative Director | Operational | Creative Package Owner -- owns final approved version of every creative field |
 
 ### Visual Pipeline Workers
 
 | Worker | Status | Notes |
 |--------|--------|-------|
-| Visual Planner | Completion Pass Complete | Production-readiness review with revision loop handling |
-| Media Generation Service | Rewritten (V3) | Executes Creative Package, generates assets via Gemini API |
-| Visual QA | Rewritten (V2) | Validates against Creative Package, enforces Visual Language |
+| Visual Planner | Finalized (Sprint 2) | 7-stage workflow with Creative Preservation Validation |
+| Media Generation Service | Updated (Sprint 2) | Executes Creative Package, generates assets via Gemini API |
+| Visual QA | Finalized (Sprint 2) | 9-step evaluation with Production Validation & Hard Gates |
 | Publishing Service | RESERVED | Not yet implemented, columns reserved |
 
 ---
@@ -227,24 +241,30 @@ All configuration is centralized in `CONFIG.gs`:
 
 ## Validation Status
 
-### Sprint 1 Progress
+### Sprint 2 Progress
 
-- Steps 1-4: All core workers rewritten and reviewed
-- Step 5: Production Validation Run -- ready to execute
-- Step 6: Post-Run Review -- pending (after validation run)
-- No validation run has been executed yet after the Sprint 1 rewrites
+- Step 0: Ownership Verification -- COMPLETE
+- Step 1: Creative Director Worker -- TODO
+- Step 2: Visual Planner Worker -- COMPLETE (Branch B)
+- Step 3: Media Generation Service -- COMPLETE
+- Step 4: Visual QA Worker -- COMPLETE (Branch B)
+- Step 5: Content Strategy Worker -- TODO
+- Step 6: System Logging -- TODO
+
+### Branch B Completion Summary
+
+- Visual Planner Prompt finalized with Creative Preservation Validation (Stage 4)
+- Visual QA Prompt finalized with Production Validation (Step 8) & Hard Gates
+- All assigned Sprint 2 findings implemented
+- Prompt propagation completed across architecture documentation
+- Consistency audit passed (6/6 dimensions)
 
 ### What Needs Validation
 
-- Generated images clearly avoid AI appearance
-- Generated images follow INSAN Visual Language (style ratio, prohibited styles)
-- Generated images communicate Trust, Warmth, and Modernity simultaneously
-- No unwanted logos, text, or watermarks
-- Creative Director produces production-ready Design Prompts
-- Visual QA catches Visual Language violations
-- Visual Planner correctly selects production mode and handles revision loop
-- Media Generation executes without reinterpretation
-- Revision loop functions correctly
+- Creative Preservation Validation catches loss of narrative moment, Egyptian identity, composition intent, visible vs internal instructions, and final artwork requirements
+- Production Hard Gates prevent pass of images with critical production failures
+- Production Failure Reporting distinguishes creative issues from production issues
+- Generation Brief preserves all creative requirements through to Media Generation
 
 ---
 
@@ -276,20 +296,18 @@ All configuration is centralized in `CONFIG.gs`:
 
 ## Next Immediate Step
 
-**Step 5: Production Validation Run**
+**Step 5: Content Strategy Worker**
 
-Execute the full pipeline with test content and provide evidence of improvement. This run will validate:
-- Generated images clearly avoid AI appearance
-- Generated images follow INSAN Visual Language (style ratio, prohibited styles)
-- Generated images communicate Trust, Warmth, and Modernity simultaneously
-- No unwanted logos, text, or watermarks
-- Creative Director produces production-ready Design Prompts
-- Visual QA catches Visual Language violations
-- Visual Planner correctly selects production mode and handles revision loop
-- Media Generation executes without reinterpretation
-- Revision loop functions correctly
+Review the Content Strategy Worker against every Sprint 2 finding assigned to it before implementing prompt modifications. The Content Strategy Worker is responsible for:
+- DP-001 (Part of): Follow language policy
 
-After the validation run, Step 6 (Post-Run Review) will analyze results and inform future work.
+After Content Strategy, Step 6 (System Logging) will address DP-010.
+
+---
+
+## Sprint 2 Reference
+
+`docs/roadmap/SPRINT_2_VALIDATION_IMPROVEMENTS.md` is the official Sprint 2 reference. Read it first when resuming work.
 
 ---
 
