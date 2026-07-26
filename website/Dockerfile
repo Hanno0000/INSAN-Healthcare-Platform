@@ -45,9 +45,12 @@ COPY --from=api-builder /app/apps/api/dist ./dist
 COPY --from=api-builder /app/apps/api/node_modules/.prisma ./node_modules/.prisma
 COPY --from=api-builder /app/apps/api/node_modules/@prisma ./node_modules/@prisma
 COPY --from=api-builder /app/apps/api/package.json ./
+COPY --from=api-builder /app/apps/api/prisma ./prisma
+COPY scripts/start.sh ./
+RUN chmod +x start.sh
 
 EXPOSE 4000
-CMD ["node", "dist/main.js"]
+CMD ["sh", "start.sh"]
 
 # ---------- Web production ----------
 FROM node:20-alpine AS web-production

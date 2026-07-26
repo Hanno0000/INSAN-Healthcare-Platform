@@ -22,7 +22,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
     let code = 'INTERNAL_SERVER_ERROR';
-    let requestId: string | undefined;
+
+    // Reuse request ID from the logging interceptor if present
+    const requestId =
+      (request.headers['x-request-id'] as string) || randomUUID();
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
@@ -63,7 +66,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           code = 'RELATION_VIOLATION';
           break;
         default:
-          requestId = randomUUID();
           this.logger.error(
             `[${requestId}] Unhandled Prisma error ${exception.code}: ${exception.message}`,
             exception.stack,
@@ -79,7 +81,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     } else {
       // Never forward raw internal error messages to the client.
       // Full detail (message + stack) is logged server-side only.
-      requestId = randomUUID();
       const err = exception instanceof Error ? exception : new Error(String(exception));
       this.logger.error(`[${requestId}] Unhandled exception: ${err.message}`, err.stack);
       message = 'Internal server error';
@@ -91,9 +92,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       error: {
         code,
         message,
+        requestId,
         path: request.url,
         timestamp: new Date().toISOString(),
-        ...(requestId ? { requestId } : {}),
       },
     });
   }

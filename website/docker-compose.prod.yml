@@ -48,6 +48,10 @@ services:
           memory: 256M
           cpus: "0.5"
 
+  # Self-hosted PostgreSQL for development/testing.
+  # For production: use a managed provider (Supabase, Neon, AWS RDS, etc.)
+  # and override DATABASE_URL in .env.production to point to it.
+  # If keeping this service in production, set up automated pg_dump backups.
   db:
     image: postgres:16-alpine
     container_name: insan-db

@@ -29,12 +29,14 @@
 
 **Branch:** `main` (up to date with `origin/main`)
 **Remote:** `origin/main` only
-**Uncommitted changes:** Sprint B infrastructure changes pending commit (20+ files).
+**Uncommitted changes:** None.
 
 ### Recent Commits
 
 | Hash | Message |
 |------|---------|
+| `dbca761` | feat(sprint-b): production infrastructure — Docker, nginx, CI/CD, logging, deployment scripts |
+| `c84ef43` | feat(sprint-a): application hardening — Helmet, CORS, rate limiting, DTO validation |
 | `6ded56d` | refactor(repo): relocate brand assets and clean untracked files |
 | `ba3330f` | docs: separate CURRENT_STATE documents for Website Platform and Campaign OS |
 | `dbafbb6` | docs(sprint-1): add Direction Correction -- refocus on production quality |
@@ -691,6 +693,16 @@ The following models exist in the Prisma schema but have no corresponding NestJS
 - **Health endpoint:** `/health` now verifies real database connectivity via Prisma.
 - **Global exception filter:** Added `requestId` to 500 responses; catch default Prisma errors; never leaks internals.
 - **Build verified:** TypeScript type-check + build pass clean for both API and web apps.
+
+### Independent Review Fixes (2026-07-26)
+
+Following an independent production readiness review, the following defects were identified and fixed:
+
+- **Prisma migrations in Docker:** API Docker image now copies `start.sh` + `prisma/` directory; CMD runs `start.sh` which executes `prisma migrate deploy` before starting the API. `.dockerignore` no longer excludes `scripts/`.
+- **Trust proxy:** `app.set('trust proxy', 1)` enabled in production for correct client IP resolution behind nginx — critical for rate limiting and audit logging accuracy.
+- **Request ID correlation:** Exception filter now reads `x-request-id` from request headers (set by the logging interceptor) instead of generating a separate UUID, enabling log correlation for 500 errors.
+- **CI lint:** Removed `continue-on-error: true` from the lint step so lint failures now fail the build.
+- **Documentation:** Updated CURRENT_STATE.md commit history, clarified `db` service in docker-compose.prod.yml and `.env.production.example` is for dev/testing — production should use a managed PostgreSQL provider.
 
 ### Core Platform Implementation
 

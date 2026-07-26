@@ -8,6 +8,7 @@ const helmet = require('helmet');
 import { AppModule } from './app.module';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { RequestLoggingInterceptor } from './common/interceptors/request-logging.interceptor';
+import { HttpAdapterHost } from '@nestjs/core';
 
 const REQUIRED_ENV_VARS = [
   'DATABASE_URL',
@@ -68,6 +69,12 @@ async function bootstrap() {
   });
 
   app.setGlobalPrefix('api/v1', { exclude: ['health'] });
+
+  // Trust first proxy (nginx) — required for correct req.ip, rate limiting, and audit logging
+  if (process.env.NODE_ENV === 'production') {
+    const { httpAdapter } = app.get(HttpAdapterHost);
+    httpAdapter.getInstance().set('trust proxy', 1);
+  }
 
   app.use(cookieParser());
 
