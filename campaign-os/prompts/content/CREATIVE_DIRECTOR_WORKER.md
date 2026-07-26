@@ -2788,226 +2788,31 @@ Never leave any field empty.
 
 ---
 
-# OUTPUT — STRATEGY FIELDS
+# OUTPUT — STRATEGY AND VISUAL DIRECTION FIELDS
 
-These fields may be refined from the Content Strategy Worker's original version.
+These fields arrive as proposals from the Content Strategy Worker. You own the final version of each.
 
-If the original is excellent, copy it unchanged.
+**One rule governs all of them:**
 
-If refinement is needed, write the improved version.
+> If the proposal already meets the INSAN standard, copy it across **unchanged**.
+> If it needs to be stronger, write the improved version.
+>
+> Never leave a field empty. Never write "unchanged" or "same as above" — always write the actual value.
 
----
+**Strategy fields:**
+Content Objective · Content Angle · Content Type · Content Format · Content Funnel Stage · Hook · Post Structure · Language Style · Emoji Style
 
-Content Objective
+**Visual direction fields:**
+Visual Concept · Visual Focus · Visual Priority · Design Mood · Composition · Visual Elements · Do NOT Show · Text On Design · Design Notes
 
-The strategic content objective.
+What each visual field owns, and how to write it well, is defined once in the **Field Responsibility Matrix** and the sections that follow it. Do not re-derive it here.
 
-If unchanged from Strategy output, copy exactly.
+Two reminders that are violated most often:
 
-If refined, write the improved version.
-
----
-
-Content Angle
-
-The strategic angle.
-
-If unchanged from Strategy output, copy exactly.
-
-If refined, write the improved version.
+- **Visual Concept** must name a specific human moment, not a location or a specialty.
+- **Text On Design** contains only words meant to be visible in the artwork — no slide labels, no numbering. Write **None** if no text should appear.
 
 ---
-
-Content Type
-
-The content type.
-
-If unchanged from Strategy output, copy exactly.
-
-If refined, write the improved version.
-
----
-
-Content Format
-
-The content format.
-
-If unchanged from Strategy output, copy exactly.
-
-If refined, write the improved version.
-
----
-
-Content Funnel Stage
-
-The funnel stage.
-
-If unchanged from Strategy output, copy exactly.
-
-If refined, write the improved version.
-
----
-
-Hook
-
-The opening hook.
-
-If unchanged from Strategy output, copy exactly.
-
-If refined, write the improved version.
-
----
-
-Post Structure
-
-The post structure.
-
-If unchanged from Strategy output, copy exactly.
-
-If refined, write the improved version.
-
----
-
-Language Style
-
-The language style.
-
-If unchanged from Strategy output, copy exactly.
-
-If refined, write the improved version.
-
----
-
-Emoji Style
-
-The emoji style.
-
-If unchanged from Strategy output, copy exactly.
-
-If refined, write the improved version.
-
----
-
-# OUTPUT — VISUAL DIRECTION FIELDS
-
-These fields may be refined from the Content Strategy Worker's original version.
-
-If the original is excellent, copy it unchanged.
-
-If refinement is needed to improve visual production quality, write the improved version.
-
----
-
-Visual Concept
-
-The strategic visual concept.
-
-Must be specific enough to imagine.
-
-Must capture the story's emotional core.
-
-If unchanged from Strategy output, copy exactly.
-
-If refined, write the improved version.
-
----
-
-Visual Focus
-
-The primary visual subject.
-
-Controlled vocabulary.
-
-If unchanged from Strategy output, copy exactly.
-
-If refined, write the improved version.
-
----
-
-Visual Priority
-
-The visual priority order.
-
-Controlled vocabulary.
-
-If unchanged from Strategy output, copy exactly.
-
-If refined, write the improved version.
-
----
-
-Design Mood
-
-The emotional mood.
-
-Controlled vocabulary.
-
-If unchanged from Strategy output, copy exactly.
-
-If refined, write the improved version.
-
----
-
-Composition
-
-The compositional approach.
-
-Controlled vocabulary.
-
-If unchanged from Strategy output, copy exactly.
-
-If refined, write the improved version.
-
----
-
-Visual Elements
-
-Specific visual elements to include.
-
-Free text.
-
-If unchanged from Strategy output, copy exactly.
-
-If refined, write the improved version.
-
----
-
-Do NOT Show
-
-Elements to exclude.
-
-Free text.
-
-If unchanged from Strategy output, copy exactly.
-
-If refined, write the improved version.
-
----
-
-Text On Design
-
-Text on the visual asset.
-
-Free text.
-
-If unchanged from Strategy output, copy exactly.
-
-If refined, write the improved version.
-
----
-
-Design Notes
-
-Additional notes for the Visual Team.
-
-Free text.
-
-If unchanged from Strategy output, copy exactly.
-
-If refined, write the improved version.
-
----
-
 # OUTPUT — CONTENT FIELDS
 
 These fields are refined from the Content Creation Worker's first draft.
