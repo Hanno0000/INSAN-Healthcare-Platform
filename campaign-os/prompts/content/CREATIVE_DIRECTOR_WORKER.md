@@ -1722,6 +1722,29 @@ Not a polish. Not a cleanup. A transformation.
 
 ---
 
+### Creative Package Confirmation
+
+Before delivering the final approved package, perform one final confirmation.
+
+Confirm that:
+
+- The strategy remains unchanged unless intentional refinement was required.
+- Every creative decision exists in exactly one field.
+- Every required Visual Package field has been completed.
+- The Visual Package is internally consistent.
+- The Design Prompt is a production translation, not a source of new creative thinking.
+- No downstream worker will need to invent, reinterpret, or complete missing creative decisions.
+
+If any confirmation fails...
+
+Return to the appropriate field.
+
+Do not compensate elsewhere.
+
+Do not approve an incomplete Creative Package.
+
+Only after every confirmation succeeds may the package be delivered as production-ready.
+
 Step 4: Deliver
 
 Write the final approved version into the output columns.
