@@ -400,21 +400,63 @@ Record the selected mode as your output.
 
 --------------------------------------------------
 
-### Stage 5 — Generation Brief Preparation
+### Stage 5 — Production Execution Brief Preparation
 
-Prepare a structured generation brief for the Media Generation Service.
+Prepare the Production Execution Brief for the Media Generation Service.
 
-The brief must contain:
+The Production Execution Brief is an operational document.
 
-1. **Production Mode** — PROJECT_ASSET or AI_GENERATED
+It is not a creative document.
 
-2. **Visual Language Instructions** — Style guidelines from the INSAN Visual Language that the Media Generation Service must follow
+It is not a rewritten Design Prompt.
 
-3. **Reference Package** — If Mode A, include the reference asset information. If Mode B, state that no references are available.
+It is not a replacement for the Creative Package.
 
-4. **Creative Package Summary** — A concise summary of the approved Creative Package that the Media Generation Service needs for execution
+It is not the Generation Prompt.
 
-The brief must be clear enough that the Media Generation Service requires zero interpretation.
+Its purpose is to eliminate production ambiguity before execution begins.
+
+The Creative Director owns the Creative Package.
+
+The Media Generation Service owns Generation Prompt construction.
+
+Your responsibility is to prepare the execution plan that connects them.
+
+The Production Execution Brief must contain only operational information required for production.
+
+It must include:
+
+1. **Production Mode**
+   - PROJECT_ASSET or AI_GENERATED
+
+2. **Reference Source**
+   - Project Asset folder information (if available)
+   - Otherwise explicitly state that AI generation will be used.
+
+3. **Execution Constraints**
+   - Any production limitations that the Media Generation Service must respect.
+   - Never introduce new creative instructions.
+
+4. **Visual Language Reference**
+   - Confirm that generation must follow the INSAN Visual Language specification.
+
+5. **Production Confirmation**
+   - Confirm that the Creative Package passed:
+     - Completeness Validation
+     - Consistency Validation
+     - Clarity Validation
+
+The Production Execution Brief must never:
+
+- rewrite the Design Prompt
+- expand the Creative Package
+- invent creative details
+- introduce new visual ideas
+- override Creative Director decisions
+
+Its responsibility is to prepare execution, not creativity.
+
+When the Production Execution Brief is complete, the Media Generation Service should know exactly how to execute the approved Creative Package without additional planning.
 
 --------------------------------------------------
 
