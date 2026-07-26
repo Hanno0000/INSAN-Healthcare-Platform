@@ -1359,63 +1359,152 @@ Brand considerations, medical accuracy notes, cultural sensitivity requirements,
 
 # PRODUCING THE DESIGN PROMPT
 
-The Design Prompt is the final production instruction for visual generation.
+The Design Prompt is NOT a second creative document.
 
-It is not an image description.
+The Design Prompt is the execution layer of the approved Visual Creative Package.
 
-It is a creative brief that the Media Generation Service reads alongside the visual direction fields to produce the intended asset.
+Its purpose is not to invent.
 
-### What a Production-Ready Design Prompt Contains
+Its purpose is not to redesign.
 
-A strong Design Prompt integrates:
+Its purpose is not to improve the visual concept.
 
-The visual concept — what scene or moment to depict.
+Its purpose is not to add creativity.
 
-The visual language — INSAN Visual Language terms (Stylized Realism, Semi-Realistic Editorial Illustration, 3D Matte).
+All creative thinking must already be complete before the Design Prompt is written.
 
-The composition — how the frame is structured.
+The Design Prompt simply translates the approved Visual Creative Package into production-ready instructions for the Media Generation Service.
 
-The emotional tone — what the viewer should feel.
+---
 
-The key elements — what must be in the frame.
+## THE DESIGN PROMPT DEPENDS ON THE VISUAL PACKAGE
 
-The exclusions — what must not be in the frame.
+The Visual Creative Package is the source of truth.
 
-The environment — where the scene takes place.
+Every creative decision must already exist inside these approved fields:
 
-The lighting — what kind of light defines the mood.
+- Visual Concept
+- Visual Focus
+- Visual Priority
+- Design Mood
+- Composition
+- Visual Elements
+- Do NOT Show
+- Text On Design
+- Design Notes
 
-The human expression — what the subjects look like, how they behave.
+The Design Prompt does not replace these fields.
 
-### What a Weak Design Prompt Looks Like
+The Design Prompt does not compete with these fields.
 
-"A doctor in a hospital."
+The Design Prompt does not duplicate these fields.
 
-This is a description, not a production instruction.
+The Design Prompt executes these fields.
 
-It could produce any image.
+If a creative decision does not exist inside the Visual Package...
 
-It communicates nothing specific.
+The Design Prompt must not invent it.
 
-### What a Strong Design Prompt Looks Like
+Instead, improve the Visual Package first.
 
-"Stylized realism. A female pediatrician in a modern examination room, kneeling to eye level with a 6-year-old boy sitting on the examination table. Warm natural window light from the left. The doctor holds a stethoscope loosely in one hand, genuine smile, relaxed posture. The child's expression shifts from nervous to curious. Clean background with colorful wall art at child height, wooden furniture accents, medical equipment visible but not dominant. Composition: Close-up, eye-level angle. Mood: Calm, warm, human. Style: 70% stylized realism, 20% semi-realistic editorial. No cartoon elements, no exaggerated emotions, no stock-photo posing."
+Only then produce the Design Prompt.
 
-This is a production instruction.
+---
 
-It communicates specific visual decisions.
+## TRANSLATION — NOT RECREATION
 
-### Design Prompt Principles
+Think like a film director handing instructions to a production team.
 
-**Be specific, not generic.** Every word should narrow the possibilities. Generic prompts produce generic images.
+The screenplay already exists.
 
-**Reference the visual direction fields.** The Design Prompt should integrate Visual Concept, Design Mood, Composition, Visual Elements, and Do NOT Show. Do not repeat them mechanically — weave them into a coherent production instruction.
+Your job is not to rewrite the screenplay.
 
-**Use INSAN Visual Language terms.** Reference style ratio (70/20/10), composition philosophy, lighting philosophy, and human expression philosophy from the Visual Language spec.
+Your job is to explain exactly how it should be produced.
 
-**Customize for the story.** Avoid repeating identical descriptive boilerplate across every prompt. The Design Prompt should feel customized for the specific emotional context of each post.
+The Design Prompt performs the same role.
 
-**Serve the platform.** If the format is a carousel, the Design Prompt should account for series consistency. If the format is a story, the Design Prompt should prioritize vertical composition and thumb-stopping quality.
+It converts approved creative decisions into clear production instructions.
+
+Nothing more.
+
+Nothing less.
+
+---
+
+## WHAT THE DESIGN PROMPT MAY DO
+
+The Design Prompt MAY:
+
+- Connect approved visual fields into one coherent instruction.
+- Organize the production flow.
+- Clarify relationships between subjects and environment.
+- Improve production precision.
+- Apply INSAN Visual Language terminology.
+- Improve generation reliability.
+
+---
+
+## WHAT THE DESIGN PROMPT MUST NEVER DO
+
+The Design Prompt must NEVER:
+
+- Introduce a new scene.
+- Introduce a new story.
+- Introduce a new emotion.
+- Introduce new characters.
+- Introduce new objects.
+- Introduce new visual priorities.
+- Introduce new branding.
+- Introduce production metadata.
+- Translate Text On Design.
+- Rewrite Text On Design.
+- Replace approved creative decisions.
+
+If new creative thinking is required...
+
+Return to the Visual Package.
+
+Do not hide new ideas inside the Design Prompt.
+
+---
+
+## A PRODUCTION TRANSLATION
+
+A production-ready Design Prompt should read like production instructions.
+
+It should naturally integrate:
+
+- the approved Visual Concept
+- the approved Design Mood
+- the approved Composition
+- the approved Visual Elements
+- the approved Do NOT Show rules
+- the approved Text On Design
+- the approved Design Notes
+
+without creating additional creative direction.
+
+The prompt should reduce ambiguity.
+
+It should never increase it.
+
+---
+
+## FINAL DECISION RULE
+
+The Visual Creative Package owns creativity.
+
+The Design Prompt owns execution.
+
+If there is ever a conflict between the Design Prompt and the Visual Package...
+
+The Visual Package is always correct.
+
+Update the Visual Package first.
+
+Then regenerate the Design Prompt.
+
+Never resolve creative conflicts inside the Design Prompt itself.
 
 ---
 
