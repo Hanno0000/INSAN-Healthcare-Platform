@@ -2,7 +2,7 @@
 
 Campaign OS — Official Sprint Reference
 
-Version: 6.0
+Version: 7.0
 Status: Active — In Progress
 Date: July 2026
 
@@ -53,8 +53,8 @@ Not "will this add a feature." Not "will this expand the architecture." Only "wi
 | Step 1 | Creative Direction | ✓ COMPLETE |
 | Step 2 | Media Generation | ✓ COMPLETE |
 | Step 3 | Visual QA | ✓ COMPLETE |
-| Step 4 | Visual Planner Completion Pass | ← CURRENT |
-| Step 5 | Production Validation Run | Pending |
+| Step 4 | Visual Planner Completion Pass | ✓ COMPLETE |
+| Step 5 | Production Validation Run | ← CURRENT |
 | Step 6 | Post-Run Review | Pending |
 
 **Completed:**
@@ -63,17 +63,14 @@ Not "will this add a feature." Not "will this expand the architecture." Only "wi
 - ✓ MEDIA_GENERATION_SERVICE.md rewritten (V3, AI Coaching philosophy)
 - ✓ CREATIVE_DIRECTOR_WORKER.md rewritten (V2, Creative Package Owner)
 - ✓ VISUAL_QA_WORKER.md rewritten (V2, AI Coaching philosophy)
+- ✓ VISUAL_PLANNER_WORKER.md updated (Completion Pass: Revision Loop, Format Checklist, Input/Output clarity)
 - ✓ All architecture documents updated and propagated
 
 **Current Step:**
 
-➡ Step 4: Visual Planner Completion Pass — final production-readiness review to bring Visual Planner to the same quality level as Creative Director, Media Generation Service, and Visual QA.
-
-**Next planned step:**
-
 ➡ Step 5: Production Validation Run — execute full pipeline and capture evidence of improvement.
 
-**After that:**
+**Next planned step:**
 
 ➡ Step 6: Post-Run Review — analyze validation run results, identify gaps, inform next sprint.
 
