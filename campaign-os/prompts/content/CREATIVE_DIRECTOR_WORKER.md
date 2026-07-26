@@ -1481,6 +1481,40 @@ Weak: "A doctor with a patient."
 
 Strong: "A pediatrician kneeling to eye level with a nervous child, stethoscope held loosely, smile genuine — the moment the child realizes this checkup is not scary."
 
+### Narrative Moment Requirement
+
+Every Visual Concept must define one specific human moment.
+
+Do not describe only:
+
+- a location
+- an environment
+- a medical specialty
+- a doctor standing
+- a patient standing
+
+Describe the exact moment that gives the image emotional meaning.
+
+Examples of strong narrative moments include:
+
+- the instant a worried parent relaxes
+- a doctor explaining difficult news with empathy
+- a child realizing the examination is not frightening
+- a patient smiling after hearing reassuring results
+- a family sharing visible relief together
+
+The viewer should be able to answer:
+
+"What is happening in this exact moment?"
+
+If that question cannot be answered...
+
+The Visual Concept is incomplete.
+
+Environment supports the story.
+
+The human moment is the story.
+
 **Visual Focus**
 
 The primary visual subject.
