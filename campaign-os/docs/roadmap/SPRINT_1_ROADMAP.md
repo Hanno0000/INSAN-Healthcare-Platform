@@ -2,7 +2,7 @@
 
 Campaign OS — Official Sprint Reference
 
-Version: 5.0
+Version: 6.0
 Status: Active — In Progress
 Date: July 2026
 
@@ -53,8 +53,9 @@ Not "will this add a feature." Not "will this expand the architecture." Only "wi
 | Step 1 | Creative Direction | ✓ COMPLETE |
 | Step 2 | Media Generation | ✓ COMPLETE |
 | Step 3 | Visual QA | ✓ COMPLETE |
-| Step 4 | Production Validation Run | ← CURRENT |
-| Step 5 | Post-Run Review | Pending |
+| Step 4 | Visual Planner Completion Pass | ← CURRENT |
+| Step 5 | Production Validation Run | Pending |
+| Step 6 | Post-Run Review | Pending |
 
 **Completed:**
 
@@ -66,11 +67,15 @@ Not "will this add a feature." Not "will this expand the architecture." Only "wi
 
 **Current Step:**
 
-➡ Step 4: Production Validation Run — waiting for execution and evidence.
+➡ Step 4: Visual Planner Completion Pass — final production-readiness review to bring Visual Planner to the same quality level as Creative Director, Media Generation Service, and Visual QA.
 
 **Next planned step:**
 
-➡ Step 5: Post-Run Review — analyze validation run results, identify gaps, inform next sprint.
+➡ Step 5: Production Validation Run — execute full pipeline and capture evidence of improvement.
+
+**After that:**
+
+➡ Step 6: Post-Run Review — analyze validation run results, identify gaps, inform next sprint.
 
 ---
 
@@ -307,7 +312,7 @@ If any one of these three emotions is missing, the image fails.
 
 ---
 
-## 5. Sprint Scope — The Five Steps
+## 5. Sprint Scope — The Six Steps
 
 ### Step 1: Creative Direction
 
@@ -347,9 +352,38 @@ Rewrote Visual QA Worker with AI Coaching philosophy, Hard Gates, Branding valid
 
 ---
 
-### Step 4: Production Validation Run
+### Step 4: Visual Planner Completion Pass
 
 **Status:** Current Step
+
+Bring the Visual Planner to the same production quality level as the Creative Director, Media Generation Service, and Visual QA — without expanding Sprint scope.
+
+**Objective:**
+
+The Visual Planner is the only worker that has not yet received the same level of Sprint 1 review and completion. This completion pass ensures the entire Visual Pipeline reaches uniform quality before the first Validation Run.
+
+**What this Completion Pass may improve:**
+
+- Prompt quality (coaching philosophy, completeness validation, revision loop)
+- Worker contract alignment (inputs, outputs, stage transitions)
+- Runtime consistency (VISUAL_STAGE handling, code-prompt alignment)
+- Revision loop behavior (handling Visual QA feedback)
+- Production-readiness validation (format-specific completeness checks)
+- Input/output contract clarity (enumerating all fields)
+
+**What this Completion Pass must NOT do:**
+
+- Introduce unrelated features
+- Activate Project Assets
+- Redesign the architecture
+- Modify other workers
+- Change CONFIG production configuration
+
+---
+
+### Step 5: Production Validation Run
+
+**Status:** Pending
 
 Execute a production validation run to verify improved output quality. No new features, no worker rewrites, no Apps Script changes during this step. The goal is evidence.
 
@@ -362,7 +396,7 @@ Execute a production validation run to verify improved output quality. No new fe
 
 ---
 
-### Step 5: Post-Run Review
+### Step 6: Post-Run Review
 
 **Status:** Pending
 
@@ -385,7 +419,9 @@ Media Generation ✓ COMPLETE
          ↓
 Visual QA ✓ COMPLETE
          ↓
-Production Validation Run ← CURRENT
+Visual Planner Completion Pass ← CURRENT
+         ↓
+Production Validation Run
          ↓
 Post-Run Review
 ```
@@ -574,9 +610,9 @@ If you cannot answer all 8 questions, the document has not been read thoroughly.
 
 Steps 1–3 (Creative Direction, Media Generation, Visual QA) are complete. All three core workers have been rewritten using AI Coaching philosophy and are aligned with the INSAN Visual Language.
 
-The sprint is now waiting for the Production Validation Run (Step 4). No new features, worker rewrites, or Apps Script changes should occur during this step. The goal is evidence — not expansion.
+The sprint is now focused on the Visual Planner Completion Pass (Step 4). The Visual Planner is the only worker that has not yet received the same level of Sprint 1 review and completion. This completion pass will bring it to the same production quality as the other workers before the Validation Run.
 
-After the validation run, Step 5 (Post-Run Review) will analyze results and inform future work.
+After the completion pass, Step 5 (Production Validation Run) will execute the full pipeline and provide evidence. Step 6 (Post-Run Review) will analyze results and inform future work.
 
 ---
 
@@ -590,6 +626,7 @@ After the validation run, Step 5 (Post-Run Review) will analyze results and info
 | 3.0 | July 2026 | Sprint progress update — Media Generation Service V3 complete, Visual QA Service in progress, 5-step execution sequence defined |
 | 4.0 | July 2026 | Visual QA Worker V2 complete and approved — both core workers rewritten using AI Coaching philosophy |
 | 5.0 | July 2026 | Sprint 1 Direction Correction — simplified 5-step execution plan, deferred non-quality architectural work, added Post-Run Review step |
+| 6.0 | July 2026 | Sprint Direction Update — added Visual Planner Completion Pass (Step 4) before Validation Run, expanded to 6-step execution plan |
 
 ---
 

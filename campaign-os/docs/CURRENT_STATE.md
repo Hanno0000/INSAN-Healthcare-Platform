@@ -1,8 +1,8 @@
 # Campaign OS -- Current State
 
-> **Version:** 1.0
-> **Date:** 2026-07-25
-> **Status:** Sprint 1 -- In Progress (Waiting for Production Validation Run)
+> **Version:** 1.1
+> **Date:** 2026-07-26
+> **Status:** Sprint 1 -- In Progress (Visual Planner Completion Pass)
 > **Canonical Handoff Document** -- Primary entry point for Campaign OS development.
 > **Scope:** Campaign OS only. For Website Platform, see `website/Docs/CURRENT_STATE.md`.
 
@@ -14,13 +14,13 @@
 |-----------|--------|
 | **Project Phase** | Sprint 1 -- Visual Production Quality & Workflow Hardening |
 | **Documentation** | Complete (architecture, contracts, prompts, roadmap) |
-| **Apps Script Code** | Implemented (13 source files in `src/`) |
-| **Workers** | 3 workers rewritten (Creative Director, Visual QA, Media Generation) |
+| **Apps Script Code** | Implemented (12 source files in `src/`) |
+| **Workers** | 4 workers rewritten (Creative Director, Visual QA, Media Generation, Visual Planner in progress) |
 | **Production Pipeline** | Operational (Content Pipeline + Visual Pipeline) |
-| **Current Sprint** | Waiting for Production Validation Run (Step 4) |
+| **Current Sprint** | Visual Planner Completion Pass (Step 4) |
 | **Visual Language** | Implemented (INSAN Visual Language spec, CONFIG.gs) |
 
-**Overall:** Campaign OS is a Google Apps Script AI Operating System that transforms strategic content into publishable social media assets using AI Workers. Sprint 1 is focused on improving production quality. Steps 1-3 (Creative Direction, Media Generation, Visual QA) are complete. The system is waiting for a Production Validation Run to provide evidence of improvement.
+**Overall:** Campaign OS is a Google Apps Script AI Operating System that transforms strategic content into publishable social media assets using AI Workers. Sprint 1 is focused on improving production quality. Steps 1-3 (Creative Direction, Media Generation, Visual QA) are complete. The Visual Planner is undergoing its completion pass to bring it to the same production quality level as the other workers before executing the Production Validation Run.
 
 ---
 
@@ -55,8 +55,9 @@ The sprint addresses four root causes:
 | Step 1 | Creative Direction | COMPLETE |
 | Step 2 | Media Generation | COMPLETE |
 | Step 3 | Visual QA | COMPLETE |
-| Step 4 | Production Validation Run | CURRENT -- waiting for execution |
-| Step 5 | Post-Run Review | Pending |
+| Step 4 | Visual Planner Completion Pass | CURRENT |
+| Step 5 | Production Validation Run | Pending |
+| Step 6 | Post-Run Review | Pending |
 
 ---
 
@@ -137,7 +138,7 @@ Section B: Visual Production
 
 | Worker | Status | Notes |
 |--------|--------|-------|
-| Visual Planner | Operational | Production readiness validation, mode selection, generation brief preparation |
+| Visual Planner | Under Sprint 1 Completion Pass | Final production-readiness review before Validation Run -- completion pass to bring to same quality as CD, MGS, VQA |
 | Media Generation Service | Rewritten (V3) | Executes Creative Package, generates assets via Gemini API |
 | Visual QA | Rewritten (V2) | Validates against Creative Package, enforces Visual Language |
 | Publishing Service | RESERVED | Not yet implemented, columns reserved |
@@ -220,7 +221,8 @@ All configuration is centralized in `CONFIG.gs`:
 ### Sprint 1 Progress
 
 - Steps 1-3: All core workers rewritten, architecture documents updated
-- Step 4: Production Validation Run -- waiting for execution and evidence
+- Step 4: Visual Planner Completion Pass -- final production-readiness review before Validation Run
+- Step 5: Production Validation Run -- pending (after Visual Planner completion)
 - No validation run has been executed yet after the Sprint 1 rewrites
 
 ### What Needs Validation
@@ -231,7 +233,7 @@ All configuration is centralized in `CONFIG.gs`:
 - No unwanted logos, text, or watermarks
 - Creative Director produces production-ready Design Prompts
 - Visual QA catches Visual Language violations
-- Visual Planner correctly selects production mode
+- Visual Planner correctly selects production mode and handles revision loop
 - Media Generation executes without reinterpretation
 - Revision loop functions correctly
 
@@ -265,11 +267,13 @@ All configuration is centralized in `CONFIG.gs`:
 
 ## Next Immediate Step
 
-**Step 4: Production Validation Run**
+**Step 4: Visual Planner Completion Pass**
 
-Execute a production validation run to verify improved output quality. No new features, no worker rewrites, no Apps Script changes during this step. The goal is evidence.
+The Visual Planner is the only worker that has not yet received the same level of Sprint 1 review and completion as the Creative Director, Media Generation Service, and Visual QA. This completion pass will improve prompt quality, worker contract alignment, runtime consistency, revision loop behavior, and input/output contract clarity.
 
-After the validation run, Step 5 (Post-Run Review) will analyze results and inform future work.
+This is NOT a redesign. This is a Completion Pass. It must not introduce unrelated features, activate Project Assets, or redesign the architecture.
+
+After the completion pass, Step 5 (Production Validation Run) will execute the full pipeline and provide evidence of improvement. Step 6 (Post-Run Review) will analyze results and inform future work.
 
 ---
 
@@ -307,9 +311,10 @@ Campaign OS architecture is defined across these documents in `docs/architecture
 
 - `CONFIG.gs` production configuration section (frozen)
 - Worker prompts (Creative Director, Visual QA, Media Generation) -- all were rewritten in Sprint 1
+- Visual Planner prompt -- currently under Sprint 1 Completion Pass
 - INSAN Visual Language definition
 - Pipeline architecture (Section A/B separation, transfer mechanism)
 
 ---
 
-*This document is the primary entry point for anyone continuing development on Campaign OS. Website Platform documentation is maintained separately at `website/Docs/CURRENT_STATE.md`. Last updated: 2026-07-25.*
+*This document is the primary entry point for anyone continuing development on Campaign OS. Website Platform documentation is maintained separately at `website/Docs/CURRENT_STATE.md`. Last updated: 2026-07-26.*
