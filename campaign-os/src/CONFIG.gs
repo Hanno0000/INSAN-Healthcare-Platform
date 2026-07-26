@@ -147,6 +147,21 @@ var CONFIG = {
   DATA_START_ROW: 2,
   BATCH_TIMEOUT_SECONDS: 300,
 
+  // ================================
+  // RETRY POLICY (TD-001)
+  // A transient rate limit must not cost a whole row. Delays are deliberately
+  // modest: Apps Script kills an execution at ~6 minutes, and a carousel makes
+  // one API call per asset, so a long backoff would consume the budget it is
+  // meant to protect.
+  // Worst case added per call: 2s + 5s = 7s.
+  // ================================
+
+  RETRY: {
+    MAX_ATTEMPTS: 3,
+    DELAYS_MS: [2000, 5000],
+    RETRYABLE_HTTP: [408, 429, 500, 502, 503, 504]
+  },
+
   COLUMN_NAMES: {
     AI_WORKER: 'AI Worker',
     PUBLISHING_DATE: 'Publishing Date',

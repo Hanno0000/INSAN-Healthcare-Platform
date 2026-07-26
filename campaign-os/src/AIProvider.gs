@@ -1,3 +1,68 @@
+// Shared transient-failure handling for every outbound API call.
+// Previously each provider retried once on 429 with a fixed sleep, and treated
+// 500/502/503 as permanent — so a momentary upstream blip failed the row and
+// discarded whatever had already been paid for.
+var RetryPolicy = {
+
+  isRetryable: function(httpCode) {
+    return CONFIG.RETRY.RETRYABLE_HTTP.indexOf(httpCode) !== -1;
+  },
+
+  // Exponential with jitter. Jitter matters when a carousel fires several calls
+  // in sequence — without it, every retry lands in the same window.
+  delayFor: function(attemptIndex) {
+    var delays = CONFIG.RETRY.DELAYS_MS;
+    var base = delays[Math.min(attemptIndex, delays.length - 1)];
+    return base + Math.floor(Math.random() * 500);
+  },
+
+  // fetchFn must return an HTTPResponse (muteHttpExceptions enabled).
+  // Returns the last response; the caller decides what a non-200 means.
+  fetch: function(fetchFn, label) {
+    var maxAttempts = CONFIG.RETRY.MAX_ATTEMPTS;
+    var response = null;
+    var lastError = null;
+
+    for (var attempt = 0; attempt < maxAttempts; attempt++) {
+      if (attempt > 0) {
+        var wait = this.delayFor(attempt - 1);
+        Logger.log(
+          'RETRY | ' + label + ' | attempt ' + (attempt + 1) + '/' + maxAttempts +
+          ' after ' + wait + 'ms'
+        );
+        Utilities.sleep(wait);
+      }
+
+      try {
+        response = fetchFn();
+        lastError = null;
+
+        var code = response.getResponseCode();
+
+        if (!this.isRetryable(code)) {
+          return response;
+        }
+
+        Logger.log('RETRY_TRIGGERED | ' + label + ' | HTTP ' + code);
+
+      } catch (e) {
+        // Network-level failure: no response object at all.
+        lastError = e;
+        Logger.log('RETRY_TRIGGERED | ' + label + ' | ' + e.toString());
+      }
+    }
+
+    if (lastError) {
+      throw new Error(
+        label + ' failed after ' + maxAttempts + ' attempts: ' + lastError.toString()
+      );
+    }
+
+    return response;
+  }
+};
+
+
 var AIProvider = {
 
   call: function(prompt, options) {
@@ -89,16 +154,12 @@ var GeminiProvider = {
       muteHttpExceptions: true
     };
 
-    var response = UrlFetchApp.fetch(url, requestOptions);
+    var response = RetryPolicy.fetch(function() {
+      return UrlFetchApp.fetch(url, requestOptions);
+    }, 'Gemini ' + model);
+
     var responseCode = response.getResponseCode();
     var responseBody = response.getContentText();
-
-    if (responseCode === 429) {
-      Utilities.sleep(3000);
-      response = UrlFetchApp.fetch(url, requestOptions);
-      responseCode = response.getResponseCode();
-      responseBody = response.getContentText();
-    }
 
     if (responseCode !== 200) {
       throw new Error(

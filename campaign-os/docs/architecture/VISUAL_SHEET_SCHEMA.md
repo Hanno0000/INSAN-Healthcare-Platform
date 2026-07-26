@@ -256,7 +256,7 @@ Each column has exactly one owner. No orphan columns.
 
 5. **Transfer is one-way.** Content Pipeline → Visual Pipeline via formulas or automated transfer.
 
-6. **Visual Planner writes to Asset Count, Production Mode, and Reference Asset Package.**
+6. **Visual Planner writes to Asset Count only.**
 
 7. **Media Generation Service writes to Generated Assets, Generation Status, and Generation Timestamp.**
 
@@ -274,7 +274,7 @@ Each column has exactly one owner. No orphan columns.
 
 2. **Content Strategy and Content Creation produce drafts** — Their outputs are first versions. The Creative Director owns the final approved version.
 
-3. **Visual Planner is Production Readiness and Planning** — Validates completeness, prepares execution plan. Does not create creative work.
+3. **Visual Planner is Production Readiness** — Validates completeness, does not create.
 
 4. **Spreadsheet is Persistent Database** — Only write columns that store NEW production information. Temporary data stays in memory.
 

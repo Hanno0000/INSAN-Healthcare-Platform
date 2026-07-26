@@ -98,32 +98,60 @@ var ServiceRunner = {
       var assetCount = this._getAssetCount(rowData);
 
       var allUrls = [];
+      var assetFailures = [];
 
       for (var i = 0; i < assetCount; i++) {
         var slidePrompt = this._buildGenerationPrompt(rowData, i, assetCount);
 
-        var imageResult = ImageProvider.generate(slidePrompt, {
-          aspectRatio: specs.aspectRatio
-        });
+        // One failed asset must not discard the assets already generated for
+        // this row. Keep going, and report the shortfall rather than claiming
+        // a clean SUCCESS on an incomplete set.
+        try {
+          var imageResult = ImageProvider.generate(slidePrompt, {
+            aspectRatio: specs.aspectRatio
+          });
 
-        var fileUrl = this._storeGeneratedImages(
-          imageResult.images,
-          rowData['Content ID'] + (assetCount > 1 ? '_S' + (i + 1) : '')
+          var fileUrl = this._storeGeneratedImages(
+            imageResult.images,
+            rowData['Content ID'] + (assetCount > 1 ? '_S' + (i + 1) : '')
+          );
+
+          allUrls.push(fileUrl);
+
+        } catch (assetErr) {
+          assetFailures.push('asset ' + (i + 1) + ': ' + assetErr.toString());
+          Logger.log(
+            'ASSET_GENERATION_FAILED | Row: ' + rowNumber +
+            ' | asset ' + (i + 1) + '/' + assetCount + ' | ' + assetErr.toString()
+          );
+        }
+      }
+
+      if (!allUrls.length) {
+        throw new Error(
+          'No assets were generated for this row. ' + assetFailures.join(' | ')
         );
-
-        allUrls.push(fileUrl);
       }
 
       var finalUrls = allUrls.join(', ');
+      var isPartial = allUrls.length < assetCount;
 
       var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
       var columnMap = SheetSchema._getColumnMap(sheetName);
 
       this._writeResult(sheet, columnMap, rowNumber, {
         'Generated Assets': finalUrls,
-        'Generation Status': 'SUCCESS',
+        'Generation Status': isPartial
+          ? 'PARTIAL (' + allUrls.length + '/' + assetCount + ')'
+          : 'SUCCESS',
         'Generation Timestamp': new Date()
       });
+
+      if (isPartial) {
+        Logger.logPartial('MEDIA_GENERATION_SERVICE', rowNumber, 0,
+          'Generated ' + allUrls.length + ' of ' + assetCount + ' assets. ' +
+          assetFailures.join(' | '));
+      }
 
       SheetWriter.writeAIWorkerTag(rowNumber, 'MEDIA_GENERATION_SERVICE', sheetName);
 

@@ -88,6 +88,16 @@ All generated media must conform to the INSAN Visual Language. The visual identi
 
 The Visual Planner selects the production mode (PROJECT_ASSET or AI_GENERATED) based on available project reference images. Mode A (PROJECT_ASSET) is preferred when suitable reference images exist. Mode B (AI_GENERATED) is the fallback. The selected mode is communicated to the Media Generation Service through the Reference Asset Package.
 
+> **Implementation status:** Mode A cannot currently be selected.
+> `CONFIG.PROJECT_ASSETS.FOLDER_ID` is an empty string and the folder holds no
+> images, so every row resolves to Mode B (AI_GENERATED). The Visual Planner
+> workflow hook exists and will work once the folder is populated, but until
+> then this is a single-path system, not a two-mode one.
+>
+> This matters for interpretation: 100% of generated media is currently
+> AI-generated with no real photographic reference, which is a known contributor
+> to generic output.
+
 ### AP-016: Creative Package Owner
 
 The Creative Director is the Creative Package Owner. The Content Strategy Worker and Content Creation Worker produce first drafts. The Creative Director owns the final approved version of every creative field — strategy refinement, content refinement, visual creative package, and design prompt. This ensures a single creative authority before visual production begins.
@@ -331,23 +341,29 @@ VISUAL_STAGE = "READY" after transfer.
 
 ---
 
-## 8. Model Router Architecture
+## 8. Model Routing
+
+> **Implementation status:** There is no Model Router component. No such class or
+> function exists in `src/`. This section describes the *principle* that is
+> upheld, not a module that exists.
+>
+> What actually happens: `CONFIG.MEDIA_MODELS` holds one image model and one
+> video model. `ServiceRunner._isVideoFormat()` chooses between them by Content
+> Format. Text workers all use `CONFIG.GEMINI_MODEL`.
+>
+> The principle below still holds — no worker prompt names a model — but the
+> selection is a two-way branch in configuration, not a routing table.
 
 ### Routing Principle
 
-The Model Router routes by Content Format only. Workers never know model names.
+Model selection is driven by Content Format. Workers never know model names.
 
-### Router Table
+### Actual Selection
 
-| Content Format | Model (Hidden from Workers) |
+| Content Format | Resolved model |
 |---|---|
-| Static | Model configured in system |
-| Carousel | Model configured in system |
-| Video | Model configured in system |
-| Reel | Model configured in system |
-| Story | Model configured in system |
-| Motion Graphic | Model configured in system |
-| Infographic | Model configured in system |
+| Static, Carousel, Story, Infographic | `CONFIG.MEDIA_MODELS.IMAGE` |
+| Video, Reel, Motion Graphic | `CONFIG.MEDIA_MODELS.VIDEO` — **not yet implemented; these formats fail with an explicit error** |
 
 ### Worker Awareness
 

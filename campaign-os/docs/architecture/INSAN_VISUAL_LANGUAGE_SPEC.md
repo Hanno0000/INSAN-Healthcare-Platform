@@ -374,7 +374,7 @@ Every generated image must satisfy:
 
 This specification is referenced by:
 
-- **Visual Planner Worker** — Uses creative philosophy when preparing execution plans
+- **Visual Planner Worker** — Uses creative philosophy when preparing generation briefs
 - **Media Generation Service** — Applies creative philosophy during image generation
 - **Visual QA Worker** — Validates generated images against creative philosophy
 - **CONFIG.gs** — `VISUAL_LANGUAGE` object contains machine-readable version

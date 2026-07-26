@@ -20,6 +20,7 @@ var ImageProvider = {
       model + ':generateContent?key=' + apiKey;
 
     var images = [];
+    var failures = [];
 
     for (var i = 0; i < numberOfImages; i++) {
       var payload = {
@@ -45,31 +46,46 @@ var ImageProvider = {
         muteHttpExceptions: true
       };
 
-      var response = UrlFetchApp.fetch(url, requestOptions);
-      var responseCode = response.getResponseCode();
-      var responseBody = response.getContentText();
+      // A failure on asset 3 must not discard assets 1 and 2 — those are already
+      // generated and already paid for. Record the failure, keep what worked,
+      // and let the caller decide whether a partial set is usable.
+      try {
+        var response = RetryPolicy.fetch(function() {
+          return UrlFetchApp.fetch(url, requestOptions);
+        }, 'Image ' + model + ' (asset ' + (i + 1) + '/' + numberOfImages + ')');
 
-      if (responseCode === 429) {
-        Utilities.sleep(5000);
-        response = UrlFetchApp.fetch(url, requestOptions);
-        responseCode = response.getResponseCode();
-        responseBody = response.getContentText();
-      }
+        var responseCode = response.getResponseCode();
+        var responseBody = response.getContentText();
 
-      if (responseCode !== 200) {
-        throw new Error(
-          'Image API error (HTTP ' + responseCode + '): ' +
-          this._extractErrorMessage(responseBody)
+        if (responseCode !== 200) {
+          throw new Error(
+            'HTTP ' + responseCode + ': ' + this._extractErrorMessage(responseBody)
+          );
+        }
+
+        images.push(this._extractImage(responseBody));
+
+      } catch (e) {
+        failures.push('asset ' + (i + 1) + ': ' + e.toString());
+        Logger.log(
+          'IMAGE_ASSET_FAILED | asset ' + (i + 1) + '/' + numberOfImages +
+          ' | ' + e.toString()
         );
       }
+    }
 
-      var image = this._extractImage(responseBody);
-      images.push(image);
+    if (!images.length) {
+      throw new Error(
+        'Image generation produced nothing. ' + failures.join(' | ')
+      );
     }
 
     return {
       images: images,
-      count: images.length
+      count: images.length,
+      requested: numberOfImages,
+      failures: failures,
+      isPartial: images.length < numberOfImages
     };
   },
 

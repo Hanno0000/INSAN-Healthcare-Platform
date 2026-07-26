@@ -1,10 +1,48 @@
 # Campaign OS -- Current State
 
-> **Version:** 1.5
-> **Date:** 2026-07-26
-> **Status:** Sprint 2 -- In Progress (Creative Director Complete)
+> **Version:** 1.6
+> **Date:** 2026-07-27
+> **Status:** Sprint 3 -- Pipeline Integrity Fixes complete. Awaiting Validation Run #002.
 > **Canonical Handoff Document** -- Primary entry point for Campaign OS development.
 > **Scope:** Campaign OS only. For Website Platform, see `website/Docs/CURRENT_STATE.md`.
+
+---
+
+## ⚠️ Read This First — Sprint 2 Conclusions Were Not Verified
+
+Sprint 2 closed every worker with a "Compliance Audit PASS" and concluded that
+the architecture required no further change before production.
+
+**Those audits reviewed prompt text. They did not review output.**
+
+A subsequent review of the actual pipeline — the code, the sheet data, and a
+generated asset — found that several defects marked resolved in Sprint 2 were
+still reaching production, and that some had never been reachable by a prompt
+change at all.
+
+Nothing below invalidates the architecture. Ownership boundaries, contracts and
+the Field Responsibility Matrix all held up. The failures were in **data flow and
+verification**, not in design.
+
+### What was actually wrong
+
+| Finding | Sprint 2 status | Reality |
+|---|---|---|
+| Strategic inputs scrambled | Not detected | The Content Pipeline transfer formula pulled `Campaign Cards!P:AA` into columns expecting `O:Z`. Every strategic field was shifted one column. `Target Audience` received a number; `Emotional Trigger` received a psychological barrier. **Every worker had been running on mismatched inputs.** |
+| VP-001 metadata leakage | DONE | `ServiceRunner` appended `". Slide N of M"` to every carousel prompt in code. No prompt rule could have prevented it. |
+| VP-006 repetitive composition | DONE | Every asset in a carousel received an identical prompt. A four-card set was four attempts at one image. |
+| DP-009 QA too permissive | DONE | Visual QA received the asset URL as plain text and never saw the image. It graded the Creative Package and returned A+ on assets containing duplicated text and an unauthorized logo. |
+| Reference Asset Package | DONE | Written by the Visual Planner, read by nothing. |
+| QA decision vocabulary | — | The prompt asked for `PASS`/`REVISE`/`REJECT`; `stageMapping` expected `Approved`/`Revision Required`/`Rejected`. Only controlled-vocabulary injection kept the state machine alive. |
+| Revision loop | — | `Revision Required → PLANNING` had no counter, despite `VISUAL_PIPELINE_FLOW.md` specifying a maximum of 3. |
+
+### The lesson worth keeping
+
+A worker that cannot observe its subject cannot evaluate it. A prompt rule cannot
+constrain behaviour that lives in code. **An audit that reads instructions rather
+than outputs will confirm whatever the instructions claim.**
+
+Future sprint closure requires evidence from a production run, not a prompt review.
 
 ---
 
@@ -176,6 +214,21 @@ Not by rewriting prompts or redesigning worker responsibilities.
 ## Architecture Review Conclusion
 
 An independent post-Sprint 2 architecture review was conducted.
+
+> **Amended 2026-07-27.** The conclusion below — that the architecture needs no
+> redesign — still stands, and the pipeline-integrity work of Sprint 3 supports
+> it: every defect found was in data flow or verification, none required an
+> ownership or contract change.
+>
+> One clause of the reasoning was wrong, however. "Contracts are aligned" was
+> asserted from documents rather than from execution. Several contracts described
+> behaviour the code did not implement: `Reference Asset Package` had a documented
+> consumer that never read it, Visual QA was contracted to validate images it was
+> never given, and the Model Router in `VISUAL_PRODUCTION_ARCHITECTURE.md` §8 has
+> no implementation at all.
+>
+> Alignment between a prompt, a contract and a schema does not establish
+> alignment with the running system. Verify against code.
 
 ### Major Conclusion
 
