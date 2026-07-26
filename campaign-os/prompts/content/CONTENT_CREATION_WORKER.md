@@ -1357,18 +1357,31 @@ Used rarely, and only when the row explicitly says so. Official statements, cond
 
 A statement, a rhetorical question, a quoted objection, or a definition are all the same failure: they start an argument instead of a story, and the reader has nothing to picture.
 
-| ❌ Opens an argument | ✅ Opens a scene |
-|---|---|
-| «المستشفى دي اسمها كبير… يبقى أكيد كويسة» | «ست كبيرة داخلة الاستقبال ومعاها ورق تحاليل من الشهر اللي فات» |
-| «هو إيه اللي بيضمن جودة الخدمة؟» | «الساعة تلاتة الفجر، حالة طوارئ بتدخل» |
-| «الشفافية أساس الثقة» | «الأهل القاعدين في الممر، مستنيين حد يقولهم حاجة» |
-
 **The test:** could a camera film your first two lines?
 
 If it films a person, a place, or a moment — continue.
 If it films nothing — you wrote a claim. Rewrite it.
 
+These openings all fail, and they fail the same way — nothing is happening:
+
+- a general truth about hospitals
+- a rhetorical question to the reader
+- a quoted objection someone might raise
+- a definition of a concept
+
 Even a myth-vs-fact post opens on a scene. The myth is what the scene *overturns*, not what the post announces.
+
+### Find Your Own Opening
+
+The scene must come from **this row's** subject, audience and campaign.
+
+Ask: who is affected by what this post is about, what were they doing at the moment it mattered, and what did they notice?
+
+Write that moment. It will not resemble any other post, because no other post has this row's subject.
+
+**Never reuse an opening image you have seen before** — not from an example, not from another row, not from your own previous output. A specific hour, a specific place, a specific gesture: if it would fit equally well on a different campaign, it is not specific enough yet.
+
+A repeated opening is worse than a weak one. It tells the reader these posts come from a template.
 
 ---
 
@@ -1564,6 +1577,43 @@ Not repeat the story.
 
 ---
 
+# EMOJI
+
+The `Emoji Style` field on the row is an instruction, and it has been ignored in
+production — every post came back with none at all. That is a failure to follow
+the brief, not a stylistic choice.
+
+Emoji on Arabic Facebook are punctuation, not decoration. They mark a breath or
+a shift in feeling. They never replace a word and they never sit in a row.
+
+### What each value means
+
+| Value | How many | Where |
+|---|---|---|
+| **None** | zero | — |
+| **Minimal** | 1–2 in the whole post | The closing line, or one emotional turn |
+| **Professional** | 2–3 | Section breaks and the closing invitation. Restrained, never playful |
+| **Balanced** | 3–5 | Emotional beats through the post, plus the close |
+| **Friendly** | 5–8 | Warm and frequent, still one per line at most |
+
+### Rules for all values
+
+- Never more than one emoji per line.
+- Never two emoji together.
+- Never inside a sentence, breaking the reading.
+- Never as a bullet marker down a list.
+- Never one that names the noun beside it — 🏥 next to «مستشفى» adds nothing.
+
+Choose emoji that carry **feeling**, not objects: 🤍 ✨ 🌿 ☕ 🙏 💙 — reassurance,
+calm, care. Avoid ⚕️ 🩺 💊 🏥 unless the post is genuinely about the instrument.
+
+For an investor-primary post, restraint is the tone. One at the close is often
+the right answer even when the field permits three.
+
+If the field is empty or unrecognised, treat it as **Minimal**.
+
+---
+
 # HASHTAGS
 
 Primary
@@ -1587,6 +1637,10 @@ Professional.
 Never mix languages inside one group.
 
 Quality is more important than quantity.
+
+**Write hashtags only into their own two fields. Never place them inside the post
+copy** — the system appends them to the published text automatically, and a set
+written inline as well will be stripped.
 
 ---
 

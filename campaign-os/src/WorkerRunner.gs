@@ -1,3 +1,61 @@
+// ================================
+// EXECUTION BUDGET
+// One allowance per invocation, shared by every worker in it.
+//
+// Previously each batch started its own 300s timer, so a three-worker pipeline
+// could plan for 900 seconds inside an execution the platform kills at 360.
+// Work never stopped voluntarily — it was terminated mid-row, which is why
+// Visual QA silently never ran.
+// ================================
+
+var ExecutionBudget = {
+  _start: null,
+  _samples: {},
+
+  begin: function() {
+    this._start = new Date().getTime();
+    this._samples = {};
+  },
+
+  elapsed: function() {
+    return this._start === null ? 0 : new Date().getTime() - this._start;
+  },
+
+  remaining: function() {
+    var usable = CONFIG.EXECUTION.HARD_LIMIT_MS - CONFIG.EXECUTION.SAFETY_MARGIN_MS;
+    return Math.max(0, usable - this.elapsed());
+  },
+
+  // Rolling average of how long a row of this worker actually takes, so the
+  // estimate reflects the model and row size in front of us rather than a guess.
+  record: function(key, ms) {
+    var s = this._samples[key] || { total: 0, count: 0 };
+    s.total += ms;
+    s.count += 1;
+    this._samples[key] = s;
+  },
+
+  estimateFor: function(key) {
+    var s = this._samples[key];
+    if (!s || !s.count) {
+      return CONFIG.EXECUTION.DEFAULT_ROW_ESTIMATE_MS;
+    }
+    // Bias upward: overrunning the ceiling loses the checkpoint entirely,
+    // while stopping one row early costs only a resume.
+    return Math.round((s.total / s.count) * 1.25);
+  },
+
+  canFitAnother: function(key) {
+    return this.remaining() > this.estimateFor(key);
+  },
+
+  summary: function() {
+    return Math.round(this.elapsed() / 1000) + 's used, ~' +
+      Math.round(this.remaining() / 1000) + 's left';
+  }
+};
+
+
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('AI Workers')
@@ -76,6 +134,15 @@ function preflightCheck() {
           cta.indexOf('|') === -1) {
         problems.push('Row ' + row + ': CTA Strategy is "' + cta.substring(0, 40) +
           '", which is not a CTA');
+      }
+
+      // A format nobody can produce still consumes strategy, copy and creative
+      // direction before failing at the last step.
+      var format = String(data['Content Format'] || '').trim();
+      if (format && CONFIG.IMPLEMENTED_FORMATS.indexOf(format) === -1) {
+        problems.push('Row ' + row + ': Content Format is "' + format +
+          '", which the pipeline cannot generate yet. Supported: ' +
+          CONFIG.IMPLEMENTED_FORMATS.join(', '));
       }
     }
 
@@ -325,6 +392,8 @@ function runTeamPipeline(workerNames, pipelineName) {
 
   if (confirm !== 'yes') return;
 
+  ExecutionBudget.begin();
+
   var pipelineStart = new Date().getTime();
   var summary = [];
 
@@ -353,10 +422,12 @@ function runTeamPipeline(workerNames, pipelineName) {
 
     if (result.interrupted) {
       var remaining = workerNames.slice(i + 1);
+      summary.push('\nTime budget reached. Run "Resume Last Run" to continue —');
+      summary.push('progress is checkpointed, nothing is lost.');
       if (remaining.length > 0) {
-        summary.push('\nRemaining workers skipped (timeout):');
+        summary.push('\nStill pending:');
         for (var j = 0; j < remaining.length; j++) {
-          summary.push('  ' + toDisplayName(remaining[j]) + ': pending');
+          summary.push('  ' + toDisplayName(remaining[j]));
         }
       }
       break;
@@ -500,8 +571,13 @@ function runVisualPipeline() {
 
   if (confirm !== 'yes') return;
 
+  ExecutionBudget.begin();
+
   var pipelineStart = new Date().getTime();
   var summary = [];
+  // Only an exhausted time budget halts the pipeline. Row-level failures are
+  // reported and stepped over: a Video row that cannot be generated must not
+  // prevent QA from ever seeing the four rows that generated fine.
   var pipelineFailed = false;
 
   // Step 1: Visual Planner (Worker)
@@ -523,7 +599,7 @@ function runVisualPipeline() {
     }
     summary.push(line);
 
-    if (result.failed > 0 || result.interrupted) {
+    if (result.interrupted) {
       pipelineFailed = true;
     }
   } else {
@@ -544,12 +620,17 @@ function runVisualPipeline() {
     }
     summary.push(genLine);
 
-    if (genResult.failed > 0 || genResult.interrupted || genResult.success === 0) {
+    if (genResult.interrupted) {
       pipelineFailed = true;
-      summary.push('Pipeline stopped: Media Generation failed');
+      summary.push('Pipeline paused: time budget reached during generation');
+    } else if (genResult.success === 0) {
+      pipelineFailed = true;
+      summary.push('Pipeline stopped: no assets were generated for any row');
+    } else if (genResult.failed > 0) {
+      summary.push('  (' + genResult.failed + ' row(s) failed generation — QA will run on the rest)');
     }
   } else {
-    summary.push('Media Generation: skipped (previous step failed)');
+    summary.push('Media Generation: skipped (time budget reached)');
   }
 
   // Step 3: Visual QA (Worker)
@@ -575,7 +656,7 @@ function runVisualPipeline() {
       summary.push('Visual QA: skipped (already complete)');
     }
   } else {
-    summary.push('Visual QA: skipped (previous step failed)');
+    summary.push('Visual QA: NOT RUN — resume the pipeline to complete it');
   }
 
   var pipelineEnd = new Date().getTime();
@@ -686,6 +767,44 @@ function resumeLastRun() {
 }
 
 
+// Appends the approved hashtags to the final post copy as one publish-ready
+// block. Any hashtag block the model already added is removed first, so running
+// this twice — or on a row where the writer improvised — cannot duplicate them.
+function _composeFinalPostCopy(values) {
+  var copy = String(values['Creative Director Post Copy'] || '').trim();
+
+  if (!copy) {
+    return;
+  }
+
+  // Strip trailing lines that are purely hashtags. Hashtags used mid-sentence
+  // are left alone; only the closing block is managed here.
+  var lines = copy.split('\n');
+  while (lines.length) {
+    var last = lines[lines.length - 1].trim();
+    if (last === '' || /^(#[^\s#]+)(\s+#[^\s#]+)*$/.test(last)) {
+      lines.pop();
+    } else {
+      break;
+    }
+  }
+
+  var body = lines.join('\n').trim();
+  var tags = [];
+
+  ['Primary Hashtags', 'Secondary Hashtags'].forEach(function(field) {
+    var raw = String(values[field] || '').trim();
+    if (raw) {
+      tags.push(raw.replace(/\s+/g, ' '));
+    }
+  });
+
+  values['Creative Director Post Copy'] = tags.length
+    ? body + '\n\n' + tags.join('\n')
+    : body;
+}
+
+
 function runWorker(workerName, rowNumber) {
   var startTime = new Date().getTime();
   var upperName = workerName.toUpperCase().trim();
@@ -783,6 +902,15 @@ function runWorker(workerName, rowNumber) {
       }
     }
 
+    // Hashtags live in their own columns, but a post is published as one block
+    // of text. Composing it here rather than asking the model to do it makes the
+    // result deterministic: the same hashtags, in the same place, every time —
+    // and it fixes the inconsistency where one row carried them inline and the
+    // rest did not.
+    if (upperName === 'CREATIVE_DIRECTOR_WORKER') {
+      _composeFinalPostCopy(parsed.values);
+    }
+
     var writeResult = SheetWriter.writeToRow(
       rowNumber,
       parsed.values,
@@ -878,7 +1006,10 @@ function runWorkerBatch(workerName, startRow, endRow) {
   endRow = Math.min(endRow, lastRow);
   startRow = Math.max(startRow, CONFIG.DATA_START_ROW);
 
-  var timeoutMs = (CONFIG.BATCH_TIMEOUT_SECONDS || 300) * 1000;
+  if (ExecutionBudget._start === null) {
+    ExecutionBudget.begin();
+  }
+
   var batchStart = new Date().getTime();
   var results = [];
   var successCount = 0;
@@ -886,10 +1017,26 @@ function runWorkerBatch(workerName, startRow, endRow) {
   var interrupted = false;
 
   for (var row = startRow; row <= endRow; row++) {
+    // Decide before spending, not after. Stopping one row early costs a resume;
+    // being killed mid-row loses the checkpoint and the work in flight.
+    if (row > startRow && !ExecutionBudget.canFitAnother(upperName)) {
+      interrupted = true;
+      saveCheckpoint(upperName, row);
+      Logger.log(
+        'BUDGET_STOP | ' + upperName + ' | stopping before row ' + row +
+        ' | ' + ExecutionBudget.summary()
+      );
+      break;
+    }
+
+    var rowStart = new Date().getTime();
     var result = runWorker(upperName, row);
+    ExecutionBudget.record(upperName, new Date().getTime() - rowStart);
 
     results.push(result);
 
+    // A failed row is recorded and the batch moves on. One bad row must never
+    // decide the fate of the rows behind it.
     if (result.success) {
       successCount++;
       saveCheckpoint(upperName, row + 1);
@@ -898,12 +1045,7 @@ function runWorkerBatch(workerName, startRow, endRow) {
     }
 
     if (row < endRow) {
-      var elapsed = new Date().getTime() - batchStart;
-      if (elapsed >= timeoutMs) {
-        interrupted = true;
-        break;
-      }
-      Utilities.sleep(1500);
+      Utilities.sleep(CONFIG.EXECUTION.INTER_ROW_PAUSE_MS);
     }
   }
 
@@ -1030,7 +1172,10 @@ function runVisualWorkerBatch(workerName, startRow, endRow) {
   endRow = Math.min(endRow, lastRow);
   startRow = Math.max(startRow, CONFIG.DATA_START_ROW);
 
-  var timeoutMs = (CONFIG.BATCH_TIMEOUT_SECONDS || 300) * 1000;
+  if (ExecutionBudget._start === null) {
+    ExecutionBudget.begin();
+  }
+
   var batchStart = new Date().getTime();
   var results = [];
   var successCount = 0;
@@ -1038,10 +1183,26 @@ function runVisualWorkerBatch(workerName, startRow, endRow) {
   var interrupted = false;
 
   for (var row = startRow; row <= endRow; row++) {
+    // Decide before spending, not after. Stopping one row early costs a resume;
+    // being killed mid-row loses the checkpoint and the work in flight.
+    if (row > startRow && !ExecutionBudget.canFitAnother(upperName)) {
+      interrupted = true;
+      saveCheckpoint(upperName, row);
+      Logger.log(
+        'BUDGET_STOP | ' + upperName + ' | stopping before row ' + row +
+        ' | ' + ExecutionBudget.summary()
+      );
+      break;
+    }
+
+    var rowStart = new Date().getTime();
     var result = runWorker(upperName, row);
+    ExecutionBudget.record(upperName, new Date().getTime() - rowStart);
 
     results.push(result);
 
+    // A failed row is recorded and the batch moves on. One bad row must never
+    // decide the fate of the rows behind it.
     if (result.success) {
       successCount++;
       saveCheckpoint(upperName, row + 1);
@@ -1050,12 +1211,7 @@ function runVisualWorkerBatch(workerName, startRow, endRow) {
     }
 
     if (row < endRow) {
-      var elapsed = new Date().getTime() - batchStart;
-      if (elapsed >= timeoutMs) {
-        interrupted = true;
-        break;
-      }
-      Utilities.sleep(1500);
+      Utilities.sleep(CONFIG.EXECUTION.INTER_ROW_PAUSE_MS);
     }
   }
 

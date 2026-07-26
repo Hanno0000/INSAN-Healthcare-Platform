@@ -162,6 +162,26 @@ var CONFIG = {
     RETRYABLE_HTTP: [408, 429, 500, 502, 503, 504]
   },
 
+  // ================================
+  // EXECUTION BUDGET
+  // Apps Script terminates a script at ~6 minutes with no chance to save state.
+  // The budget is shared by every worker in one invocation: a three-worker
+  // pipeline does not get three separate allowances. Work stops early, writes a
+  // checkpoint, and tells the operator which row to resume from.
+  // ================================
+
+  EXECUTION: {
+    HARD_LIMIT_MS: 360000,   // Apps Script ceiling
+    SAFETY_MARGIN_MS: 45000, // reserved for checkpointing and the summary dialog
+    DEFAULT_ROW_ESTIMATE_MS: 30000,
+    INTER_ROW_PAUSE_MS: 400
+  },
+
+  // Formats the pipeline can actually produce today. Anything outside this list
+  // reaches Media Generation and fails, after strategy and creative work have
+  // already been paid for.
+  IMPLEMENTED_FORMATS: ['Static', 'Carousel', 'Story', 'Infographic'],
+
   COLUMN_NAMES: {
     AI_WORKER: 'AI Worker',
     PUBLISHING_DATE: 'Publishing Date',

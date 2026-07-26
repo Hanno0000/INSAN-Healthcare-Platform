@@ -1306,11 +1306,35 @@ The correct forms: اللي · ده/دي · مش/ما…ش · هـ · بيتعم
 
 ---
 
+#### Check Three — Was the brief followed?
+
+**Emoji.** Read the row's `Emoji Style`, then count the emoji in the copy.
+
+| Value | Expected |
+|---|---|
+| None | 0 |
+| Minimal | 1–2 |
+| Professional | 2–3 |
+| Balanced | 3–5 |
+| Friendly | 5–8 |
+
+Zero emoji on a row that asks for any is a brief that was not followed — the most
+common defect in production. Add them yourself: one per line at most, at
+emotional turns and the close, never naming the noun beside them.
+
+**Hashtags.** They belong in their own two fields and nowhere else. If the writer
+placed a hashtag block inside the post copy, remove it — the system appends the
+approved set automatically, and leaving it produces a duplicate.
+
+---
+
 #### Two More, Quickly
 
 **The claim check.** Any sentence that asserts quality outright — «رعاية متميزة»، «جودة عالية»، «الأفضل» — is a sentence that shows nothing. Replace it with the moment that proves it, or cut it.
 
 **The institution check.** The brand should appear once, in the second half. If it opens the post, or appears three times, the story became a brochure.
+
+**The repetition check.** Look at the opening line. Have you approved this image before — the same hour, the same arrival, the same corridor? A distinctive opening reused across rows stops being distinctive and starts reading as a template. Send it back for one that belongs to this campaign alone.
 
 ---
 
@@ -2889,36 +2913,53 @@ Integrate the visual direction fields into a coherent production instruction.
 
 Creative Director Quality Score
 
-(0-10)
-
-This score represents real editorial judgment, not encouragement.
+Write one of exactly: **A+ · A · B+ · B · C · Needs Rewrite**
 
 The score evaluates the COMPLETE Creative Package — copy, visual direction, and design prompt.
 
-Calibration guide:
+### Score by deduction, not by impression
 
-A+ (9-10)
-Reserved for exceptionally rare work that requires virtually no improvement across any dimension.
+In production every row came back **A**. Five different campaigns, five different
+writers' drafts, one identical score. That is not calibration — it is a rubber
+stamp, and it makes the score worthless as a signal.
 
-A (8)
-Production-ready work with only very minor refinements needed.
+So do not ask "how good is this?" Start at **A+** and take away for what you can
+actually point to.
 
-B+ (6-7)
-Strong work that still benefits from noticeable creative improvements in copy or visual direction.
+**Deduct one full grade for each of these that is true:**
 
-B (5)
-Good foundation but execution needs meaningful refinement in one or more dimensions.
+- The opening is a claim, a question or a quote rather than a scene
+- The opening image repeats one used on another row
+- Any MSA marker survives: الذي · هذا · ليس · سوف · يتم · حيث · لماذا · الآن
+- The emoji count does not match the row's `Emoji Style`
+- Hashtags appear inside the post copy
+- The copy asserts quality instead of showing it
+- The brand appears in the first half, or three or more times
+- The piece does not serve the row's `Target Audience`
+- Visual Concept names a place or specialty instead of a human moment
+- Any visual field contains Arabic, or `Text On Design` contains a slide label
+- The Design Prompt introduces a creative decision absent from the Visual Package
 
-Needs Rewrite (0-4)
-The work does not yet meet the INSAN publication standard.
+**Two or more deductions cannot score above B+.**
+**Four or more is Needs Rewrite**, whatever the writing feels like.
 
-Avoid inflating scores.
+### What each grade actually means
 
-Exceptional scores should remain exceptional.
+| Grade | Meaning |
+|---|---|
+| **A+** | Zero deductions. You changed nothing because nothing needed changing. Genuinely rare. |
+| **A** | Zero deductions, but you made a real improvement while reviewing. |
+| **B+** | One or two deductions, now corrected by you. |
+| **B** | Two or three deductions; the thinking is sound but execution needed work. |
+| **C** | Several deductions, or one that reached the reader. |
+| **Needs Rewrite** | Four or more, or the strategy itself does not hold. |
 
-Most work should fall in the B to B+ range.
+If you awarded **A** and changed nothing, check again — either the deduction list
+genuinely came back empty, or you did not look hard enough. The second is far
+more common.
 
-Only genuinely exceptional work deserves an A or A+.
+The score is a message to the writer about what to fix. A score that never varies
+teaches nothing.
 
 ---
 
