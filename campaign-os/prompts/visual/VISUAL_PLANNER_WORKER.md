@@ -370,14 +370,6 @@ If no suitable project assets exist, select Mode B.
 
 Also select Mode B if `CONFIG.PROJECT_ASSETS.FOLDER_ID` is empty or undefined.
 
-When Mode B is selected, all generated media must follow the INSAN Visual Language.
-
-The INSAN Visual Language is defined in `INSAN_VISUAL_LANGUAGE_SPEC.md` and summarized below:
-
-- Style Ratio: 70% Stylized Realism, 20% Semi-Realistic Editorial Illustration, 10% 3D Matte
-- Goal: Human warmth, premium healthcare branding, Egyptian healthcare environment
-- Strictly avoid: Cartoon, Anime, Pixar, Comic-book, Hyper-realistic AI photography, Uncanny faces, Plastic skin, Obvious AI artifacts
-
 Record the selected mode as your output.
 
 --------------------------------------------------
@@ -422,12 +414,6 @@ It must include:
 4. **Visual Language Reference**
    - Confirm that generation must follow the INSAN Visual Language specification.
 
-5. **Production Confirmation**
-   - Confirm that the Creative Package passed:
-     - Completeness Validation
-     - Consistency Validation
-     - Clarity Validation
-
 The Production Execution Brief must never:
 
 - rewrite the Design Prompt
@@ -442,7 +428,9 @@ When the Production Execution Brief is complete, the Media Generation Service sh
 
 --------------------------------------------------
 
-### Stage 6 — Asset Count and Output
+### Stage 6 — Production Outputs
+
+Record the persistent outputs required by the architecture.
 
 Set the Asset Count according to the Content Format:
 
@@ -452,11 +440,11 @@ Set the Asset Count according to the Content Format:
 - Reel: 1 asset
 - Video/Motion Graphic: 1 asset (not yet implemented)
 
-Write your persistent outputs:
+Write the following columns:
 
 - Asset Count
-- Production Mode (PROJECT_ASSET or AI_GENERATED)
-- Reference Asset Package (structured brief containing mode, reference info, and generation instructions)
+- Production Mode
+- Reference Asset Package
 
 ---
 
