@@ -1,8 +1,8 @@
 # INSAN Website Platform -- Current State
 
-> **Version:** 3.0
+> **Version:** 4.0
 > **Date:** 2026-07-26
-> **Status:** Phase 1 Complete (Core Platform Implemented)
+> **Status:** Phase 2 -- Production Readiness Audit Completed (No-Go)
 > **Canonical Handoff Document** -- Primary entry point for Website Platform development only.
 > **Scope:** Website Platform only. For Campaign OS, see `campaign-os/docs/CURRENT_STATE.md`.
 
@@ -12,7 +12,7 @@
 
 | Dimension | Status |
 |-----------|--------|
-| **Project Phase** | Phase 1 Complete -- Core Platform (Backend + Frontend + Database) |
+| **Project Phase** | Phase 2 -- Production Readiness (Audit Completed) |
 | **Documentation** | 100% complete (18 specification documents, ~4,500+ lines) |
 | **Source Code** | ~206 files across backend (NestJS) and frontend (Next.js) |
 | **Database** | Prisma schema with 28 models, 2 migrations applied, comprehensive seed data |
@@ -21,7 +21,7 @@
 | **Deployment** | Docker, CI/CD specified but not yet configured |
 | **Brand Assets** | Complete (5 logo variants, multi-format) |
 
-**Overall:** The core platform is implemented and functional. The backend provides a complete REST API with JWT authentication, RBAC permissions, audit logging, and 14 NestJS modules. The frontend delivers a public website (14 pages) and admin dashboard (14 modules) built with Next.js 14, Tailwind CSS, and React Query. The database schema is applied with seed data. Docker infrastructure, i18n routing, media upload, and AI chat remain as deferred items.
+**Overall:** The core platform is implemented and functional. The backend provides a complete REST API with JWT authentication, RBAC permissions, audit logging, and 14 NestJS modules. The frontend delivers a public website (14 pages) and admin dashboard (14 modules) built with Next.js 14, Tailwind CSS, and React Query. The database schema is applied with seed data. A Production Readiness Audit has been completed with a score of 38/100 and a **No-Go** recommendation. Remaining work is production hardening, infrastructure, deployment preparation, monitoring, backups, compliance, and launch readiness. See `GO_LIVE_ROADMAP.md` for the execution roadmap.
 
 ---
 
@@ -896,7 +896,7 @@ A `scripts/post-merge.sh` hook exists that automatically:
 
 ## Production Readiness
 
-> **Current readiness: Development/Demo.** Core platform is functional but not production-ready.
+> **Current readiness: No-Go (Production Readiness Audit).** Core platform is functional but not production-ready. Audit completed with score of 38/100. See Production Readiness Audit section above and `GO_LIVE_ROADMAP.md` for the execution plan.
 
 ### What Exists
 
@@ -938,6 +938,82 @@ When new technical debt is identified during development, add it to `TECH_DEBT.m
 
 ---
 
+## Production Readiness Audit
+
+> **Audit completed: 2026-07-26.** Read-only review. No code was modified.
+
+| Field | Detail |
+|-------|--------|
+| **Scope** | `website/` workspace only (NestJS API + Next.js frontend) |
+| **Baseline** | CURRENT_STATE.md v3.0, cross-checked against actual source files |
+| **Readiness Score** | **38 / 100** |
+| **Recommendation** | **No-Go** |
+
+### Summary
+
+The application layer (backend API, admin dashboard, public website, database, RBAC, audit system) is substantially complete and functional. The core platform is not the problem -- production readiness spans security hardening, infrastructure, monitoring, backups, legal/compliance, and content population, which are almost entirely outstanding.
+
+### Key Findings
+
+| Category | Finding | Blocks Prod? |
+|----------|---------|--------------|
+| **Security** | No Helmet / HTTP security headers (TD-005) | Critical |
+| **Security** | Rate limiting may not be enforced despite being documented (pending verification) | Critical |
+| **Security** | CORS hardcoded to localhost (TD-006), no dependency audit, no pen test | High |
+| **Security** | JWT/DB secrets are ad-hoc dev values, no rotation process | High |
+| **Auth** | 3 non-atomic DB writes on login (TD-002) | High |
+| **Backend** | DTOs typed `any` instead of validated classes (TD-001, TD-004) | High |
+| **Frontend** | i18n routing not wired -- bilingual requirement is ambiguous | High |
+| **Frontend** | No Page Builder / drag-and-drop editor for content staff | High |
+| **Database** | No managed production PostgreSQL selected | Critical |
+| **Database** | Missing indexes on multiple FK columns (TD-008) | Medium |
+| **Deployment** | No deployment pipeline or infrastructure exists | Critical |
+| **Deployment** | Dockerfiles / docker-compose / nginx not in repository | Critical |
+| **Deployment** | No CI/CD pipeline | High |
+| **Infrastructure** | No domain, DNS, SSL, or reverse proxy configured | Critical |
+| **Infrastructure** | No object storage (S3/R2) configured | High |
+| **Monitoring** | No uptime monitoring, error tracking, or structured logging | High |
+| **Backup** | No backup strategy or restore procedure | Critical |
+| **Compliance** | No Privacy Policy or Terms of Use pages (PII collection via forms) | Critical |
+| **Content** | Only seed/demo data -- no real content | High |
+
+### Prioritized Blockers
+
+**Must-fix before any production deployment (Critical):**
+
+- [ ] Deployment pipeline: Dockerfiles, production compose, reverse proxy, TLS
+- [ ] Managed production PostgreSQL
+- [ ] Domain, DNS, SSL certificates
+- [ ] Verify rate limiting enforcement; add Helmet
+- [ ] Set production CORS_ORIGIN; regenerate all secrets
+- [ ] Database backup + restore procedure
+- [ ] Privacy Policy and Terms of Use pages
+- [ ] Basic monitoring: uptime, error tracking, structured logging
+- [ ] Confirm seed script cannot destructively run against production data
+
+**Should-fix before launch (High):**
+
+- [ ] Wrap auth login writes in DB transaction (TD-002)
+- [ ] DTO validation on Settings, Leads, Medical Centers (TD-001, TD-004)
+- [ ] Dependency vulnerability audit
+- [ ] Decide: bilingual (AR+EN) or Arabic-only at launch
+- [ ] Add missing FK indexes (TD-008)
+- [ ] Confirm 500 errors never leak stack traces
+- [ ] Replace seed content with real data
+- [ ] Decide if Media Library is required at launch
+
+**Recommended before or shortly after launch (Medium/Low):**
+
+- [ ] WCAG 2.1 AA accessibility pass
+- [ ] JSON-LD structured data, meta-tag coverage audit
+- [ ] Load testing on public form and booking endpoints
+- [ ] Resolve remaining tech debt (TD-005 through TD-012)
+- [ ] Admin Page Builder UI if non-technical staff will manage content
+
+> **Full audit details:** See `GO_LIVE_ROADMAP.md` for the execution roadmap. Original audit document available on request.
+
+---
+
 ## Recommended Next Phase
 
 ### Phase 1: Core Platform Development -- COMPLETE
@@ -948,25 +1024,30 @@ All core modules are implemented and functional:
 - Database: 28 models, 2 migrations, seed data.
 - Auth: JWT with RBAC, audit logging.
 
-### Recommended Next Phase: Production Hardening
+### Phase 2: Production Readiness -- IN PROGRESS
 
-The following areas should be addressed before deploying to production:
+The Production Readiness Audit has been completed. The application layer is substantially complete; remaining work is production hardening, infrastructure, deployment, monitoring, backups, compliance, and launch readiness.
+
+**Execution roadmap:** See [`GO_LIVE_ROADMAP.md`](GO_LIVE_ROADMAP.md) for the sprint-by-sprint execution plan (Sprint A: Application Hardening, Sprint B: Production Infrastructure, Sprint C: Launch Readiness, Final Stage: Go Live).
 
 | Priority | Area | Focus |
 |----------|------|-------|
-| **P0** | Security | Helmet, CORS config, rate limit tuning, dependency audit, input validation (TD-001 through TD-008) |
-| **P0** | Docker | Dockerfiles for api + web, docker-compose.prod.yml, nginx config |
-| **P1** | i18n | Wire up `next-intl`, add `/ar/` + `/en/` routing, translate all UI strings |
-| **P1** | SEO | Dynamic sitemap, robots.txt, JSON-LD structured data, meta tags on all pages |
-| **P1** | Missing Pages | About, Investors, Privacy Policy, Terms of Use |
-| **P2** | Media Module | S3 upload, folder management, admin UI |
-| **P2** | Performance | Core Web Vitals, bundle analysis, image optimization, caching |
-| **P2** | Accessibility | WCAG 2.1 AA audit, keyboard nav, screen reader testing |
-| **P3** | AI Chat | LLM integration, knowledge base admin, conversation history |
-| **P3** | Social Sync | Facebook/Instagram/LinkedIn auto-sync worker |
-| **P3** | Technical Debt | Resolve TD-001 through TD-012 |
-
-After production hardening, follow the remaining phases in `99_REPLIT_BUILD_GUIDE.md`.
+| **P0** | Security | Helmet, CORS, rate limiting, secrets, dependency audit, input validation |
+| **P0** | Deployment | Dockerfiles, docker-compose.prod.yml, nginx, CI/CD pipeline |
+| **P0** | Infrastructure | Production PostgreSQL, domain, DNS, SSL |
+| **P0** | Backup & Recovery | Database backup strategy, restore procedure, RPO/RTO targets |
+| **P0** | Compliance | Privacy Policy, Terms of Use (required for PII collection) |
+| **P1** | Monitoring | Uptime checks, error tracking (Sentry), structured logging |
+| **P1** | Auth Hardening | Transaction wrapping (TD-002), DTO validation (TD-001, TD-004) |
+| **P1** | Content | Replace seed data with real content |
+| **P2** | i18n | Wire up `next-intl`, `/ar/` + `/en/` routing (pending business decision) |
+| **P2** | SEO | Structured data, meta tags, sitemap validation |
+| **P2** | Accessibility | WCAG 2.1 AA audit |
+| **P2** | Performance | Core Web Vitals, bundle analysis, image optimization |
+| **P3** | Media Module | S3 upload, folder management, admin UI |
+| **P3** | AI Chat | LLM integration, knowledge base admin |
+| **P3** | Social Sync | Facebook/Instagram/LinkedIn auto-sync |
+| **P3** | Technical Debt | Resolve TD-005 through TD-012 |
 
 ---
 
@@ -1057,4 +1138,4 @@ If you modify any specification during development:
 
 ---
 
-*This document is the primary entry point for anyone continuing development on the INSAN Website Platform. Campaign OS documentation is maintained separately at `campaign-os/docs/CURRENT_STATE.md`. Last updated: 2026-07-26.*
+*This document is the primary entry point for anyone continuing development on the INSAN Website Platform. Campaign OS documentation is maintained separately at `campaign-os/docs/CURRENT_STATE.md`. Last updated: 2026-07-26. Version 4.0 -- Phase 2 Production Readiness Audit completed.*
