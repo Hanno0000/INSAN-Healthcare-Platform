@@ -404,17 +404,118 @@ Production validation is independent of creative quality.
 
 An image may be visually attractive and still fail production validation.
 
+## Production Constraint Alignment
+
+The Visual QA Worker validates the final artwork against the approved Production Execution Brief and the production constraints enforced during image generation.
+
+Validation must confirm that the generated artwork remains consistent with upstream production standards.
+
+At minimum, verify that the artwork satisfies:
+
+- Internal instructions are not visible.
+- Only approved visible text is present.
+- Language integrity is preserved.
+- Unauthorized branding is absent.
+- Egyptian healthcare identity is preserved where required.
+- The intended narrative moment is clearly represented.
+- The artwork is a final publish-ready design.
+- Typography remains readable and well integrated.
+- Arabic rendering quality is preserved when applicable.
+- The design is suitable for its intended publishing platform.
+
+Failure of any mandatory production constraint must be reflected in the QA decision.
+
 Verify all of the following:
 
 - No production metadata is visible inside the artwork.
+
+### Forbidden Visible Text Assessment
+
+Confirm that no internal production terminology is visible anywhere in the artwork.
+
+Examples include, but are not limited to:
+
+- slide numbers
+- card numbers
+- Premium Carousel
+- Style Ratio
+- Aspect Ratio
+- Prompt Layer
+- Production Notes
+- Internal Comments
+- Placeholder Instructions
+- QA Labels
+- Generation Metadata
+- Worker Names
+- Pipeline Terminology
+
+Any visible production terminology indicates that internal execution information has leaked into the published artwork and must reduce confidence in production readiness.
+
 - All visible text appears only in the approved campaign language.
 - No unauthorized branding, hospital names, platform names, or generated logos are present.
 - Egyptian healthcare identity is preserved whenever required by the Creative Package.
 - The image contains the intended human narrative moment rather than a generic medical scene.
 - Typography is readable, properly structured, and free from overlap.
+
+### Typography Quality Assessment
+
+When visible text is intentionally present, evaluate typography as part of the overall design quality.
+
+Confirm that:
+
+- visual hierarchy is clear
+- font sizing supports readability
+- spacing between text elements is balanced
+- alignment is visually consistent
+- text does not overlap other text
+- text does not overlap important visual elements
+- sufficient contrast exists between text and background
+- line breaks improve readability
+- typography integrates naturally into the composition
+- text remains comfortably readable at normal mobile viewing size
+
+Poor typography quality should reduce confidence in production readiness even when the wording itself is correct.
+
 - Arabic text, when present, is correctly rendered, readable, and free from spelling or RTL layout errors.
+
+### Arabic Rendering Quality Assessment
+
+When Arabic text is intentionally present, evaluate its rendering quality as part of production readiness.
+
+Confirm that:
+
+- Arabic letter shaping is correct.
+- Characters remain properly connected.
+- Word order is preserved.
+- Spelling matches the approved visible text.
+- No mirrored or reversed Arabic appears.
+- Right-to-left reading flow is preserved.
+- Words are not split unnaturally across lines.
+- Punctuation is placed naturally.
+- Text remains clearly readable at normal mobile viewing size.
+- Arabic typography integrates naturally with the overall composition.
+
+Rendering defects should reduce confidence in production readiness even when the intended wording is correct.
+
 - The asset is final publish-ready artwork and not a mockup, presentation board, concept sheet, or draft.
 - The design demonstrates sufficient visual impact for its intended publishing platform.
+
+### Facebook Feed Performance Assessment
+
+When the intended publishing platform is Facebook, evaluate whether the artwork is likely to attract attention during normal feed scrolling.
+
+Confirm that:
+
+- the primary subject is immediately recognizable
+- the visual message is understandable within the first few seconds
+- the composition has a clear focal point
+- unnecessary visual clutter is absent
+- important elements remain readable on mobile devices
+- the emotional impact is immediately apparent
+- the design maintains strong visual clarity at reduced viewing size
+- the overall composition encourages the viewer to stop scrolling
+
+Weak feed presence should reduce confidence in production readiness even if the artwork is technically correct.
 
 Failure in any production-critical requirement must directly affect the final QA decision.
 
