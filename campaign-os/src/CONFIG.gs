@@ -245,6 +245,30 @@ var CONFIG = {
   // already been paid for.
   IMPLEMENTED_FORMATS: CONFIG_IMPLEMENTED_FORMATS,
 
+  // ================================
+  // STAGE ORDER
+  // Re-running a stage invalidates everything produced after it: the later
+  // stages were derived from inputs that no longer exist. Without this, a
+  // re-planned row keeps the previous run's generated images and its "Approved"
+  // QA verdict — an approved-looking row whose assets came from a brief that
+  // has since been replaced.
+  //
+  // Used by SheetWriter.clearDownstreamOutput().
+  // ================================
+
+  STAGE_ORDER: {
+    CONTENT: [
+      'CONTENT_STRATEGY_WORKER',
+      'CONTENT_CREATION_WORKER',
+      'CREATIVE_DIRECTOR_WORKER'
+    ],
+    VISUAL: [
+      'VISUAL_PLANNER_WORKER',
+      'MEDIA_GENERATION',
+      'VISUAL_QA_WORKER'
+    ]
+  },
+
   COLUMN_NAMES: {
     AI_WORKER: 'AI Worker',
     PUBLISHING_DATE: 'Publishing Date',

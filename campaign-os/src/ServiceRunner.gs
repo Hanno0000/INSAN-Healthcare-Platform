@@ -97,6 +97,10 @@ var ServiceRunner = {
       var specs = this._getMediaSpecs(contentFormat);
       var assetCount = this._getAssetCount(rowData);
 
+      // A previous run's QA verdict describes images that are about to be
+      // replaced. Clear it before generating, not after.
+      SheetWriter.clearDownstreamOutput(rowNumber, 'MEDIA_GENERATION');
+
       var allUrls = [];
       var assetFailures = [];
 

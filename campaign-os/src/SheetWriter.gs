@@ -262,6 +262,114 @@ var SheetWriter = {
     }
   },
 
+  // Resolves the columns a stage owns, for both workers and services.
+  _stageWriteColumns: function(stageName) {
+    if (CONFIG.WORKERS[stageName]) {
+      return {
+        columns: CONFIG.WORKERS[stageName].writeColumns || [],
+        sheet: CONFIG.WORKERS[stageName].sheetName || CONFIG.SHEET_NAME
+      };
+    }
+
+    if (CONFIG.SERVICES[stageName]) {
+      return {
+        columns: CONFIG.SERVICES[stageName].writeColumns || [],
+        sheet: CONFIG.SERVICES[stageName].sheetName || CONFIG.SHEET_NAME
+      };
+    }
+
+    return null;
+  },
+
+  // Wipes everything produced after `stageName` in the same pipeline.
+  //
+  // A worker overwrites its own columns on every run — the parser emits every
+  // output field, blank when the model omitted one. What it never touched was
+  // the output of *later* stages, which is derived from inputs this run just
+  // replaced. Re-planning a row therefore left the previous run's generated
+  // images and its "Approved" QA verdict sitting beside a brand-new brief:
+  // a row that reads as approved and publishable, whose assets came from a
+  // brief that no longer exists.
+  //
+  // Clearing is the honest state. A blank QA verdict says "not yet judged",
+  // which is true; a stale one asserts something false about work that has
+  // since been redone.
+  clearDownstreamOutput: function(rowNumber, stageName) {
+    var pipelines = CONFIG.STAGE_ORDER || {};
+    var cleared = [];
+
+    // Some columns have two writers by design: the Creative Director refines
+    // the same strategy fields the Content Strategy Worker proposes. Clearing a
+    // column this stage is about to write would be a wasted write at best, and
+    // — if the caller ever clears after writing — silent data loss. Excluding
+    // them makes the result independent of call order.
+    var own = {};
+    var self = this._stageWriteColumns(stageName);
+    if (self) {
+      for (var s = 0; s < self.columns.length; s++) {
+        own[self.columns[s]] = true;
+      }
+    }
+
+    for (var key in pipelines) {
+      var stages = pipelines[key];
+      var position = stages.indexOf(stageName);
+
+      if (position === -1) {
+        continue;
+      }
+
+      for (var i = position + 1; i < stages.length; i++) {
+        var target = this._stageWriteColumns(stages[i]);
+
+        if (!target || !target.columns.length) {
+          continue;
+        }
+
+        var sheet = this._getSheet(target.sheet);
+        var columnMap = SheetSchema._getColumnMap(target.sheet);
+
+        if (!sheet) {
+          continue;
+        }
+
+        for (var c = 0; c < target.columns.length; c++) {
+          var colName = target.columns[c];
+
+          if (own[colName]) {
+            continue;
+          }
+
+          var colIndex = columnMap[colName];
+
+          if (!colIndex) {
+            continue;
+          }
+
+          var cell = sheet.getRange(rowNumber, colIndex);
+
+          // Only touch cells that actually hold something — avoids pointless
+          // writes and keeps the log readable.
+          if (String(cell.getValue() || '').trim() === '') {
+            continue;
+          }
+
+          this._writeCellSafe(cell, '', rowNumber, colName, colIndex);
+          cleared.push(colName);
+        }
+      }
+    }
+
+    if (cleared.length) {
+      Logger.log(
+        'STALE_CLEARED | Row: ' + rowNumber + ' | Re-ran: ' + stageName +
+        ' | Cleared downstream: ' + cleared.join(', ')
+      );
+    }
+
+    return cleared;
+  },
+
   batchWrite: function(rowsData, workerName) {
     var results = [];
 

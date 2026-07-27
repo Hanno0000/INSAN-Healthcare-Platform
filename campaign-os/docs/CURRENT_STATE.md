@@ -565,3 +565,13 @@ Further redesign without production evidence would introduce risk without justif
 ---
 
 *This document is the primary entry point for anyone continuing development on Campaign OS. Website Platform documentation is maintained separately at `website/Docs/CURRENT_STATE.md`. Last updated: 2026-07-26.*
+
+---
+
+## Session Handoff
+
+`docs/HANDOFF.md` records what was actually wrong with this system, why each defect
+was invisible to prompt-level review, and what remains unverified.
+
+**Read it before this document.** This file describes the architecture as designed;
+that one describes where the design and the running system diverged.

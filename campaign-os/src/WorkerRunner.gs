@@ -1149,6 +1149,11 @@ function runWorker(workerName, rowNumber) {
 
     var parsed = ResponseParser.parse(aiResponse.text, upperName);
 
+    // Everything produced after this stage was derived from inputs this run has
+    // just replaced. Clear it before writing, so the row never shows fresh work
+    // beside a stale verdict about work that no longer exists.
+    SheetWriter.clearDownstreamOutput(rowNumber, upperName);
+
     // Vocabulary gaps are recorded, never fatal. Reviewing these after a run is
     // how SYSTEM_CONSTANTS gets corrected from evidence instead of assumption.
     if (parsed.deviations && parsed.deviations.length) {
