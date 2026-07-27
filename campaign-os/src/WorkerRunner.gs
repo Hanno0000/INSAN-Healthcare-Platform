@@ -1963,12 +1963,88 @@ function _applyMediaGenerationStageMapping(rowNumber, success, sheetName) {
 // CONTENT ID GENERATION
 // ================================
 
+// The next Content ID, continuing from the highest one that actually exists.
+//
+// The counter used to live only in Script Properties, which drifts from the
+// sheet the moment anything happens outside this function: a property store
+// reset, a row typed in by hand, a sheet copied from another workbook. When it
+// drifts low the next run re-issues IDs that are already in use, and a Content
+// ID that identifies two different rows breaks every join built on it — the
+// Visual Pipeline lookup, the revision counter, the asset folders.
+//
+// Reading the sheet makes the highest ID present the floor. The property is
+// still consulted and still the higher of the two wins, so IDs are never reused
+// after a row is deleted either.
+var _contentIdFloor = null;
+
 function _generateContentId(rowNumber) {
   var props = PropertiesService.getScriptProperties();
-  var lastId = parseInt(props.getProperty('LAST_CONTENT_ID') || '0', 10);
-  var newId = lastId + 1;
+
+  // Script globals reset with each execution, so the sheet is read once per
+  // run rather than once per row.
+  if (_contentIdFloor === null) {
+    var stored = parseInt(props.getProperty('LAST_CONTENT_ID') || '0', 10);
+    if (isNaN(stored)) {
+      stored = 0;
+    }
+
+    var inSheet = _highestContentIdInSheet();
+    _contentIdFloor = Math.max(stored, inSheet);
+
+    if (inSheet > stored) {
+      Logger.log(
+        'CONTENT_ID | Counter was at ' + stored + ' but the sheet already holds ' +
+        'CNT-' + ('000000' + inSheet).slice(-6) + '. Continuing from the sheet.'
+      );
+    }
+  }
+
+  var newId = _contentIdFloor + 1;
+  _contentIdFloor = newId;
   props.setProperty('LAST_CONTENT_ID', String(newId));
 
-  var padded = ('000000' + newId).slice(-6);
-  return 'CNT-' + padded;
+  return 'CNT-' + ('000000' + newId).slice(-6);
+}
+
+
+// Highest numeric suffix among the Content IDs already in the Content Pipeline.
+// Anything that is not a CNT-nnnnnn is ignored rather than guessed at.
+function _highestContentIdInSheet() {
+  try {
+    var sheetName = CONFIG.SHEET_NAME;
+    var sheet = SheetSchema._getSheet(sheetName);
+    var column = SheetSchema.getColumnIndex(CONFIG.COLUMN_NAMES.CONTENT_ID, sheetName);
+    var lastRow = sheet.getLastRow();
+
+    if (column < 1 || lastRow < CONFIG.DATA_START_ROW) {
+      return 0;
+    }
+
+    var values = sheet
+      .getRange(CONFIG.DATA_START_ROW, column, lastRow - CONFIG.DATA_START_ROW + 1, 1)
+      .getValues();
+
+    var highest = 0;
+
+    for (var i = 0; i < values.length; i++) {
+      var match = String(values[i][0]).trim().match(/^CNT-(\d+)$/i);
+
+      if (!match) {
+        continue;
+      }
+
+      var value = parseInt(match[1], 10);
+
+      if (!isNaN(value) && value > highest) {
+        highest = value;
+      }
+    }
+
+    return highest;
+  } catch (e) {
+    // Falling back to the stored counter is the old behaviour, which is worse
+    // but not broken. Silently returning 0 without saying so would not be.
+    Logger.log('CONTENT_ID | Could not read existing IDs: ' + e.toString());
+    return 0;
+  }
 }
