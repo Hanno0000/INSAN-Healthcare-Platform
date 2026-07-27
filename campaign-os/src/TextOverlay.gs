@@ -20,6 +20,42 @@
 // size, in a known font at a known position.
 // ================================
 
+// Run this once from the Apps Script editor after adding the presentations
+// scope. It composes a caption over a plain test image and drops the result in
+// the generated-assets folder, so the Slides round trip is proven in seconds
+// rather than discovered part-way through a paid batch.
+function testTextOverlay() {
+  var swatch = Utilities.newBlob(
+    Utilities.base64Decode(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAABzenr0AAAADUlEQVR42mNk' +
+      'YPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+    ),
+    'image/png',
+    'overlay-test'
+  );
+
+  var composed = TextOverlay.apply(
+    swatch, 'القرار الطبي مش مجرد اجتهاد فردي.', 1080, 1080
+  );
+
+  var file = DriveApp.getFolderById(CONFIG.VISUAL_ASSETS.generated)
+    .createFile(composed.setName('TEXT_OVERLAY_TEST.png'));
+
+  Logger.log('Overlay test written to: ' + file.getUrl());
+
+  SpreadsheetApp.getUi().alert(
+    'Text Overlay Test',
+    'It worked. Open the Generated assets folder and check ' +
+    'TEXT_OVERLAY_TEST.png:\n\n' +
+    '- the Arabic reads right to left and the letters are joined\n' +
+    '- the wording is exactly: القرار الطبي مش مجرد اجتهاد فردي.\n' +
+    '- it sits in the lower band, legible against the scrim\n\n' +
+    'Delete the file afterwards.',
+    SpreadsheetApp.getUi().ButtonSet.OK
+  );
+}
+
+
 var TextOverlay = {
 
   // Slides is the only rasteriser available to Apps Script. The sequence is:
