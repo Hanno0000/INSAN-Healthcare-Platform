@@ -202,20 +202,57 @@ var DriveLoader = {
     return null;
   },
 
-  _assetSubfolder: function(folderName) {
+  // Resolves a "/"-separated path beneath the project assets root.
+  //
+  // Domains are grouped in Drive — clinical departments live under Services/,
+  // brand material sits at the top — so a domain's folder is a path, not a
+  // direct child. Walking the segments keeps the Drive layout free to be
+  // organised for humans rather than flattened for the code.
+  _assetSubfolder: function(folderPath) {
     var rootId = CONFIG.PROJECT_ASSETS && CONFIG.PROJECT_ASSETS.FOLDER_ID;
 
-    if (!rootId || !String(rootId).trim()) {
+    if (!rootId || !String(rootId).trim() || !folderPath) {
       return null;
     }
 
+    var segments = String(folderPath).split('/');
+    var current;
+
     try {
-      var folders = DriveApp.getFolderById(rootId).getFoldersByName(folderName);
-      return folders.hasNext() ? folders.next() : null;
+      current = DriveApp.getFolderById(rootId);
     } catch (e) {
       Logger.log('PROJECT_ASSETS | cannot open root folder: ' + e.toString());
       return null;
     }
+
+    for (var i = 0; i < segments.length; i++) {
+      var name = segments[i].trim();
+
+      if (!name) {
+        continue;
+      }
+
+      try {
+        var matches = current.getFoldersByName(name);
+
+        if (!matches.hasNext()) {
+          // Expected whenever a domain folder has not been created yet.
+          // Callers treat an absent folder as "no reference images".
+          return null;
+        }
+
+        current = matches.next();
+
+      } catch (e) {
+        Logger.log(
+          'PROJECT_ASSETS | cannot descend into "' + name + '" of "' +
+          folderPath + '": ' + e.toString()
+        );
+        return null;
+      }
+    }
+
+    return current;
   },
 
   // Names only — cheap enough to call while building worker context.

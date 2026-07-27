@@ -132,7 +132,7 @@ Every issue carries the evidence it was found from. Nothing here is speculative.
 4. `ServiceRunner` resolves the domain, loads the images, and passes them to `ImageProvider`.
 5. `ImageProvider` sends them as `inlineData` parts ahead of the instruction, with prompt guidance to match the real architecture, finishes, equipment and uniforms — and to copy no person, text or logo from them.
 
-**To activate:** set `CONFIG.PROJECT_ASSETS.FOLDER_ID`, create subfolders named exactly as the `folder` values in `CONFIG.PROJECT_ASSETS.DOMAINS`, add real photographs. Nothing else. A missing or empty folder falls back to AI generation silently.
+**Activated 2026-07-27.** `FOLDER_ID` points at `My Drive / Insan / business / Media`. Domain `folder` values are now paths relative to it — clinical departments live under `Services/`, brand material at the top — so `_assetSubfolder()` walks path segments rather than looking for a direct child. `Maintenance → Check Project Assets` reports what each domain actually contains, so setup can be verified without paying for a run. **Folders exist but still need photographs**; a missing or empty folder falls back to AI generation silently.
 
 **Expected impact:** the largest single lever on "generic-looking design" — but only once real photographs are in place. Until then behaviour is unchanged.
 

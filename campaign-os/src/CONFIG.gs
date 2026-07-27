@@ -111,8 +111,17 @@ var CONFIG = {
   // is required — an empty or missing subfolder falls back to AI_GENERATED.
   // ================================
 
+  // Drive: My Drive / Insan / business / Media
+  //   Media/
+  //   ├── Brand Identity/
+  //   └── Services/
+  //       ├── Emergency Department/
+  //       ├── Intensive Care Unit/
+  //       └── ...
+  //
+  // `folder` below is a path relative to FOLDER_ID; "/" descends a level.
   PROJECT_ASSETS: {
-    FOLDER_ID: '',
+    FOLDER_ID: '1KIYMoXT-nKRxfKssmzvinuCJLRW-zdAw',
     SUPPORTED_IMAGE_TYPES: ['image/jpeg', 'image/png', 'image/webp'],
     MAX_REFERENCE_IMAGES: 3,
 
@@ -121,23 +130,25 @@ var CONFIG = {
     // Order matters: the first domain with a keyword hit wins, so the more
     // specific domains are listed first.
     DOMAINS: [
-      { key: 'nicu', folder: 'Neonatal Intensive Care Unit',
+      { key: 'nicu', folder: 'Services/Neonatal Intensive Care Unit',
         keywords: ['nicu', 'neonatal', 'newborn', 'حضانة', 'حديثي الولادة'] },
-      { key: 'icu', folder: 'Intensive Care Unit',
+      { key: 'icu', folder: 'Services/Intensive Care Unit',
         keywords: ['icu', 'intensive care', 'critical care', 'عناية مركزة', 'رعاية حرجة'] },
-      { key: 'emergency', folder: 'Emergency Department',
+      { key: 'emergency', folder: 'Services/Emergency Department',
         keywords: ['emergency', 'triage', 'ambulance', 'طوارئ', 'إسعاف'] },
-      { key: 'operating-room', folder: 'Operating Room',
+      { key: 'operating-room', folder: 'Services/Operating Room',
         keywords: ['operating', 'surgery', 'surgical', 'theatre', 'عمليات', 'جراحة'] },
-      { key: 'radiology', folder: 'Radiology Department',
+      { key: 'radiology', folder: 'Services/Radiology Department',
         keywords: ['radiology', 'imaging', 'x-ray', 'mri', 'ct scan', 'أشعة'] },
-      { key: 'laboratory', folder: 'Laboratory',
+      { key: 'laboratory', folder: 'Services/Laboratory',
         keywords: ['laboratory', 'lab ', 'specimen', 'blood test', 'معمل', 'تحاليل'] },
-      { key: 'physiotherapy', folder: 'Physiotherapy',
+      { key: 'physiotherapy', folder: 'Services/Physiotherapy',
         keywords: ['physiotherapy', 'rehabilitation', 'physical therapy', 'علاج طبيعي', 'تأهيل'] },
-      { key: 'pharmacy', folder: 'Pharmacy',
+      // Folder not created yet — resolves to no reference images and falls back
+      // to AI generation until it exists. Create Services/Pharmacy to enable.
+      { key: 'pharmacy', folder: 'Services/Pharmacy',
         keywords: ['pharmacy', 'pharmacist', 'medication', 'صيدلية', 'دواء'] },
-      { key: 'outpatient-clinic', folder: 'Outpatient Clinic',
+      { key: 'outpatient-clinic', folder: 'Services/Outpatient Clinic',
         keywords: ['outpatient', 'clinic', 'consultation', 'reception', 'عيادة', 'استقبال', 'كشف'] },
       { key: 'branding', folder: 'Brand Identity',
         keywords: ['brand', 'identity', 'logo', 'هوية'] }

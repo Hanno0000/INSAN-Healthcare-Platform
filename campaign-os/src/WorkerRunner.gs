@@ -81,6 +81,7 @@ function onOpen() {
     .addSubMenu(SpreadsheetApp.getUi()
       .createMenu('Maintenance')
       .addItem('Preflight Check', 'preflightCheck')
+      .addItem('Check Project Assets', 'checkProjectAssets')
       .addItem('Unblock Dropdowns (run once)', 'relaxDataValidation')
       .addItem('Review Vocabulary Gaps', 'showVocabularyGaps')
       .addSeparator()
@@ -145,6 +146,90 @@ function cancelActiveJob() {
 
   _clearJob();
   ui.alert('Background Job', 'Cancelled. Automatic continuation is off.', ui.ButtonSet.OK);
+}
+
+
+// Reports what the project asset folders actually contain, per domain.
+//
+// The whole reference-image path degrades silently by design — a missing or
+// empty folder simply falls back to AI generation. That is right at runtime and
+// unhelpful when setting it up: without this, the only way to find out whether
+// the wiring works is to pay for a run and inspect the output.
+function checkProjectAssets() {
+  var ui = SpreadsheetApp.getUi();
+  var cfg = CONFIG.PROJECT_ASSETS || {};
+
+  if (!cfg.FOLDER_ID || !String(cfg.FOLDER_ID).trim()) {
+    ui.alert('Project Assets',
+      'CONFIG.PROJECT_ASSETS.FOLDER_ID is empty.\n\n' +
+      'Every row will generate without photographic reference.',
+      ui.ButtonSet.OK);
+    return;
+  }
+
+  try {
+    var rootName;
+
+    try {
+      rootName = DriveApp.getFolderById(cfg.FOLDER_ID).getName();
+    } catch (e) {
+      ui.alert('Project Assets',
+        'Cannot open the folder in FOLDER_ID.\n\n' +
+        'Either the ID is wrong, or the account running this script has no ' +
+        'access to it.\n\n' + e.toString(),
+        ui.ButtonSet.OK);
+      return;
+    }
+
+    var lines = ['Root folder: ' + rootName, ''];
+    var domains = cfg.DOMAINS || [];
+    var withImages = 0;
+    var totalImages = 0;
+
+    for (var i = 0; i < domains.length; i++) {
+      var domain = domains[i];
+      var folder = DriveLoader._assetSubfolder(domain.folder);
+
+      if (!folder) {
+        lines.push('✗  ' + domain.folder + '  — folder not found');
+        continue;
+      }
+
+      var names = DriveLoader.listProjectAssets(domain);
+
+      if (!names.length) {
+        lines.push('○  ' + domain.folder + '  — folder exists, no images');
+        continue;
+      }
+
+      withImages++;
+      totalImages += names.length;
+      lines.push('✓  ' + domain.folder + '  — ' + names.length + ' image(s)');
+    }
+
+    lines.push('');
+
+    if (withImages === 0) {
+      lines.push('No domain has usable images yet, so every row still');
+      lines.push('generates without reference. Add photographs to the folders');
+      lines.push('above and re-run this check.');
+    } else {
+      lines.push(withImages + ' of ' + domains.length + ' domains ready — ' +
+        totalImages + ' image(s) total.');
+      lines.push('');
+      lines.push('Rows matching a ready domain will use PROJECT_ASSET mode.');
+      lines.push('Rows matching an empty one fall back to AI generation.');
+    }
+
+    lines.push('');
+    lines.push('Supported types: ' + (cfg.SUPPORTED_IMAGE_TYPES || []).join(', '));
+    lines.push('Up to ' + (cfg.MAX_REFERENCE_IMAGES || 3) + ' images are sent per row.');
+
+    ui.alert('Project Assets', lines.join('\n'), ui.ButtonSet.OK);
+
+  } catch (e) {
+    ui.alert('Project Assets', 'Check failed: ' + e.toString(), ui.ButtonSet.OK);
+  }
 }
 
 
