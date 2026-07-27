@@ -1415,6 +1415,50 @@ The last line is the one people remember. Earn it: make it the *conclusion* of w
 
 ---
 
+## Length
+
+Facebook truncates behind "See more" after roughly three lines. Everything past
+that point is read only by someone who chose to keep going — so the post has to
+earn its own length.
+
+| `Content Format` | Target | Ceiling |
+|---|---|---|
+| **Static** | 90–140 words | 160 |
+| **Carousel** | 120–180 words | 200 — the cards carry the detail, the caption sets it up |
+| **Story** | 40–70 words | 90 |
+| **Infographic** | 80–120 words | 140 |
+
+Production posts ran 250–400 words. That is roughly double, and the excess was
+never new information — it was the same idea restated in a second register.
+
+Two cuts recover most of it:
+
+**The restatement.** After making a point, writers often make it again in
+different words to be certain it landed. Delete the second version. The first was
+enough.
+
+**The summary close.** A post that has told its story does not need a paragraph
+explaining what the story meant. End on the last concrete thing, then the
+invitation.
+
+Ask of every paragraph: *what does the reader know now that they did not know one
+paragraph ago?* If the honest answer is nothing, cut it — however well written.
+
+---
+
+## Never Address the Reader as a Category
+
+Never write «المستثمر الذكي بيعرف…» or «للأطباء اللي بيدوروا على…».
+
+Naming the audience inside the copy pushes everyone else out, and it converts a
+story into a sales approach the moment it appears.
+
+An investor-primary post never mentions investors. It shows a system working
+properly, and lets the investor draw the conclusion themselves. That conclusion,
+reached alone, is worth more than any sentence written at them.
+
+---
+
 ## Before You Submit — Four Checks
 
 **1. The camera check.** Can a camera film your opening? If not, rewrite the opening.

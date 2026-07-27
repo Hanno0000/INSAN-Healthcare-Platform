@@ -14,9 +14,131 @@ var ContextBuilder = {
     sections.push(this._buildProjectDocs(workerName));
     sections.push(this._buildControlledVocabulary(workerConfig));
     sections.push(this._buildRowData(workerConfig, rowData));
+    sections.push(this._buildCreativeMemory(workerName, rowData));
     sections.push(this._buildOutputFormat(workerConfig));
 
-    return sections.join('\n\n');
+    return sections.filter(function(s) { return s; }).join('\n\n');
+  },
+
+  // The writing prompts have always instructed workers to learn from earlier
+  // Creative Director feedback and to avoid repeating previous openings. Neither
+  // was possible: each row was processed in isolation with no sight of any other.
+  // Two posts consequently opened with the identical line.
+  //
+  // This supplies the missing history — recent notes to learn from, and recent
+  // openings to avoid repeating.
+  _buildCreativeMemory: function(workerName, rowData) {
+    if (workerName !== 'CONTENT_CREATION_WORKER' &&
+        workerName !== 'CREATIVE_DIRECTOR_WORKER') {
+      return '';
+    }
+
+    var history = this._recentApprovedRows(rowData, 4);
+
+    if (!history.length) {
+      return '';
+    }
+
+    var lines = [
+      '## CREATIVE MEMORY',
+      '',
+      'Recent approved work from this ecosystem. Use it to keep improving and to',
+      'stay distinct — never to copy.',
+      ''
+    ];
+
+    var openings = [];
+    var notes = [];
+
+    for (var i = 0; i < history.length; i++) {
+      var opening = String(history[i].opening || '').trim();
+      var note = String(history[i].notes || '').trim();
+
+      if (opening) {
+        openings.push('- "' + opening.substring(0, 90) + '"');
+      }
+      if (note) {
+        notes.push('- ' + note.replace(/\s+/g, ' ').substring(0, 300));
+      }
+    }
+
+    if (openings.length) {
+      lines.push('### Openings already used — do not reuse these images');
+      lines.push('');
+      lines.push(openings.join('\n'));
+      lines.push('');
+      lines.push('Your opening must not repeat any of the above, nor a close variation');
+      lines.push('of one. A distinctive opening stops being distinctive on its second use.');
+      lines.push('');
+    }
+
+    if (notes.length) {
+      lines.push('### Creative Director feedback on recent work');
+      lines.push('');
+      lines.push(notes.join('\n'));
+      lines.push('');
+      lines.push('Look for the recurring observation. Apply the lesson; do not imitate');
+      lines.push('the wording it referred to.');
+    }
+
+    return lines.join('\n');
+  },
+
+  // Reads a small window of earlier rows from the Content Pipeline. Kept cheap
+  // and failure-tolerant: creative memory is an enhancement, and a problem here
+  // must never stop a row from being produced.
+  _recentApprovedRows: function(rowData, limit) {
+    try {
+      var sheetName = CONFIG.SHEET_NAME;
+      var currentId = String(rowData[CONFIG.COLUMN_NAMES.CONTENT_ID] || '').trim();
+      var lastRow = SheetSchema.getLastRow(sheetName);
+
+      if (lastRow < CONFIG.DATA_START_ROW) {
+        return [];
+      }
+
+      var columnMap = SheetSchema._getColumnMap(sheetName);
+      var copyCol = columnMap['Creative Director Post Copy'];
+      var notesCol = columnMap['Creative Director Notes'];
+      var idCol = columnMap[CONFIG.COLUMN_NAMES.CONTENT_ID];
+
+      if (!copyCol) {
+        return [];
+      }
+
+      var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+      var scanFrom = Math.max(CONFIG.DATA_START_ROW, lastRow - 24);
+      var height = lastRow - scanFrom + 1;
+      var width = sheet.getLastColumn();
+      var block = sheet.getRange(scanFrom, 1, height, width).getValues();
+
+      var found = [];
+
+      // Newest first — recent work is the most relevant.
+      for (var r = block.length - 1; r >= 0 && found.length < limit; r--) {
+        var row = block[r];
+        var copy = String(row[copyCol - 1] || '').trim();
+
+        if (!copy) {
+          continue;
+        }
+
+        if (idCol && currentId && String(row[idCol - 1] || '').trim() === currentId) {
+          continue;
+        }
+
+        found.push({
+          opening: copy.split('\n')[0],
+          notes: notesCol ? row[notesCol - 1] : ''
+        });
+      }
+
+      return found;
+
+    } catch (e) {
+      Logger.log('CREATIVE_MEMORY | unavailable: ' + e.toString());
+      return [];
+    }
   },
 
   _buildHeader: function(workerName) {

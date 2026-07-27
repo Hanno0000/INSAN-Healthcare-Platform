@@ -65,14 +65,24 @@ var RetryPolicy = {
 
 var AIProvider = {
 
+  // Per-worker overrides take precedence over the global default, so a worker
+  // whose task suits a different model can use one without moving the rest.
+  // Configure in CONFIG.WORKERS[NAME].provider / .model — omit both to inherit.
   call: function(prompt, options) {
-    var provider = CONFIG.AI_PROVIDER;
+    options = options || {};
+
+    var provider = options.provider || CONFIG.AI_PROVIDER;
 
     switch (provider) {
       case 'gemini':
         return GeminiProvider.call(prompt, options);
+      case 'claude':
+        return ClaudeProvider.call(prompt, options);
       default:
-        throw new Error('Unknown AI provider: ' + provider);
+        throw new Error(
+          'Unknown AI provider: "' + provider + '". Available: ' +
+          this.getAvailableProviders().join(', ')
+        );
     }
   },
 
@@ -81,7 +91,129 @@ var AIProvider = {
   },
 
   getAvailableProviders: function() {
-    return ['gemini'];
+    return ['gemini', 'claude'];
+  },
+
+  // A provider is only usable once its key is present.
+  isConfigured: function(provider) {
+    var keyName = provider === 'claude' ? 'ANTHROPIC_API_KEY' : 'GEMINI_API_KEY';
+    var key = PropertiesService.getScriptProperties().getProperty(keyName);
+    return !!(key && String(key).trim());
+  }
+};
+
+
+// Dormant until ANTHROPIC_API_KEY is set in Script Properties and a worker is
+// pointed at it. Present so switching a worker is configuration, not a code
+// change — and so a Gemini outage is not a total production stop.
+var ClaudeProvider = {
+
+  API_URL: 'https://api.anthropic.com/v1/messages',
+  API_VERSION: '2023-06-01',
+
+  call: function(prompt, options) {
+    options = options || {};
+
+    var apiKey = PropertiesService.getScriptProperties().getProperty('ANTHROPIC_API_KEY');
+
+    if (!apiKey) {
+      throw new Error(
+        'ANTHROPIC_API_KEY not found in Script Properties. ' +
+        'Add it, or set the worker back to the gemini provider.'
+      );
+    }
+
+    var model = options.model || CONFIG.CLAUDE_MODEL;
+    var maxTokens = options.maxOutputTokens || CONFIG.CLAUDE_MAX_OUTPUT_TOKENS;
+    var content = [];
+
+    // Images first, matching the Gemini path: vision workers rely on the
+    // artwork preceding the instruction.
+    var images = options.images || [];
+    for (var i = 0; i < images.length; i++) {
+      content.push({
+        type: 'image',
+        source: {
+          type: 'base64',
+          media_type: images[i].mimeType || 'image/jpeg',
+          data: images[i].base64
+        }
+      });
+    }
+
+    content.push({ type: 'text', text: prompt });
+
+    var payload = {
+      model: model,
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: content }]
+    };
+
+    if (options.temperature != null) {
+      payload.temperature = options.temperature;
+    }
+
+    var requestOptions = {
+      method: 'post',
+      contentType: 'application/json',
+      headers: {
+        'x-api-key': apiKey,
+        'anthropic-version': this.API_VERSION
+      },
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true
+    };
+
+    var response = RetryPolicy.fetch(function() {
+      return UrlFetchApp.fetch(ClaudeProvider.API_URL, requestOptions);
+    }, 'Claude ' + model);
+
+    var code = response.getResponseCode();
+    var body = response.getContentText();
+
+    if (code !== 200) {
+      throw new Error('Claude API error (HTTP ' + code + '): ' +
+        this._extractErrorMessage(body));
+    }
+
+    return this._parseResponse(body);
+  },
+
+  _parseResponse: function(body) {
+    var parsed = JSON.parse(body);
+
+    if (!parsed.content || !parsed.content.length) {
+      throw new Error('Claude returned no content');
+    }
+
+    var text = parsed.content
+      .filter(function(b) { return b.type === 'text'; })
+      .map(function(b) { return b.text; })
+      .join('');
+
+    if (!text) {
+      throw new Error('Claude returned no text content');
+    }
+
+    var usage = parsed.usage || {};
+
+    return {
+      text: text,
+      finishReason: parsed.stop_reason || '',
+      inputTokens: usage.input_tokens || 0,
+      outputTokens: usage.output_tokens || 0
+    };
+  },
+
+  _extractErrorMessage: function(body) {
+    try {
+      var parsed = JSON.parse(body);
+      if (parsed.error && parsed.error.message) {
+        return parsed.error.message;
+      }
+    } catch (e) {
+    }
+    return String(body).substring(0, 500);
   }
 };
 

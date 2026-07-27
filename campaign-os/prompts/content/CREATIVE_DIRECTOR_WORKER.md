@@ -2936,6 +2936,8 @@ actually point to.
 - The copy asserts quality instead of showing it
 - The brand appears in the first half, or three or more times
 - The piece does not serve the row's `Target Audience`
+- **The copy names its own audience** — «المستثمر الذكي…», «للأطباء…». Speaking *about* the reader breaks the story. Conviction comes from the moment they are watching, never from being addressed
+- The post runs past the length its `Content Format` allows
 - Visual Concept names a place or specialty instead of a human moment
 - Any visual field contains Arabic, or `Text On Design` contains a slide label
 - The Design Prompt introduces a creative decision absent from the Visual Package

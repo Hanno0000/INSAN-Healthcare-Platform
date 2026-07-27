@@ -4,6 +4,10 @@
 // Do not modify unless explicitly requested.
 // ================================
 
+// Declared before CONFIG so it can be referenced from inside the literal.
+// Content Format offered to workers must equal what the pipeline can build.
+var CONFIG_IMPLEMENTED_FORMATS = ['Static', 'Carousel', 'Story', 'Infographic'];
+
 var CONFIG = {
 
   SHEET_NAME: 'Content Pipeline',
@@ -18,6 +22,39 @@ var CONFIG = {
   GEMINI_MODEL: 'gemini-3.5-flash',
   GEMINI_TEMPERATURE: 0.7,
   GEMINI_MAX_OUTPUT_TOKENS: 8192,
+
+  // ================================
+  // ALTERNATE PROVIDER (dormant)
+  // Used only by workers that name it. To enable:
+  //   1. Add ANTHROPIC_API_KEY to Script Properties
+  //   2. Add provider: 'claude' to the worker in the WORKERS block below
+  // Suggested first candidates, by expected return:
+  //   CREATIVE_DIRECTOR_WORKER — owns every creative decision
+  //   VISUAL_QA_WORKER         — reads text inside images
+  //   CONTENT_CREATION_WORKER  — writes the published Arabic
+  // ================================
+
+  CLAUDE_MODEL: 'claude-sonnet-5',
+  CLAUDE_MAX_OUTPUT_TOKENS: 8192,
+
+  // ================================
+  // CREATIVE CRITIC (opt-in)
+  // The Creative Director writes the package and grades its own work in one
+  // inference, and graded five different campaigns identically. This runs a
+  // second, independent pass that re-scores the finished package against the
+  // deduction rubric — it does not rewrite anything, so it costs a fraction of
+  // a full generation rather than doubling it.
+  //
+  // Off by default: it is a real cost increase and the decision is the
+  // operator's. Set ENABLED to true to turn it on.
+  // ================================
+
+  CREATIVE_CRITIC: {
+    ENABLED: false,
+    provider: null,   // null inherits AI_PROVIDER; 'claude' for an independent read
+    model: null,
+    temperature: 0.2
+  },
 
   // ================================
   // INSAN VISUAL LANGUAGE
@@ -206,7 +243,7 @@ var CONFIG = {
   // Formats the pipeline can actually produce today. Anything outside this list
   // reaches Media Generation and fails, after strategy and creative work have
   // already been paid for.
-  IMPLEMENTED_FORMATS: ['Static', 'Carousel', 'Story', 'Infographic'],
+  IMPLEMENTED_FORMATS: CONFIG_IMPLEMENTED_FORMATS,
 
   COLUMN_NAMES: {
     AI_WORKER: 'AI Worker',
@@ -533,10 +570,11 @@ var CONFIG = {
       'Medical Service', 'Myth vs Fact', 'FAQ',
       'Health Tips', 'Announcement', 'Community', 'Campaign'
     ],
-    'Content Format': [
-      'Static', 'Carousel', 'Reel', 'Video',
-      'Story', 'Motion Graphic', 'Infographic'
-    ],
+    // Restricted to what the pipeline can actually produce. Video, Reel and
+    // Motion Graphic remain valid business concepts but have no generation path,
+    // and selecting one spent strategy, copy and creative direction before
+    // failing at the final step. Restore them here when video is implemented.
+    'Content Format': CONFIG_IMPLEMENTED_FORMATS,
     'Content Funnel Stage': [
       'Awareness', 'Interest', 'Consideration',
       'Trust', 'Decision', 'Retention', 'Advocacy'

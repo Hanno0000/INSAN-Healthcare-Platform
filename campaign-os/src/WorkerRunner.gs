@@ -848,6 +848,136 @@ function resumeLastRun() {
 }
 
 
+// An independent second opinion on the Creative Director's own grade.
+//
+// One inference that both writes the package and scores it has an obvious
+// conflict, and the production evidence bore it out: five different campaigns,
+// five identical A grades. This pass only re-scores — it never rewrites — so it
+// costs a fraction of a generation instead of doubling it.
+//
+// Opt-in via CONFIG.CREATIVE_CRITIC.ENABLED. Any failure leaves the original
+// score untouched: a second opinion is an improvement, never a dependency.
+function _applyCreativeCritic(values, rowNumber) {
+  var cfg = CONFIG.CREATIVE_CRITIC || {};
+
+  if (!cfg.ENABLED) {
+    return;
+  }
+
+  try {
+    var prompt = [
+      'You are reviewing a finished creative package for an Egyptian healthcare',
+      'brand. You did not write it. Your only task is to grade it honestly.',
+      '',
+      'Start at A+ and deduct one full grade for each of the following that is',
+      'true. Be literal — check, do not assume.',
+      '',
+      '- The post copy opens with a claim, question or quote rather than a scene',
+      '- Any Modern Standard Arabic marker survives: الذي التي هذا هذه ليس سوف يتم حيث لماذا الآن',
+      '- The emoji count does not match the Emoji Style field',
+      '- The copy names its own audience (e.g. "المستثمر الذكي")',
+      '- The copy asserts quality instead of showing it',
+      '- The brand appears in the first half, or three or more times',
+      '- Visual Concept describes a place or specialty rather than a human moment',
+      '- Any visual field contains Arabic text',
+      '- Text On Design contains a slide or card label',
+      '',
+      'Two or more deductions cannot score above B+. Four or more is Needs Rewrite.',
+      '',
+      'Return ONLY this JSON, nothing else:',
+      '{"score":"A+|A|B+|B|C|Needs Rewrite","deductions":["..."],"reason":"one sentence"}',
+      '',
+      '--- EMOJI STYLE ---',
+      String(values['Emoji Style'] || '(not set)'),
+      '',
+      '--- POST COPY ---',
+      String(values['Creative Director Post Copy'] || ''),
+      '',
+      '--- VISUAL CONCEPT ---',
+      String(values['Visual Concept'] || ''),
+      '',
+      '--- VISUAL ELEMENTS ---',
+      String(values['Visual Elements'] || ''),
+      '',
+      '--- TEXT ON DESIGN ---',
+      String(values['Text On Design'] || '')
+    ].join('\n');
+
+    var response = AIProvider.call(prompt, {
+      provider: cfg.provider || undefined,
+      model: cfg.model || undefined,
+      temperature: cfg.temperature,
+      maxOutputTokens: 1024
+    });
+
+    var match = String(response.text || '').match(/\{[\s\S]*\}/);
+
+    if (!match) {
+      Logger.log('CRITIC | row ' + rowNumber + ' | no JSON returned, keeping original score');
+      return;
+    }
+
+    var verdict = JSON.parse(match[0]);
+    var allowed = CONFIG.CONTROLLED_VOCABULARY['Creative Director Quality Score'] || [];
+
+    if (!verdict.score || allowed.indexOf(verdict.score) === -1) {
+      Logger.log('CRITIC | row ' + rowNumber + ' | unusable score "' + verdict.score + '"');
+      return;
+    }
+
+    var original = values['Creative Director Quality Score'];
+
+    if (verdict.score === original) {
+      Logger.log('CRITIC | row ' + rowNumber + ' | independent pass agrees: ' + original);
+      return;
+    }
+
+    values['Creative Director Quality Score'] = verdict.score;
+
+    var deductions = (verdict.deductions || []).join('; ');
+    values['Creative Director Notes'] =
+      String(values['Creative Director Notes'] || '').trim() +
+      '\n\n[Independent review: ' + original + ' → ' + verdict.score +
+      (deductions ? '. ' + deductions : '') + ']';
+
+    Logger.logPartial('CREATIVE_DIRECTOR_WORKER', rowNumber, 0,
+      'Critic adjusted score ' + original + ' → ' + verdict.score +
+      (verdict.reason ? ' (' + verdict.reason + ')' : ''));
+
+  } catch (e) {
+    // Never let a second opinion cost the row its output.
+    Logger.log('CRITIC | row ' + rowNumber + ' | skipped: ' + e.toString());
+  }
+}
+
+
+// The fields visual production cannot proceed without. Checking them in code
+// costs nothing and gives an exact answer; asking a language model to notice an
+// empty cell costs a full inference and gives a probable one.
+var REQUIRED_CREATIVE_FIELDS = [
+  'Creative Director Design Prompt',
+  'Visual Concept',
+  'Visual Focus',
+  'Design Mood',
+  'Composition'
+];
+
+function _missingCreativeFields(rowData) {
+  var missing = [];
+
+  for (var i = 0; i < REQUIRED_CREATIVE_FIELDS.length; i++) {
+    var field = REQUIRED_CREATIVE_FIELDS[i];
+    var value = String(rowData[field] || '').trim();
+
+    if (!value || value.toLowerCase() === 'none' || value.toLowerCase() === 'n/a') {
+      missing.push(field);
+    }
+  }
+
+  return missing;
+}
+
+
 // Appends the approved hashtags to the final post copy as one publish-ready
 // block. Any hashtag block the model already added is removed first, so running
 // this twice — or on a row where the writer improvised — cannot duplicate them.
@@ -940,6 +1070,20 @@ function runWorker(workerName, rowNumber) {
 
     var context = ContextBuilder.buildContext(upperName, rowData);
 
+    // Field completeness is a deterministic check. Running it before the model
+    // call means an incomplete package fails in milliseconds at no token cost,
+    // instead of ~15 seconds later via a model asked to notice empty cells.
+    if (upperName === 'VISUAL_PLANNER_WORKER') {
+      var missing = _missingCreativeFields(rowData);
+
+      if (missing.length) {
+        throw new Error(
+          'Creative Package incomplete — cannot plan production. Missing: ' +
+          missing.join(', ') + '. Return the row to the Creative Director.'
+        );
+      }
+    }
+
     // The Visual Planner owns the Production Mode decision but has no way to
     // look inside a Drive folder. Tell it what actually exists, so the decision
     // reflects reality instead of being a guess that nothing acts on.
@@ -969,6 +1113,15 @@ function runWorker(workerName, rowNumber) {
     var callOptions = {
       temperature: workerConfig.temperature
     };
+
+    // Per-worker provider and model, when the worker declares them. Absent
+    // both, the global defaults apply and nothing changes.
+    if (workerConfig.provider) {
+      callOptions.provider = workerConfig.provider;
+    }
+    if (workerConfig.model) {
+      callOptions.model = workerConfig.model;
+    }
 
     // Visual QA evaluates artwork, so it must receive the artwork. Without this
     // it only ever saw the Drive URL as text and graded the brief, not the image.
@@ -1016,6 +1169,7 @@ function runWorker(workerName, rowNumber) {
     // rest did not.
     if (upperName === 'CREATIVE_DIRECTOR_WORKER') {
       _composeFinalPostCopy(parsed.values);
+      _applyCreativeCritic(parsed.values, rowNumber);
     }
 
     var writeResult = SheetWriter.writeToRow(

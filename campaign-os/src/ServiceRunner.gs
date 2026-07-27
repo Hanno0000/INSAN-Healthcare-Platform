@@ -424,13 +424,23 @@ var ServiceRunner = {
       );
     }
 
+    // Style and light are stated positively before the exclusions. Output drifted
+    // to cold photographic realism because the only style guidance was negative,
+    // and a model given nothing to aim at defaults to a photograph.
+    parts.push(
+      'Rendering style: designed editorial illustration with soft realistic ' +
+      'modelling — clearly crafted artwork rather than a photograph. Warm, ' +
+      'light-filled interior with soft directional daylight, gentle shadows and ' +
+      'a warm neutral palette. Natural unposed human expression'
+    );
+
     var visibleText = this._resolveVisibleText(rowData, index, assetCount);
     if (visibleText) {
       parts.push(
         'The only text rendered anywhere in the image is exactly this wording, ' +
-        'set as clean well-spaced typography with strong contrast, comfortably ' +
-        'legible at mobile size, integrated into the composition and not ' +
-        'overlapping any subject: "' + visibleText + '"'
+        'appearing once and once only, set as clean well-spaced typography with ' +
+        'strong contrast, comfortably legible at mobile size, integrated into the ' +
+        'composition and not overlapping any subject: "' + visibleText + '"'
       );
     } else {
       parts.push('The image contains no text, lettering, numerals or captions of any kind');
@@ -444,14 +454,37 @@ var ServiceRunner = {
   // Image models follow trailing exclusion clauses far more reliably than
   // negation woven through the descriptive body.
   _buildExclusions: function(doNotShow) {
+    // Each line here corresponds to a defect observed in generated output, not
+    // to a general preference. Wording is deliberately concrete: the model
+    // ignored "no mockups" while producing contact sheets, so the specific
+    // shapes it actually produced are named.
     var banned = [
+      // Layout defects — B3
+      'one single full-frame image only',
+      'no grids, collages, contact sheets, split panels, thumbnails or inset sub-images',
+      'no mockups, device frames, presentation boards, mood boards or concept sheets',
+      'no borders, frames, crop marks, registration marks, blueprint overlays or margin guides',
+
+      // Text defects — B4, B5
+      'no duplicated or repeated text; each approved line appears exactly once',
+      'no text anywhere except the approved wording',
+      'screens, monitors, tablets and phones must be switched off, blank, ' +
+        'showing plain colour, or thrown far out of focus — never legible text, ' +
+        'interfaces, charts or dashboards',
+      'no signage, wall text, badges, labels or documents bearing readable writing',
       'no logos, brand marks, hospital names, platform names or watermarks',
       'no slide numbers, card numbers, page numbers or production labels',
       'no placeholder or lorem ipsum text, no UI chrome, no file names',
-      'no mockups, device frames, presentation boards, mood boards or concept sheets',
-      'no duplicated or repeated text blocks',
+
+      // Human presence — B8
+      'no rows of people posed facing the camera, no line-ups, no team portraits, ' +
+        'no group photographs; subjects are engaged in the moment, not presenting to camera',
+
+      // Style — B6, B7
+      'no photorealistic photography; this is designed editorial artwork',
       'no cartoon, anime, Pixar or comic-book styling',
-      'no photorealistic photography, uncanny faces, plastic skin or visible AI artifacts'
+      'no uncanny faces, plastic skin or visible AI artifacts',
+      'no cold, dim, desaturated or clinical-blue grading; keep it warm and light-filled'
     ];
 
     var campaign = String(doNotShow || '').trim();
