@@ -101,6 +101,10 @@ var ServiceRunner = {
       // replaced. Clear it before generating, not after.
       SheetWriter.clearDownstreamOutput(rowNumber, 'MEDIA_GENERATION');
 
+      // Resolved once per row so every asset in a carousel carries the same
+      // version — they are one attempt, not several.
+      var assetVersion = this._resolveAssetVersion(rowData['Content ID']);
+
       var allUrls = [];
       var assetFailures = [];
 
@@ -140,7 +144,8 @@ var ServiceRunner = {
 
           var fileUrl = this._storeGeneratedImages(
             imageResult.images,
-            rowData['Content ID'] + (assetCount > 1 ? '_S' + (i + 1) : '')
+            rowData['Content ID'] + (assetCount > 1 ? '_S' + (i + 1) : ''),
+            assetVersion
           );
 
           allUrls.push(fileUrl);
@@ -176,9 +181,14 @@ var ServiceRunner = {
 
       if (isPartial) {
         Logger.logPartial('MEDIA_GENERATION_SERVICE', rowNumber, 0,
-          'Generated ' + allUrls.length + ' of ' + assetCount + ' assets. ' +
-          assetFailures.join(' | '));
+          assetVersion + ': generated ' + allUrls.length + ' of ' + assetCount +
+          ' assets. ' + assetFailures.join(' | '));
       }
+
+      Logger.log(
+        'ASSET_VERSION | Row: ' + rowNumber + ' | ' + rowData['Content ID'] +
+        ' | ' + assetVersion + ' | ' + allUrls.length + ' asset(s)'
+      );
 
       SheetWriter.writeAIWorkerTag(rowNumber, 'MEDIA_GENERATION_SERVICE', sheetName);
 
@@ -189,7 +199,8 @@ var ServiceRunner = {
 
       Logger.logSuccess(
         'MEDIA_GENERATION_SERVICE', rowNumber, runtime, 0, 0,
-        'Generated ' + allUrls.length + ' image(s) [' + contentFormat + ']'
+        assetVersion + ': generated ' + allUrls.length +
+        ' image(s) [' + contentFormat + ']'
       );
 
       return {
@@ -584,7 +595,31 @@ var ServiceRunner = {
     return assetCount;
   },
 
-  _storeGeneratedImages: function(images, contentId) {
+  // Which attempt this is for the row. Every regeneration was previously named
+  // V1, so a folder holding three attempts at the same card gave no way to tell
+  // them apart except by cross-referencing timestamps against the execution log.
+  //
+  // The revision counter already exists — WorkerRunner keeps it per Content ID
+  // to enforce MAX_REVISION_CYCLES. Reading it here costs nothing.
+  //
+  // Note: the counter is cleared when QA approves or rejects, so a manual
+  // re-generation of an already-settled row starts again at V1. That is correct
+  // — it is a new attempt, not a continuation of a closed revision cycle — and
+  // the timestamp still keeps the filenames distinct.
+  _resolveAssetVersion: function(contentId) {
+    if (typeof _getRevisionCount !== 'function' || !contentId) {
+      return 'V1';
+    }
+
+    try {
+      return 'V' + (_getRevisionCount(contentId) + 1);
+    } catch (e) {
+      Logger.log('ASSET_VERSION | falling back to V1: ' + e.toString());
+      return 'V1';
+    }
+  },
+
+  _storeGeneratedImages: function(images, nameStem, version) {
     var folderId = CONFIG.VISUAL_ASSETS.generated;
 
     if (!folderId) {
@@ -597,7 +632,9 @@ var ServiceRunner = {
     var folder = DriveApp.getFolderById(folderId);
     var urls = [];
     var timestamp = this._formatTimestamp(new Date());
-    var version = 'V1';
+    var contentId = nameStem;
+
+    version = version || 'V1';
 
     for (var i = 0; i < images.length; i++) {
       var image = images[i];

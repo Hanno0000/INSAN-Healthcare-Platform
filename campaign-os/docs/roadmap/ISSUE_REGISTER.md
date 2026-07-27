@@ -103,6 +103,16 @@ Every issue carries the evidence it was found from. Nothing here is speculative.
 **Problem:** Exactly what Rule 6 "Narrative First" forbids. QA described it without flagging it.
 **Fix applied:** Rows of people facing camera, line-ups, team portraits and group photographs excluded at generation — subjects must be engaged in the moment. Added as a QA hard gate.
 
+### B10 — Every regeneration was named V1 ✅
+**Evidence:** `ServiceRunner._storeGeneratedImages()` hardcoded `var version = 'V1'`, so a row taken through three revision cycles produced three sets of files all labelled V1. `VISUAL_PRODUCTION_ARCHITECTURE.md` had specified V1 for the *initial* generation, implying later versions for revisions.
+**Impact:** low risk, real friction — the revision loop could not be reviewed from the folder, only by cross-referencing timestamps against the execution log.
+**Fix applied:** `_resolveAssetVersion()` reads the per-Content-ID revision counter that already exists to enforce `MAX_REVISION_CYCLES`. First attempt V1, after the first `Revision Required` V2, and so on. Resolved once per row so every card in a carousel shares one version. The version now appears in the execution log alongside the asset count. Falls back to V1 if the counter is unavailable. 10 unit tests.
+
+### B11 — Asset folders defined but unused ⏳
+**Evidence:** `CONFIG.VISUAL_ASSETS` defines `approved`, `rejected`, `published` and `archive`; only `generated` is referenced anywhere in the code. No `setTrashed`, `moveTo`, or equivalent exists in the project.
+**Consequence:** approved and rejected artwork accumulates in one folder, and `Final Asset URL` points into `generated` rather than an approved location. The configuration implies a sorting workflow that does not exist.
+**Suggested fix:** move assets on the QA decision, or drop the unused folder entries. Naturally belongs with the Publishing Service (C2) — documented here so the gap is not mistaken for working behaviour.
+
 ### B9 — QA scores a hard-gate failure as B+ ✅
 **Evidence:** Row 6 has duplicate text — a hard gate — yet scored B+.
 **Fix applied:** The cap is stated at the top of the hard gate list rather than only in the calibration section: any gate failure caps the score at C, and it is not a judgement call. The gate sets the ceiling; craft decides only where it lands beneath it.

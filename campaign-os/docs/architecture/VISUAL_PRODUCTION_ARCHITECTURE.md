@@ -572,10 +572,26 @@ CNT-000002_V1_20260723_143105_1.jpg
 ### Rules
 
 - Content ID comes from Content Pipeline (auto-generated CNT-XXXXXX).
-- Version is V1 for initial generation.
+- Version is the generation attempt: V1 initially, V2 after the first
+  `Revision Required`, V3 after the second. Every asset in one carousel shares
+  a version — they are one attempt, not several. Resolved from the revision
+  counter that also enforces `MAX_REVISION_CYCLES`.
 - Timestamp is YYYYMMDD_HHMMSS.
 - Sequence is a single digit for the asset number.
 - Extensions are lowercase.
+
+### Asset retention
+
+Nothing is deleted or moved. A regenerated row leaves its earlier attempts in
+place, distinguished by version and timestamp, so a revision cycle can be
+reviewed after the fact. The sheet's `Generated Assets` column is overwritten
+and always points at the current attempt.
+
+> **Implementation note:** `CONFIG.VISUAL_ASSETS` defines `approved`,
+> `rejected`, `published` and `archive` folders alongside `generated`. Only
+> `generated` is used — no code sorts assets between them. Approved and rejected
+> artwork sits together, and `Final Asset URL` points into `generated` like
+> everything else. Sorting arrives with the Publishing Service.
 
 ---
 
