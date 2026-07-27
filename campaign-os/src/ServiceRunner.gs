@@ -154,10 +154,13 @@ var ServiceRunner = {
         );
       }
 
+      // The Media Designer composes every prompt for the row in one pass, so it
+      // can hold the whole carousel in view and make the cards a sequence
+      // rather than three independent attempts at one picture.
+      var composed = this._composePrompts(rowData, assetCount, usingReference, rowNumber);
+
       for (var i = 0; i < assetCount; i++) {
-        var slidePrompt = this._buildGenerationPrompt(
-          rowData, i, assetCount, usingReference
-        );
+        var slidePrompt = composed[i];
 
         // One failed asset must not discard the assets already generated for
         // this row. Keep going, and report the shortfall rather than claiming
@@ -167,6 +170,13 @@ var ServiceRunner = {
             aspectRatio: specs.aspectRatio,
             referenceImages: referenceImages
           });
+
+          // The wording is set as type over the finished artwork rather than
+          // requested from the image model. Generation above was told to
+          // produce no text at all.
+          imageResult.images = this._composeVisibleText(
+            imageResult.images, rowData, i, assetCount, specs, rowNumber
+          );
 
           var fileUrl = this._storeGeneratedImages(
             imageResult.images,
@@ -330,6 +340,16 @@ var ServiceRunner = {
   },
 
   // Each carousel asset gets its own scene instead of N copies of one prompt.
+  //
+  // Falling back to the whole prompt when it is not segmented was the quiet
+  // failure: a three-card carousel whose Creative Director wrote one paragraph
+  // received one byte-identical prompt three times, and the resulting cards were
+  // three attempts at the same picture. It looked like the image model refusing
+  // to vary. It was the assembly handing it nothing to vary.
+  //
+  // Throwing instead sends the row back to the Creative Director, where the
+  // missing per-card direction actually belongs. Three identical generations
+  // cost three generations.
   _extractSlideSegment: function(designPrompt, index, assetCount) {
     var text = String(designPrompt || '');
 
@@ -340,10 +360,24 @@ var ServiceRunner = {
     var split = this._segmentByAsset(text);
 
     if (!split) {
-      return this._stripInternalLabels(text);
+      throw new Error(
+        'Carousel of ' + assetCount + ' cards has no per-card direction. The ' +
+        'Creative Director Design Prompt must separate each card with "|" — ' +
+        'one distinct scene per card. Generating without it produces ' +
+        assetCount + ' copies of the same image. Re-run the Creative Director.'
+      );
     }
 
-    var segment = split.segments[Math.min(index, split.segments.length - 1)];
+    if (split.segments.length < assetCount) {
+      throw new Error(
+        'Carousel needs ' + assetCount + ' distinct scenes but the Creative ' +
+        'Director Design Prompt describes only ' + split.segments.length +
+        '. Re-run the Creative Director, or set Asset Count to ' +
+        split.segments.length + '.'
+      );
+    }
+
+    var segment = split.segments[index];
     return split.preamble ? (split.preamble + ' ' + segment) : segment;
   },
 
@@ -475,16 +509,26 @@ var ServiceRunner = {
       'a warm neutral palette. Natural unposed human expression'
     );
 
-    var visibleText = this._resolveVisibleText(rowData, index, assetCount);
-    if (visibleText) {
+    // No text is ever requested. The headline is composited afterwards by
+    // TextOverlay, so asking for it here would put a second, misspelled copy on
+    // the artwork — which is exactly what happened when both ran.
+    //
+    // Reserving the band it will occupy is the one thing generation still has
+    // to do: the model cannot be told the wording, but it can be told to leave
+    // the area quiet so real type has somewhere to sit.
+    var cfg = CONFIG.TEXT_OVERLAY || {};
+    var willOverlay = cfg.ENABLED &&
+      !!this._resolveVisibleText(rowData, index, assetCount);
+
+    parts.push('The image contains no text, lettering, numerals or captions of any kind');
+
+    if (willOverlay) {
       parts.push(
-        'The only text rendered anywhere in the image is exactly this wording, ' +
-        'appearing once and once only, set as clean well-spaced typography with ' +
-        'strong contrast, comfortably legible at mobile size, integrated into the ' +
-        'composition and not overlapping any subject: "' + visibleText + '"'
+        'Leave the ' + (String(cfg.POSITION || 'bottom').toLowerCase() === 'top'
+          ? 'upper' : 'lower') +
+        ' third of the frame visually quiet — no faces, hands or key detail ' +
+        'there. Keep the subject and the point of interest clear of that band'
       );
-    } else {
-      parts.push('The image contains no text, lettering, numerals or captions of any kind');
     }
 
     parts.push(this._buildExclusions(rowData['Do NOT Show']));
@@ -643,6 +687,117 @@ var ServiceRunner = {
       Logger.log('ASSET_VERSION | falling back to V1: ' + e.toString());
       return 'V1';
     }
+  },
+
+  // One prompt per asset, from the Media Designer when it is enabled and from
+  // the legacy code-built assembly when it is not.
+  //
+  // A designer failure falls back rather than losing the row: the concatenated
+  // prompt produces weaker work, but weaker work beats a batch that stops
+  // because one model call returned malformed JSON. The fallback is logged
+  // loudly — silently producing the output this worker was built to replace
+  // would leave the operator judging the designer by results it never produced.
+  _composePrompts: function(rowData, assetCount, usingReference, rowNumber) {
+    var designer = ((CONFIG.SERVICES || {}).MEDIA_GENERATION || {}).designer || {};
+
+    if (designer.ENABLED) {
+      try {
+        var result = MediaDesigner.compose(rowData, assetCount, {
+          usingReference: usingReference
+        });
+
+        if (result.blocked) {
+          throw new Error(
+            'Media Designer will not produce publishable work from this brief: ' +
+            result.blockedReason + ' Re-run the Creative Director for this row.'
+          );
+        }
+
+        Logger.log(
+          'MEDIA_DESIGNER | Row ' + rowNumber + ' | composed ' +
+          result.prompts.length + ' prompt(s)'
+        );
+
+        return result.prompts;
+
+      } catch (designerErr) {
+        // A blocked brief is a decision, not a malfunction. It must reach the
+        // caller instead of being quietly downgraded to a legacy generation.
+        if (String(designerErr.message || '').indexOf('will not produce publishable') !== -1) {
+          throw designerErr;
+        }
+
+        Logger.log(
+          'MEDIA_DESIGNER_FAILED | Row ' + rowNumber + ' | falling back to the ' +
+          'code-built prompt for this row | ' + designerErr.toString()
+        );
+      }
+    }
+
+    var prompts = [];
+    for (var i = 0; i < assetCount; i++) {
+      prompts.push(this._buildGenerationPrompt(rowData, i, assetCount, usingReference));
+    }
+    return prompts;
+  },
+
+  // Sets the approved wording over each generated image and returns the images
+  // with their base64 replaced by the composed versions.
+  //
+  // A failure here keeps the untyped artwork rather than discarding the asset.
+  // The image itself is sound and the wording can be added by hand; throwing it
+  // away would mean paying for the generation twice to fix a caption. The
+  // shortfall is logged rather than left to be noticed.
+  _composeVisibleText: function(images, rowData, index, assetCount, specs, rowNumber) {
+    var cfg = CONFIG.TEXT_OVERLAY || {};
+
+    if (!cfg.ENABLED) {
+      return images;
+    }
+
+    var wording = this._resolveVisibleText(rowData, index, assetCount);
+
+    if (!wording) {
+      return images;
+    }
+
+    if (wording.length > (cfg.LONG_HEADLINE_CHARS || 90)) {
+      Logger.log(
+        'TEXT_OVERLAY | Row ' + rowNumber + ' | asset ' + (index + 1) +
+        ' | headline is ' + wording.length + ' characters. It will be set at a ' +
+        'reduced size, but this length reads as a caption rather than a ' +
+        'headline on a phone. Shorten it in Text On Design.'
+      );
+    }
+
+    for (var i = 0; i < images.length; i++) {
+      try {
+        var source = Utilities.newBlob(
+          Utilities.base64Decode(images[i].base64),
+          images[i].mimeType,
+          'asset'
+        );
+
+        var composed = TextOverlay.apply(
+          source, wording, specs.width, specs.height
+        );
+
+        if (composed) {
+          images[i] = {
+            base64: Utilities.base64Encode(composed.getBytes()),
+            mimeType: 'image/png'
+          };
+        }
+
+      } catch (overlayErr) {
+        Logger.log(
+          'TEXT_OVERLAY_FAILED | Row ' + rowNumber + ' | asset ' + (index + 1) +
+          ' | keeping the artwork without wording | ' + overlayErr.toString()
+        );
+      }
+    }
+
+    return images;
   },
 
   _storeGeneratedImages: function(images, nameStem, version) {

@@ -215,6 +215,34 @@ var CONFIG = {
     }
   },
 
+  // ================================
+  // TEXT OVERLAY
+  // Approved Arabic wording is set as real type after generation rather than
+  // asked of the image model, which cannot shape or order Arabic reliably.
+  // See TextOverlay.gs for the defects this replaced.
+  //
+  // ENABLED: false returns the pipeline to asking the image model for text.
+  // Keep it true unless diagnosing the overlay itself.
+  // ================================
+
+  TEXT_OVERLAY: {
+    ENABLED: true,
+    POSITION: 'bottom',        // 'bottom' | 'top'
+    FONT_FAMILY: 'Cairo',      // must exist in Google Slides
+    TEXT_COLOR: '#ffffff',
+    BOLD: true,
+    MAX_FONT_PT: 44,
+    MIN_FONT_PT: 20,
+    MARGIN_PCT: 0.07,
+    BAND_HEIGHT_PCT: 0.3,
+    SCRIM_COLOR: '#0d1b2a',
+    SCRIM_ALPHA: 0.55,         // 0 disables the scrim entirely
+
+    // Headlines longer than this are logged as a copy problem. Nothing is
+    // truncated — a silently shortened headline is worse than a long one.
+    LONG_HEADLINE_CHARS: 90
+  },
+
   CACHE_DURATION: 21600,
   LOG_SHEET_NAME: 'Execution Log',
   HEADER_ROW: 1,
@@ -562,11 +590,37 @@ var CONFIG = {
     MEDIA_GENERATION: {
       sheetName: 'Visual Pipeline',
       type: 'generation',
+
+      // The training manual. Loading this is what turns MEDIA_GENERATION from
+      // string concatenation into a worker that reads, judges and composes.
+      promptFile: 'MEDIA_GENERATION_SERVICE.md',
+
+      designer: {
+        // false returns generation to the code-built prompt in
+        // ServiceRunner._buildGenerationPrompt(). Kept as a way back if the
+        // designer misbehaves mid-campaign, not as a normal setting.
+        ENABLED: true,
+
+        // Execution work, not strategy: high enough to reach past the brief's
+        // first suggestion, low enough to stay inside it.
+        temperature: 0.8,
+
+        // Omit to use CONFIG.AI_PROVIDER.
+        provider: null,
+
+        // The manual is comprehensive on its own and already costs ~8k tokens.
+        // Every doc added here is paid on every row and comes out of the same
+        // six-minute execution budget. Add on evidence that the designer needs
+        // it, not in case it might.
+        docs: ['INSAN_VISUAL_LANGUAGE_SPEC.md']
+      },
+
       readColumns: [
-        'Content ID', 'Content Format',
+        'Content ID', 'Content Format', 'Hospital Brand',
         'Creative Director Design Prompt', 'Visual Concept',
-        'Visual Focus', 'Composition', 'Visual Elements',
-        'Do NOT Show', 'Text On Design', 'Asset Count',
+        'Visual Focus', 'Visual Priority', 'Design Mood', 'Composition',
+        'Visual Elements', 'Do NOT Show', 'Design Notes',
+        'Text On Design', 'Asset Count',
         'Production Mode', 'Reference Asset Package'
       ],
       writeColumns: [

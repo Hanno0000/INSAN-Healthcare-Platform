@@ -33,20 +33,31 @@ var DriveLoader = {
     return this._loadFile(fileName, folderId || CONFIG.DOCS_FOLDER_ID);
   },
 
+  // Services are resolved as well as workers. Media Generation lives under
+  // CONFIG.SERVICES, and because this function only ever looked at
+  // CONFIG.WORKERS its 1,990-line training manual was never loaded by anything
+  // — the file sat in Drive being edited while the image prompt was built by
+  // string concatenation in code.
   loadPrompt: function(workerName) {
-    var workerConfig = CONFIG.WORKERS[workerName];
+    var config = CONFIG.WORKERS[workerName] ||
+      (CONFIG.SERVICES && CONFIG.SERVICES[workerName]);
 
-    if (!workerConfig) {
-      Logger.log('Unknown worker: ' + workerName);
+    if (!config) {
+      Logger.log('Unknown worker or service: ' + workerName);
       return null;
     }
 
-    var isVisualWorker = workerConfig.sheetName === CONFIG.VISUAL_PIPELINE.SHEET_NAME;
-    var folderId = isVisualWorker
+    if (!config.promptFile) {
+      Logger.log('No promptFile configured for: ' + workerName);
+      return null;
+    }
+
+    var isVisual = config.sheetName === CONFIG.VISUAL_PIPELINE.SHEET_NAME;
+    var folderId = isVisual
       ? CONFIG.VISUAL_PROMPTS_FOLDER_ID
       : CONFIG.PROMPTS_FOLDER_ID;
 
-    return this._loadFile(workerConfig.promptFile, folderId);
+    return this._loadFile(config.promptFile, folderId);
   },
 
   loadProjectDocs: function(workerName) {
