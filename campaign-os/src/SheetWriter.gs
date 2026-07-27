@@ -298,25 +298,39 @@ var SheetWriter = {
     var pipelines = CONFIG.STAGE_ORDER || {};
     var cleared = [];
 
-    // Some columns have two writers by design: the Creative Director refines
-    // the same strategy fields the Content Strategy Worker proposes. Clearing a
-    // column this stage is about to write would be a wasted write at best, and
-    // — if the caller ever clears after writing — silent data loss. Excluding
-    // them makes the result independent of call order.
-    var own = {};
-    var self = this._stageWriteColumns(stageName);
-    if (self) {
-      for (var s = 0; s < self.columns.length; s++) {
-        own[self.columns[s]] = true;
-      }
-    }
-
     for (var key in pipelines) {
       var stages = pipelines[key];
       var position = stages.indexOf(stageName);
 
       if (position === -1) {
         continue;
+      }
+
+      // Some columns have more than one writer by design: the Creative
+      // Director refines the same 18 strategy fields the Content Strategy
+      // Worker proposes, so those names appear in *both* stages' writeColumns.
+      //
+      // Appearing in a later stage's writeColumns does not make a column that
+      // stage's output. It belongs to the earliest stage that writes it, and
+      // that stage has already run. Treating it as downstream deletes work
+      // this very execution just produced — which is exactly what happened:
+      // the Content Creation Worker wiped every strategy field on each row it
+      // touched, because all 18 sit in the Creative Director's writeColumns.
+      //
+      // So protect every column written at or before this stage, not just the
+      // caller's own. What remains is genuinely downstream: derived from
+      // inputs this run replaced, and safe to clear.
+      var protectedCols = {};
+      for (var p = 0; p <= position; p++) {
+        var upstream = this._stageWriteColumns(stages[p]);
+
+        if (!upstream) {
+          continue;
+        }
+
+        for (var u = 0; u < upstream.columns.length; u++) {
+          protectedCols[upstream.columns[u]] = true;
+        }
       }
 
       for (var i = position + 1; i < stages.length; i++) {
@@ -336,7 +350,7 @@ var SheetWriter = {
         for (var c = 0; c < target.columns.length; c++) {
           var colName = target.columns[c];
 
-          if (own[colName]) {
+          if (protectedCols[colName]) {
             continue;
           }
 
