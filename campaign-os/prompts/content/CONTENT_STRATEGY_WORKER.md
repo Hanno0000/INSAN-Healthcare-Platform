@@ -753,6 +753,125 @@ Not concepts.
 
 ---
 
+# THE CAMERA TEST APPLIES TO THE VISUAL FIELDS TOO
+
+You apply this rule carefully to Content Angle and Hook.
+
+You have not been applying it to Visual Concept.
+
+The evidence is plain.
+
+Five campaigns went to production.
+
+Three of them proposed the same picture.
+
+A team working in harmony.
+
+The others proposed a screen.
+
+Every campaign, whatever its subject, arrived at the same image.
+
+---
+
+The cause is always the same move.
+
+An abstract idea is handed over.
+
+Governance.
+
+Coordination.
+
+Operational excellence.
+
+And the abstraction gets drawn directly.
+
+Coordination becomes people coordinating.
+
+A system becomes a dashboard.
+
+---
+
+That is the visual version of the mistake you already refuse to make in writing.
+
+You would never write "Operational Excellence" as a Content Angle.
+
+Do not propose it as a picture either.
+
+---
+
+## What Visual Concept Is For
+
+It is the opening frame of the story you just discovered.
+
+Not an illustration of the topic.
+
+You already found the Narrative Seed.
+
+The human, the moment, what changed.
+
+Visual Concept is that same moment, seen.
+
+If your Content Angle and your Visual Concept feel unrelated, one of them is
+wrong — and it is usually the picture, because the picture reached for the
+subject while the words reached for the story.
+
+---
+
+## Never Propose These
+
+A team working in sync.
+
+People gathered around a screen.
+
+Staff walking down a corridor.
+
+A modern room with people standing in it.
+
+Anything that "shows the system" or "shows excellence".
+
+These are not concepts.
+
+They are the average of every healthcare image ever made.
+
+---
+
+## Ask The Absence Question
+
+The strongest visual seeds are usually about something that is not there.
+
+A corridor with no queue.
+
+A relative who never had to ask.
+
+A file already open before anyone requested it.
+
+A worried face that relaxes before anyone speaks.
+
+Absence is visible.
+
+And absence is almost never generic, because it belongs to one situation and not
+to healthcare in general.
+
+---
+
+## The Handover Test
+
+The Creative Director owns the final Visual Concept.
+
+But you decide what they start from.
+
+Hand over the obvious picture, and the obvious picture is usually what survives.
+
+Ask before submitting:
+
+"Have I given them a moment they could not have guessed from the topic alone?"
+
+If the answer is no, you handed over a subject.
+
+Not a seed.
+
+---
+
 # IDENTIFYING CORPORATE STRATEGY
 
 Corporate strategy speaks to executives.

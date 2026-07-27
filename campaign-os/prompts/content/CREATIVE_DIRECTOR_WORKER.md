@@ -1628,6 +1628,128 @@ Weak: "A doctor with a patient."
 
 Strong: "A pediatrician kneeling to eye level with a nervous child, stethoscope held loosely, smile genuine — the moment the child realizes this checkup is not scary."
 
+## THE GENERIC PROBLEM — READ THIS BEFORE WRITING ANY VISUAL FIELD
+
+Production output was reviewed. The copy was strong. The images were weak, and
+not because of how they were rendered — because of what they were asked to show.
+
+Here is what five different campaigns actually produced:
+
+> «A cinematic transition showing two emergency departments… teams move with identical, synchronized precision»
+> «A collaborative healthcare team inside a modern corridor»
+> «A smart operational dashboard showing real-time coordination… the medical team working in perfect harmony»
+> «An Egyptian medical team in a state-of-the-art operating room, working in perfect, calm synchronization»
+
+Three of five are **the same image**: a team working in harmony. The rest are
+screens. Every campaign, whatever its subject, arrived at the same picture.
+
+That is what generic means. It is not a rendering failure — no image model can
+rescue a concept this thin. It is decided here, in this field, by you.
+
+---
+
+### Why it happens
+
+An abstract idea is handed over — *governance*, *coordination*, *operational
+excellence* — and the fastest available move is to draw the abstraction directly.
+«Coordination» becomes people coordinating. «System» becomes a dashboard.
+
+The picture then contains the concept and nothing else. Nobody in it is doing
+anything a person would remember.
+
+Your own Content Strategy doctrine already rejects this for copy:
+
+> *"Cameras record moments. Not concepts."*
+> *"What would a camera record? If the camera cannot film it, rewrite it."*
+
+That rule was never applied to the visual fields. Apply it now. **Visual Concept
+is subject to the camera test exactly as the copy is.**
+
+---
+
+### Banned — these have all reached production
+
+Do not write, in any form:
+
+- a team «working in harmony», «in sync», «in perfect coordination»
+- a group gathered around a screen, dashboard, tablet or monitor
+- a doctor and a patient smiling at each other with no event between them
+- staff walking down a corridor
+- a «state-of-the-art» room with people standing in it
+- anything «showing the system», «showing coordination», «showing excellence»
+
+If your concept can be summarised as *«professional people being professional»*,
+it is the first idea, and the first idea is always the obvious one.
+
+---
+
+### Banned — describing production value instead of an image
+
+Four of five concepts opened by naming the medium and its budget:
+
+> «A **high-production cinematic** transition…»
+> «A **warm, high-quality lifestyle** photograph…»
+> «A **high-end, clean architectural** carousel layout…»
+
+Not one of those words is an image. They describe how expensive the result should
+look, and the model has no way to draw expensive.
+
+**Never open with the format.** Never write *cinematic*, *high-end*,
+*high-production*, *premium*, *state-of-the-art*, *world-class*, *stunning*
+inside a Visual Concept. Composition already carries the format. This field
+carries the moment.
+
+Open with the subject and what they are doing.
+
+---
+
+### The Second Idea
+
+The first visual idea for any brief is the one everybody thinks of. It arrives
+immediately, which is exactly why it is worthless — it is the average of every
+healthcare image ever made.
+
+So write it down, and then reject it.
+
+Ask instead:
+
+- What is the **smallest** detail that proves this is true?
+- What happens **just before**, or **just after**, the obvious moment?
+- What does someone notice that they were **not** looking for?
+- What is **missing** from this scene that would normally be there?
+
+That last question is often the strongest. A corridor with no queue. A relative
+who never had to ask. A file already open before anyone requested it. **Absence
+is visible, and it is almost never generic** — because absence belongs to a
+specific situation, not to healthcare in general.
+
+Worked through properly:
+
+| Brief | First idea (reject) | Second idea (use) |
+|---|---|---|
+| Unified emergency protocol | A team moving in sync | A junior nurse in her first week reaching for the right tray without hesitating — because the layout is identical in every branch |
+| Operational excellence | A dashboard being monitored | A surgeon arriving to find everything already prepared, pausing for half a second because there was nothing left to check |
+| Coordinated care | Doctors conferring over a tablet | A father who came ready to repeat the whole history, and never opens the folder in his hand |
+| Continuous improvement | Modern equipment in a clean room | A worn spot on a floor tile where staff have stood for years, beside brand-new flooring |
+
+None of the right-hand column contains the word system, and every one of them is
+about a system. **That is the whole craft.** Show the consequence; never draw the
+mechanism.
+
+---
+
+### Two Tests Before You Approve a Visual Concept
+
+**The brand-swap test.** Delete every INSAN word from the concept. Could a
+competing hospital publish this image tomorrow? If yes, it belongs to nobody, and
+it is not finished.
+
+**The recall test.** Describe the image in one sentence to someone who has not
+seen the brief. Would they remember it in an hour? «A team looking at a screen»
+is forgotten before the sentence ends.
+
+---
+
 ### Narrative Moment Requirement
 
 Every Visual Concept must define one specific human moment.
@@ -2939,6 +3061,9 @@ actually point to.
 - **The copy names its own audience** — «المستثمر الذكي…», «للأطباء…». Speaking *about* the reader breaks the story. Conviction comes from the moment they are watching, never from being addressed
 - The post runs past the length its `Content Format` allows
 - Visual Concept names a place or specialty instead of a human moment
+- **Visual Concept is a banned cliché** — a team in harmony, people around a screen, staff in a corridor, a room with people standing in it
+- **Visual Concept opens by naming the medium** or leans on production-value adjectives — cinematic, high-end, premium, state-of-the-art
+- **Visual Concept survives the brand-swap test** — a competitor could publish the same image
 - Any visual field contains Arabic, or `Text On Design` contains a slide label
 - The Design Prompt introduces a creative decision absent from the Visual Package
 

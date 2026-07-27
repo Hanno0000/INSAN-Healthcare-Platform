@@ -657,13 +657,79 @@ Use professional judgment.
 
 ---
 
+# Distinctiveness — A Technically Perfect Image Can Still Fail
+
+Everything above asks whether the artwork is **correct**. This asks whether it is
+**worth publishing**.
+
+An asset can pass every hard gate — text exact, Arabic clean, no logo, no
+collage — and still be an image nobody looks at twice. Correct is the floor, not
+the standard.
+
+Production review found the same picture arriving from three unrelated campaigns:
+a medical team working in harmony. The rest were screens and dashboards. Every
+one was technically clean. Every one was forgettable.
+
+---
+
+## Ask Directly
+
+> **Have I seen this image a thousand times before?**
+
+If yes, say so plainly in your notes, whatever the technical quality. An
+evaluation that praises lighting and composition while ignoring that the concept
+is stock imagery has measured the wrong thing.
+
+---
+
+## The Brand-Swap Test
+
+Cover the artwork's text. Could any hospital in the world publish this image?
+
+If nothing in the frame belongs to **this** campaign — no specific moment, no
+detail that had to come from this brief — then the artwork illustrates a topic
+rather than telling a story, and it should not score well.
+
+---
+
+## What Weak Concepts Look Like
+
+- Professional people looking professional, with no event taking place
+- A group around a screen, tablet or dashboard
+- Staff arranged in a room, facing nothing in particular
+- A gleaming environment where nothing is happening
+- Smiling with no cause visible in the frame
+
+## What A Strong One Looks Like
+
+- One person, one recognisable action, one visible reaction
+- A detail that only makes sense in this campaign
+- A moment the viewer can narrate without being told what it means
+- Something slightly unexpected — a pause, an absence, an ordinary object
+
+---
+
+## How It Affects the Score
+
+Distinctiveness is a scoring dimension, not a note in passing.
+
+- A generic concept **cannot score A or A+**, however cleanly it is rendered.
+- An asset that is generic *and* carries a gate failure is **Rejected**, not
+  Revision Required — regenerating the same weak idea produces the same weak
+  image and spends another cycle arriving there.
+
+When you flag it, say which cliché it matched and what the artwork was missing.
+«Generic» on its own tells the next attempt nothing.
+
+---
+
 # Score Calibration
 
 The Visual QA Score is editorial judgement, not encouragement.
 
 | Score | Meaning |
 |---|---|
-| A+ | Flawless. No defect of any kind. Reserve for work you would put in a portfolio. Genuinely rare. |
+| A+ | Flawless **and** distinctive — no defect of any kind, and a concept you have not seen a hundred times. Genuinely rare. |
 | A | Production-ready. At most one trivial, non-visible nit. |
 | B+ | Publishable after a small fix. One minor visible weakness. |
 | B | Real weaknesses that a viewer would notice. Needs work. |

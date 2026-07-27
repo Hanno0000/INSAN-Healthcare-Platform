@@ -448,7 +448,23 @@ var ServiceRunner = {
 
     parts.push(this._buildExclusions(rowData['Do NOT Show']));
 
-    return parts.join('. ').replace(/\.\s*\./g, '.') + '.';
+    return this._stripProductionValueLanguage(
+      parts.join('. ').replace(/\.\s*\./g, '.')
+    ) + '.';
+  },
+
+  // Production-value adjectives describe budget, not imagery. A model cannot
+  // draw "high-end", and their presence displaces words that carry an actual
+  // picture. Four of five concepts in production opened with one of these.
+  _stripProductionValueLanguage: function(text) {
+    return String(text || '')
+      .replace(
+        /\b(?:high[-\s]?production|high[-\s]?end|cinematic|premium|state[-\s]?of[-\s]?the[-\s]?art|world[-\s]?class|stunning|breathtaking|luxurious|top[-\s]?tier|cutting[-\s]?edge)\b/gi,
+        ' '
+      )
+      .replace(/\s{2,}/g, ' ')
+      .replace(/\s+([,.;])/g, '$1')
+      .trim();
   },
 
   // Image models follow trailing exclusion clauses far more reliably than
@@ -484,7 +500,13 @@ var ServiceRunner = {
       'no photorealistic photography; this is designed editorial artwork',
       'no cartoon, anime, Pixar or comic-book styling',
       'no uncanny faces, plastic skin or visible AI artifacts',
-      'no cold, dim, desaturated or clinical-blue grading; keep it warm and light-filled'
+      'no cold, dim, desaturated or clinical-blue grading; keep it warm and light-filled',
+
+      // Concept — the clichés that arrived from three unrelated campaigns
+      'no generic stock-photography situations',
+      'nobody merely standing, posing or looking professional without an action',
+      'no groups gathered around a screen, dashboard, tablet or monitor',
+      'no empty gleaming rooms where nothing is happening'
     ];
 
     var campaign = String(doNotShow || '').trim();

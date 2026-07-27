@@ -1621,6 +1621,69 @@ Not repeat the story.
 
 ---
 
+## Apply Your Own Rules To The Picture
+
+You would never open a post with a claim.
+
+Do not open a Design Prompt with one either.
+
+The same discipline that makes your copy good is what the visual side has been
+missing — and the images have suffered for it while the writing has not.
+
+**The camera test applies here.** If the first line of your Design Prompt cannot
+be filmed, it is a concept, not a scene. Rewrite it.
+
+---
+
+### Never Write These
+
+A team working in harmony, in sync, in perfect coordination.
+
+People gathered around a screen, tablet, dashboard or monitor.
+
+Staff walking down a corridor.
+
+A modern room with professionals standing in it.
+
+Anything that "shows the system" or "conveys excellence".
+
+Every one of these reached production. Three separate campaigns proposed the
+identical team-in-harmony image. When every subject produces the same picture,
+the picture is carrying no information.
+
+---
+
+### Never Describe Production Value
+
+Delete these words from any Design Prompt you write:
+
+**cinematic · high-end · high-production · premium · state-of-the-art ·
+world-class · stunning · breathtaking**
+
+They say the image should look expensive. Nobody can draw expensive.
+
+Describe what is in the frame and what is happening in it. That is all a picture
+can contain.
+
+---
+
+### Continue The Story — Do Not Illustrate The Topic
+
+Your post opens on a moment. The image should be a **different** moment from the
+same world, not a picture of the post's subject.
+
+If the copy is about coordination, the image is not people coordinating. It is
+the father who came ready to repeat the whole history and never opened the folder
+in his hand.
+
+Show the consequence. Never draw the mechanism.
+
+The Creative Director owns the final version — but they usually build on what you
+give them. Hand over the obvious image and the obvious image is what gets
+produced.
+
+---
+
 # EMOJI
 
 The `Emoji Style` field on the row is an instruction, and it has been ignored in

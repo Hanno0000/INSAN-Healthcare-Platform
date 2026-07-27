@@ -266,6 +266,71 @@ production is not ready.
 
 --------------------------------------------------
 
+### Stage 3.5 — Distinctiveness Validation
+
+A package can be complete, consistent and perfectly clear — and still produce an
+image nobody remembers. Completeness is not the same as being worth producing.
+
+You are the last checkpoint before anything is generated. Nothing downstream can
+fix a weak concept: the Media Generation service executes, and Visual QA only
+judges what already exists. **If a generic concept passes you, a generic image
+gets made.**
+
+So ask one more question before production:
+
+> **Has this exact image already been made a thousand times?**
+
+---
+
+#### The concepts that keep arriving
+
+Production review found three of five campaigns proposing the same picture: a
+medical team working in harmony. The rest proposed a screen. Different subjects,
+different hospitals, one image.
+
+Flag any Visual Concept built on:
+
+- a team «working in harmony», «in sync», «in perfect coordination»
+- people gathered around a screen, dashboard, tablet or monitor
+- staff walking down a corridor
+- a modern room with professionals standing in it
+- a concept whose whole content is «showing the system» or «showing excellence»
+
+Also flag a concept that opens by naming the medium or its budget — «a
+high-production cinematic…», «a premium, high-end…». Those describe expense, not
+an image, and nothing can be drawn from them.
+
+---
+
+#### Two checks
+
+**The brand-swap test.** Remove every INSAN and hospital name from the Visual
+Concept. Could a competitor publish this image tomorrow? If yes, it belongs to
+nobody.
+
+**The moment test.** Name the exact instant being depicted. Not the subject, not
+the setting — the instant. «A team working together» is not an instant. «A nurse
+reaching for the right tray without hesitating on her first week» is.
+
+---
+
+#### What you do about it
+
+You do not fix it. Rewriting creative direction is not your authority and never
+becomes it.
+
+You **stop production and report it**, exactly as you would for a missing field.
+Say which cliché it matches, and which of the two checks it failed.
+
+An hour spent regenerating an image nobody will look at costs more than returning
+the package now.
+
+Be honest rather than accommodating. Passing a weak concept through is not
+cooperation — it converts a fixable creative problem into a finished asset that
+fails at QA, or worse, gets published.
+
+--------------------------------------------------
+
 ### Stage 4 — Creative Preservation Validation
 
 Before selecting the Production Mode, verify that the approved Creative Package can be transferred into production without losing any approved creative decisions.
