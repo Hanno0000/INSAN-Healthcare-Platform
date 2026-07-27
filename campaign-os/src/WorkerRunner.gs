@@ -56,6 +56,78 @@ var ExecutionBudget = {
 };
 
 
+// ================================
+// OPERATOR STOP
+// A run in progress had no off switch. The only ways out were to let it finish
+// or to close the tab — and closing the tab does not stop the server, it just
+// stops you seeing it. On a batch that is producing bad output, or one launched
+// against the wrong rows, every remaining row is a paid mistake.
+//
+// The sidebar issues the stop as its own request while the run is still going;
+// Apps Script runs the two concurrently, so the flag lands in the property
+// store where the running loop reads it between rows. Nothing is interrupted
+// mid-row: the row in flight is finished and written, then the batch stops the
+// way it stops for a spent time budget — checkpoint saved, resumable.
+// ================================
+
+var RunControl = {
+  PROPERTY: 'STOP_REQUESTED',
+
+  // Stop means stop — including the parts that would restart on their own.
+  // A long job schedules its own continuation about a minute after each pass,
+  // so halting only the execution in flight would look like it worked and then
+  // quietly resume. The scheduled trigger goes with it.
+  requestStop: function() {
+    var now = new Date().getTime();
+    PropertiesService.getScriptProperties().setProperty(this.PROPERTY, String(now));
+
+    var hadJob = !!_loadJob();
+    _clearJob();
+
+    Logger.log(
+      'STOP_REQUESTED | operator asked the current run to stop' +
+      (hadJob ? ' | background continuation cancelled' : '')
+    );
+
+    return { requestedAt: now, jobCancelled: hadJob };
+  },
+
+  clear: function() {
+    PropertiesService.getScriptProperties().deleteProperty(this.PROPERTY);
+  },
+
+  // A stop applies only to a run that was already going when the button was
+  // pressed. Comparing the request against the run's own start time means a
+  // flag left behind by an earlier run — one that finished before the loop
+  // noticed, or died mid-row — can never kill the next run. So no entry point
+  // has to remember to clear the flag first, and there is no window in which
+  // clearing it races the request.
+  stopRequested: function(runStartMs) {
+    var raw = PropertiesService.getScriptProperties().getProperty(this.PROPERTY);
+
+    if (!raw) {
+      return false;
+    }
+
+    var requestedAt = parseInt(raw, 10);
+
+    if (isNaN(requestedAt)) {
+      return false;
+    }
+
+    return requestedAt >= (runStartMs || 0);
+  },
+
+  // The start time every loop in this execution measures a stop request
+  // against. ExecutionBudget.begin() runs once per invocation, so its start is
+  // the outermost run's start even when a pipeline spans several batches —
+  // which is what makes a stop pressed during step 1 still stop step 2.
+  runStart: function(fallbackMs) {
+    return ExecutionBudget._start === null ? fallbackMs : ExecutionBudget._start;
+  }
+};
+
+
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('AI Workers')
@@ -88,6 +160,8 @@ function onOpen() {
       .addItem('Background Job Status', 'showJobStatus')
       .addItem('Cancel Background Job', 'cancelActiveJob'))
     .addSeparator()
+    .addItem('Stop Current Run', 'stopCurrentRun')
+    .addSeparator()
     .addItem('Refresh Cache', 'refreshCache')
     .addItem('System Status', 'systemStatus')
     .addToUi();
@@ -119,6 +193,27 @@ function showJobStatus() {
   ];
 
   ui.alert('Background Job', lines.join('\n'), ui.ButtonSet.OK);
+}
+
+
+// The menu equivalent of the sidebar's Stop button. A menu item opened from the
+// same sheet runs as its own execution, so this returns while the run it stops
+// is still going — the same way the sidebar call does.
+function stopCurrentRun() {
+  var ui = SpreadsheetApp.getUi();
+  var outcome = RunControl.requestStop();
+
+  ui.alert(
+    'Stop Requested',
+    'The run will stop after the row it is working on finishes.\n\n' +
+    'That row is written first — nothing is abandoned half-done. Work already ' +
+    'in the sheet is kept, and checkpoints are saved, so "Resume Last Run" ' +
+    'picks up from where it stopped.' +
+    (outcome.jobCancelled
+      ? '\n\nThe scheduled background continuation has been cancelled too.'
+      : ''),
+    ui.ButtonSet.OK
+  );
 }
 
 
@@ -480,6 +575,46 @@ function runFullContentPipeline() {
   runTeamPipeline(CONTENT_TEAM_WORKERS, 'Content Pipeline');
 }
 
+// Asked after the run is confirmed, before any work starts.
+//
+// The cache holds the prompt and doc files read from Drive, for six hours. It
+// only goes stale when one of those files is edited — which is something the
+// operator did and a timer cannot know about. So the question is asked at the
+// one moment the answer is knowable, and answering it clears the cache once for
+// the whole run rather than repeatedly during it.
+//
+// Returns false only if the refresh itself failed, so the caller can abandon a
+// run that would otherwise use exactly the prompts the operator asked to
+// replace — and produce plausible output from them.
+function offerCacheRefresh() {
+  var answer = Browser.msgBox(
+    'Refresh Prompt Cache?',
+    'Prompts and docs are cached for six hours.\n\n' +
+    'Choose Yes if you have edited any prompt or doc on Drive since the last ' +
+    'run — otherwise the workers read the previous version.\n\n' +
+    'It costs a few seconds at the start of the run.',
+    Browser.Buttons.YES_NO
+  );
+
+  if (answer !== 'yes') {
+    return true;
+  }
+
+  try {
+    refreshCache();
+    return true;
+  } catch (e) {
+    Browser.msgBox(
+      'Cache Refresh Failed',
+      'The cache could not be cleared:\n' + e.toString() +
+      '\n\nThe run was not started — it would have used the old prompts.',
+      Browser.Buttons.OK
+    );
+    return false;
+  }
+}
+
+
 function runTeamWorker(workerName) {
   var lastRow = SheetSchema.getLastRow();
 
@@ -495,6 +630,8 @@ function runTeamWorker(workerName) {
   );
 
   if (confirm !== 'yes') return;
+
+  if (!offerCacheRefresh()) return;
 
   var startTime = new Date().getTime();
   var result = runWorkerBatch(workerName, range.start, range.end);
@@ -535,6 +672,8 @@ function runTeamPipeline(workerNames, pipelineName) {
 
   if (confirm !== 'yes') return;
 
+  if (!offerCacheRefresh()) return;
+
   ExecutionBudget.begin();
 
   var pipelineStart = new Date().getTime();
@@ -559,9 +698,25 @@ function runTeamPipeline(workerNames, pipelineName) {
     var line = displayName + ': ' + result.success + ' success, ' +
       result.failed + ' failed (' + durationSec + 's)';
     if (result.interrupted) {
-      line += ' [timeout - resume from row ' + result.nextRow + ']';
+      line += result.stopped
+        ? ' [stopped - resume from row ' + result.nextRow + ']'
+        : ' [timeout - resume from row ' + result.nextRow + ']';
     }
     summary.push(line);
+
+    // A stop must stay stopped. Falling through to the timeout branch would
+    // schedule an automatic continuation, and the run the operator just halted
+    // would restart by itself about a minute later.
+    if (result.stopped) {
+      _clearJob();
+      summary.push('\nStopped at your request. Nothing is scheduled to continue.');
+      summary.push('Work already written to the sheet is kept, and checkpoints');
+      summary.push('are saved — "Resume Last Run" picks up from row ' + result.nextRow + '.');
+      if (workerNames.slice(i + 1).length > 0) {
+        summary.push('\nNot started: ' + workerNames.slice(i + 1).map(toDisplayName).join(', '));
+      }
+      break;
+    }
 
     if (result.interrupted) {
       var remaining = workerNames.slice(i);
@@ -629,6 +784,8 @@ function runMediaGenerationService() {
 
   if (confirm !== 'yes') return;
 
+  if (!offerCacheRefresh()) return;
+
   var startTime = new Date().getTime();
   var result = ServiceRunner.runMediaGeneration(range.start, range.end);
   var endTime = new Date().getTime();
@@ -679,6 +836,8 @@ function runVisualWorker(workerName) {
 
   if (confirm !== 'yes') return;
 
+  if (!offerCacheRefresh()) return;
+
   var startTime = new Date().getTime();
   var result = runVisualWorkerBatch(workerName, range.start, range.end);
   var endTime = new Date().getTime();
@@ -722,6 +881,8 @@ function runVisualPipeline() {
 
   if (confirm !== 'yes') return;
 
+  if (!offerCacheRefresh()) return;
+
   ExecutionBudget.begin();
 
   var pipelineStart = new Date().getTime();
@@ -730,6 +891,7 @@ function runVisualPipeline() {
   // reported and stepped over: a Video row that cannot be generated must not
   // prevent QA from ever seeing the four rows that generated fine.
   var pipelineFailed = false;
+  var pipelineStopped = false;
 
   // Step 1: Visual Planner (Worker)
   var plannerName = 'VISUAL_PLANNER_WORKER';
@@ -746,12 +908,15 @@ function runVisualPipeline() {
     var line = 'Visual Planner: ' + result.success + ' success, ' +
       result.failed + ' failed (' + durationSec + 's)';
     if (result.interrupted) {
-      line += ' [timeout - resume from row ' + result.nextRow + ']';
+      line += result.stopped
+        ? ' [stopped - resume from row ' + result.nextRow + ']'
+        : ' [timeout - resume from row ' + result.nextRow + ']';
     }
     summary.push(line);
 
     if (result.interrupted) {
       pipelineFailed = true;
+      pipelineStopped = !!result.stopped;
     }
   } else {
     summary.push('Visual Planner: skipped (already complete)');
@@ -767,11 +932,17 @@ function runVisualPipeline() {
     var genLine = 'Media Generation: ' + genResult.success + ' success, ' +
       genResult.failed + ' failed (' + durationSec + 's)';
     if (genResult.interrupted) {
-      genLine += ' [timeout - resume from row ' + genResult.nextRow + ']';
+      genLine += genResult.stopped
+        ? ' [stopped - resume from row ' + genResult.nextRow + ']'
+        : ' [timeout - resume from row ' + genResult.nextRow + ']';
     }
     summary.push(genLine);
 
-    if (genResult.interrupted) {
+    if (genResult.stopped) {
+      pipelineFailed = true;
+      pipelineStopped = true;
+      summary.push('Generation stopped at your request');
+    } else if (genResult.interrupted) {
       pipelineFailed = true;
       summary.push('Pipeline paused: time budget reached during generation');
     } else if (genResult.success === 0) {
@@ -800,7 +971,10 @@ function runVisualPipeline() {
       var line = 'Visual QA: ' + result.success + ' success, ' +
         result.failed + ' failed (' + durationSec + 's)';
       if (result.interrupted) {
-        line += ' [timeout - resume from row ' + result.nextRow + ']';
+        line += result.stopped
+          ? ' [stopped - resume from row ' + result.nextRow + ']'
+          : ' [timeout - resume from row ' + result.nextRow + ']';
+        pipelineStopped = pipelineStopped || !!result.stopped;
       }
       summary.push(line);
     } else {
@@ -812,7 +986,11 @@ function runVisualPipeline() {
 
   // The visual pipeline interleaves a service between two workers, so it is
   // resumed as a whole rather than worker by worker.
-  if (pipelineFailed) {
+  if (pipelineStopped) {
+    _clearJob();
+    summary.push('\nStopped at your request. Nothing is scheduled to continue.');
+    summary.push('Checkpoints are kept — "Resume Last Run" picks up where it stopped.');
+  } else if (pipelineFailed) {
     _saveJob({
       workers: ['VISUAL_PLANNER_WORKER', 'MEDIA_GENERATION', 'VISUAL_QA_WORKER'],
       completed: [],
@@ -829,7 +1007,8 @@ function runVisualPipeline() {
   var totalDuration = ((pipelineEnd - pipelineStart) / 1000).toFixed(1);
 
   Browser.msgBox(
-    pipelineFailed ? 'Visual Pipeline Paused' : 'Visual Pipeline Complete',
+    pipelineStopped ? 'Visual Pipeline Stopped'
+      : (pipelineFailed ? 'Visual Pipeline Paused' : 'Visual Pipeline Complete'),
     summary.join('\n') +
     '\n\nTotal Duration: ' + totalDuration + ' seconds',
     Browser.Buttons.OK
@@ -906,6 +1085,8 @@ function resumeLastRun() {
   );
 
   if (confirm !== 'yes') return;
+
+  if (!offerCacheRefresh()) return;
 
   var startTime = new Date().getTime();
   var result = runWorkerBatch(target.worker, target.row, endRow);
@@ -1362,12 +1543,30 @@ function runWorkerBatch(workerName, startRow, endRow) {
   }
 
   var batchStart = new Date().getTime();
+  var runStart = RunControl.runStart(batchStart);
   var results = [];
   var successCount = 0;
   var failCount = 0;
   var interrupted = false;
+  var stopped = false;
+  var lastProcessedRow = null;
+
+  // The first row not yet done, and so the row a resume has to start from.
+  var nextRow = startRow;
 
   for (var row = startRow; row <= endRow; row++) {
+    // Checked before the budget, and without the `row > startRow` guard the
+    // budget needs: a batch must always attempt one row to make progress, but
+    // an operator asking it to stop wants it stopped, not one row later.
+    if (RunControl.stopRequested(runStart)) {
+      interrupted = true;
+      stopped = true;
+      saveCheckpoint(upperName, row);
+      RunControl.clear();
+      Logger.log('OPERATOR_STOP | ' + upperName + ' | stopped before row ' + row);
+      break;
+    }
+
     // Decide before spending, not after. Stopping one row early costs a resume;
     // being killed mid-row loses the checkpoint and the work in flight.
     if (row > startRow && !ExecutionBudget.canFitAnother(upperName)) {
@@ -1385,6 +1584,8 @@ function runWorkerBatch(workerName, startRow, endRow) {
     ExecutionBudget.record(upperName, new Date().getTime() - rowStart);
 
     results.push(result);
+    lastProcessedRow = row;
+    nextRow = row + 1;
 
     // A failed row is recorded and the batch moves on. One bad row must never
     // decide the fate of the rows behind it.
@@ -1404,15 +1605,27 @@ function runWorkerBatch(workerName, startRow, endRow) {
     clearCheckpoint(upperName);
   }
 
-  var status = interrupted ? 'TIMEOUT' : (failCount === 0 ? 'SUCCESS' : 'PARTIAL');
+  var status = interrupted
+    ? (stopped ? 'STOPPED' : 'TIMEOUT')
+    : (failCount === 0 ? 'SUCCESS' : 'PARTIAL');
 
   Logger.logExecution({
     worker: upperName,
-    row: startRow + '-' + (interrupted ? results[results.length - 1].row : endRow),
+    row: startRow + '-' + (interrupted
+      ? (lastProcessedRow === null ? startRow : lastProcessedRow)
+      : endRow),
     status: status,
     runtime: new Date().getTime() - batchStart,
+    // The row to resume from is the first one *not* done — the same value
+    // returned as nextRow below. Logging the last completed row instead told
+    // an operator resuming by hand to re-run a row that had already been paid
+    // for, and to overwrite good output with a second generation of it.
     details: 'Batch: ' + successCount + ' success, ' + failCount + ' failed' +
-      (interrupted ? ' (timeout - resume from row ' + results[results.length - 1].row + ')' : '')
+      (interrupted
+        ? (stopped
+            ? ' (stopped by operator - resume from row ' + nextRow + ')'
+            : ' (timeout - resume from row ' + nextRow + ')')
+        : '')
   });
 
   return {
@@ -1420,7 +1633,8 @@ function runWorkerBatch(workerName, startRow, endRow) {
     success: successCount,
     failed: failCount,
     interrupted: interrupted,
-    nextRow: interrupted ? results[results.length - 1].row + 1 : null,
+    stopped: stopped,
+    nextRow: interrupted ? nextRow : null,
     results: results
   };
 }
@@ -1500,6 +1714,7 @@ function continueActiveJob() {
   ExecutionBudget.begin();
 
   var progressed = false;
+  var stoppedByOperator = false;
 
   try {
     for (var i = 0; i < job.workers.length; i++) {
@@ -1523,7 +1738,8 @@ function continueActiveJob() {
         result = {
           success: gen.success,
           failed: gen.failed,
-          interrupted: !!gen.interrupted
+          interrupted: !!gen.interrupted,
+          stopped: !!gen.stopped
         };
       } else {
         var isVisual = !!(CONFIG.WORKERS[worker] && CONFIG.WORKERS[worker].sheetName);
@@ -1536,6 +1752,11 @@ function continueActiveJob() {
         progressed = true;
       }
 
+      if (result.stopped) {
+        stoppedByOperator = true;
+        break;
+      }
+
       if (result.interrupted) {
         break;
       }
@@ -1545,6 +1766,17 @@ function continueActiveJob() {
   } catch (e) {
     Logger.logFailure('ORCHESTRATOR', job.start, 0,
       'Continuation pass failed: ' + e.toString());
+  }
+
+  // Scheduling the next pass here is what makes a long job finish unattended.
+  // It is also the one thing that would undo a stop: the operator halts the
+  // pass, and a minute later it starts again. Checked before anything else.
+  if (stoppedByOperator) {
+    Logger.logPartial('ORCHESTRATOR', job.start + '-' + job.end, 0,
+      'Stopped at operator request on pass ' + job.passes +
+      '. Automatic continuation is off; checkpoints are kept.');
+    _clearJob();
+    return;
   }
 
   var remaining = job.workers.filter(function(w) {
@@ -1683,12 +1915,30 @@ function runVisualWorkerBatch(workerName, startRow, endRow) {
   }
 
   var batchStart = new Date().getTime();
+  var runStart = RunControl.runStart(batchStart);
   var results = [];
   var successCount = 0;
   var failCount = 0;
   var interrupted = false;
+  var stopped = false;
+  var lastProcessedRow = null;
+
+  // The first row not yet done, and so the row a resume has to start from.
+  var nextRow = startRow;
 
   for (var row = startRow; row <= endRow; row++) {
+    // Checked before the budget, and without the `row > startRow` guard the
+    // budget needs: a batch must always attempt one row to make progress, but
+    // an operator asking it to stop wants it stopped, not one row later.
+    if (RunControl.stopRequested(runStart)) {
+      interrupted = true;
+      stopped = true;
+      saveCheckpoint(upperName, row);
+      RunControl.clear();
+      Logger.log('OPERATOR_STOP | ' + upperName + ' | stopped before row ' + row);
+      break;
+    }
+
     // Decide before spending, not after. Stopping one row early costs a resume;
     // being killed mid-row loses the checkpoint and the work in flight.
     if (row > startRow && !ExecutionBudget.canFitAnother(upperName)) {
@@ -1706,6 +1956,8 @@ function runVisualWorkerBatch(workerName, startRow, endRow) {
     ExecutionBudget.record(upperName, new Date().getTime() - rowStart);
 
     results.push(result);
+    lastProcessedRow = row;
+    nextRow = row + 1;
 
     // A failed row is recorded and the batch moves on. One bad row must never
     // decide the fate of the rows behind it.
@@ -1725,15 +1977,27 @@ function runVisualWorkerBatch(workerName, startRow, endRow) {
     clearCheckpoint(upperName);
   }
 
-  var status = interrupted ? 'TIMEOUT' : (failCount === 0 ? 'SUCCESS' : 'PARTIAL');
+  var status = interrupted
+    ? (stopped ? 'STOPPED' : 'TIMEOUT')
+    : (failCount === 0 ? 'SUCCESS' : 'PARTIAL');
 
   Logger.logExecution({
     worker: upperName,
-    row: startRow + '-' + (interrupted ? results[results.length - 1].row : endRow),
+    row: startRow + '-' + (interrupted
+      ? (lastProcessedRow === null ? startRow : lastProcessedRow)
+      : endRow),
     status: status,
     runtime: new Date().getTime() - batchStart,
+    // The row to resume from is the first one *not* done — the same value
+    // returned as nextRow below. Logging the last completed row instead told
+    // an operator resuming by hand to re-run a row that had already been paid
+    // for, and to overwrite good output with a second generation of it.
     details: 'Batch: ' + successCount + ' success, ' + failCount + ' failed' +
-      (interrupted ? ' (timeout - resume from row ' + results[results.length - 1].row + ')' : '')
+      (interrupted
+        ? (stopped
+            ? ' (stopped by operator - resume from row ' + nextRow + ')'
+            : ' (timeout - resume from row ' + nextRow + ')')
+        : '')
   });
 
   return {
@@ -1741,7 +2005,8 @@ function runVisualWorkerBatch(workerName, startRow, endRow) {
     success: successCount,
     failed: failCount,
     interrupted: interrupted,
-    nextRow: interrupted ? results[results.length - 1].row + 1 : null,
+    stopped: stopped,
+    nextRow: interrupted ? nextRow : null,
     results: results
   };
 }

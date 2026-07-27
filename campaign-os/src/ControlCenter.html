@@ -140,6 +140,12 @@
     .btn-outline { background: white; color: var(--text); border: 1.5px solid var(--border); }
     .btn-outline:hover:not(:disabled) { background: #f8f9fa; border-color: #ccc; }
 
+    /* The one control that matters while everything else is disabled, so it is
+       the one control that must not look like the rest of them. */
+    .btn-stop { background: var(--red); color: white; }
+    .btn-stop:hover:not(:disabled) { filter: brightness(1.08); }
+    .btn-stop:disabled { opacity: 0.35; }
+
     .btn-icon { font-size: 14px; flex-shrink: 0; }
 
     .dashboard-grid {
@@ -399,6 +405,27 @@
     .modal-detail .label { color: var(--text-secondary); }
     .modal-detail .value { font-weight: 600; }
 
+    /* The cache question, asked with the run rather than as a second dialog. */
+    .modal-ask {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      margin-top: 14px;
+      padding: 11px 12px;
+      background: var(--bg);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .modal-ask input { margin: 1px 0 0 0; flex-shrink: 0; cursor: pointer; }
+    .modal-ask .ask-title { font-size: 12px; font-weight: 600; }
+    .modal-ask .ask-note {
+      font-size: 10.5px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+      line-height: 1.45;
+    }
+
     .modal-actions {
       display: flex;
       gap: 8px;
@@ -641,6 +668,9 @@
       <span class="arrow" id="arrow-ops">&#9660;</span>
     </div>
     <div class="card-body" id="section-ops">
+      <button class="btn btn-stop js-stop" onclick="doStop()" disabled>
+        <span class="btn-icon">&#9632;</span>Stop Current Run
+      </button>
       <button class="btn btn-outline" onclick="doResume()">
         <span class="btn-icon">&#9654;</span>Resume Last Run
       </button>
@@ -671,6 +701,17 @@
       <h3 id="confirm-title">Confirm Execution</h3>
       <p id="confirm-desc"></p>
       <div class="modal-detail" id="confirm-detail"></div>
+      <label class="modal-ask" for="confirm-refresh">
+        <input type="checkbox" id="confirm-refresh" checked>
+        <span>
+          <span class="ask-title">Refresh the prompt cache first</span>
+          <span class="ask-note" id="confirm-refresh-note">
+            Prompts are cached for six hours. Refresh if you have edited any
+            prompt or doc on Drive since the last run &#8212; otherwise the workers
+            read the previous version. Costs a few seconds at the start.
+          </span>
+        </span>
+      </label>
       <div class="modal-actions">
         <button class="btn btn-outline" onclick="cancelConfirm()">Cancel</button>
         <button class="btn btn-primary" id="confirm-btn" onclick="executeConfirmed()">Confirm</button>
@@ -683,6 +724,11 @@
     var visualMode = 'count';
     var isRunning = false;
     var isRefreshing = false;
+    var stopRequested = false;
+
+    // Remembered between runs in this sidebar session only; the confirm dialog
+    // still shows the question every time.
+    var refreshBeforeRun = true;
     var pendingAction = null;
     var refreshInterval = null;
 
@@ -720,16 +766,79 @@
       }
     }
 
-    function disableAll() {
+    // Stop is the exception to both: it is the only control worth having while
+    // a run is going, and the only one worth taking away when nothing is.
+    //
+    // `stoppable` is false for Resume/Refresh/Status — they finish in a second
+    // and read no stop flag, so an active Stop button there would promise
+    // something it cannot do, while still cancelling a scheduled continuation
+    // the operator never meant to touch.
+    function disableAll(stoppable) {
       isRunning = true;
+      stopRequested = false;
       var btns = document.querySelectorAll('.btn');
-      for (var i = 0; i < btns.length; i++) btns[i].disabled = true;
+      for (var i = 0; i < btns.length; i++) {
+        var isStop = btns[i].className.indexOf('js-stop') !== -1;
+        btns[i].disabled = isStop ? !stoppable : true;
+      }
+      setStopLabel('&#9632;', 'Stop Current Run');
     }
 
     function enableAll() {
       isRunning = false;
+      stopRequested = false;
       var btns = document.querySelectorAll('.btn');
-      for (var i = 0; i < btns.length; i++) btns[i].disabled = false;
+      for (var i = 0; i < btns.length; i++) {
+        btns[i].disabled = btns[i].className.indexOf('js-stop') !== -1;
+      }
+      setStopLabel('&#9632;', 'Stop Current Run');
+    }
+
+    function setStopLabel(icon, text) {
+      var btns = document.querySelectorAll('.js-stop');
+      for (var i = 0; i < btns.length; i++) {
+        btns[i].innerHTML = '<span class="btn-icon">' + icon + '</span>' + text;
+      }
+    }
+
+    // The request lands in the property store immediately; the run reads it
+    // between rows. The row already in flight is finished and written first, so
+    // there is a wait of up to one row — say so rather than let the button look
+    // like it did nothing.
+    function doStop() {
+      if (!isRunning || stopRequested) return;
+
+      stopRequested = true;
+      setStopLabel('<span class="spinner"></span>', 'Stopping after this row...');
+
+      var btns = document.querySelectorAll('.js-stop');
+      for (var i = 0; i < btns.length; i++) btns[i].disabled = true;
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (!result || !result.success) {
+            setStopLabel('&#9632;', 'Stop failed - try again');
+            var again = document.querySelectorAll('.js-stop');
+            for (var j = 0; j < again.length; j++) again[j].disabled = false;
+            stopRequested = false;
+            return;
+          }
+
+          var status = document.getElementById('p-status');
+          if (status) {
+            status.textContent = result.jobCancelled
+              ? 'Stopping after the current row (continuation cancelled)...'
+              : 'Stopping after the current row...';
+          }
+        })
+        .withFailureHandler(function(err) {
+          setStopLabel('&#9632;', 'Stop failed - try again');
+          var again = document.querySelectorAll('.js-stop');
+          for (var j = 0; j < again.length; j++) again[j].disabled = false;
+          stopRequested = false;
+          showError('Stop Error', err.message, 'The run is still going. Try again.');
+        })
+        .executeStop();
     }
 
     function toggleSection(id) {
@@ -789,6 +898,11 @@
         '<div class="row"><span class="label">Mode</span><span class="value">' + rows.mode + '</span></div>' +
         '<div class="row"><span class="label">Rows</span><span class="value">' + rows.start + ' - ' + rows.end + ' (' + rows.count + ' rows)</span></div>';
 
+      // Asked every run, but pre-set to whatever was answered last time. The
+      // question is the point; making the operator re-decide from scratch on a
+      // run they are repeating is not.
+      document.getElementById('confirm-refresh').checked = refreshBeforeRun;
+
       document.getElementById('confirm-btn').className = 'btn btn-primary';
       pendingAction = { op: op, info: info, rows: rows };
       document.getElementById('confirm-overlay').classList.add('active');
@@ -807,9 +921,47 @@
       var action = pendingAction;
       pendingAction = null;
 
-      disableAll();
+      refreshBeforeRun = document.getElementById('confirm-refresh').checked;
+
+      disableAll(true);
       showProgress(action.info.name, action.rows.start, action.rows.end);
 
+      if (!refreshBeforeRun) {
+        startAction(action);
+        return;
+      }
+
+      // Cleared before the run, not on a timer: the cache only goes stale when
+      // a prompt is edited, and this is the moment that matters. One clear per
+      // run, then every worker in it reads from a warm cache.
+      updateProgress(0, action.rows.count, 'Refreshing prompt cache...');
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (!result || !result.success) {
+            // Running now would use exactly the stale prompts the operator
+            // just asked to be rid of, and the output would look fine.
+            enableAll();
+            loadDashboard(true);
+            showError('Cache Refresh Failed',
+              (result && result.error) || 'The cache could not be cleared.',
+              'The run was not started - it would have used the old prompts. Try again.');
+            return;
+          }
+
+          updateProgress(0, action.rows.count, 'Cache refreshed. Starting...');
+          startAction(action);
+        })
+        .withFailureHandler(function(err) {
+          enableAll();
+          loadDashboard(true);
+          showError('Cache Refresh Error', err.message,
+            'The run was not started. Try again, or untick the refresh option to run anyway.');
+        })
+        .executeRefreshCache();
+    }
+
+    function startAction(action) {
       if (action.info.pipeline) {
         runPipelineAction(action.info.steps, action.rows);
       } else if (action.info.service) {
@@ -835,6 +987,12 @@
               '<span>Rows <span class="count" id="p-current">0</span> / <span class="count" id="p-total">' + (end - start + 1) + '</span></span>' +
               '<span id="p-pct">0%</span>' +
             '</div>' +
+            // Also here, not only in Operations: this card is what the operator
+            // is looking at while the run costs money, and Operations may be
+            // collapsed or scrolled off.
+            '<button class="btn btn-stop js-stop" onclick="doStop()">' +
+              '<span class="btn-icon">&#9632;</span>Stop Current Run' +
+            '</button>' +
           '</div>' +
         '</div>';
 
@@ -885,6 +1043,19 @@
         '</div>';
     }
 
+    // Deliberately not the error card. The operator asked for this to happen.
+    function showStopped(title, done, nextRow) {
+      var area = document.getElementById('result-area');
+      area.innerHTML =
+        '<div class="result-card result-info">' +
+          '<div class="result-title">&#9632; ' + title + ' stopped</div>' +
+          '<div class="result-body">' +
+            (done || 0) + ' row(s) finished and written before stopping.' +
+            (nextRow ? ' Resume from row ' + nextRow + '.' : '') +
+          '</div>' +
+        '</div>';
+    }
+
     function showInfo(title, message) {
       var area = document.getElementById('result-area');
       area.innerHTML =
@@ -902,7 +1073,9 @@
           enableAll();
           loadDashboard(true);
 
-          if (result.success) {
+          if (result.stopped) {
+            showStopped(result.worker, result.successCount, result.nextRow);
+          } else if (result.success) {
             var total = result.successCount + result.failedCount;
             showSuccess(result.worker, total, result.duration);
           } else {
@@ -928,7 +1101,9 @@
           enableAll();
           loadDashboard(true);
 
-          if (result.success) {
+          if (result.stopped) {
+            showStopped(result.worker || serviceName, result.successCount, result.nextRow);
+          } else if (result.success) {
             var total = result.successCount + result.failedCount;
             showSuccess(result.worker, total, result.duration);
           } else {
@@ -949,7 +1124,13 @@
           enableAll();
           loadDashboard(true);
 
-          if (result.success) {
+          if (result.stopped) {
+            showInfo('Pipeline Stopped',
+              (result.summary ? result.summary.join('<br>') : 'Stopped at your request.') +
+              '<div style="margin-top:8px;font-size:11px;color:var(--text-secondary)">' +
+              'Work already written is kept. Checkpoints are saved, and nothing is ' +
+              'scheduled to continue on its own.</div>');
+          } else if (result.success) {
             showSuccess('Pipeline Complete', rows.count, result.totalDuration);
           } else {
             var detail = result.summary ? result.summary.join(' | ') : 'Unknown error';
@@ -1139,12 +1320,19 @@
 
     // ==================== AUTO REFRESH ====================
 
+    // Every poll is a server round trip that reads four sheets. Nothing here
+    // changes on its own — the numbers move when a run moves them, and a run
+    // already calls loadDashboard() when it finishes. So the poll is only a
+    // backstop for changes made elsewhere, and five minutes is often enough
+    // for that.
+    var AUTO_REFRESH_MS = 5 * 60 * 1000;
+
     function startAutoRefresh() {
       refreshInterval = setInterval(function() {
         if (!isRunning && !isRefreshing) {
           loadDashboard();
         }
-      }, 30000);
+      }, AUTO_REFRESH_MS);
     }
 
     // ==================== INIT ====================

@@ -10,15 +10,32 @@ var ServiceRunner = {
 
     var timeoutMs = (CONFIG.BATCH_TIMEOUT_SECONDS || 300) * 1000;
     var batchStart = new Date().getTime();
+    var runStart = RunControl.runStart(batchStart);
     var results = [];
     var successCount = 0;
     var failCount = 0;
     var interrupted = false;
+    var stopped = false;
+    var lastProcessedRow = null;
+    var nextRow = startRow;
 
     for (var row = startRow; row <= endRow; row++) {
+      // Generation is the expensive step — one call per asset — so an operator
+      // who wants it stopped is usually watching money leave. Checked before
+      // the row, not after.
+      if (RunControl.stopRequested(runStart)) {
+        interrupted = true;
+        stopped = true;
+        RunControl.clear();
+        Logger.log('OPERATOR_STOP | MEDIA_GENERATION | stopped before row ' + row);
+        break;
+      }
+
       var result = this._processMediaGenerationRow(row);
 
       results.push(result);
+      lastProcessedRow = row;
+      nextRow = row + 1;
 
       if (result.success) {
         successCount++;
@@ -36,15 +53,23 @@ var ServiceRunner = {
       }
     }
 
-    var status = interrupted ? 'TIMEOUT' : (failCount === 0 ? 'SUCCESS' : 'PARTIAL');
+    var status = interrupted
+      ? (stopped ? 'STOPPED' : 'TIMEOUT')
+      : (failCount === 0 ? 'SUCCESS' : 'PARTIAL');
 
     Logger.logExecution({
       worker: 'MEDIA_GENERATION_SERVICE',
-      row: startRow + '-' + (interrupted ? results[results.length - 1].row : endRow),
+      row: startRow + '-' + (interrupted
+        ? (lastProcessedRow === null ? startRow : lastProcessedRow)
+        : endRow),
       status: status,
       runtime: new Date().getTime() - batchStart,
       details: 'Batch: ' + successCount + ' success, ' + failCount + ' failed' +
-        (interrupted ? ' (timeout)' : '')
+        (interrupted
+          ? (stopped
+              ? ' (stopped by operator - resume from row ' + nextRow + ')'
+              : ' (timeout - resume from row ' + nextRow + ')')
+          : '')
     });
 
     return {
@@ -52,7 +77,8 @@ var ServiceRunner = {
       success: successCount,
       failed: failCount,
       interrupted: interrupted,
-      nextRow: interrupted ? results[results.length - 1].row + 1 : null,
+      stopped: stopped,
+      nextRow: interrupted ? nextRow : null,
       results: results
     };
   },

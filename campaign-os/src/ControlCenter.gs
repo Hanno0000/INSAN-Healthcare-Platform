@@ -259,6 +259,7 @@ function executeWorker(workerName, startRow, endRow) {
       successCount: result.success,
       failedCount: result.failed,
       interrupted: result.interrupted,
+      stopped: !!result.stopped,
       nextRow: result.nextRow,
       duration: formatDuration(endTime - startTime)
     };
@@ -296,6 +297,7 @@ function executeService(serviceName, startRow, endRow) {
       successCount: result.success,
       failedCount: result.failed,
       interrupted: result.interrupted,
+      stopped: !!result.stopped,
       nextRow: result.nextRow,
       duration: formatDuration(endTime - startTime)
     };
@@ -320,6 +322,7 @@ function executePipeline(steps, startRow, endRow) {
   var totalSuccess = 0;
   var totalFailed = 0;
   var pipelineFailed = false;
+  var pipelineStopped = false;
 
   for (var i = 0; i < steps.length; i++) {
     var step = steps[i];
@@ -343,10 +346,24 @@ function executePipeline(steps, startRow, endRow) {
         (result.failedCount || 0) + ' failed';
 
       if (result.interrupted) {
-        svcLine += ' [timeout - resume from row ' + result.nextRow + ']';
+        svcLine += result.stopped
+          ? ' [stopped - resume from row ' + result.nextRow + ']'
+          : ' [timeout - resume from row ' + result.nextRow + ']';
       }
 
       summary.push(svcLine);
+
+      // A stop is an instruction that was carried out, not a failure. Reporting
+      // it as one sends the operator to the Execution Log to find out what went
+      // wrong with something they did on purpose.
+      if (result.stopped) {
+        pipelineStopped = true;
+        summary.push('Stopped at your request — resume from row ' + result.nextRow);
+        for (var s = i + 1; s < steps.length; s++) {
+          summary.push(steps[s].name + ': not started');
+        }
+        break;
+      }
 
       if (!result.success) {
         pipelineFailed = true;
@@ -392,10 +409,21 @@ function executePipeline(steps, startRow, endRow) {
       (result.failedCount || 0) + ' failed';
 
     if (result.interrupted) {
-      line += ' [timeout - resume from row ' + result.nextRow + ']';
+      line += result.stopped
+        ? ' [stopped - resume from row ' + result.nextRow + ']'
+        : ' [timeout - resume from row ' + result.nextRow + ']';
     }
 
     summary.push(line);
+
+    if (result.stopped) {
+      pipelineStopped = true;
+      summary.push('Stopped at your request — resume from row ' + result.nextRow);
+      for (var k = i + 1; k < steps.length; k++) {
+        summary.push(steps[k].name + ': not started');
+      }
+      break;
+    }
 
     if (!result.success) {
       pipelineFailed = true;
@@ -414,7 +442,8 @@ function executePipeline(steps, startRow, endRow) {
   var pipelineEnd = new Date().getTime();
 
   return {
-    success: !pipelineFailed,
+    success: !pipelineFailed && !pipelineStopped,
+    stopped: pipelineStopped,
     summary: summary,
     totalSuccess: totalSuccess,
     totalFailed: totalFailed,
@@ -464,6 +493,23 @@ function resumeCheckpoint(workerName, endRow) {
   }
 
   return executeWorker(upperName, checkpointRow, endRow);
+}
+
+
+// Called by the sidebar while a run is still going. Apps Script serves it as a
+// separate execution, so it returns immediately — it does not wait for the run
+// it is stopping. The running batch picks the flag up between rows.
+function executeStop() {
+  try {
+    var outcome = RunControl.requestStop();
+
+    return {
+      success: true,
+      jobCancelled: outcome.jobCancelled
+    };
+  } catch (e) {
+    return { success: false, error: e.toString() };
+  }
 }
 
 
