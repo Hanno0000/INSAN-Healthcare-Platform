@@ -227,6 +227,18 @@ var CONFIG = {
 
   TEXT_OVERLAY: {
     ENABLED: true,
+
+    // Blank presentations whose page size matches the asset. A presentation's
+    // page size cannot be set through the API — only inherited by copying — so
+    // these are created once by hand. setUpOverlayTemplates() prints the steps.
+    //
+    // Only the sizes actually produced are needed: 1:1 for Static and Carousel,
+    // 9:16 for Story and Reel.
+    TEMPLATES: {
+      '1:1': '',
+      '9:16': ''
+    },
+
     POSITION: 'bottom',        // 'bottom' | 'top'
     FONT_FAMILY: 'Cairo',      // must exist in Google Slides
     TEXT_COLOR: '#ffffff',

@@ -20,6 +20,75 @@
 // size, in a known font at a known position.
 // ================================
 
+// One-time setup. Creates the two blank presentations the overlay copies, and
+// prints exactly what to do with them.
+//
+// The page size still has to be set by hand: there is no API for it anywhere —
+// not at creation, not in batchUpdate, not in SlidesApp. Copying is the only
+// operation that carries a page size, so these two files exist to be copied.
+function setUpOverlayTemplates() {
+  var wanted = [
+    { key: '1:1', label: 'Square 1080 x 1080 (Static, Carousel)', w: 1080, h: 1080 },
+    { key: '9:16', label: 'Vertical 1080 x 1920 (Story, Reel)', w: 1080, h: 1920 }
+  ];
+
+  var lines = [
+    '',
+    '=====================================================',
+    ' OVERLAY TEMPLATE SETUP',
+    '=====================================================',
+    '',
+    'Two blank presentations have been created. For each one:',
+    '',
+    '  1. Open the link below.',
+    '  2. File > Page setup > Custom.',
+    '  3. Choose Pixels, enter the size, click Apply.',
+    '  4. Delete anything on the slide. Leave it completely blank.',
+    '  5. Close it. Do not rename it.',
+    '',
+    'Then paste the IDs into CONFIG.TEXT_OVERLAY.TEMPLATES and run',
+    'testTextOverlay().',
+    ''
+  ];
+
+  var ids = {};
+
+  for (var i = 0; i < wanted.length; i++) {
+    var spec = wanted[i];
+    var presentation = SlidesApp.create('INSAN Overlay Template ' + spec.key);
+    var id = presentation.getId();
+    ids[spec.key] = id;
+
+    lines.push('--- ' + spec.label + ' ---');
+    lines.push('  Set page size to: ' + spec.w + ' x ' + spec.h + ' pixels');
+    lines.push('  Open:  https://docs.google.com/presentation/d/' + id + '/edit');
+    lines.push('  ID:    ' + id);
+    lines.push('');
+  }
+
+  lines.push('CONFIG.TEXT_OVERLAY.TEMPLATES should read:');
+  lines.push('');
+  lines.push('    TEMPLATES: {');
+  lines.push("      '1:1': '" + ids['1:1'] + "',");
+  lines.push("      '9:16': '" + ids['9:16'] + "'");
+  lines.push('    },');
+  lines.push('');
+  lines.push('=====================================================');
+
+  var message = lines.join('\n');
+  Logger.log(message);
+
+  try {
+    var ui = SpreadsheetApp.getUi();
+    ui.alert('Overlay Template Setup', message, ui.ButtonSet.OK);
+  } catch (noUi) {
+    // Running from the editor. The log above is the result.
+  }
+
+  return ids;
+}
+
+
 // Run this once from the Apps Script editor after adding the presentations
 // scope. It composes a caption over a plain test image and drops the result in
 // the generated-assets folder, so the Slides round trip is proven in seconds
@@ -41,30 +110,53 @@ function testTextOverlay() {
   var file = DriveApp.getFolderById(CONFIG.VISUAL_ASSETS.generated)
     .createFile(composed.setName('TEXT_OVERLAY_TEST.png'));
 
-  Logger.log('Overlay test written to: ' + file.getUrl());
+  // The first run of this test reported success while writing a blank 16:9
+  // image, because nothing checked the shape of what came back. A square asset
+  // that exports 16:9 means the template's page size was never set.
+  var bytes = composed.getBytes();
+  var width = ((bytes[16] & 255) << 24) | ((bytes[17] & 255) << 16) |
+              ((bytes[18] & 255) << 8) | (bytes[19] & 255);
+  var height = ((bytes[20] & 255) << 24) | ((bytes[21] & 255) << 16) |
+               ((bytes[22] & 255) << 8) | (bytes[23] & 255);
 
-  SpreadsheetApp.getUi().alert(
-    'Text Overlay Test',
-    'It worked. Open the Generated assets folder and check ' +
-    'TEXT_OVERLAY_TEST.png:\n\n' +
+  if (width !== height) {
+    throw new Error(
+      'The overlay produced a ' + width + ' x ' + height + ' image for a ' +
+      'square asset. The 1:1 template still has the default widescreen page ' +
+      'size — open it, File > Page setup > Custom, 1080 x 1080 pixels. ' +
+      'The test file was still written so you can see it: ' + file.getUrl()
+    );
+  }
+
+  var message = 'Overlay test written to: ' + file.getUrl() + '\n' +
+    'Output: ' + width + ' x ' + height + '\n' +
+    'Check TEXT_OVERLAY_TEST.png:\n' +
     '- the Arabic reads right to left and the letters are joined\n' +
     '- the wording is exactly: القرار الطبي مش مجرد اجتهاد فردي.\n' +
-    '- it sits in the lower band, legible against the scrim\n\n' +
-    'Delete the file afterwards.',
-    SpreadsheetApp.getUi().ButtonSet.OK
-  );
+    '- it sits in the lower band, legible against the scrim\n' +
+    'Delete the file afterwards.';
+
+  Logger.log(message);
+
+  // This is meant to be run from the editor, where there is no container UI.
+  // Reporting through the dialog when one exists is a convenience; failing on
+  // its absence would report a passing test as an error, which is exactly what
+  // it did on the first real run.
+  try {
+    var ui = SpreadsheetApp.getUi();
+    ui.alert('Text Overlay Test', 'It worked.\n\n' + message, ui.ButtonSet.OK);
+  } catch (noUi) {
+    // Running from the editor. The log above is the result.
+  }
 }
 
 
 var TextOverlay = {
 
   // Slides is the only rasteriser available to Apps Script. The sequence is:
-  // create a presentation at the asset's exact page size, lay the artwork in
-  // full-bleed, set the type over it, then export the page as an image.
+  // copy a template at the asset's page size, lay the artwork in full-bleed,
+  // set the type over it, then export the page as an image.
   SLIDES_API: 'https://slides.googleapis.com/v1/presentations',
-
-  // Points, not pixels. Slides measures in points at 96dpi, so 1080px = 810pt.
-  PX_TO_PT: 0.75,
 
   // Returns a new blob with the wording set over the artwork, or null when
   // there is nothing to add. Throws only on a genuine failure, so the caller
@@ -77,16 +169,20 @@ var TextOverlay = {
     }
 
     var cfg = CONFIG.TEXT_OVERLAY || {};
-    var pageW = Math.round(widthPx * this.PX_TO_PT);
-    var pageH = Math.round(heightPx * this.PX_TO_PT);
-
-    var presentationId = null;
+    var scratchId = null;
 
     try {
-      var created = this._createPresentation(pageW, pageH);
-      presentationId = created.presentationId;
+      scratchId = this._openScratch(widthPx, heightPx);
 
-      var presentation = SlidesApp.openById(presentationId);
+      var presentation = SlidesApp.openById(scratchId);
+
+      // Read the page back rather than assuming it. The first version computed
+      // its layout from the size it had asked for, and when that request was
+      // ignored every coordinate was wrong: the type was positioned past the
+      // bottom edge of a page 270pt shorter than expected, and exported blank.
+      var pageW = presentation.getPageWidth();
+      var pageH = presentation.getPageHeight();
+
       var slide = presentation.getSlides()[0];
 
       // Full-bleed. insertImage takes the blob directly, which avoids handing
@@ -96,16 +192,17 @@ var TextOverlay = {
 
       this._setType(slide, wording, pageW, pageH, cfg);
 
+      var pageObjectId = slide.getObjectId();
       presentation.saveAndClose();
 
-      return this._exportPage(presentationId, created.pageObjectId, imageBlob.getName());
+      return this._exportPage(scratchId, pageObjectId, imageBlob.getName());
 
     } finally {
-      // The presentation is scaffolding. Leaving it behind would fill the
-      // operator's Drive with one file per generated asset.
-      if (presentationId) {
+      // The copy is scaffolding. Leaving it behind would put one presentation
+      // in the operator's Drive per generated asset.
+      if (scratchId) {
         try {
-          DriveApp.getFileById(presentationId).setTrashed(true);
+          DriveApp.getFileById(scratchId).setTrashed(true);
         } catch (cleanupErr) {
           Logger.log('TEXT_OVERLAY | could not trash scratch presentation: ' +
             cleanupErr.toString());
@@ -114,42 +211,46 @@ var TextOverlay = {
     }
   },
 
-  // Page size can only be set when the presentation is created — there is no
-  // batchUpdate request for it — so this goes through the REST API rather than
-  // SlidesApp.create(), which would give a 10x5.63in widescreen page and
-  // letterbox a square asset.
-  _createPresentation: function(pageW, pageH) {
-    var response = UrlFetchApp.fetch(this.SLIDES_API, {
-      method: 'post',
-      contentType: 'application/json',
-      headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() },
-      payload: JSON.stringify({
-        title: 'insan-overlay-scratch',
-        pageSize: {
-          width: { magnitude: pageW, unit: 'PT' },
-          height: { magnitude: pageH, unit: 'PT' }
-        }
-      }),
-      muteHttpExceptions: true
-    });
+  // A presentation's page size cannot be set through the API at all: it is
+  // ignored by presentations.create ("other fields in the request are
+  // ignored"), there is no batchUpdate request for it, and SlidesApp has no
+  // setter. A new presentation is always 10 x 5.63in widescreen, which would
+  // export a 1:1 asset as 16:9 with the artwork stretched.
+  //
+  // Copying a presentation does carry its page size, so the size is set once by
+  // hand in the Slides UI and every asset is a copy of that. Run
+  // setUpOverlayTemplates() for the instructions.
+  _openScratch: function(widthPx, heightPx) {
+    var key = this._aspectKey(widthPx, heightPx);
+    var templates = (CONFIG.TEXT_OVERLAY || {}).TEMPLATES || {};
+    var templateId = templates[key];
 
-    if (response.getResponseCode() !== 200) {
+    if (!templateId || !String(templateId).trim()) {
       throw new Error(
-        'Could not create the overlay presentation (HTTP ' +
-        response.getResponseCode() + '). If this says the Slides API is not ' +
-        'enabled or the scope is missing, add ' +
-        '"https://www.googleapis.com/auth/presentations" to appsscript.json ' +
-        'and re-authorise. Response: ' +
-        response.getContentText().substring(0, 300)
+        'No overlay template configured for ' + key + ' assets. Run ' +
+        'setUpOverlayTemplates() from the Apps Script editor — it prints the ' +
+        'one-time setup, which takes about a minute — then put the ' +
+        'presentation ID in CONFIG.TEXT_OVERLAY.TEMPLATES["' + key + '"].'
       );
     }
 
-    var body = JSON.parse(response.getContentText());
+    try {
+      return DriveApp.getFileById(templateId)
+        .makeCopy('insan-overlay-scratch')
+        .getId();
+    } catch (e) {
+      throw new Error(
+        'Could not copy the ' + key + ' overlay template (' + templateId + '): ' +
+        e.toString() + ' Check the ID in CONFIG.TEXT_OVERLAY.TEMPLATES.'
+      );
+    }
+  },
 
-    return {
-      presentationId: body.presentationId,
-      pageObjectId: body.slides[0].objectId
-    };
+  _aspectKey: function(widthPx, heightPx) {
+    if (widthPx === heightPx) {
+      return '1:1';
+    }
+    return heightPx > widthPx ? '9:16' : '16:9';
   },
 
   _setType: function(slide, wording, pageW, pageH, cfg) {
