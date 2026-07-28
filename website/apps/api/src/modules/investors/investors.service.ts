@@ -32,11 +32,15 @@ export class InvestorsService {
       allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'h1', 'h2', 'h3', 'div', 'span', 'iframe']),
       allowedAttributes: {
         ...sanitizeHtml.defaults.allowedAttributes,
-        '*': ['class', 'style'],
+        '*': ['class'],
         'img': ['src', 'alt', 'width', 'height'],
         'iframe': ['src', 'width', 'height', 'frameborder', 'allowfullscreen']
       },
-      allowedSchemes: ['http', 'https', 'data']
+      // 'data:' is deliberately excluded — combined with 'iframe' it allows
+      // embedding arbitrary HTML/JS (data:text/html;base64,...).
+      allowedSchemes: ['http', 'https'],
+      // Only known video/map embed hosts may be used inside <iframe src>.
+      allowedIframeHostnames: ['www.youtube.com', 'youtube.com', 'www.google.com'],
     });
 
     const existing = await this.prisma.investorsPage.findFirst();

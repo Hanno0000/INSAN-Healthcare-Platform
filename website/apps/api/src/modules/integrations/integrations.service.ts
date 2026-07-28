@@ -7,11 +7,19 @@ export class IntegrationsService {
   private readonly encryptionKey: string;
 
   constructor(private prisma: PrismaService) {
-    // In production, this should be a secure 32-byte key from ENV
-    const secret = process.env.ENCRYPTION_KEY || 'insan-default-secret-key-32-chars!';
-    
+    // main.ts refuses to boot in production without ENCRYPTION_KEY, so this
+    // fallback only ever runs in local development.
+    const secret = process.env.ENCRYPTION_KEY;
+    if (!secret) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        '[IntegrationsService] ENCRYPTION_KEY is not set — using an insecure development-only key. Set ENCRYPTION_KEY before deploying.',
+      );
+    }
+    const effectiveSecret = secret || 'INSECURE-DEV-ONLY-DO-NOT-USE-IN-PRODUCTION';
+
     // Ensure it's exactly 32 bytes for AES-256
-    this.encryptionKey = crypto.createHash('sha256').update(String(secret)).digest('base64').substring(0, 32);
+    this.encryptionKey = crypto.createHash('sha256').update(effectiveSecret).digest('base64').substring(0, 32);
   }
 
   // Encrypt value

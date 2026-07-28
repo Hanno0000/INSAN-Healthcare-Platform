@@ -3,6 +3,7 @@ import PublicLayout from '@/components/public/PublicLayout';
 import PageTitle from '@/components/public/PageTitle';
 import EmptyState from '@/components/public/EmptyState';
 import { getFaqs } from '@/lib/public-api';
+import { t } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'الأسئلة الشائعة | منظومة إنسان',
@@ -15,7 +16,7 @@ export default async function FaqPage() {
 
   // Group FAQs by topic
   const faqsByTopic = faqs.reduce((acc, faq) => {
-    const topic = faq.topic || 'عام';
+    const topic = t(faq.topic) || 'عام';
     if (!acc[topic]) acc[topic] = [];
     acc[topic].push(faq);
     return acc;
@@ -42,10 +43,10 @@ export default async function FaqPage() {
                     {topicFaqs.sort((a, b) => a.order - b.order).map((faq) => (
                       <div key={faq.id} className="bg-light-bg rounded-card p-6 border border-gray-100 hover:shadow-sm transition-shadow">
                         <h3 className="text-lg font-bold text-heading font-cairo mb-3">
-                          {faq.question}
+                          {t(faq.question)}
                         </h3>
                         <p className="text-default font-cairo leading-relaxed">
-                          {faq.answer}
+                          {t(faq.answer)}
                         </p>
                       </div>
                     ))}

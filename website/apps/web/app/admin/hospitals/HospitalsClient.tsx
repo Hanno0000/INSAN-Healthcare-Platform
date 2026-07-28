@@ -47,7 +47,7 @@ export default function HospitalsClient() {
         <p className="text-xs text-gray-400">{r.name?.en}</p>
       </div>
     )},
-    { key: 'city', header: 'المدينة', render: (r: any) => r.city?.ar || '—' },
+    { key: 'slug', header: 'المعرّف (slug)', render: (r: any) => <span className="text-xs text-gray-500 font-mono" dir="ltr">{r.slug}</span> },
     { key: 'status', header: 'الحالة', render: (r: any) => <StatusBadge status={r.status} /> },
     { key: 'actions', header: '', width: '120px', render: (r: any) => (
       <div className="flex items-center gap-1">

@@ -145,7 +145,7 @@ export default function AIAssistantPage() {
                       </span>
                     </td>
                     <td className="py-3 px-4 flex gap-2">
-                      <button onClick={() => { setEditingProvider(p); setProviderModalOpen(true); }} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded">
+                      <button onClick={() => { setEditingProvider({ ...p, apiKey: p.maskedApiKey || '' }); setProviderModalOpen(true); }} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded">
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button onClick={() => handleDeleteProvider(p.id)} className="p-1.5 text-red-600 hover:bg-red-50 rounded">
@@ -214,6 +214,9 @@ export default function AIAssistantPage() {
           <div>
             <label className="block text-sm font-bold text-gray-900 mb-1">مفتاح الـ API</label>
             <input required type="password" value={editingProvider?.apiKey || ''} onChange={e => setEditingProvider({...editingProvider, apiKey: e.target.value})} className={inputCls} dir="ltr" />
+            {editingProvider?.id && (
+              <p className="text-xs text-gray-400 mt-1">اتركه كما هو (••••) للإبقاء على المفتاح الحالي دون تغيير</p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-bold text-gray-900 mb-1">Base URL (اختياري للـ Custom Endpoints)</label>

@@ -4,10 +4,17 @@ import {
   Matches,
   ValidateNested,
   IsEnum,
+  IsArray,
+  IsObject,
+  ArrayMaxSize,
+  MaxLength,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { BilingualDto } from '../../../common/dto/bilingual.dto';
 import { ContentStatus } from '@prisma/client';
+
+/** تعبير منتظم يقبل روابط تضمين خرائط جوجل الرسمية فقط */
+const MAPS_EMBED = /^https:\/\/(www\.)?google\.com\/maps\/embed/;
 
 export class CreateHospitalDto {
   @IsString()
@@ -43,6 +50,10 @@ export class CreateHospitalDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(1000)
+  @Matches(MAPS_EMBED, {
+    message: 'googleMapsUrl must be an official Google Maps embed URL (https://www.google.com/maps/embed...)',
+  })
   googleMapsUrl?: string;
 
   @IsOptional()
@@ -58,4 +69,39 @@ export class CreateHospitalDto {
   @ValidateNested()
   @Type(() => BilingualDto)
   metaDescription?: BilingualDto;
+
+  @IsOptional()
+  @IsObject()
+  customFields?: Record<string, any>;
+
+  // ─── حقول صفحة المستشفى الجديدة (6) ───
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => BilingualDto)
+  heroTagline?: BilingualDto;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(3)
+  heroStats?: any[];
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(30)
+  departments?: any[];
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(20)
+  locations?: any[];
+
+  @IsOptional()
+  @IsObject()
+  contactInfo?: Record<string, any>;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(4)
+  journeySteps?: any[];
 }

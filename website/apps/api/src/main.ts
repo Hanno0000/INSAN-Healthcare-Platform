@@ -18,6 +18,7 @@ const REQUIRED_ENV_VARS = [
 
 const PRODUCTION_REQUIRED = [
   'CORS_ORIGIN',
+  'ENCRYPTION_KEY',
   ...REQUIRED_ENV_VARS,
 ] as const;
 
@@ -42,7 +43,7 @@ function validateEnvironment() {
   }
 
   if (nodeEnv === 'production') {
-    const secrets = ['JWT_ACCESS_SECRET', 'JWT_REFRESH_SECRET'];
+    const secrets = ['JWT_ACCESS_SECRET', 'JWT_REFRESH_SECRET', 'ENCRYPTION_KEY'];
     for (const secret of secrets) {
       const val = process.env[secret] || '';
       if (val.includes('change_me') || val.length < 32) {

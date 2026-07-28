@@ -18,6 +18,33 @@ import { RESOURCE_PATHS, SUPPORTED_LOCALES } from '../../common/helpers/slug.hel
 export class HospitalsService {
   constructor(private prisma: PrismaService) {}
 
+  /**
+   * يتحقّق من صحة مصفوفة الأقسام قبل الحفظ:
+   * كل قسم يجب أن يكون له slug صالح، وكل slug فريد داخل نفس المستشفى.
+   */
+  private validateDepartments(departments: any): void {
+    if (departments === undefined || departments === null) return;
+    if (!Array.isArray(departments)) {
+      throw new BadRequestException('departments must be an array');
+    }
+    const seen = new Set<string>();
+    for (const [i, dept] of departments.entries()) {
+      const slug = dept?.slug;
+      if (typeof slug !== 'string' || !/^[a-z0-9-]+$/.test(slug)) {
+        throw new BadRequestException(
+          `القسم رقم ${i + 1}: الـ slug مطلوب ويجب أن يكون حروفاً إنجليزية صغيرة وأرقاماً وشرطات فقط`,
+        );
+      }
+      if (seen.has(slug)) {
+        throw new BadRequestException(`الـ slug "${slug}" مكرّر — يجب أن يكون كل قسم بـ slug فريد`);
+      }
+      seen.add(slug);
+      if (!dept?.name?.ar) {
+        throw new BadRequestException(`القسم "${slug}": الاسم بالعربية مطلوب`);
+      }
+    }
+  }
+
   async findAll(query: any, filter: any, isAdmin = false) {
     const { page, pageSize, skip, take } = parsePagination(query);
     const orderBy = parseSortOrder(query.sortBy, query.sortDir, ['createdAt', 'updatedAt', 'slug']);
@@ -59,8 +86,47 @@ export class HospitalsService {
     const hospital = await this.prisma.hospital.findUnique({
       where: { slug },
       include: {
-        medicalCenters: { include: { medicalCenter: { select: { id: true, slug: true, name: true, heroImage: true, isFeatured: true } } } },
-        doctors: { include: { doctor: { select: { id: true, slug: true, name: true, specialty: true, photo: true, isFeatured: true } } } },
+        // المراكز الطبية التابعة + عيادات كل مركز (للسيكشن 2 و 4)
+        medicalCenters: {
+          include: {
+            medicalCenter: {
+              select: {
+                id: true,
+                slug: true,
+                name: true,
+                heroImage: true,
+                isFeatured: true,
+                clinics: {
+                  select: { id: true, name: true, schedule: true },
+                  orderBy: { createdAt: 'asc' },
+                },
+              },
+            },
+          },
+        },
+        // الأطباء (لصفحة القسم)
+        doctors: {
+          include: {
+            doctor: {
+              select: { id: true, slug: true, name: true, specialty: true, photo: true, isFeatured: true },
+            },
+          },
+        },
+        // أحدث 4 أخبار مرتبطة بهذا المستشفى (للسيكشن 6)
+        // ⚠️ اسم الحقل relatedHospitalId — وليس hospitalId
+        newsPosts: {
+          where: { status: 'PUBLISHED' },
+          select: {
+            id: true,
+            slug: true,
+            title: true,
+            excerpt: true,
+            featuredImage: true,
+            publishedAt: true,
+          },
+          orderBy: { publishedAt: 'desc' },
+          take: 4,
+        },
       },
     });
     if (!hospital || hospital.status !== 'PUBLISHED') {
@@ -73,12 +139,16 @@ export class HospitalsService {
     const existing = await this.prisma.hospital.findUnique({ where: { slug: dto.slug } });
     if (existing) throw new ConflictException('A hospital with this slug already exists');
 
+    this.validateDepartments((dto as any).departments);
+
     return this.prisma.hospital.create({ data: dto as any });
   }
 
   async update(id: string, dto: UpdateHospitalDto) {
     const existing = await this.prisma.hospital.findUnique({ where: { id } });
     if (!existing) throw new NotFoundException('Hospital not found');
+
+    this.validateDepartments((dto as any).departments);
 
     const slugChanged = dto.slug && dto.slug !== existing.slug;
     if (slugChanged) {

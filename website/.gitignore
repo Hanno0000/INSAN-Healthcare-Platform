@@ -19,3 +19,6 @@ infra/ssl/*.key
 docker-compose.prod.yml
 # tsconfig build info
 *.tsbuildinfo
+# Local DB test scripts (never commit real connection strings)
+test-db.js
+*.local.js

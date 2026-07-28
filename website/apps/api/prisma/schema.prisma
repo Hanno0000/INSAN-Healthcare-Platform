@@ -187,6 +187,14 @@ model Hospital {
   heroImage        String?
   brandColor       String?
   googleMapsUrl    String?
+  // ─── حقول صفحة المستشفى الجديدة (6) ───
+  heroTagline      Json?
+  heroStats        Json?
+  departments      Json?
+  locations        Json?
+  contactInfo      Json?
+  journeySteps     Json?
+  // ──────────────────────────────────────
   status           ContentStatus           @default(DRAFT)
   metaTitle        Json?
   metaDescription  Json?

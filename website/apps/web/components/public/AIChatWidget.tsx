@@ -21,12 +21,16 @@ export default function AIChatWidget() {
     setIsTyping(true);
     
     try {
-      const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1';
+      const API_BASE = (typeof window !== 'undefined' && process.env.NODE_ENV === 'production')
+        ? '/api/v1'
+        : (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1');
       const res = await fetch(`${API_BASE}/ai/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          messages: newMessages.map(m => ({ role: m.role, content: m.text })) 
+        body: JSON.stringify({
+          // The API only accepts 'user' | 'assistant' | 'ai' — 'ai' is our
+          // internal display label, translate it to 'assistant' on the wire.
+          messages: newMessages.map(m => ({ role: m.role === 'ai' ? 'assistant' : 'user', content: m.text }))
         })
       });
       

@@ -41,6 +41,11 @@ export class FacebookSyncService {
         return { success: false, error: data.error.message };
       }
 
+      if (!Array.isArray(data?.data)) {
+        this.logger.warn('Facebook API response did not contain a posts array — skipping sync.');
+        return { success: false, message: 'Unexpected Facebook API response shape' };
+      }
+
       let syncedCount = 0;
 
       for (const post of data.data) {
@@ -73,7 +78,8 @@ export class FacebookSyncService {
                 en: post.message
               },
               featuredImage: post.full_picture || null,
-              status: ContentStatus.PUBLISHED,
+              // Requires editorial review before appearing on the public site.
+              status: ContentStatus.DRAFT,
               sourceType: NewsSourceType.SOCIAL_SYNC,
               sourcePlatform: SocialPlatform.FACEBOOK,
               externalPostId: post.id,

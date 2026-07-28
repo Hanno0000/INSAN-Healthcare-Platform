@@ -1,6 +1,8 @@
-import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, Logger, HttpException, HttpStatus, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AiProvider } from '@prisma/client';
+
+const MASK_PREFIX = '••••';
 
 @Injectable()
 export class AiService {
@@ -8,20 +10,42 @@ export class AiService {
 
   constructor(private prisma: PrismaService) {}
 
+  /** Mask an API key for display (e.g. ••••1234) — never return the raw value to the client. */
+  private maskApiKey(value: string): string {
+    if (!value) return '';
+    if (value.length <= 4) return MASK_PREFIX;
+    return MASK_PREFIX + value.slice(-4);
+  }
+
   // ==============================
   // Providers Management
   // ==============================
   async getProviders() {
-    return this.prisma.aiProvider.findMany({
+    const providers = await this.prisma.aiProvider.findMany({
       orderBy: { priority: 'asc' },
     });
+    return providers.map(({ apiKey, ...rest }) => ({
+      ...rest,
+      maskedApiKey: this.maskApiKey(apiKey),
+    }));
   }
 
-  async saveProvider(data: { id?: string; name: string; baseUrl?: string; apiKey: string; modelName: string; priority: number; isActive: boolean }) {
+  async saveProvider(data: { id?: string; name: string; baseUrl?: string; apiKey?: string; modelName: string; priority: number; isActive: boolean }) {
+    const { apiKey, ...rest } = data;
+    const isMasked = typeof apiKey === 'string' && apiKey.startsWith(MASK_PREFIX);
+
     if (data.id) {
-      return this.prisma.aiProvider.update({ where: { id: data.id }, data });
+      const { id, ...updateData } = rest;
+      if (!isMasked && apiKey) {
+        (updateData as any).apiKey = apiKey;
+      }
+      return this.prisma.aiProvider.update({ where: { id }, data: updateData });
     }
-    return this.prisma.aiProvider.create({ data });
+
+    if (!apiKey || isMasked) {
+      throw new BadRequestException('apiKey is required to create a new provider');
+    }
+    return this.prisma.aiProvider.create({ data: { ...rest, apiKey } as any });
   }
 
   async deleteProvider(id: string) {

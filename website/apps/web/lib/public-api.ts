@@ -38,6 +38,34 @@ export interface PaginatedResponse<T> {
 }
 export interface SingleResponse<T> { success: boolean; data: T }
 
+export interface HeroStat {
+  value: string;
+  suffix?: string;
+  label: Bilingual;
+}
+export interface HospitalDepartment {
+  slug: string;
+  name: Bilingual;
+  shortDescription?: Bilingual;
+  description?: Bilingual;
+  image?: string;
+  doctorIds?: string[];
+}
+export interface HospitalLocation {
+  name: Bilingual;
+  mapsUrl: string;
+}
+export interface HospitalContactInfo {
+  phone?: string;
+  email?: string;
+  address?: Bilingual;
+}
+export interface JourneyStep {
+  icon: string;
+  title: Bilingual;
+  desc: Bilingual;
+}
+
 export interface Hospital {
   id: string; slug: string; name: Bilingual;
   shortDescription: Bilingual; description: Bilingual;
@@ -46,6 +74,27 @@ export interface Hospital {
   status: string; customFields?: Record<string, any>;
   googleMapsUrl?: string;
   createdAt?: string; updatedAt?: string;
+
+  // الحقول الستة الجديدة
+  heroTagline?: Bilingual;
+  heroStats?: HeroStat[];
+  departments?: HospitalDepartment[];
+  locations?: HospitalLocation[];
+  contactInfo?: HospitalContactInfo;
+  journeySteps?: JourneyStep[];
+
+  // علاقات تأتي من findBySlug
+  medicalCenters?: { medicalCenter: {
+    id: string; slug: string; name: Bilingual; heroImage?: string; isFeatured?: boolean;
+    clinics?: { id: string; name: Bilingual; schedule: any }[];
+  } }[];
+  doctors?: { doctor: {
+    id: string; slug: string; name: Bilingual; specialty?: Bilingual; photo?: string;
+  } }[];
+  newsPosts?: {
+    id: string; slug: string; title: Bilingual; excerpt?: Bilingual;
+    featuredImage?: string; publishedAt?: string;
+  }[];
 }
 export interface MedicalCenter {
   id: string; slug: string; name: Bilingual;
@@ -94,9 +143,9 @@ export interface CmsSection {
 }
 export interface FaqItem {
   id: string;
-  topic: string;
-  question: string;
-  answer: string;
+  topic: Bilingual;
+  question: Bilingual;
+  answer: Bilingual;
   order: number;
 }
 

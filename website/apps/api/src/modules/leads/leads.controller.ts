@@ -12,10 +12,12 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { LeadsService } from './leads.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateAppointmentStatusDto, MarkContactReadDto } from './dto/update-lead-status.dto';
+import { UpdateAppointmentAnswersDto } from './dto/update-appointment-answers.dto';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../common/guards/permissions.guard';
@@ -38,9 +40,10 @@ export class LeadsController {
   }
 
   @Patch('appointments/:id/answers')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
-  async updateAppointmentAnswers(@Param('id') id: string, @Body() body: { answers: any }) {
-    const data = await this.leadsService.updateAppointmentAnswers(id, body.answers);
+  async updateAppointmentAnswers(@Param('id') id: string, @Body() dto: UpdateAppointmentAnswersDto) {
+    const data = await this.leadsService.updateAppointmentAnswers(id, dto.answers);
     return ApiResponse.success(data);
   }
 

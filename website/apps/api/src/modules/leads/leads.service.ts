@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { CreateContactDto } from './dto/create-contact.dto';
@@ -15,11 +15,38 @@ export class LeadsService {
     return this.prisma.appointmentRequest.create({ data: dto as any });
   }
 
-  async updateAppointmentAnswers(id: string, answers: any) {
-    return this.prisma.appointmentRequest.update({
+  async updateAppointmentAnswers(id: string, answers: Record<string, any>) {
+    const appt = await this.prisma.appointmentRequest.findUnique({
+      where: { id },
+      select: { id: true, status: true, createdAt: true },
+    });
+    if (!appt) throw new NotFoundException('Appointment not found');
+
+    // Only the initial booking flow may attach answers — once staff has
+    // progressed the request, the answers are considered final.
+    if (appt.status !== 'NEW') {
+      throw new ForbiddenException('This appointment can no longer be updated');
+    }
+
+    // Booking form step 2 is expected to complete within minutes of step 1.
+    // This closes the window an attacker would have to guess/replay an id.
+    const ANSWERS_WINDOW_MS = 30 * 60 * 1000;
+    if (Date.now() - appt.createdAt.getTime() > ANSWERS_WINDOW_MS) {
+      throw new ForbiddenException('The time window to submit answers has expired');
+    }
+
+    const serialized = JSON.stringify(answers ?? {});
+    if (serialized.length > 20_000) {
+      throw new BadRequestException('Answers payload is too large');
+    }
+
+    await this.prisma.appointmentRequest.update({
       where: { id },
       data: { answers },
     });
+
+    // Do not echo back the record — it contains the patient's name/phone/email.
+    return { ok: true };
   }
 
   async findAllAppointments(query: any, filter: any) {
