@@ -920,3 +920,199 @@ Every future piece of communication should answer one simple question:
 If the answer is not reassurance...
 
 The communication probably needs to be rewritten.
+
+---
+
+# Strategic Constraints
+
+This section documents the strategic boundaries agreed upon during planning.
+
+These are permanent communication principles rather than campaign-specific decisions.
+
+Future workers should respect these principles unless they are officially updated.
+
+---
+
+# Medical Communication Principles
+
+All communication surrounding the Kabarona Program should remain medically responsible.
+
+The program should never create unrealistic expectations.
+
+Medical credibility must always take precedence over marketing effectiveness.
+
+Every communication should build trust through honesty rather than exaggeration.
+
+---
+
+# What The Program Should Never Promise
+
+The following promises should never appear in marketing communication.
+
+The program should never promise:
+
+- Guaranteed recovery.
+- Guaranteed prevention of disease.
+- Guaranteed prevention of hospitalization.
+- Guaranteed prevention of ICU admission.
+- Guaranteed reduction of medications.
+- Guaranteed improvement in every patient's condition.
+- Any medical outcome that cannot be ethically guaranteed.
+
+Healthcare communication should always remain evidence-based and professionally responsible.
+
+---
+
+# What The Program Can Confidently Promise
+
+The following values accurately represent the program philosophy.
+
+The program can confidently promise:
+
+- Organized healthcare.
+- Continuous medical follow-up.
+- Comprehensive assessment.
+- Professional geriatric care.
+- Better continuity of care.
+- Greater reassurance for families.
+- A healthcare journey designed around the needs of older adults.
+
+These promises describe the care process rather than guaranteeing medical outcomes.
+
+---
+
+# How The Program Should Be Perceived
+
+Future communication should gradually build the following perception.
+
+The Kabarona Program is:
+
+- Organized.
+- Compassionate.
+- Professional.
+- Continuous.
+- Human-centered.
+- Family-oriented.
+- Specialized.
+- Trustworthy.
+
+The program should never feel like a promotional medical package.
+
+It should feel like a long-term healthcare companion.
+
+---
+
+# How Older Adults Should Be Represented
+
+One important creative decision emerged during planning.
+
+Older adults should never be represented as weak, helpless or incapable.
+
+Instead they should appear as:
+
+- Active.
+- Respected.
+- Independent whenever possible.
+- Valued members of their families.
+- People with experience and dignity.
+
+Communication should celebrate ageing rather than fear it.
+
+---
+
+# The Role Of Families
+
+Families are an essential part of the healthcare journey.
+
+Future communication should recognize that healthcare decisions are often shared between patients and their families.
+
+The program supports not only older adults, but also the people who care about them.
+
+This perspective should remain consistent across future marketing activities.
+
+---
+
+# Long-Term Brand Contribution
+
+The Kabarona Program contributes to the larger INSAN brand by reinforcing one central belief.
+
+INSAN does not simply provide medical services.
+
+INSAN builds organized healthcare experiences designed around people.
+
+Every future communication should strengthen this broader perception.
+
+The success of the program should also strengthen trust in the INSAN Healthcare Ecosystem.
+
+---
+
+# Relationship With The INSAN Ecosystem
+
+The program should never be presented as an isolated initiative.
+
+It is one component of the broader INSAN Healthcare Ecosystem.
+
+Whenever appropriate, communication should naturally reinforce that the program operates under INSAN's unified standards of quality, governance and patient-centered care.
+
+Cross-promotion should never feel forced.
+
+The ecosystem should be discovered naturally through consistent communication.
+
+---
+
+# Knowledge Scope
+
+This document intentionally focuses on permanent knowledge.
+
+It does not contain:
+
+- Campaign plans.
+- Advertising strategies.
+- Content calendars.
+- Approved Content Angles.
+- Design prompts.
+- Social media posts.
+- Creative execution.
+
+Those assets are generated later by specialized AI Workers using this document as their primary knowledge source.
+
+---
+
+# Future Worker Guidance
+
+Every downstream worker should begin by reading this document before producing any output.
+
+This document defines:
+
+- What the program is.
+- Why the program exists.
+- How it should be understood.
+- How it should be communicated.
+- What it should never claim.
+- The strategic philosophy behind the program.
+
+Execution decisions belong to downstream workers.
+
+Knowledge belongs here.
+
+---
+
+# Document Maintenance Policy
+
+This document is a living knowledge asset.
+
+New information should be added only when it represents permanent knowledge about the program.
+
+Temporary campaign decisions should never be stored here.
+
+Whenever strategic decisions become permanent, they should be incorporated into this document to ensure that future workers inherit the latest approved understanding of the Kabarona Program.
+
+---
+
+# End of Version 1 Foundation
+
+The first version of this document establishes the permanent knowledge foundation for the Kabarona Program.
+
+Future revisions should expand this knowledge while preserving consistency, accuracy and strategic intent.
+
+This document should always remain the official Source of Truth for the program.
