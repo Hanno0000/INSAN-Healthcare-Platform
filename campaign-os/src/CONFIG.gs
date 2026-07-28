@@ -216,6 +216,31 @@ var CONFIG = {
   },
 
   // ================================
+  // ASSET INTEGRITY
+  // Deterministic gate in front of Visual QA. See AssetIntegrity.gs — a vision
+  // model scored a set of half-cropped, wrong-aspect assets "A / Approved"
+  // with an accurate description of what was in them.
+  // ================================
+
+  ASSET_INTEGRITY: {
+    ENABLED: true,
+
+    // Aspect drift allowed against the format's MEDIA_SPECS. Assets arrive at
+    // more than one size legitimately — the image model returns its own, the
+    // text overlay re-exports at the rasteriser's — so the shape is checked,
+    // not the dimensions. 3% passes a 1024x1792 nine-sixteenths; it fails a
+    // square delivered as 16:9 by a wide margin.
+    ASPECT_TOLERANCE: 0.03,
+
+    // Long edge below this is soft on a phone once the placement upscales it.
+    MIN_LONG_EDGE: 1000,
+
+    // A blank or failed render compresses to almost nothing. A floor, not a
+    // quality measure.
+    MIN_BYTES: 15000
+  },
+
+  // ================================
   // TEXT OVERLAY
   // Approved Arabic wording is set as real type after generation rather than
   // asked of the image model, which cannot shape or order Arabic reliably.

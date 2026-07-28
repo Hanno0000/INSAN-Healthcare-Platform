@@ -1401,6 +1401,33 @@ function runWorker(workerName, rowNumber) {
         );
       }
 
+      // Arithmetic before judgement. These are properties that are true or
+      // false by measurement — shape, resolution, count, duplication — and a
+      // grader asked about composition reports on composition. A set that is
+      // structurally wrong fails here in milliseconds at no token cost, rather
+      // than being described accurately and approved.
+      //
+      // This throws rather than requesting a revision on purpose. Every defect
+      // it catches is systemic — a template at the wrong page size, a format
+      // mapped to the wrong spec, a short generation — and regenerating would
+      // produce the same wrong output at the same price. It needs an operator,
+      // not another attempt.
+      if ((CONFIG.ASSET_INTEGRITY || {}).ENABLED) {
+        var integrity = AssetIntegrity.check(qaImages, rowData);
+
+        for (var n = 0; n < integrity.notes.length; n++) {
+          Logger.log('ASSET_INTEGRITY | Row ' + rowNumber + ' | ' + integrity.notes[n]);
+        }
+
+        if (!integrity.passed) {
+          throw new Error(
+            'Assets failed integrity checks before QA (row ' + rowNumber + '): ' +
+            integrity.failures.join(' ') +
+            ' Fix the cause and re-run Media Generation for this row.'
+          );
+        }
+      }
+
       callOptions.images = qaImages;
       context += '\n\n=== GENERATED ASSETS ===\n\n' +
         qaImages.length + ' generated image(s) are attached above. ' +
