@@ -1116,3 +1116,254 @@ The first version of this document establishes the permanent knowledge foundatio
 Future revisions should expand this knowledge while preserving consistency, accuracy and strategic intent.
 
 This document should always remain the official Source of Truth for the program.
+
+---
+
+# AI Worker Guidance
+
+This document is intended to be consumed by both humans and AI Workers.
+
+Future AI Workers should treat this document as the primary knowledge source for the Kabarona Program.
+
+If information in future campaign briefs, content requests or prompts conflicts with this document, this document should be considered the authoritative reference unless a newer approved project decision explicitly overrides it.
+
+Workers should inherit the philosophy of the program rather than simply extracting facts.
+
+Understanding is more important than copying.
+
+---
+
+# Intended Consumers
+
+This document is expected to support multiple downstream systems.
+
+Examples include:
+
+- Campaign Strategy Workers
+- Content Strategy Workers
+- Content Creation Workers
+- Creative Directors
+- Visual Planning Workers
+- Website Workers
+- Advertising Specialists
+- Patient Journey Designers
+- Customer Experience Teams
+- Sales Teams
+- Future AI Agents
+
+Every consumer may use different parts of this document, but all should inherit the same strategic understanding.
+
+---
+
+# Knowledge Classification
+
+The information contained within this document can generally be classified into the following categories.
+
+## Permanent Knowledge
+
+Examples:
+
+- Program philosophy.
+- Healthcare principles.
+- Communication philosophy.
+- Positioning.
+- Human insights.
+- Medical boundaries.
+- Audience understanding.
+- Long-term strategic decisions.
+
+These elements should remain stable over time.
+
+---
+
+## Evolving Knowledge
+
+Examples:
+
+- New services.
+- New follow-up programs.
+- Updated operational processes.
+- Additional differentiators.
+- New strategic decisions approved by the project team.
+
+These sections may expand as the program evolves.
+
+---
+
+## External Knowledge
+
+The following information should NOT be maintained inside this document.
+
+- Campaign execution.
+- Advertising plans.
+- Media buying.
+- Monthly content calendars.
+- Seasonal campaigns.
+- Creative assets.
+- Performance reports.
+- Analytics.
+
+Those belong to other project systems.
+
+---
+
+# Relationship With Other Documentation
+
+This document should be considered part of the INSAN Business Knowledge Layer.
+
+It supports—but does not replace—the following project assets:
+
+- Campaign Playbook
+- Campaign Cards
+- Content Pipeline
+- Website Architecture
+- Brand Documentation
+- Creative Constitution
+- Platform Knowledge Base
+
+Those documents describe execution.
+
+This document describes knowledge.
+
+---
+
+# Relationship With Campaign Cards
+
+Campaign Cards are summaries.
+
+This document is the complete reference.
+
+Campaign Cards should inherit their strategic understanding from this document.
+
+This document should never be rewritten simply to match a Campaign Card.
+
+Instead, Campaign Cards should be updated whenever this knowledge evolves.
+
+Knowledge flows in one direction.
+
+Knowledge Base
+
+↓
+
+Campaign Cards
+
+↓
+
+Content Pipeline
+
+↓
+
+Content Production
+
+This hierarchy should remain consistent across the project.
+
+---
+
+# Documentation Principles
+
+Every addition to this document should satisfy the following criteria.
+
+The information should be:
+
+- Permanently valuable.
+- Strategically important.
+- Helpful for future decision making.
+- Reusable across multiple campaigns.
+- Independent of temporary marketing activities.
+
+If information is only useful for one campaign, it probably belongs somewhere else.
+
+---
+
+# Versioning Philosophy
+
+This document is intentionally designed as a living document.
+
+Future versions should expand knowledge rather than replace it.
+
+Historical strategic decisions should remain traceable whenever possible.
+
+Major structural changes should preserve backward compatibility for downstream AI Workers.
+
+---
+
+# Future Expansion Areas
+
+The following knowledge domains may be added in future versions as the program evolves.
+
+- Operational workflows.
+- Patient journey mapping.
+- Clinical pathways.
+- Partnership opportunities.
+- Success metrics.
+- Frequently asked questions.
+- Internal operational notes.
+- Healthcare ecosystem integrations.
+
+These sections should only be added when they become permanent parts of the program.
+
+---
+
+# Final Strategic Reminder
+
+The Kabarona Program should never be understood as a collection of medical services.
+
+It should always be understood as a carefully designed healthcare experience for older adults and their families.
+
+The program exists to improve quality of life, strengthen continuity of care and provide reassurance through organized healthcare.
+
+Every future campaign, every piece of content and every communication should preserve this philosophy.
+
+Features may evolve.
+
+Services may expand.
+
+Campaigns will change.
+
+Communication channels will change.
+
+But the underlying philosophy should remain consistent.
+
+That philosophy is the most important knowledge preserved within this document.
+
+---
+
+# Document Metadata
+
+**Document Type**
+
+Business Knowledge Base
+
+**Knowledge Domain**
+
+Healthcare Program
+
+**Program**
+
+Kabarona Program
+
+**Project**
+
+INSAN Healthcare Ecosystem
+
+**Status**
+
+Living Document
+
+**Authority Level**
+
+Primary Source of Truth
+
+**Primary Purpose**
+
+Capture and preserve permanent strategic, medical and communication knowledge related to the Kabarona Program.
+
+**Last Major Review**
+
+Version 1.0 Foundation
+
+**Maintained By**
+
+INSAN Marketing & Brand Team
+
+Future updates should extend this knowledge base without compromising strategic consistency or institutional memory.
