@@ -37,12 +37,14 @@ tar -xzvf __ARCHIVE__
 docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
 echo "Waiting 20s for API container to start..."
 sleep 20
-API_CONTAINER=$(docker ps --filter 'name=api' --format '{{.Names}}' | head -1)
+API_CONTAINER=$(docker ps --filter "name=api" --format "{{.Names}}" | head -1)
 if [ -n "$API_CONTAINER" ]; then
+  echo "Running migrations on container: $API_CONTAINER"
+  docker exec $API_CONTAINER npx prisma migrate deploy
   echo "Running seed on container: $API_CONTAINER"
   docker exec $API_CONTAINER npx ts-node prisma/seed.ts 2>&1 || echo "Seed skipped (data may already exist)"
 else
-  echo "Warning: API container not found - seed skipped"
+  echo "Warning: API container not found - migration and seed skipped"
 fi
 rm -f __ARCHIVE__
 echo "Done!"
