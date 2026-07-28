@@ -1585,262 +1585,459 @@ Trust should remain the strongest message throughout every future campaign.
 
 ---
 
+# Strategic Reminder
+
+Every future communication should answer one question before publication:
+
+"What feeling remains after someone experiences this communication?"
+
+If the answer is not:
+
+Trust.
+
+Confidence.
+
+Reassurance.
+
+Professionalism.
+
+Transparency.
+
+then the communication should be revised.
+
+The ICU is not being marketed.
+
+Trust is being built.
+
+---
+
 # Strategic Constraints
 
-This section documents the strategic boundaries agreed upon during planning.
+The planning discussions established several permanent strategic boundaries.
 
-These are permanent communication principles rather than campaign-specific decisions.
+These boundaries should remain valid unless formally changed.
 
-Future workers should respect these principles unless they are officially updated.
+Future workers should always respect them.
+
+The ICU must never compete using exaggerated claims.
+
+The ICU must never compete by criticizing other hospitals.
+
+The ICU must never rely on fear as a marketing tool.
+
+Communication must never exploit emotionally vulnerable families.
+
+Professional ethics always take priority over marketing effectiveness.
+
+INSAN's long-term reputation is more valuable than any short-term campaign result.
 
 ---
 
 # Medical Communication Principles
 
-All communication surrounding the ICU service should remain medically responsible.
+All ICU communication should remain medically responsible.
 
-The service should never create unrealistic expectations.
+Every statement should be supportable.
 
-Medical credibility must always take precedence over marketing effectiveness.
+Clinical uncertainty should be respected.
 
-Every communication should build trust through honesty rather than exaggeration.
+Communication should explain the healthcare process rather than predict medical outcomes.
+
+Professional credibility should always outweigh persuasive language.
+
+Transparency is part of medical ethics, not merely a communication technique.
 
 ---
 
 # What The ICU Should Never Promise
 
-The following promises should never appear in marketing communication.
-
 The ICU should never promise:
 
 - Guaranteed survival.
 - Guaranteed recovery.
+- Guaranteed neurological improvement.
 - Guaranteed prevention of complications.
-- Guaranteed cure of any condition.
-- Guaranteed length of stay.
-- Any medical outcome that cannot be ethically guaranteed.
+- Guaranteed ICU admission.
+- Guaranteed bed availability.
+- Guaranteed physician availability.
+- Guaranteed transfer timing.
+- Guaranteed discharge timing.
+- Any outcome beyond ethical medical responsibility.
 
-Critical care communication should always remain evidence-based and professionally responsible.
+The ICU provides professional critical care.
+
+It never guarantees results.
 
 ---
 
 # What The ICU Can Confidently Promise
 
-The following values accurately represent the ICU service philosophy.
-
 The ICU can confidently promise:
 
 - Organized critical care.
-- Continuous medical monitoring.
-- Multidisciplinary team collaboration.
-- Transparent communication with families.
-- Professional partnership with referring physicians.
-- Financial clarity and honesty.
-- Organized transitions of care.
-- Respect for patients, families and physicians.
-- Continuous operational improvement under INSAN governance.
+- Professional multidisciplinary management.
+- Honest communication.
+- Respectful family interaction.
+- Physician collaboration.
+- Transparent processes.
+- Ethical decision making.
+- Continuous monitoring.
+- Professional coordination.
+- Human-centered care.
 
-These promises describe the care process and organizational values rather than guaranteeing medical outcomes.
+These promises describe the care process rather than medical outcomes.
 
 ---
 
 # How The ICU Should Be Perceived
 
-Future communication should gradually build the following perception.
+Planning consistently aimed to build the following long-term perception.
 
 The ICU is:
 
+- Professional.
 - Organized.
 - Transparent.
-- Professional.
+- Ethical.
 - Human-centered.
-- Trustworthy.
 - Collaborative.
-- Accountable.
-- Continuous.
+- Reliable.
+- Continuously improving.
 
-The ICU should never feel like a terrifying place.
+It should never be perceived as:
 
-It should feel like a system that families, physicians and patients can trust.
+- A commercial ICU.
+- A luxury ICU.
+- A technology-first ICU.
+- A fear-based ICU.
+- A department defined only by beds and equipment.
 
----
-
-# How Patients Should Be Represented
-
-Patients should never be represented as statistics or bed occupancy numbers.
-
-They should appear as:
-
-- Individuals receiving organized care.
-- People whose dignity is preserved.
-- Members of families who are supported.
-- Recipients of coordinated multidisciplinary attention.
-
-Communication should humanize every aspect of the ICU experience.
+It should instead be recognized as a trusted critical care system.
 
 ---
 
-# The Role of Families
+# How Families Should Be Represented
 
-Families are not spectators during ICU care.
+Families should never be portrayed as helpless.
 
-They are partners.
+Instead they should appear as valued partners in the patient's journey.
 
-Their emotional needs are part of the care system.
+Communication should acknowledge:
 
-Their right to information is part of the care system.
+Their emotions.
 
-Their involvement in transitions is part of the care system.
+Their responsibility.
 
-Communication should always acknowledge the family's role and support their journey.
+Their questions.
+
+Their need for reassurance.
+
+Respect for families should remain visible across all future communications.
 
 ---
 
-# The Role of Referring Physicians
+# How Physicians Should Be Represented
 
-Referring physicians are professional partners.
+Planning emphasized that referring physicians are partners rather than customers.
 
-Their trust is earned, not assumed.
+Future communication should consistently demonstrate:
 
-Their patients are their responsibility even after referral.
+Professional respect.
 
-Their need for communication and visibility is legitimate and respected.
+Clinical collaboration.
 
-The ICU should always communicate that referring physicians are valued partners in the care continuum.
+Shared responsibility.
+
+Mutual trust.
+
+The ICU complements the physician's care rather than replacing it.
 
 ---
 
 # Long-Term Brand Contribution
 
-The ICU contributes to the larger INSAN brand by reinforcing one central belief:
+The ICU contributes to the broader INSAN Healthcare Ecosystem by demonstrating what organized healthcare looks like during the most critical moments.
 
-INSAN does not simply provide medical services.
+Success should strengthen public trust not only in the ICU, but in the INSAN operating philosophy as a whole.
 
-INSAN builds organized healthcare experiences designed around people.
-
-Every future communication should strengthen this broader perception.
-
-The success of the ICU should also strengthen trust in the INSAN Healthcare Ecosystem.
+The ICU becomes one of the strongest public demonstrations of INSAN's commitment to quality, organization and patient-centered care.
 
 ---
 
 # Relationship With The INSAN Ecosystem
 
-The ICU should never be presented as an isolated hospital department.
+The ICU should never be presented as an isolated department.
 
-It is one component of the broader INSAN Healthcare Ecosystem.
+It operates within the broader INSAN Healthcare Ecosystem.
 
-INSAN drives the continuous development, governance and operational improvement of the ICU service.
+Future communication should naturally reinforce that:
 
-Whenever appropriate, communication should naturally reinforce that the ICU operates under INSAN's unified standards of quality, governance and patient-centered care.
+Operational standards.
 
-Future communication should gradually build INSAN as the management and healthcare platform behind the hospitals rather than presenting each hospital as an isolated institution.
+Continuous improvement.
+
+Governance.
+
+Quality systems.
+
+Patient experience.
+
+Innovation.
+
+Organizational development.
+
+are driven through INSAN.
+
+The hospitals deliver the service.
+
+INSAN continuously develops the system behind the service.
 
 ---
 
 # Knowledge Scope
 
-This document intentionally focuses on permanent knowledge.
+This document intentionally stores permanent knowledge only.
 
-It does not contain:
+It should not contain:
 
-- Campaign plans.
-- Advertising strategies.
-- Content calendars.
-- Approved Content Angles.
-- Design prompts.
-- Social media posts.
-- Creative execution.
+- Campaign execution.
+- Advertising plans.
+- Media buying.
+- Creative production.
+- Monthly calendars.
+- Performance reports.
+- Temporary promotions.
+- Seasonal campaigns.
 
-Those assets are generated later by specialized AI Workers using this document as their primary knowledge source.
+Those belong to downstream project systems.
 
 ---
 
 # Future Worker Guidance
 
-Every downstream worker should begin by reading this document before producing any output.
+Every downstream AI Worker should begin by reading this document.
 
 This document defines:
 
-- What the ICU service is.
-- Why the ICU service exists.
+- What the ICU is.
+- Why it exists.
 - How it should be understood.
 - How it should be communicated.
-- What it should never claim.
-- The strategic philosophy behind the service.
+- What should never be claimed.
+- The philosophy that future execution must inherit.
 
-Execution decisions belong to downstream workers.
+Execution belongs to downstream workers.
 
 Knowledge belongs here.
 
 ---
 
+# Document Maintenance Policy
+
+This document is a living institutional knowledge asset.
+
+Future updates should add permanent knowledge.
+
+Temporary discussions should never replace strategic knowledge.
+
+When project decisions become permanent, they should be incorporated into this document so future workers inherit the latest approved understanding.
+
+---
+
+# AI Worker Guidance
+
+Future AI Workers should treat this document as the primary Source of Truth for the ICU service.
+
+Whenever future prompts conflict with this document, the approved knowledge contained here should take precedence unless a newer strategic decision explicitly supersedes it.
+
+Workers should inherit philosophy, not merely facts.
+
+Understanding is more important than copying.
+
+---
+
+# Intended Consumers
+
+This document is intended to support:
+
+- Campaign Strategy Workers.
+- Content Strategy Workers.
+- Content Creation Workers.
+- Creative Directors.
+- Website Workers.
+- Advertising Specialists.
+- Patient Journey Designers.
+- Referral Development Teams.
+- Business Development Teams.
+- Physician Relationship Teams.
+- Hospital Management.
+- Future AI Agents.
+
+All consumers should inherit the same strategic understanding.
+
+---
+
+# Knowledge Classification
+
+## Permanent Knowledge
+
+Includes:
+
+- ICU philosophy.
+- Positioning.
+- Communication principles.
+- Human insights.
+- Service boundaries.
+- Brand philosophy.
+- Audience understanding.
+- Long-term strategic decisions.
+
+These elements should remain stable.
+
+---
+
+## Evolving Knowledge
+
+May include:
+
+- New ICU services.
+- New operational workflows.
+- New patient experience initiatives.
+- Additional differentiators.
+- New permanent strategic decisions.
+
+These sections may expand over time.
+
+---
+
+## External Knowledge
+
+The following should NOT be maintained here:
+
+- Campaign execution.
+- Creative assets.
+- Social media content.
+- Advertising copy.
+- Analytics.
+- Media planning.
+- Performance reports.
+
+These belong to other project systems.
+
+---
+
+# Relationship With Other Documentation
+
+This document belongs to the INSAN Business Knowledge Layer.
+
+It supports, but does not replace:
+
+- Campaign Playbook.
+- Campaign Cards.
+- Website Architecture.
+- Brand Documentation.
+- Creative Constitution.
+- Platform Knowledge Base.
+- AI Worker Documentation.
+
+This document defines knowledge.
+
+Other documents define execution.
+
+---
+
+# Relationship With Campaign Cards
+
+Campaign Cards are condensed strategic assets.
+
+This document is the complete institutional reference.
+
+Knowledge flows in one direction.
+
+Knowledge Base
+
+↓
+
+Campaign Cards
+
+↓
+
+Content Strategy
+
+↓
+
+Creative Planning
+
+↓
+
+Content Production
+
+Campaign Cards should inherit their understanding from this document, never the opposite.
+
+---
+
 # Documentation Principles
 
-Every addition to this document should satisfy the following criteria.
-
-The information should be:
+Every future addition should be:
 
 - Permanently valuable.
 - Strategically important.
+- Reusable.
 - Helpful for future decision making.
-- Reusable across multiple campaigns.
-- Independent of temporary marketing activities.
+- Independent of temporary campaigns.
 
-If information is only useful for one campaign, it probably belongs somewhere else.
+If a piece of information is useful only once, it probably belongs somewhere else.
 
 ---
 
 # Versioning Philosophy
 
-This document is intentionally designed as a living document.
+This document is intentionally designed as a living knowledge asset.
 
-Future versions should expand knowledge rather than replace it.
+Future versions should expand institutional knowledge rather than replace it.
 
 Historical strategic decisions should remain traceable whenever possible.
 
-Major structural changes should preserve backward compatibility for downstream AI Workers.
+Structural consistency should be preserved to maintain compatibility with downstream AI Workers.
 
 ---
 
 # Future Expansion Areas
 
-The following knowledge domains may be added in future versions as the service evolves.
+As the ICU service evolves, future versions may include:
 
-- Operational workflows
-- Patient journey mapping
-- Clinical pathways
-- Partnership opportunities
-- Success metrics
-- Frequently asked questions
-- Internal operational notes
-- ICU-specific contract structures
-- Staff training protocols
-- Quality improvement metrics
+- Patient journey mapping.
+- ICU operational workflows.
+- Referral workflows.
+- Family communication pathways.
+- Clinical pathways.
+- Partnership programs.
+- Quality indicators.
+- Frequently Asked Questions.
+- Internal operational guidance.
+- Additional ecosystem integrations.
 
-These sections should only be added when they become permanent parts of the service.
+Only permanent knowledge should be added.
 
 ---
 
 # Final Strategic Reminder
 
-The ICU should never be understood as a collection of beds and machines.
+The ICU should never be understood as a collection of beds, monitors and ventilators.
 
-It should always be understood as an organized critical care system designed around patients, families and physicians.
+It should always be understood as an organized critical care system built around people.
 
-The service exists to provide coordinated care, transparent communication and human support during one of the most vulnerable moments in a person's life.
+Its long-term value comes from trust, transparency, coordination and professional collaboration.
 
-Every future campaign, every piece of content and every communication should preserve this philosophy.
+Equipment will evolve.
 
-Features may evolve.
-
-Equipment may upgrade.
+Processes will improve.
 
 Campaigns will change.
 
-Communication channels will change.
+Technology will change.
 
-But the underlying philosophy should remain consistent.
+But the philosophy should remain constant.
 
 That philosophy is the most important knowledge preserved within this document.
 
@@ -1874,7 +2071,7 @@ Primary Source of Truth
 
 **Primary Purpose**
 
-Capture and preserve permanent strategic, medical and communication knowledge related to the ICU service.
+Capture and preserve permanent strategic, operational, medical and communication knowledge related to the Intensive Care Unit.
 
 **Last Major Review**
 
@@ -1884,12 +2081,17 @@ Version 1.0 Foundation
 
 INSAN Marketing & Brand Team
 
-Future updates should extend this knowledge base without compromising strategic consistency or institutional memory.
+Future updates should extend this document while preserving strategic consistency and institutional memory.
 
 ---
 
 # Related Knowledge
 
-- PROGRAM_KABARONA.md
-- Delta International Hospital
+- INSAN Healthcare Ecosystem
 - Future Specialized Hospital
+- Delta International Hospital
+- Emergency Department
+- Cardiology
+- Internal Medicine
+- Surgery
+- Kabarona Program
