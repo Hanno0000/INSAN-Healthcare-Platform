@@ -235,8 +235,8 @@ var CONFIG = {
     // Only the sizes actually produced are needed: 1:1 for Static and Carousel,
     // 9:16 for Story and Reel.
     TEMPLATES: {
-      '1:1': '',
-      '9:16': ''
+      '1:1': '18f-q4jDsW8uCt7km5JtgyEGh0Sek-uekskHahWMjHMk',
+      '9:16': '1HyrDEfQdgdFAxvpYb5tAzw6W-23_Cg8GKJKho0Sxg8w'
     },
 
     POSITION: 'bottom',        // 'bottom' | 'top'
