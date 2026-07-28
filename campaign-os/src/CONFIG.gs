@@ -246,7 +246,12 @@ var CONFIG = {
     MAX_FONT_PT: 44,
     MIN_FONT_PT: 20,
     MARGIN_PCT: 0.07,
-    BAND_HEIGHT_PCT: 0.3,
+
+    // Share of the frame the type may occupy. The scrim hugs this, so it is
+    // also roughly how much of the artwork gets covered — keep it small enough
+    // that the image is still the thing being looked at.
+    BAND_HEIGHT_PCT: 0.22,
+
     SCRIM_COLOR: '#0d1b2a',
     SCRIM_ALPHA: 0.55,         // 0 disables the scrim entirely
 

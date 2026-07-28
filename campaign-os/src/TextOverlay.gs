@@ -267,11 +267,17 @@ var TextOverlay = {
     // type, so contrast against whatever the model happened to put there
     // cannot be assumed. Without this the headline is legible on some assets
     // and invisible on others, which is worse than consistently plain.
+    //
+    // It hugs the type. Padding the band by a full margin on both sides put it
+    // across 44% of the frame, which swallows the photography the generation
+    // was paid for.
     if (cfg.SCRIM_ALPHA > 0) {
-      var scrimTop = atTop ? 0 : pageH - (boxH + margin * 2);
+      var pad = margin * 0.5;
+      var scrimH = boxH + pad;
+      var scrimTop = atTop ? 0 : pageH - scrimH;
+
       var scrim = slide.insertShape(
-        SlidesApp.ShapeType.RECTANGLE,
-        0, scrimTop, pageW, boxH + margin * 2
+        SlidesApp.ShapeType.RECTANGLE, 0, scrimTop, pageW, scrimH
       );
       scrim.getFill().setSolidFill(cfg.SCRIM_COLOR || '#0d1b2a', cfg.SCRIM_ALPHA);
       scrim.getBorder().setTransparent();
@@ -286,13 +292,17 @@ var TextOverlay = {
       .setForegroundColor(cfg.TEXT_COLOR || '#ffffff')
       .setBold(cfg.BOLD !== false);
 
-    // Arabic set left-to-right reorders the words. Both the paragraph direction
-    // and the alignment have to say so.
+    // Arabic set left-to-right reorders the words, so the direction has to be
+    // stated. The alignment is START, not END: both are relative to the text
+    // direction, so in right-to-left text END means the left edge. Setting END
+    // left-aligned the headline — invisible on a first line that happens to
+    // fill the width, obvious the moment it wrapped and "فردي." sat alone on
+    // the left.
     var paragraphs = range.getParagraphs();
     for (var i = 0; i < paragraphs.length; i++) {
       var style = paragraphs[i].getRange().getParagraphStyle();
       style.setTextDirection(SlidesApp.TextDirection.RIGHT_TO_LEFT);
-      style.setParagraphAlignment(SlidesApp.ParagraphAlignment.END);
+      style.setParagraphAlignment(SlidesApp.ParagraphAlignment.START);
     }
 
     box.setContentAlignment(atTop
