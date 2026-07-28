@@ -1,3 +1,25 @@
+---
+document_type: Knowledge Base
+entity_type: Medical Service
+entity_name: Kabarona Program
+owner: INSAN
+status: Active
+
+related_campaigns:
+  - Kabarona Program
+
+related_services:
+  - Outpatient Clinics
+  - Laboratory Services
+  - Diagnostic Imaging
+  - Ultrasound
+  - Echocardiography
+
+related_departments:
+  - Geriatrics
+  - Internal Medicine
+---
+
 # PROGRAM_KABARONA.md
 
 > INSAN Healthcare Ecosystem
@@ -86,6 +108,28 @@ To become one of the leading senior healthcare programs in Egypt by delivering o
 # Mission
 
 Provide seniors with professional, continuous and compassionate healthcare that helps them live healthier, safer and more independent lives while giving their families greater peace of mind.
+
+---
+
+# Why This Program Exists
+
+Older adults often experience fragmented healthcare journeys.
+
+Multiple doctors. Multiple appointments. Multiple medications.
+
+No single provider owns the full picture.
+
+Families are left managing a complex system with no clear guide.
+
+Follow-up is inconsistent. Conditions are discovered late. Communication between providers is weak.
+
+The result is confusion, uncertainty and preventable decline.
+
+This program was designed to close that gap.
+
+Organized care. Continuous follow-up. One clear journey.
+
+For the patient and for the family.
 
 ---
 
@@ -274,6 +318,18 @@ The minimum eligible age should be officially standardized.
 Several age thresholds were discussed during planning.
 
 One official eligibility age should be selected and used consistently across all future marketing materials.
+
+---
+
+# Program Boundaries
+
+The program does not replace emergency medical care.
+
+The program does not guarantee medical outcomes.
+
+The program complements specialist care rather than replacing it.
+
+The program focuses on organized long-term healthcare rather than isolated consultations.
 
 ---
 
@@ -1367,3 +1423,10 @@ Version 1.0 Foundation
 INSAN Marketing & Brand Team
 
 Future updates should extend this knowledge base without compromising strategic consistency or institutional memory.
+
+---
+
+# Related Knowledge
+
+- Future Specialized Hospital
+- Delta International Hospital
