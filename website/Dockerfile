@@ -3,20 +3,18 @@ RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 # Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
-
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
+ENV PATH="/app/node_modules/.bin:${PATH}"
 # ---------- Pruned installer ----------
 FROM base AS installer
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json .npmrc ./
 COPY apps/api/package.json ./apps/api/package.json
 COPY apps/web/package.json ./apps/web/package.json
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --no-frozen-lockfile
 
 # ---------- API build ----------
 FROM base AS api-builder
 COPY --from=installer /app/node_modules ./node_modules
-COPY --from=installer /app/apps/api/node_modules ./apps/api/node_modules
-COPY --from=installer /app/apps/web/node_modules ./apps/web/node_modules
 COPY apps/api ./apps/api
 COPY apps/web ./apps/web
 WORKDIR /app/apps/api
@@ -26,10 +24,9 @@ RUN pnpm build
 # ---------- Web build ----------
 FROM base AS web-builder
 COPY --from=installer /app/node_modules ./node_modules
-COPY --from=installer /app/apps/api/node_modules ./apps/api/node_modules
-COPY --from=installer /app/apps/web/node_modules ./apps/web/node_modules
 COPY apps/web ./apps/web
 COPY apps/api/prisma ./apps/api/prisma
+COPY .env.production ./apps/web/.env.production
 WORKDIR /app/apps/web
 RUN pnpm build
 
@@ -38,12 +35,10 @@ FROM node:20-alpine AS api-production
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 ENV NODE_ENV=production
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 
-COPY --from=installer /app/node_modules ./node_modules
+COPY --from=api-builder /app/node_modules ./node_modules
 COPY --from=api-builder /app/apps/api/dist ./dist
-COPY --from=api-builder /app/apps/api/node_modules/.prisma ./node_modules/.prisma
-COPY --from=api-builder /app/apps/api/node_modules/@prisma ./node_modules/@prisma
 COPY --from=api-builder /app/apps/api/package.json ./
 COPY --from=api-builder /app/apps/api/prisma ./prisma
 COPY scripts/start.sh ./
@@ -57,9 +52,10 @@ FROM node:20-alpine AS web-production
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 ENV NODE_ENV=production
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 
 COPY --from=web-builder /app/apps/web/.next/standalone ./
+COPY --from=web-builder /app/node_modules ./node_modules
 COPY --from=web-builder /app/apps/web/.next/static ./.next/static
 COPY --from=web-builder /app/apps/web/public ./public
 

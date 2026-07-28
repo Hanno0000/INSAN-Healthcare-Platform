@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ScheduleModule } from '@nestjs/schedule';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { HospitalsModule } from './modules/hospitals/hospitals.module';
@@ -16,6 +17,9 @@ import { LeadsModule } from './modules/leads/leads.module';
 import { UsersModule } from './modules/users/users.module';
 import { BrandsModule } from './modules/brands/brands.module';
 import { AuditModule } from './modules/audit/audit.module';
+import { IntegrationsModule } from './modules/integrations/integrations.module';
+import { InvestorsModule } from './modules/investors/investors.module';
+import { AiModule } from './modules/ai/ai.module';
 import { HealthController } from './health.controller';
 
 @Module({
@@ -30,6 +34,7 @@ import { HealthController } from './health.controller';
         limit: 100,
       },
     ]),
+    ScheduleModule.forRoot(),
     PrismaModule,
     AuthModule,
     HospitalsModule,
@@ -44,6 +49,9 @@ import { HealthController } from './health.controller';
     UsersModule,
     BrandsModule,
     AuditModule,
+    IntegrationsModule,
+    InvestorsModule,
+    AiModule,
   ],
   controllers: [HealthController],
   providers: [

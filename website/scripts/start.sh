@@ -28,4 +28,4 @@ npx prisma migrate deploy
 
 # Start the API
 echo "Starting INSAN API on port ${PORT:-4000}..."
-exec node dist/main.js
+exec node dist/src/main.js

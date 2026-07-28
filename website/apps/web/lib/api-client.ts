@@ -1,6 +1,8 @@
 'use client';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1';
+const API_BASE = (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') 
+  ? '/api/v1' 
+  : (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1');
 
 // In-memory access token store (never localStorage)
 let accessToken: string | null = null;
@@ -36,6 +38,7 @@ export async function apiRequest<T = any>(
     ...fetchOptions,
     headers,
     credentials: 'include',
+    cache: 'no-store',
   });
 
   // Auto-refresh if 401
@@ -47,6 +50,7 @@ export async function apiRequest<T = any>(
         ...fetchOptions,
         headers,
         credentials: 'include',
+        cache: 'no-store',
       });
       return parseResponse<T>(retryResponse);
     }
@@ -165,6 +169,11 @@ export const api = {
     createClinic: (centerId: string, body: any) => apiRequest<Single<any>>(`/admin/medical-centers/${centerId}/clinics`, { method: 'POST', body: JSON.stringify(body) }),
     updateClinic: (centerId: string, id: string, body: any) => apiRequest<Single<any>>(`/admin/medical-centers/${centerId}/clinics/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
     deleteClinic: (centerId: string, id: string) => apiRequest(`/admin/medical-centers/${centerId}/clinics/${id}`, { method: 'DELETE' }),
+    // Questions
+    listQuestions: (centerId: string) => apiRequest<Single<any[]>>(`/admin/medical-centers/${centerId}/questions`),
+    createQuestion: (centerId: string, body: any) => apiRequest<Single<any>>(`/admin/medical-centers/${centerId}/questions`, { method: 'POST', body: JSON.stringify(body) }),
+    updateQuestion: (centerId: string, id: string, body: any) => apiRequest<Single<any>>(`/admin/medical-centers/${centerId}/questions/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
+    deleteQuestion: (centerId: string, id: string) => apiRequest(`/admin/medical-centers/${centerId}/questions/${id}`, { method: 'DELETE' }),
   },
 
   // Doctors
@@ -248,6 +257,7 @@ export const api = {
     get: (id: string) => apiRequest<Single<any>>(`/admin/appointments/${id}`),
     updateStatus: (id: string, status: string, notes?: string) =>
       apiRequest<Single<any>>(`/admin/appointments/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status, notes }) }),
+    delete: (id: string) => apiRequest(`/admin/appointments/${id}`, { method: 'DELETE' }),
   },
 
   // Contact
@@ -277,6 +287,12 @@ export const api = {
     addSocial: (brandId: string, body: any) => apiRequest<Single<any>>(`/admin/brands/${brandId}/social-accounts`, { method: 'POST', body: JSON.stringify(body) }),
     updateSocial: (brandId: string, id: string, body: any) => apiRequest<Single<any>>(`/admin/brands/${brandId}/social-accounts/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
     deleteSocial: (brandId: string, id: string) => apiRequest(`/admin/brands/${brandId}/social-accounts/${id}`, { method: 'DELETE' }),
+  },
+
+  // Investors
+  investors: {
+    get: () => apiRequest<Single<any>>('/admin/investors-page'),
+    update: (body: any) => apiRequest<Single<any>>('/admin/investors-page', { method: 'POST', body: JSON.stringify(body) }),
   },
 
   // Audit

@@ -13,6 +13,7 @@ export class BilingualRequiredDto {
   @IsString()
   ar: string;
 
+  @IsOptional()
   @IsString()
-  en: string;
+  en?: string;
 }

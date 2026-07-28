@@ -2,9 +2,10 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import PublicLayout from '@/components/public/PublicLayout';
-import Breadcrumb from '@/components/public/Breadcrumb';
+import PageTitle from '@/components/public/PageTitle';
 import { getHospital } from '@/lib/public-api';
 import { t } from '@/lib/utils';
+import { Calendar, Phone, Activity, Users } from 'lucide-react';
 
 interface Props { params: { slug: string } }
 
@@ -21,111 +22,134 @@ export default async function HospitalDetailPage({ params }: Props) {
   const res = await getHospital(params.slug);
   if (!res?.data) notFound();
   const h = res.data;
-  const color = h.brandColor || '#0E7C86';
+  const color = h.brandColor || '#175cdd';
 
   return (
     <PublicLayout>
-      {/* Hero */}
-      <section
-        className="relative bg-primary-900 text-white py-20 overflow-hidden"
-        style={h.heroImage ? {} : {}}
-      >
-        {h.heroImage && (
-          <div className="absolute inset-0">
-            <img src={h.heroImage} alt="" className="w-full h-full object-cover opacity-20" />
-          </div>
-        )}
-        <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, #0B1F3A 60%, ${color}40)` }} />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
-          <Breadcrumb crumbs={[
-            { label: 'الرئيسية', href: '/' },
-            { label: 'المستشفيات', href: '/hospitals' },
-            { label: t(h.name) },
-          ]} />
+      <PageTitle 
+        title={t(h.name)} 
+        breadcrumbs={[
+          { label: 'المستشفيات', href: '/hospitals' },
+          { label: t(h.name) },
+        ]} 
+      />
 
-          <div className="flex items-start gap-5 mt-4">
-            {h.logoUrl ? (
-              <img src={h.logoUrl} alt="" className="w-16 h-16 rounded-2xl object-contain bg-white/10 p-2 border border-white/20" />
-            ) : (
-              <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold border border-white/20" style={{ backgroundColor: `${color}40` }}>
-                {t(h.name).charAt(0)}
-              </div>
-            )}
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-bold">{t(h.name)}</h1>
-              <p className="text-white/70 text-base mt-2 max-w-xl">{t(h.shortDescription)}</p>
-            </div>
-          </div>
-
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              href={`/book?hospitalId=${h.id}`}
-              className="bg-secondary-500 hover:bg-secondary-500/90 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
-            >
-              احجز موعداً في هذا المستشفى
-            </Link>
-            <Link
-              href="/contact"
-              className="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
-            >
-              تواصل معنا
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Content */}
-      <section className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="max-w-3xl">
-            <h2 className="text-xl font-bold text-primary-900 mb-4">عن المستشفى</h2>
-            <div className="prose prose-gray max-w-none text-gray-600 leading-relaxed">
-              <p>{t(h.description)}</p>
-            </div>
-          </div>
-
-          {/* Custom fields */}
-          {h.customFields && Object.keys(h.customFields).length > 0 && (
-            <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Object.entries(h.customFields).map(([key, val]) => (
-                <div key={key} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                  <p className="text-xs text-gray-400 mb-1 uppercase tracking-wider">{key}</p>
-                  <p className="text-sm font-medium text-gray-800">{String(val)}</p>
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4 md:px-8 max-w-7xl">
+          
+          <div className="flex flex-col lg:flex-row gap-12">
+            
+            {/* Left Column (Content) */}
+            <div className="lg:w-2/3">
+              <div className="mb-8">
+                {h.heroImage && (
+                  <div className="rounded-card overflow-hidden shadow-floating mb-8 aspect-video">
+                    <img src={h.heroImage} alt={t(h.name)} className="w-full h-full object-cover" />
+                  </div>
+                )}
+                <div className="flex items-center gap-4 mb-6">
+                  {h.logoUrl ? (
+                    <img src={h.logoUrl} alt="" className="w-16 h-16 object-contain" />
+                  ) : (
+                    <div className="w-16 h-16 rounded-xl flex items-center justify-center text-3xl font-bold text-white shadow-sm" style={{ backgroundColor: color }}>
+                      {t(h.name).charAt(0)}
+                    </div>
+                  )}
+                  <h2 className="text-3xl font-bold text-heading font-montserrat">{t(h.name)}</h2>
                 </div>
-              ))}
-            </div>
-          )}
+                
+                <h3 className="text-xl font-bold text-heading font-montserrat mb-4">نبذة عن المستشفى</h3>
+                <div className="prose max-w-none font-cairo text-default leading-relaxed mb-10">
+                  <p>{t(h.description)}</p>
+                </div>
+              </div>
 
-          {/* Related CTAs */}
-          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Link
-              href={`/medical-centers`}
-              className="flex items-center gap-4 bg-gray-50 hover:bg-gray-100 border border-gray-100 rounded-2xl p-5 transition-colors group"
-            >
-              <div className="w-10 h-10 rounded-xl bg-secondary-500/10 flex items-center justify-center">
-                <svg className="w-5 h-5 text-secondary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
+              {/* Custom fields */}
+              {h.customFields && Object.keys(h.customFields).length > 0 && (
+                <div className="mb-10">
+                  <h3 className="text-xl font-bold text-heading font-montserrat mb-6">معلومات إضافية</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {Object.entries(h.customFields).map(([key, val]) => (
+                      <div key={key} className="bg-light-bg rounded-xl p-5 border border-gray-100 flex flex-col justify-center">
+                        <p className="text-xs text-gray-500 font-bold mb-1 uppercase tracking-wider font-montserrat">{key}</p>
+                        <p className="text-base font-semibold text-heading font-cairo">{String(val)}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Map */}
+              {h.googleMapsUrl && (
+                <div className="mb-10">
+                  <h3 className="text-xl font-bold text-heading font-montserrat mb-6">الموقع على الخريطة</h3>
+                  <div className="w-full h-[400px] rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
+                    <iframe 
+                      src={h.googleMapsUrl} 
+                      width="100%" 
+                      height="100%" 
+                      style={{ border: 0 }} 
+                      allowFullScreen={false} 
+                      loading="lazy" 
+                      referrerPolicy="no-referrer-when-downgrade"
+                      className="transition-all duration-500"
+                    ></iframe>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Right Column (Sidebar CTAs) */}
+            <div className="lg:w-1/3">
+              <div className="bg-light-bg rounded-card p-8 border border-gray-100 shadow-sm sticky top-24 font-cairo">
+                <h4 className="text-xl font-bold text-heading font-montserrat mb-6 text-center">خدمات المستشفى</h4>
+                
+                <Link
+                  href={`/book?hospitalId=${h.id}`}
+                  className="flex items-center justify-center gap-2 w-full bg-accent-500 hover:bg-accent-600 text-white font-bold py-3.5 rounded-pill transition-all mb-4 shadow-card-hover"
+                >
+                  <Calendar className="w-5 h-5" />
+                  احجز موعداً
+                </Link>
+                
+                <Link
+                  href="/contact"
+                  className="flex items-center justify-center gap-2 w-full bg-white text-heading hover:bg-gray-50 hover:text-accent-500 font-bold py-3.5 rounded-pill transition-all mb-8 border border-gray-200"
+                >
+                  <Phone className="w-5 h-5" />
+                  تواصل للاستفسار
+                </Link>
+
+                <div className="border-t border-gray-200 pt-6 flex flex-col gap-4">
+                  <Link
+                    href={`/medical-centers`}
+                    className="flex items-center gap-4 group"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:bg-accent-500 transition-colors">
+                      <Activity className="w-5 h-5 text-accent-500 group-hover:text-white transition-colors" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-heading group-hover:text-accent-500 transition-colors">المراكز الطبية التابعة</p>
+                      <p className="text-xs text-gray-500">استعرض المراكز المرتبطة</p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href={`/doctors`}
+                    className="flex items-center gap-4 group"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:bg-accent-500 transition-colors">
+                      <Users className="w-5 h-5 text-accent-500 group-hover:text-white transition-colors" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-heading group-hover:text-accent-500 transition-colors">أطباء المستشفى</p>
+                      <p className="text-xs text-gray-500">تصفح الأطباء المتخصصين</p>
+                    </div>
+                  </Link>
+                </div>
               </div>
-              <div>
-                <p className="font-semibold text-primary-900 text-sm group-hover:text-secondary-500 transition-colors">المراكز الطبية</p>
-                <p className="text-xs text-gray-500 mt-0.5">استعرض المراكز المرتبطة</p>
-              </div>
-            </Link>
-            <Link
-              href={`/doctors`}
-              className="flex items-center gap-4 bg-gray-50 hover:bg-gray-100 border border-gray-100 rounded-2xl p-5 transition-colors group"
-            >
-              <div className="w-10 h-10 rounded-xl bg-secondary-500/10 flex items-center justify-center">
-                <svg className="w-5 h-5 text-secondary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-              <div>
-                <p className="font-semibold text-primary-900 text-sm group-hover:text-secondary-500 transition-colors">أطباء المستشفى</p>
-                <p className="text-xs text-gray-500 mt-0.5">تصفح الأطباء المتخصصين</p>
-              </div>
-            </Link>
+            </div>
+
           </div>
         </div>
       </section>

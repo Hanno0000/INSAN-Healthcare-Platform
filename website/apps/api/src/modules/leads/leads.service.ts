@@ -15,9 +15,16 @@ export class LeadsService {
     return this.prisma.appointmentRequest.create({ data: dto as any });
   }
 
+  async updateAppointmentAnswers(id: string, answers: any) {
+    return this.prisma.appointmentRequest.update({
+      where: { id },
+      data: { answers },
+    });
+  }
+
   async findAllAppointments(query: any, filter: any) {
     const { page, pageSize, skip, take } = parsePagination(query);
-    const statuses = parseStatusFilter(filter, ['NEW', 'CONTACTED', 'CONFIRMED', 'CANCELLED', 'COMPLETED']);
+    const statuses = parseStatusFilter(filter, ['NEW', 'CONTACTED', 'CONFIRMED', 'CANCELLED', 'COMPLETED', 'ATTENDED', 'NO_SHOW']);
 
     const where: any = {};
     if (statuses?.length) where.status = { in: statuses };
@@ -66,8 +73,16 @@ export class LeadsService {
     await this.findOneAppointment(id);
     return this.prisma.appointmentRequest.update({
       where: { id },
-      data: { status: dto.status },
+      data: { 
+        status: dto.status,
+        ...(dto.notes !== undefined && { notes: dto.notes }),
+      },
     });
+  }
+
+  async deleteAppointment(id: string) {
+    await this.findOneAppointment(id);
+    return this.prisma.appointmentRequest.delete({ where: { id } });
   }
 
   // ─── Contact Submissions ──────────────────────────────────────────────────

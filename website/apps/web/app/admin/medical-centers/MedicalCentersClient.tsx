@@ -11,6 +11,7 @@ import Pagination from '@/components/admin/ui/Pagination';
 import SearchBar from '@/components/admin/ui/SearchBar';
 import ConfirmDialog from '@/components/admin/ui/ConfirmDialog';
 import MedicalCenterModal from './MedicalCenterModal';
+import QuestionsModal from './QuestionsModal';
 import { Edit2, Trash2 } from 'lucide-react';
 
 export default function MedicalCentersClient() {
@@ -21,6 +22,7 @@ export default function MedicalCentersClient() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<any>(null);
   const [deleteTarget, setDeleteTarget] = useState<any>(null);
+  const [questionsCenter, setQuestionsCenter] = useState<any>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ['med-centers', page, search],
@@ -50,6 +52,7 @@ export default function MedicalCentersClient() {
     { key: 'status', header: 'الحالة', render: (r: any) => <StatusBadge status={r.status} /> },
     { key: 'actions', header: '', width: '120px', render: (r: any) => (
       <div className="flex items-center gap-1">
+        <button onClick={(e) => { e.stopPropagation(); setQuestionsCenter(r); }} className="px-2 py-1 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 transition text-gray-700">الأسئلة</button>
         <button onClick={(e) => { e.stopPropagation(); setEditing(r); setModalOpen(true); }} className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition"><Edit2 size={14} /></button>
         <button onClick={(e) => { e.stopPropagation(); publishMut.mutate({ id: r.id, published: r.status === 'PUBLISHED' }); }} className="px-2 py-1 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 transition">{r.status === 'PUBLISHED' ? 'إلغاء' : 'نشر'}</button>
         <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(r); }} className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition"><Trash2 size={14} /></button>
@@ -66,6 +69,7 @@ export default function MedicalCentersClient() {
         <Pagination page={page} totalPages={data?.meta.totalPages ?? 1} total={data?.meta.total ?? 0} pageSize={15} onPage={setPage} />
       </div>
       <MedicalCenterModal open={modalOpen} onClose={() => { setModalOpen(false); setEditing(null); }} editing={editing} onSaved={() => { qc.invalidateQueries({ queryKey: ['med-centers'] }); setModalOpen(false); setEditing(null); }} />
+      <QuestionsModal center={questionsCenter} onClose={() => setQuestionsCenter(null)} />
       <ConfirmDialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={() => deleteMut.mutate(deleteTarget?.id)} loading={deleteMut.isPending} message={`هل تريد حذف "${deleteTarget?.name?.ar}"؟`} />
     </div>
   );

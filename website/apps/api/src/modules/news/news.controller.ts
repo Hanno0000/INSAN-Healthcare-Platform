@@ -22,11 +22,15 @@ import { PermissionsGuard } from '../../common/guards/permissions.guard';
 import { RequirePermission } from '../../common/decorators/require-permission.decorator';
 import { AuditInterceptor, AuditAction } from '../../common/interceptors/audit.interceptor';
 import { ApiResponse } from '../../common/helpers/api-response.helper';
+import { FacebookSyncService } from './facebook-sync.service';
 
 @Controller()
 @UseInterceptors(AuditInterceptor)
 export class NewsController {
-  constructor(private readonly newsService: NewsService) {}
+  constructor(
+    private readonly newsService: NewsService,
+    private readonly facebookSyncService: FacebookSyncService
+  ) {}
 
   // ─── Categories Public ───────────────────────────────────────────────────
 
@@ -140,5 +144,16 @@ export class NewsController {
   @AuditAction('NewsPost', 'delete')
   async removePost(@Param('id') id: string) {
     return ApiResponse.success(await this.newsService.removePost(id));
+  }
+
+  // ─── External Sync ───────────────────────────────────────────────────────
+
+  @Post('admin/news/sync-facebook')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermission('news', 'create') // Assuming same permission to pull from FB
+  @AuditAction('NewsPost', 'sync_facebook')
+  @HttpCode(HttpStatus.OK)
+  async syncFacebook() {
+    return ApiResponse.success(await this.facebookSyncService.syncFacebookPosts());
   }
 }

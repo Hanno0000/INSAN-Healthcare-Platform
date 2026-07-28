@@ -8,7 +8,7 @@ import AdminHeader from '@/components/admin/AdminHeader';
 import { AdminUserContext } from '@/lib/admin-context';
 import { ToastProvider } from '@/components/admin/ui/Toast';
 import type { AdminUser } from '@/lib/auth';
-import { api, setAccessToken } from '@/lib/api-client';
+import { api, setAccessToken, getAccessToken } from '@/lib/api-client';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 60 * 1000, retry: 1 } },
@@ -24,6 +24,20 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
 
   useEffect(() => {
     if (isLoginPage) return;
+
+    const token = getAccessToken();
+    if (token) {
+      api.auth.me()
+        .then((res: any) => {
+          setUser(res.data);
+          setLoading(false);
+        })
+        .catch(() => {
+          setLoading(false);
+          router.replace('/admin/login');
+        });
+      return;
+    }
 
     api.auth
       .refresh()

@@ -11,6 +11,8 @@ const MAP: Record<string, { label: string; cls: string }> = {
   CONFIRMED: { label: 'مؤكد',      cls: 'bg-emerald-100 text-emerald-700' },
   CANCELLED: { label: 'ملغي',      cls: 'bg-red-100 text-red-600' },
   COMPLETED: { label: 'مكتمل',     cls: 'bg-purple-100 text-purple-700' },
+  ATTENDED:  { label: 'حضر',       cls: 'bg-teal-100 text-teal-700' },
+  NO_SHOW:   { label: 'لم يحضر',   cls: 'bg-orange-100 text-orange-700' },
 };
 
 export default function StatusBadge({ status }: { status: Status }) {

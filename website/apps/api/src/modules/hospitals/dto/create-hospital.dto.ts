@@ -42,6 +42,10 @@ export class CreateHospitalDto {
   brandColor?: string;
 
   @IsOptional()
+  @IsString()
+  googleMapsUrl?: string;
+
+  @IsOptional()
   @IsEnum(ContentStatus)
   status?: ContentStatus;
 

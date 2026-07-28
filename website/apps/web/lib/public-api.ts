@@ -44,6 +44,7 @@ export interface Hospital {
   logoUrl?: string; heroImage?: string; brandColor?: string;
   metaTitle?: Bilingual; metaDescription?: Bilingual;
   status: string; customFields?: Record<string, any>;
+  googleMapsUrl?: string;
   createdAt?: string; updatedAt?: string;
 }
 export interface MedicalCenter {
@@ -91,6 +92,13 @@ export interface CmsSection {
   id: string; type: string; order: number;
   content: Record<string, any>;
 }
+export interface FaqItem {
+  id: string;
+  topic: string;
+  question: string;
+  answer: string;
+  order: number;
+}
 
 // ─── Public API calls ─────────────────────────────────────────────────────────
 
@@ -107,6 +115,10 @@ export async function getMedicalCenters(params?: { page?: number; pageSize?: num
 }
 export async function getMedicalCenter(slug: string) {
   return pub<SingleResponse<MedicalCenter>>(`/medical-centers/${slug}`);
+}
+
+export async function getBookingQuestions(centerId: string) {
+  return pub<SingleResponse<any[]>>(`/medical-centers/${centerId}/questions`, {}, true);
 }
 
 export async function getDoctors(params?: { page?: number; pageSize?: number; search?: string; hospitalId?: string }) {
@@ -137,4 +149,8 @@ export async function getTestimonials(params?: { pageSize?: number }) {
 
 export async function getCmsPage(slug: string) {
   return pub<SingleResponse<CmsPage>>(`/pages/${slug}`);
+}
+
+export async function getFaqs(params?: { pageSize?: number; search?: string }) {
+  return pub<PaginatedResponse<FaqItem>>('/faqs', params, !!params?.search);
 }

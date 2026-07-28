@@ -8,6 +8,7 @@ import { hasPermission } from '@/lib/auth';
 const navItems = [
   { label: 'لوحة التحكم', href: '/admin/dashboard', icon: '🏠', module: null, action: null },
   { label: 'الصفحات', href: '/admin/pages', icon: '📄', module: 'pages', action: 'view' },
+  { label: 'المستثمرين', href: '/admin/investors', icon: '📈', module: 'pages', action: 'view' },
   { label: 'المستشفيات', href: '/admin/hospitals', icon: '🏥', module: 'hospitals', action: 'view' },
   { label: 'المراكز الطبية', href: '/admin/medical-centers', icon: '🔬', module: 'medical-centers', action: 'view' },
   { label: 'الأطباء', href: '/admin/doctors', icon: '👨‍⚕️', module: 'doctors', action: 'view' },
@@ -17,6 +18,7 @@ const navItems = [
   { label: 'الشهادات', href: '/admin/testimonials', icon: '⭐', module: 'testimonials', action: 'view' },
   { label: 'التنقل', href: '/admin/navigation', icon: '🔗', module: 'navigation', action: 'view' },
   { label: 'المستخدمون', href: '/admin/users', icon: '👥', module: 'users', action: 'view' },
+  { label: 'الذكاء الاصطناعي', href: '/admin/ai-assistant', icon: '🤖', module: 'ai-chat', action: 'view' },
   { label: 'العلامات التجارية', href: '/admin/brands', icon: '🏷️', module: 'settings', action: 'manage' },
   { label: 'سجل التدقيق', href: '/admin/audit-log', icon: '📋', module: 'audit', action: 'view' },
   { label: 'الإعدادات', href: '/admin/settings', icon: '⚙️', module: 'settings', action: 'view' },

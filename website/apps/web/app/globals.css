@@ -2,11 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&family=Montserrat:wght@400;500;600;700&family=Lato:wght@400;700&display=swap');
 
 :root {
   --font-cairo: 'Cairo', sans-serif;
-  --font-inter: 'Inter', sans-serif;
+  --font-roboto: 'Roboto', sans-serif;
+  --font-montserrat: 'Montserrat', sans-serif;
+  --font-lato: 'Lato', sans-serif;
+
+  /* Clinic Template Variables */
+  --heading-color: #112344;
+  --accent-color: #175cdd;
+  --default-color: #3c4049;
+  --surface-color: #ffffff;
+  --light-bg-color: #f4f8ff;
+  --dark-bg-color: #021418;
+  --dark-surface-color: #11262a;
 }
 
 html[lang="ar"],
@@ -18,7 +29,46 @@ html[lang="ar"],
 html[lang="en"],
 [dir="ltr"] {
   direction: ltr;
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-roboto);
+}
+
+.light-background {
+  background-color: var(--light-bg-color);
+}
+
+.dark-background {
+  background-color: var(--dark-bg-color);
+  color: var(--surface-color);
+}
+
+/* Section Title base styles (Clinic style) */
+.section-title {
+  text-align: center;
+  padding-bottom: 60px;
+  position: relative;
+}
+
+.section-title h2 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  position: relative;
+}
+
+.section-title h2::after {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 50px;
+  height: 3px;
+  background: var(--accent-color);
+  bottom: 0;
+  left: calc(50% - 25px);
+}
+
+.section-title p {
+  margin-bottom: 0;
 }
 
 body {

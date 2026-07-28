@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '@/lib/api-client';
+import { api, apiRequest } from '@/lib/api-client';
 import { useToast } from '@/components/admin/ui/Toast';
 import PageHeader from '@/components/admin/ui/PageHeader';
 import DataTable from '@/components/admin/ui/DataTable';
@@ -10,9 +10,9 @@ import StatusBadge from '@/components/admin/ui/StatusBadge';
 import Pagination from '@/components/admin/ui/Pagination';
 import SearchBar from '@/components/admin/ui/SearchBar';
 import ConfirmDialog from '@/components/admin/ui/ConfirmDialog';
-import NewsPostModal from './NewsPostModal';
 import NewsCategoryModal from './NewsCategoryModal';
-import { Edit2, Trash2, Tag } from 'lucide-react';
+import { Edit2, Trash2, Tag, RefreshCw } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function NewsClient() {
   const qc = useQueryClient();
@@ -20,10 +20,11 @@ export default function NewsClient() {
   const [tab, setTab] = useState<'posts' | 'categories'>('posts');
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
-  const [postModal, setPostModal] = useState(false);
+  const router = useRouter();
   const [catModal, setCatModal] = useState(false);
   const [editing, setEditing] = useState<any>(null);
   const [deleteTarget, setDeleteTarget] = useState<any>(null);
+  const [syncing, setSyncing] = useState(false);
 
   const posts = useQuery({
     queryKey: ['news-posts', page, search],
@@ -64,7 +65,7 @@ export default function NewsClient() {
     { key: 'createdAt', header: 'التاريخ', render: (r: any) => new Date(r.createdAt).toLocaleDateString('ar-EG') },
     { key: 'actions', header: '', width: '120px', render: (r: any) => (
       <div className="flex items-center gap-1">
-        <button onClick={(e) => { e.stopPropagation(); setEditing(r); setPostModal(true); }} className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition"><Edit2 size={14} /></button>
+        <button onClick={(e) => { e.stopPropagation(); router.push(`/admin/news/${r.id}/edit`); }} className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition"><Edit2 size={14} /></button>
         <button onClick={(e) => { e.stopPropagation(); publishMut.mutate({ id: r.id, published: r.status === 'PUBLISHED' }); }} className="px-2 py-1 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 transition">{r.status === 'PUBLISHED' ? 'إلغاء' : 'نشر'}</button>
         <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(r); }} className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition"><Trash2 size={14} /></button>
       </div>
@@ -86,12 +87,38 @@ export default function NewsClient() {
     <div>
       <PageHeader
         title="الأخبار"
-        action={tab === 'posts' ? 'إضافة خبر' : 'إضافة تصنيف'}
-        onAction={() => { setEditing(null); tab === 'posts' ? setPostModal(true) : setCatModal(true); }}
+        action={tab === 'posts' ? 'إضافة مقال جديد' : 'إضافة تصنيف'}
+        onAction={() => { setEditing(null); tab === 'posts' ? router.push('/admin/news/create') : setCatModal(true); }}
         extra={
-          <button onClick={() => setTab(tab === 'posts' ? 'categories' : 'posts')} className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50 transition">
-            <Tag size={14} /> {tab === 'posts' ? 'التصنيفات' : 'المقالات'}
-          </button>
+          <div className="flex items-center gap-2">
+            {tab === 'posts' && (
+              <button 
+                onClick={async () => {
+                  try {
+                    setSyncing(true);
+                    const res = await apiRequest('/admin/news/sync-facebook', { method: 'POST' });
+                    if (res.success) {
+                      toast('success', `تم مزامنة ${res.data?.syncedCount || 0} منشورات`);
+                      qc.invalidateQueries({ queryKey: ['news-posts'] });
+                    } else {
+                      toast('error', res.error || 'حدث خطأ');
+                    }
+                  } catch (e: any) {
+                    toast('error', 'خطأ في الاتصال');
+                  } finally {
+                    setSyncing(false);
+                  }
+                }}
+                disabled={syncing}
+                className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition disabled:opacity-50"
+              >
+                <RefreshCw size={14} className={syncing ? 'animate-spin' : ''} /> مزامنة فيسبوك
+              </button>
+            )}
+            <button onClick={() => setTab(tab === 'posts' ? 'categories' : 'posts')} className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50 transition">
+              <Tag size={14} /> {tab === 'posts' ? 'التصنيفات' : 'المقالات'}
+            </button>
+          </div>
         }
       />
 
@@ -118,7 +145,6 @@ export default function NewsClient() {
         )}
       </div>
 
-      <NewsPostModal open={postModal} onClose={() => { setPostModal(false); setEditing(null); }} editing={editing} onSaved={() => { qc.invalidateQueries({ queryKey: ['news-posts'] }); setPostModal(false); setEditing(null); }} />
       <NewsCategoryModal open={catModal} onClose={() => { setCatModal(false); setEditing(null); }} editing={editing} onSaved={() => { qc.invalidateQueries({ queryKey: ['news-cats'] }); setCatModal(false); setEditing(null); }} />
 
       <ConfirmDialog

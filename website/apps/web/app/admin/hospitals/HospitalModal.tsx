@@ -35,9 +35,10 @@ export default function HospitalModal({ open, onClose, editing, onSaved }: Props
         email: editing.email ?? '',
         website: editing.website ?? '',
         brandId: editing.brandId ?? '',
+        googleMapsUrl: editing.googleMapsUrl ?? '',
       });
     } else {
-      reset({ name: { ar: '', en: '' }, description: { ar: '', en: '' }, city: { ar: '', en: '' }, address: { ar: '', en: '' }, phone: '', email: '', website: '', brandId: '' });
+      reset({ name: { ar: '', en: '' }, description: { ar: '', en: '' }, city: { ar: '', en: '' }, address: { ar: '', en: '' }, phone: '', email: '', website: '', brandId: '', googleMapsUrl: '' });
     }
   }, [editing, reset]);
 
@@ -100,6 +101,10 @@ export default function HospitalModal({ open, onClose, editing, onSaved }: Props
             </select>
           </FormField>
         </div>
+
+        <FormField label="رابط خريطة جوجل (تضمين Embed URL)">
+          <input {...register('googleMapsUrl')} type="url" dir="ltr" className={inputCls} placeholder="https://www.google.com/maps/embed?pb=..." />
+        </FormField>
 
         <div className="flex justify-end gap-3 pt-2">
           <button type="button" onClick={onClose} className="px-4 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50 transition">إلغاء</button>

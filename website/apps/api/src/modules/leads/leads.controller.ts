@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Patch,
+  Delete,
   Body,
   Param,
   Query,
@@ -36,6 +37,13 @@ export class LeadsController {
     return ApiResponse.success({ id: data.id, message: 'Appointment request received' });
   }
 
+  @Patch('appointments/:id/answers')
+  @HttpCode(HttpStatus.OK)
+  async updateAppointmentAnswers(@Param('id') id: string, @Body() body: { answers: any }) {
+    const data = await this.leadsService.updateAppointmentAnswers(id, body.answers);
+    return ApiResponse.success(data);
+  }
+
   // ─── Appointments Admin ───────────────────────────────────────────────────
 
   @Get('admin/appointments')
@@ -59,6 +67,14 @@ export class LeadsController {
   @AuditAction('AppointmentRequest', 'update_status')
   async updateAppointmentStatus(@Param('id') id: string, @Body() dto: UpdateAppointmentStatusDto) {
     return ApiResponse.success(await this.leadsService.updateAppointmentStatus(id, dto));
+  }
+
+  @Delete('admin/appointments/:id')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermission('appointments', 'manage')
+  @AuditAction('AppointmentRequest', 'delete')
+  async deleteAppointment(@Param('id') id: string) {
+    return ApiResponse.success(await this.leadsService.deleteAppointment(id));
   }
 
   // ─── Contact Public ───────────────────────────────────────────────────────

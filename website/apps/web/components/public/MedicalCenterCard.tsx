@@ -1,45 +1,29 @@
 import Link from 'next/link';
 import type { MedicalCenter } from '@/lib/public-api';
 import { t, truncate } from '@/lib/utils';
+import { Activity, ArrowRight } from 'lucide-react';
 
 export default function MedicalCenterCard({ center }: { center: MedicalCenter }) {
-  const color = center.brandColor || '#0E7C86';
+  const color = center.brandColor || '#0E7C86'; // secondary color
+  
   return (
-    <Link
-      href={`/medical-centers/${center.slug}`}
-      className="group bg-white rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col"
-    >
-      <div className="h-1.5 w-full" style={{ backgroundColor: color }} />
-      <div className="p-5 flex flex-col flex-1">
-        <div className="flex items-start gap-3 mb-3">
-          {center.logoUrl ? (
-            <img src={center.logoUrl} alt={t(center.name)} className="w-10 h-10 rounded-lg object-contain border border-gray-100 shrink-0" />
-          ) : (
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${color}20` }}>
-              <span className="font-bold" style={{ color }}>{t(center.name).charAt(0)}</span>
-            </div>
-          )}
-          <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-primary-900 text-sm leading-snug group-hover:text-secondary-500 transition-colors">
-              {t(center.name)}
-            </h3>
-            {center.hospitals && center.hospitals.length > 0 && (
-              <p className="text-xs text-gray-400 mt-0.5">{t(center.hospitals[0].name)}</p>
-            )}
-          </div>
-        </div>
-        {center.shortDescription && (
-          <p className="text-gray-500 text-sm leading-relaxed flex-1">
-            {truncate(t(center.shortDescription), 100)}
-          </p>
+    <div className="service-item bg-white p-6 rounded-card border border-gray-100 shadow-sm hover:shadow-floating transition-all duration-300 flex items-start gap-4 group" data-aos="fade-up">
+      <div className="service-icon-wrapper w-14 h-14 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-accent-500 group-hover:text-white" style={{ backgroundColor: `${color}15`, color: color }}>
+        {center.logoUrl ? (
+           <img src={center.logoUrl} alt="" className="w-8 h-8 object-contain" />
+        ) : (
+           <Activity className="w-6 h-6" />
         )}
-        <div className="mt-4 flex items-center gap-1 text-secondary-500 text-sm font-semibold">
-          <span>التفاصيل</span>
-          <svg className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </div>
       </div>
-    </Link>
+      <div className="service-info flex-1">
+        <h4 className="text-lg font-bold text-heading font-montserrat mb-2 group-hover:text-accent-500 transition-colors">{t(center.name)}</h4>
+        <p className="text-default font-cairo text-sm leading-relaxed mb-3">
+          {truncate(t(center.shortDescription), 80)}
+        </p>
+        <Link href={`/medical-centers`} className="service-link inline-flex items-center gap-1 text-sm font-bold text-heading hover:text-accent-500 transition-colors font-cairo">
+          اعرف المزيد <ArrowRight className="w-3 h-3 rtl:rotate-180" />
+        </Link>
+      </div>
+    </div>
   );
 }

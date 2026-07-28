@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { MedicalCentersService } from './medical-centers.service';
 import { ClinicsService } from './clinics.service';
+import { QuestionsService } from './questions.service';
 import { CreateMedicalCenterDto } from './dto/create-medical-center.dto';
 import { UpdateMedicalCenterDto } from './dto/update-medical-center.dto';
 import { CreateClinicDto } from './dto/create-clinic.dto';
@@ -31,6 +32,7 @@ export class MedicalCentersController {
   constructor(
     private readonly medicalCentersService: MedicalCentersService,
     private readonly clinicsService: ClinicsService,
+    private readonly questionsService: QuestionsService,
   ) {}
 
   // ─── Medical Centers Public ────────────────────────────────────────────────
@@ -159,5 +161,55 @@ export class MedicalCentersController {
   ) {
     const data = await this.clinicsService.remove(centerId, id);
     return ApiResponse.success(data);
+  }
+
+  // ─── Booking Questions (nested under medical-centers) ────────────────────
+
+  @Get('medical-centers/:centerId/questions') // Public
+  async listQuestionsPublic(@Param('centerId') centerId: string) {
+    const data = await this.questionsService.list(centerId);
+    return data;
+  }
+
+  @Get('admin/medical-centers/:centerId/questions')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermission('medical-centers', 'view')
+  async listQuestionsAdmin(@Param('centerId') centerId: string) {
+    const data = await this.questionsService.list(centerId);
+    return data;
+  }
+
+  @Post('admin/medical-centers/:centerId/questions')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermission('medical-centers', 'edit')
+  @AuditAction('BookingQuestion', 'create')
+  @HttpCode(HttpStatus.CREATED)
+  async createQuestion(
+    @Param('centerId') centerId: string,
+    @Body() dto: any, // CreateBookingQuestionDto
+  ) {
+    const data = await this.questionsService.create(centerId, dto);
+    return data;
+  }
+
+  @Patch('admin/medical-centers/:centerId/questions/:id')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermission('medical-centers', 'edit')
+  @AuditAction('BookingQuestion', 'update')
+  async updateQuestion(
+    @Param('id') id: string,
+    @Body() dto: any, // UpdateBookingQuestionDto
+  ) {
+    const data = await this.questionsService.update(id, dto);
+    return data;
+  }
+
+  @Delete('admin/medical-centers/:centerId/questions/:id')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermission('medical-centers', 'edit')
+  @AuditAction('BookingQuestion', 'delete')
+  async removeQuestion(@Param('id') id: string) {
+    const data = await this.questionsService.delete(id);
+    return data;
   }
 }

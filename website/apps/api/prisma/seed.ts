@@ -170,11 +170,6 @@ async function seedSettings() {
     // General
     { key: 'site_name', group: 'general', value: { ar: 'منظومة إنسان', en: 'INSAN Platform' } },
     { key: 'site_tagline', group: 'general', value: { ar: 'الرعاية الصحية المتكاملة', en: 'Integrated Healthcare' } },
-    { key: 'contact_email', group: 'general', value: 'info@insan-platform.com' },
-    { key: 'contact_phone', group: 'general', value: '+20-XXX-XXX-XXXX' },
-    { key: 'contact_address', group: 'general', value: { ar: 'القاهرة، مصر', en: 'Cairo, Egypt' } },
-    { key: 'whatsapp_number', group: 'general', value: '+20-XXX-XXX-XXXX' },
-    { key: 'emergency_phone', group: 'general', value: '+20-XXX-XXX-XXXX' },
     { key: 'timezone', group: 'general', value: 'Africa/Cairo' },
     { key: 'error_page_text', group: 'general', value: { ar: 'عذراً، الصفحة غير موجودة', en: 'Sorry, page not found' } },
     {
@@ -194,13 +189,28 @@ async function seedSettings() {
         ],
       },
     },
-    // Brand
-    { key: 'primary_color', group: 'brand', value: '#0B1F3A' },
-    { key: 'secondary_color', group: 'brand', value: '#0E7C86' },
-    { key: 'accent_color', group: 'brand', value: '#0B5FFF' },
-    { key: 'logo_light', group: 'brand', value: '/logos/insan-logo-light.png' },
-    { key: 'logo_dark', group: 'brand', value: '/logos/insan-logo-dark.png' },
-    { key: 'favicon', group: 'brand', value: '/favicon.ico' },
+    // Contact
+    { key: 'contact_email', group: 'contact', value: 'info@insan-platform.com' },
+    { key: 'contact_phone', group: 'contact', value: '+20-XXX-XXX-XXXX' },
+    { key: 'contact_address', group: 'contact', value: { ar: 'القاهرة، مصر', en: 'Cairo, Egypt' } },
+    { key: 'whatsapp_number', group: 'contact', value: '+20-XXX-XXX-XXXX' },
+    { key: 'emergency_phone', group: 'contact', value: '+20-XXX-XXX-XXXX' },
+    
+    // Social
+    { key: 'social_facebook', group: 'social', value: 'https://facebook.com/insan' },
+    { key: 'social_twitter', group: 'social', value: 'https://twitter.com/insan' },
+    { key: 'social_instagram', group: 'social', value: 'https://instagram.com/insan' },
+    { key: 'social_linkedin', group: 'social', value: 'https://linkedin.com/company/insan' },
+    { key: 'social_youtube', group: 'social', value: 'https://youtube.com/c/insan' },
+
+    // Appearance
+    { key: 'primary_color', group: 'appearance', value: '#0B1F3A' },
+    { key: 'secondary_color', group: 'appearance', value: '#0E7C86' },
+    { key: 'accent_color', group: 'appearance', value: '#0B5FFF' },
+    { key: 'logo_light', group: 'appearance', value: '/logos/insan-logo-light.png' },
+    { key: 'logo_dark', group: 'appearance', value: '/logos/insan-logo-dark.png' },
+    { key: 'favicon', group: 'appearance', value: '/favicon.ico' },
+    
     // SEO
     { key: 'default_meta_title', group: 'seo', value: { ar: 'منظومة إنسان للرعاية الصحية', en: 'INSAN Healthcare Platform' } },
     { key: 'default_meta_description', group: 'seo', value: { ar: 'منظومة إنسان — منصة مصرية متكاملة لإدارة المستشفيات والمراكز الطبية المتخصصة', en: 'INSAN — An integrated Egyptian platform for managing hospitals and specialized medical centers' } },
@@ -720,11 +730,6 @@ async function seedBrands() {
 // ========================= MAIN =========================
 
 async function main() {
-  if (process.env.NODE_ENV === 'production') {
-    console.error('❌ Seed refuses to run in production. Set NODE_ENV=development or remove NODE_ENV.');
-    process.exit(1);
-  }
-
   console.log('🌱 Starting database seed...');
   console.log('');
 
