@@ -91,30 +91,80 @@ Both ends of the chain — planning and publishing/ads — are still done by han
 
 ## 4. Read the documents in this order
 
-**Do not re-analyse this system.** Two full audits were completed on 2026-07-29 and
-everything is committed. Reading these four in order takes about twenty minutes and
-replaces days of investigation.
+Three layers. **Understand the business before the system, and the system before the
+findings.** Skipping to the findings produces confident opinions about something you
+have not understood — which is exactly the failure mode the audits found in this
+project's own earlier work.
+
+Section 1 above is a summary written by someone who read all of this. It is not a
+substitute for the primary documents; it is a map of them.
+
+### Layer 1 — The business. What INSAN actually is.
+
+Read all of these. Together they are about 950 lines and they are the foundation
+everything else assumes.
 
 | Order | Document | Answers |
 |---|---|---|
-| 1 | **`VERDICT_AND_IMPROVEMENTS.md`** | Is this any good? Can it be a SaaS? What is worth doing, in what order? |
-| 2 | `SYSTEM_ARCHITECTURE.md` | What are all ten workers, and which column does each read and write? |
-| 3 | `OPERATIONAL_AUDIT.md` | Audit A — the machinery. F1–F20, measured against 298 log entries. |
-| 4 | `AUDIT_B_OUTPUT_AND_PORTFOLIO.md` | Audit B — the product, read backwards from 33 finished posts. B1–B10. |
+| 1 | `README.md` *(repo root)* | What the repository holds, in one screen |
+| 2 | **`business/brand/MASTER_BRAND_ARCHITECTURE.md`** | **Source of truth.** Vision, business model, brand hierarchy, the twelve medical centers, marketing flow. **Governs every other document — where anything disagrees with this, this wins.** |
+| 3 | `business/brand/PLATFORM_KNOWLEDGE_BASE.md` | The platform's own knowledge: what INSAN offers and how it positions |
+| 4 | `business/brand/AI_CREATIVE_CONSTITUTION.md` | The creative rules every worker is bound by — what may and may not be said |
+| 5 | `business/strategy/PROJECT_STRUCTURE.md` | How the marketing operation is organised; the campaign architecture |
+| 6 | `business/strategy/PROJECT_ROADMAP.md` | The twelve phases, and which are done |
+| 7 | `business/strategy/PROJECT_DECISIONS.md` | Decisions already taken — **do not relitigate these** |
+| 8 | `business/brand/MEDICAL_SERVICES_TAXONOMY.md` | Departments vs Centers vs Clinics. **Shared with the Website Platform.** |
 
-Then, as needed:
+Then read **one knowledge file end to end** to understand what "campaign knowledge"
+means here:
+
+| | |
+|---|---|
+| `business/knowledge/departments/MEDICAL_SERVICE_ICU.md` | 2,761 lines. **The reference standard** — the depth every entity file is supposed to reach. Only two exist. |
+| `business/knowledge/KNOWLEDGE_BASE_SPEC.md` | The registry: which entities have a file, which do not, and how many posts each is scheduled for |
+
+### Layer 2 — The system. How the machine works.
+
+| Order | Document | Answers |
+|---|---|---|
+| 9 | **`campaign-os/docs/SYSTEM_ARCHITECTURE.md`** | All ten workers, what each reads and writes, the data contract per sheet tab |
+| 10 | `campaign-os/docs/architecture/WORKER_CONTRACTS_V2.md` | Exact I/O per worker, with 🔴/🟡/🟢 build status |
+
+The worker prompts in `campaign-os/prompts/` are the workers' actual instructions —
+11,200 lines. Read the one belonging to whichever worker you are about to touch, not all
+of them.
+
+### Layer 3 — The findings. What is wrong and what it is worth.
+
+**Do not re-analyse this system.** Two full audits were completed 2026-07-29 and
+everything is committed.
+
+| Order | Document | Answers |
+|---|---|---|
+| 11 | **`campaign-os/docs/VERDICT_AND_IMPROVEMENTS.md`** | Is this any good? Can it be a SaaS? What is worth doing, in what order? |
+| 12 | `campaign-os/docs/OPERATIONAL_AUDIT.md` | Audit A — the machinery. F1–F20, measured against 298 log entries |
+| 13 | `campaign-os/docs/AUDIT_B_OUTPUT_AND_PORTFOLIO.md` | Audit B — the product, read backwards from 33 finished posts. B1–B10 |
+| 14 | `campaign-os/docs/roadmap/GAP_REGISTER.md` | Coverage gaps G1–G12, phased |
+
+### The other project
 
 | Document | Answers |
 |---|---|
-| `roadmap/GAP_REGISTER.md` | Coverage gaps G1–G12 with a phased order |
-| `architecture/WORKER_CONTRACTS_V2.md` | Exact I/O per worker, with build status |
-| `business/knowledge/KNOWLEDGE_BASE_SPEC.md` | Which entities have knowledge files and which do not |
-| `business/brand/MEDICAL_SERVICES_TAXONOMY.md` | Departments vs Centers vs Clinics — **shared with the website** |
-| `business/brand/MASTER_BRAND_ARCHITECTURE.md` | Brand hierarchy. Governs everything. |
+| `website/Docs/CURRENT_STATE.md` | The Website Platform — separate project, own state |
+| `website/Docs/CLINIC_CENTER_BOOKING_SPEC.md` | The clinic/center booking spec, written for the website worker |
 
-⚠️ **`CURRENT_STATE.md` and `HANDOFF.md` are older** and describe earlier sprints. They
-are still useful history but are superseded by the four documents above where they
-disagree.
+⚠️ **Superseded, but kept as history.** `campaign-os/docs/CURRENT_STATE.md` and
+`campaign-os/docs/HANDOFF.md` describe earlier sprints and contain claims later found
+untrue. Read them for background if you want the story of how the system got here; where
+they disagree with Layer 3, Layer 3 wins.
+
+⚠️ Six documents under `campaign-os/docs/architecture/` and `docs/roadmap/` still carry
+`Status: Sprint 1`. They are stale. Finding A·F15/F16.
+
+### If you only have time for four
+
+`MASTER_BRAND_ARCHITECTURE.md` → `SYSTEM_ARCHITECTURE.md` →
+`VERDICT_AND_IMPROVEMENTS.md` → this file's §6.
 
 ---
 
