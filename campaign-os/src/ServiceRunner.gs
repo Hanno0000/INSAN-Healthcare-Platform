@@ -1,5 +1,12 @@
 var ServiceRunner = {
 
+  // Written into Generation Status when the approved wording could not be set
+  // over the artwork. AssetIntegrity reads it and holds the row back.
+  TEXT_MISSING_MARKER: '[TEXT NOT APPLIED]',
+
+  // Set per row by _composeVisibleText.
+  _textMissing: false,
+
   runMediaGeneration: function(startRow, endRow) {
     var config = CONFIG.SERVICES.MEDIA_GENERATION;
     var sheetName = config.sheetName;
@@ -134,6 +141,10 @@ var ServiceRunner = {
       var allUrls = [];
       var assetFailures = [];
 
+      // Reset per row: this is a script global, and a stale true would hold
+      // back a row whose overlay worked.
+      this._textMissing = false;
+
       // Mode A: if real photographs of this facility exist, they become the
       // visual reference. Previously the Production Mode column was written by
       // the Visual Planner and then read by nothing at all, so every asset was
@@ -207,11 +218,17 @@ var ServiceRunner = {
       var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
       var columnMap = SheetSchema._getColumnMap(sheetName);
 
+      var status = isPartial
+        ? 'PARTIAL (' + allUrls.length + '/' + assetCount + ')'
+        : 'SUCCESS';
+
+      if (this._textMissing) {
+        status += ' ' + this.TEXT_MISSING_MARKER;
+      }
+
       this._writeResult(sheet, columnMap, rowNumber, {
         'Generated Assets': finalUrls,
-        'Generation Status': isPartial
-          ? 'PARTIAL (' + allUrls.length + '/' + assetCount + ')'
-          : 'SUCCESS',
+        'Generation Status': status,
         'Generation Timestamp': new Date()
       });
 
@@ -790,6 +807,13 @@ var ServiceRunner = {
         }
 
       } catch (overlayErr) {
+        // The artwork is kept — it is sound and was paid for — but the row now
+        // carries assets missing their headline, and nothing downstream could
+        // tell. A post published without its approved wording is a worse
+        // outcome than a row held back, so the shortfall is recorded on the
+        // row where the integrity gate will see it.
+        this._textMissing = true;
+
         Logger.log(
           'TEXT_OVERLAY_FAILED | Row ' + rowNumber + ' | asset ' + (index + 1) +
           ' | keeping the artwork without wording | ' + overlayErr.toString()
