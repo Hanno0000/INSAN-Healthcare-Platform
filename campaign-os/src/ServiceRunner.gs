@@ -516,14 +516,20 @@ var ServiceRunner = {
       );
     }
 
-    // Style and light are stated positively before the exclusions. Output drifted
-    // to cold photographic realism because the only style guidance was negative,
-    // and a model given nothing to aim at defaults to a photograph.
+    // Light and mood are stated positively, without naming a medium. This used
+    // to assert "clearly crafted artwork rather than a photograph" here, after
+    // the Creative Director's own Design Prompt had already stated a style
+    // ratio — on one row, literally "Photographic style... 30% editorial
+    // photography" followed two sentences later by a flat instruction that it
+    // was not a photograph. A model handed two contradictory style directions
+    // does not average them; it picks one, and B6/B7 (cold photorealism,
+    // full cartoon) were both that model resolving a contradiction this
+    // function created. The Design Prompt's own style words are the only
+    // style instruction now; this line only adds the mood a bare fallback
+    // brief may be missing.
     parts.push(
-      'Rendering style: designed editorial illustration with soft realistic ' +
-      'modelling — clearly crafted artwork rather than a photograph. Warm, ' +
-      'light-filled interior with soft directional daylight, gentle shadows and ' +
-      'a warm neutral palette. Natural unposed human expression'
+      'Warm, light-filled interior with soft directional daylight, gentle ' +
+      'shadows and a warm neutral palette. Natural unposed human expression'
     );
 
     // No text is ever requested. The headline is composited afterwards by
@@ -598,8 +604,11 @@ var ServiceRunner = {
       'no rows of people posed facing the camera, no line-ups, no team portraits, ' +
         'no group photographs; subjects are engaged in the moment, not presenting to camera',
 
-      // Style — B6, B7
-      'no photorealistic photography; this is designed editorial artwork',
+      // Style — B7. Not "no photorealistic photography": that line asserted a
+      // medium regardless of what the Design Prompt had already specified, and
+      // directly contradicted a brief that had asked for editorial photography.
+      // Only the failure modes at either extreme are excluded; the medium
+      // itself is the brief's decision, not this function's.
       'no cartoon, anime, Pixar or comic-book styling',
       'no uncanny faces, plastic skin or visible AI artifacts',
       'no cold, dim, desaturated or clinical-blue grading; keep it warm and light-filled',
