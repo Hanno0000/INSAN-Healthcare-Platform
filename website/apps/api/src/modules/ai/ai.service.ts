@@ -191,7 +191,8 @@ ${contextStr || 'لا توجد معلومات مخصصة. أجب بشكل عام
 
     // OpenAI compatible endpoint (Groq, OpenAI, Together, etc)
     if (isGroq || isOpenAI || (provider.baseUrl && provider.baseUrl.includes('openai'))) {
-      const url = provider.baseUrl || 'https://api.groq.com/openai/v1/chat/completions';
+      const baseUrl = provider.baseUrl || 'https://api.groq.com/openai/v1';
+      const url = baseUrl.endsWith('/chat/completions') ? baseUrl : `${baseUrl.replace(/\/$/, '')}/chat/completions`;
       const res = await fetch(url, {
         method: 'POST',
         headers: {

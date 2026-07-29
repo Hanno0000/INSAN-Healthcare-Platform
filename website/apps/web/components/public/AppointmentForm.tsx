@@ -75,7 +75,27 @@ export default function AppointmentForm({
   }, [form.medicalCenterId]);
 
   function onChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setForm(prev => {
+      const nextForm = { ...prev, [name]: value };
+      
+      if (name === 'doctorId' && value) {
+        const doc = doctors.find(d => d.id === value);
+        if (doc) {
+          // Check for Prisma's join table structure `hospitals: [{ hospital: { id } }]` or flat structure
+          const hArr = (doc as any).hospitals || [];
+          if (hArr.length > 0) {
+            nextForm.hospitalId = hArr[0].hospital?.id || hArr[0].id || nextForm.hospitalId;
+          }
+          const cArr = (doc as any).centers || doc.medicalCenters || [];
+          if (cArr.length > 0) {
+            nextForm.medicalCenterId = cArr[0].medicalCenter?.id || cArr[0].id || nextForm.medicalCenterId;
+          }
+        }
+      }
+      
+      return nextForm;
+    });
   }
 
   function onAnswerChange(qId: string, val: any) {

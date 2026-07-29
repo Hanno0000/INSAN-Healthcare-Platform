@@ -34,6 +34,13 @@ export class AiController {
     return this.aiService.deleteProvider(id);
   }
 
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermission('settings', 'manage')
+  @Post('providers/test')
+  testProvider(@Body() body: any) {
+    return this.aiService.testProvider(body);
+  }
+
   // ==============================
   // Knowledge Base Endpoints (Admin only)
   // ==============================

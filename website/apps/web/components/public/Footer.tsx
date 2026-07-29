@@ -85,7 +85,7 @@ export default function Footer({ navItems }: Props) {
                 </p>
                 <p>
                   <strong>البريد الإلكتروني:</strong><br />
-                  <a href="mailto:info@hospitalgroup.com" className="hover:text-accent-500 transition-colors">info@hospitalgroup.com</a>
+                  <a href="mailto:info@insan-platform.com" className="hover:text-accent-500 transition-colors">info@insan-platform.com</a>
                 </p>
               </div>
             </div>

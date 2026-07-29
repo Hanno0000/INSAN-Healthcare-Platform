@@ -222,4 +222,43 @@ export class DoctorsService {
     await this.prisma.doctor.delete({ where: { id } });
     return { deleted: true };
   }
+
+  async submitReview(doctorId: string, data: { phone: string; rating: number; comment?: string }) {
+    // 1. Find a completed appointment for this doctor and phone
+    const appointment = await this.prisma.appointmentRequest.findFirst({
+      where: {
+        doctorId,
+        phone: data.phone,
+        status: { in: ['COMPLETED', 'ATTENDED'] },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (!appointment) {
+      throw new BadRequestException('لم نتمكن من العثور على موعد مكتمل مرتبط برقم الهاتف هذا.');
+    }
+
+    // 2. Check if already reviewed
+    const existingReview = await this.prisma.doctorReview.findUnique({
+      where: { appointmentId: appointment.id },
+    });
+
+    if (existingReview) {
+      throw new BadRequestException('لقد قمت بتقييم هذه الزيارة مسبقاً.');
+    }
+
+    // 3. Create Review
+    const review = await this.prisma.doctorReview.create({
+      data: {
+        doctorId,
+        appointmentId: appointment.id,
+        phone: data.phone,
+        rating: data.rating,
+        comment: data.comment,
+        status: 'PENDING',
+      },
+    });
+
+    return review;
+  }
 }

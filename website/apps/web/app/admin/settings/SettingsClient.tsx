@@ -6,7 +6,7 @@ import { api } from '@/lib/api-client';
 import { useToast } from '@/components/admin/ui/Toast';
 import PageHeader from '@/components/admin/ui/PageHeader';
 import { inputCls } from '@/components/admin/ui/FormField';
-import { Save, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Save, ToggleLeft, ToggleRight, Bot } from 'lucide-react';
 
 const GROUPS = [
   { key: 'general', label: 'عام' },
@@ -119,6 +119,13 @@ export default function SettingsClient() {
                 {g.label}
               </button>
             ))}
+          </div>
+
+          <div className="bg-white rounded-2xl border border-gray-100 p-2 mt-4">
+             <a href="/admin/settings/ai" className="block w-full text-right px-3 py-2 rounded-xl text-sm transition text-gray-600 hover:bg-gray-50 flex items-center justify-between">
+               <span className="font-semibold text-[#0E7C86]">الذكاء الاصطناعي (AI)</span>
+               <Bot size={16} className="text-[#0E7C86]" />
+             </a>
           </div>
 
           {/* Feature Flags */}

@@ -212,4 +212,18 @@ export class MedicalCentersController {
     const data = await this.questionsService.delete(id);
     return data;
   }
+
+  @Post('admin/medical-centers/:centerId/questions/copy-to')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermission('medical-centers', 'edit')
+  @AuditAction('BookingQuestion', 'copy')
+  @HttpCode(HttpStatus.OK)
+  async copyQuestions(
+    @Param('centerId') centerId: string,
+    @Body('targetCenterIds') targetCenterIds: string[],
+    @Body('questionIds') questionIds?: string[],
+  ) {
+    const data = await this.questionsService.copyTo(centerId, targetCenterIds, questionIds);
+    return data;
+  }
 }

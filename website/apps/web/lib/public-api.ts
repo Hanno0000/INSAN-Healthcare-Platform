@@ -62,6 +62,8 @@ export interface HospitalContactInfo {
 }
 export interface JourneyStep {
   icon: string;
+  image?: string;
+  link?: string;
   title: Bilingual;
   desc: Bilingual;
 }

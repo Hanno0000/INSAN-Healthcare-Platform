@@ -55,7 +55,12 @@ export default function TestimonialsClient() {
 
   return (
     <div>
-      <PageHeader title="الشهادات" subtitle={`${data?.meta.total ?? 0} شهادة`} action="إضافة شهادة" onAction={() => { setEditing(null); setModalOpen(true); }} />
+      <PageHeader 
+        title="الشهادات (قالوا عنا)" 
+        subtitle="إدارة آراء وانطباعات العملاء، الأطباء والمستثمرين التي تُعرض في أقسام 'قالوا عنا' على الموقع." 
+        action="إضافة شهادة" 
+        onAction={() => { setEditing(null); setModalOpen(true); }} 
+      />
       <div className="bg-white rounded-2xl border border-gray-100 p-4">
         <DataTable columns={columns} data={data?.data ?? []} loading={isLoading} />
         <Pagination page={page} totalPages={data?.meta.totalPages ?? 1} total={data?.meta.total ?? 0} pageSize={15} onPage={setPage} />

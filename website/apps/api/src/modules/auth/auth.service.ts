@@ -9,6 +9,7 @@ import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -134,6 +135,37 @@ export class AuthService {
     });
 
     return { message: 'Logged out successfully' };
+  }
+
+  async updateProfile(userId: string, dto: UpdateProfileDto) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new UnauthorizedException('User not found');
+
+    const updateData: any = {};
+    if (dto.name) updateData.name = dto.name;
+    if (dto.email) updateData.email = dto.email;
+
+    if (dto.newPassword) {
+      if (!dto.currentPassword) {
+        throw new BadRequestException('Current password is required to set a new password');
+      }
+      const isPasswordValid = await bcrypt.compare(dto.currentPassword, user.passwordHash);
+      if (!isPasswordValid) {
+        throw new BadRequestException('Invalid current password');
+      }
+      updateData.passwordHash = await bcrypt.hash(dto.newPassword, 10);
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return { success: true, message: 'No changes provided' };
+    }
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+    });
+
+    return { success: true, message: 'Profile updated successfully' };
   }
 
   private async generateTokens(userId: string, email: string, roleId: string, roleName: string) {

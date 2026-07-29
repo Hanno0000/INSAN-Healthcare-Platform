@@ -8,6 +8,7 @@ import { useToast } from '@/components/admin/ui/Toast';
 import Modal from '@/components/admin/ui/Modal';
 import FormField, { inputCls, textareaCls, selectCls } from '@/components/admin/ui/FormField';
 import BilingualInput from '@/components/admin/ui/BilingualInput';
+import ImageUpload from '@/components/admin/ui/ImageUpload';
 
 interface Props { open: boolean; onClose: () => void; editing: any; onSaved: () => void; }
 
@@ -25,12 +26,13 @@ export default function DoctorModal({ open, onClose, editing, onSaved }: Props) 
       name: editing.name ?? { ar: '', en: '' },
       title: editing.title ?? { ar: '', en: '' },
       specialty: editing.specialty ?? { ar: '', en: '' },
+      photo: editing.photo ?? '',
       bio: editing.bio ?? { ar: '', en: '' },
       phone: editing.phone ?? '',
       email: editing.email ?? '',
       hospitalIds: editing.hospitals?.map((h: any) => h.id) ?? [],
       medicalCenterIds: editing.medicalCenters?.map((c: any) => c.id) ?? [],
-    } : { name: { ar: '', en: '' }, title: { ar: '', en: '' }, specialty: { ar: '', en: '' }, bio: { ar: '', en: '' }, phone: '', email: '', hospitalIds: [], medicalCenterIds: [] });
+    } : { name: { ar: '', en: '' }, title: { ar: '', en: '' }, specialty: { ar: '', en: '' }, photo: '', bio: { ar: '', en: '' }, phone: '', email: '', hospitalIds: [], medicalCenterIds: [] });
   }, [editing, reset]);
 
   const mut = useMutation({
@@ -55,6 +57,7 @@ export default function DoctorModal({ open, onClose, editing, onSaved }: Props) 
             <BilingualInput arValue={f('specialty').ar} enValue={f('specialty').en} onArChange={(v) => setValue('specialty.ar', v)} onEnChange={(v) => setValue('specialty.en', v)} placeholder={{ ar: 'التخصص', en: 'Specialty' }} />
           </FormField>
         </div>
+        <ImageUpload label="صورة الطبيب (Photo)" value={watch('photo') || ''} onChange={(url) => setValue('photo', url)} />
         <FormField label="السيرة الذاتية">
           <BilingualInput arValue={f('bio').ar} enValue={f('bio').en} onArChange={(v) => setValue('bio.ar', v)} onEnChange={(v) => setValue('bio.en', v)} multiline rows={3} placeholder={{ ar: 'نبذة...', en: 'Bio...' }} />
         </FormField>

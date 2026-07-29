@@ -17,6 +17,38 @@ export class FacebookSyncService {
   async handleCron() {
     this.logger.debug('Running Facebook Sync Cron Job...');
     await this.syncFacebookPosts();
+    await this.autoPublishPendingPosts();
+  }
+
+  async autoPublishPendingPosts() {
+    try {
+      const daysStr = await this.integrations.getIntegrationValue('FACEBOOK_SYNC_AUTO_PUBLISH_DAYS');
+      if (!daysStr) return;
+
+      const days = parseInt(daysStr, 10);
+      if (isNaN(days) || days <= 0) return;
+
+      const thresholdDate = new Date();
+      thresholdDate.setDate(thresholdDate.getDate() - days);
+
+      // Update all posts synced via FB that are still DRAFT and older than threshold
+      const result = await this.prisma.newsPost.updateMany({
+        where: {
+          sourceType: NewsSourceType.SOCIAL_SYNC,
+          status: ContentStatus.DRAFT,
+          createdAt: { lte: thresholdDate }
+        },
+        data: {
+          status: ContentStatus.PUBLISHED
+        }
+      });
+
+      if (result.count > 0) {
+        this.logger.log(`Auto-published ${result.count} pending Facebook posts.`);
+      }
+    } catch (e) {
+      this.logger.error('Failed to auto-publish Facebook posts', e);
+    }
   }
 
   async syncFacebookPosts() {

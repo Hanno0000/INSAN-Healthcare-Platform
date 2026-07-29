@@ -142,6 +142,7 @@ export const api = {
     logout: () => apiRequest('/auth/logout', { method: 'POST' }),
     me: () => apiRequest<Single<any>>('/auth/me'),
     refresh: () => apiRequest<Single<{ accessToken: string }>>('/auth/refresh', { method: 'POST', skipAuth: true }),
+    updateProfile: (body: any) => apiRequest<Single<any>>('/auth/profile', { method: 'PATCH', body: JSON.stringify(body) }),
   },
 
   // Hospitals
@@ -174,6 +175,22 @@ export const api = {
     createQuestion: (centerId: string, body: any) => apiRequest<Single<any>>(`/admin/medical-centers/${centerId}/questions`, { method: 'POST', body: JSON.stringify(body) }),
     updateQuestion: (centerId: string, id: string, body: any) => apiRequest<Single<any>>(`/admin/medical-centers/${centerId}/questions/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
     deleteQuestion: (centerId: string, id: string) => apiRequest(`/admin/medical-centers/${centerId}/questions/${id}`, { method: 'DELETE' }),
+    copyQuestions: (centerId: string, targetCenterIds: string[], questionIds?: string[]) => apiRequest<Single<{ count: number }>>(`/admin/medical-centers/${centerId}/questions/copy-to`, { method: 'POST', body: JSON.stringify({ targetCenterIds, questionIds }) }),
+  },
+
+  // AI Providers
+  aiProviders: {
+    list: () => apiRequest<Single<any[]>>('/ai/providers'),
+    save: (body: any) => apiRequest<Single<any>>('/ai/providers', { method: 'POST', body: JSON.stringify(body) }),
+    delete: (id: string) => apiRequest(`/ai/providers/${id}`, { method: 'DELETE' }),
+    test: (body: any) => apiRequest<Single<{text: string}>>('/ai/providers/test', { method: 'POST', body: JSON.stringify(body) }),
+  },
+
+  // AI Knowledge Base
+  aiKnowledgeBase: {
+    list: () => apiRequest<Single<any[]>>('/ai/knowledge-base'),
+    save: (body: any) => apiRequest<Single<any>>('/ai/knowledge-base', { method: 'POST', body: JSON.stringify(body) }),
+    delete: (id: string) => apiRequest(`/ai/knowledge-base/${id}`, { method: 'DELETE' }),
   },
 
   // Doctors

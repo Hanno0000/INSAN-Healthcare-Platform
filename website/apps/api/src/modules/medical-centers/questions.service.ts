@@ -61,4 +61,48 @@ export class QuestionsService {
     await this.prisma.bookingQuestion.delete({ where: { id } });
     return { success: true };
   }
+
+  async copyTo(sourceCenterId: string, targetCenterIds: string[], questionIds?: string[]) {
+    // Get source questions
+    let whereClause: any = { medicalCenterId: sourceCenterId };
+    if (questionIds && questionIds.length > 0) {
+      whereClause.id = { in: questionIds };
+    }
+
+    const sourceQuestions = await this.prisma.bookingQuestion.findMany({
+      where: whereClause,
+      orderBy: { order: 'asc' },
+    });
+
+    if (sourceQuestions.length === 0) {
+      return { success: true, count: 0 };
+    }
+
+    let totalCopied = 0;
+
+    // For each target center, copy the questions
+    for (const targetId of targetCenterIds) {
+      if (targetId === sourceCenterId) continue;
+      
+      // Optional: Delete existing questions in target first to avoid duplicates?
+      // For now, we just append them.
+      
+      const newQuestions = sourceQuestions.map(q => ({
+        medicalCenterId: targetId,
+        questionText: q.questionText as any,
+        questionType: q.questionType,
+        options: q.options as any,
+        isRequired: q.isRequired,
+        order: q.order,
+        isActive: q.isActive,
+      }));
+
+      const res = await this.prisma.bookingQuestion.createMany({
+        data: newQuestions,
+      });
+      totalCopied += res.count;
+    }
+
+    return { success: true, count: totalCopied };
+  }
 }

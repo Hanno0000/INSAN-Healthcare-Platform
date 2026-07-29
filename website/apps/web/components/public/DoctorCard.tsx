@@ -38,6 +38,7 @@ export default function DoctorCard({ doctor }: { doctor: Doctor }) {
         </div>
       </div>
       
+      {/* Rating Section Hidden pending backend implementation 
       <div className="rating-section px-6 py-4 border-t border-gray-100 flex items-center gap-2 bg-gray-50/50">
         <div className="stars flex text-yellow-400">
           <Star className="w-4 h-4 fill-current" />
@@ -49,6 +50,7 @@ export default function DoctorCard({ doctor }: { doctor: Doctor }) {
         <span className="rating-score font-bold text-heading font-montserrat text-sm">5.0</span>
         <span className="review-count text-gray-400 text-xs font-cairo">(127 تقييم)</span>
       </div>
+      */}
       
       <div className="action-buttons p-6 pt-0 mt-auto flex gap-3 flex-wrap sm:flex-nowrap">
         <Link href={`/doctors/${doctor.slug}`} className="flex-1 btn-secondary text-center py-2.5 rounded-pill border-2 border-gray-200 text-heading font-semibold hover:border-accent-500 hover:text-accent-500 transition-colors font-cairo text-sm">

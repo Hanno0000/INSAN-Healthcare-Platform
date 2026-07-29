@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   HttpCode,
   HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import { DoctorsService } from './doctors.service';
 import { CreateDoctorDto } from './dto/create-doctor.dto';
@@ -93,5 +94,16 @@ export class DoctorsController {
   @AuditAction('Doctor', 'delete')
   async remove(@Param('id') id: string) {
     return ApiResponse.success(await this.doctorsService.remove(id));
+  }
+
+  @Post('doctors/:id/reviews')
+  async submitReview(
+    @Param('id') id: string,
+    @Body() body: { phone: string; rating: number; comment?: string },
+  ) {
+    if (!body.phone || !body.rating) {
+      throw new BadRequestException('Phone and rating are required');
+    }
+    return ApiResponse.success(await this.doctorsService.submitReview(id, body));
   }
 }

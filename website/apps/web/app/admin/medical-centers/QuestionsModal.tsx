@@ -8,7 +8,7 @@ import { useToast } from '@/components/admin/ui/Toast';
 import Modal from '@/components/admin/ui/Modal';
 import FormField, { inputCls, selectCls } from '@/components/admin/ui/FormField';
 import BilingualInput from '@/components/admin/ui/BilingualInput';
-import { Plus, Trash2, Edit2, GripVertical } from 'lucide-react';
+import { Plus, Trash2, Edit2, GripVertical, Copy, Loader2, X } from 'lucide-react';
 import ConfirmDialog from '@/components/admin/ui/ConfirmDialog';
 
 interface Props { center: any; onClose: () => void; }
@@ -31,19 +31,46 @@ export default function QuestionsModal({ center, onClose }: Props) {
     onError: (e: any) => toast('error', e.message),
   });
 
+  const [copyOpen, setCopyOpen] = useState(false);
+  const [selectedTargets, setSelectedTargets] = useState<string[]>([]);
+  const [selectedQuestions, setSelectedQuestions] = useState<string[]>([]);
+  
+  const { data: allCenters } = useQuery({
+    queryKey: ['all-med-centers-for-copy'],
+    queryFn: () => api.medicalCenters.list({ page: 1, pageSize: 100 }),
+    enabled: copyOpen,
+  });
+
+  const copyMut = useMutation({
+    mutationFn: (targetIds: string[]) => api.medicalCenters.copyQuestions(center.id, targetIds, selectedQuestions),
+    onSuccess: (res) => { 
+      toast('success', `تم نسخ الأسئلة بنجاح إلى المراكز المحددة (${res.data?.count || 0} سؤال)`); 
+      setCopyOpen(false); 
+      setSelectedTargets([]); 
+      setSelectedQuestions([]);
+    },
+    onError: (e: any) => toast('error', e.message),
+  });
+
   return (
     <Modal open={!!center} onClose={onClose} title={`أسئلة الحجز: ${center?.name?.ar}`} size="xl">
       {!editingQ ? (
         <div className="space-y-4">
-          <div className="flex justify-end">
-            <button onClick={() => setEditingQ({})} className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2">
+          <div className="flex justify-between items-center bg-gray-50 p-4 rounded-xl border border-gray-100">
+            <button onClick={() => { 
+              setCopyOpen(true);
+              setSelectedQuestions(questions?.data?.map((q: any) => q.id) || []);
+            }} disabled={questions?.data?.length === 0} className="text-[#0E7C86] hover:bg-[#0E7C86]/10 px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition disabled:opacity-50">
+              <Copy size={16} /> نسخ هذه الأسئلة لمراكز أخرى
+            </button>
+            <button onClick={() => setEditingQ({})} className="bg-[#0B1F3A] hover:bg-[#0E7C86] text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition">
               <Plus size={16} /> إضافة سؤال
             </button>
           </div>
           
           {isLoading ? (
             <p className="text-center text-gray-500 py-4">جاري التحميل...</p>
-          ) : questions?.data?.length === 0 ? (
+          ) : !questions?.data || questions.data.length === 0 ? (
             <p className="text-center text-gray-500 py-8">لا يوجد أسئلة مضافة حتى الآن.</p>
           ) : (
             <div className="space-y-3">
@@ -70,6 +97,59 @@ export default function QuestionsModal({ center, onClose }: Props) {
       ) : (
         <QuestionEditor centerId={center.id} initial={Object.keys(editingQ).length > 0 ? editingQ : null} onCancel={() => setEditingQ(null)} onSaved={() => { qc.invalidateQueries({ queryKey: ['questions', center.id] }); setEditingQ(null); }} />
       )}
+
+      {/* Copy Modal */}
+      <Modal open={copyOpen} onClose={() => setCopyOpen(false)} title="نسخ الأسئلة למراكز أخرى" size="md">
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600 font-bold border-b pb-2">1. حدد الأسئلة المطلوب نسخها:</p>
+          <div className="border border-gray-200 rounded-xl max-h-40 overflow-y-auto p-2">
+            {questions?.data?.map((q: any) => (
+              <label key={q.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition">
+                <input 
+                  type="checkbox" 
+                  checked={selectedQuestions.includes(q.id)}
+                  onChange={(e) => {
+                    if (e.target.checked) setSelectedQuestions(prev => [...prev, q.id]);
+                    else setSelectedQuestions(prev => prev.filter(id => id !== q.id));
+                  }}
+                  className="w-4 h-4 text-[#0E7C86] rounded border-gray-300 focus:ring-[#0E7C86]"
+                />
+                <span className="text-sm font-medium">{q.questionText?.ar}</span>
+              </label>
+            ))}
+          </div>
+
+          <p className="text-sm text-gray-600 font-bold border-b pb-2 mt-4">2. اختر المراكز الطبية لنسخ الأسئلة إليها:</p>
+          <div className="border border-gray-200 rounded-xl max-h-40 overflow-y-auto p-2">
+            {allCenters?.data?.filter((c: any) => c.id !== center.id).map((c: any) => (
+              <label key={c.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition">
+                <input 
+                  type="checkbox" 
+                  checked={selectedTargets.includes(c.id)}
+                  onChange={(e) => {
+                    if (e.target.checked) setSelectedTargets(prev => [...prev, c.id]);
+                    else setSelectedTargets(prev => prev.filter(id => id !== c.id));
+                  }}
+                  className="w-4 h-4 text-[#0E7C86] rounded border-gray-300 focus:ring-[#0E7C86]"
+                />
+                <span className="text-sm font-medium">{c.name?.ar}</span>
+              </label>
+            ))}
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+            <button type="button" onClick={() => setCopyOpen(false)} className="px-5 py-2 text-sm rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition">إلغاء</button>
+            <button 
+              onClick={() => copyMut.mutate(selectedTargets)} 
+              disabled={selectedTargets.length === 0 || copyMut.isPending} 
+              className="px-6 py-2 text-sm rounded-xl bg-[#0E7C86] text-white hover:bg-[#0B1F3A] transition disabled:opacity-50 flex items-center gap-2"
+            >
+              {copyMut.isPending && <Loader2 size={16} className="animate-spin" />}
+              نسخ الآن
+            </button>
+          </div>
+        </div>
+      </Modal>
     </Modal>
   );
 }
@@ -106,11 +186,12 @@ function QuestionEditor({ centerId, initial, onCancel, onSaved }: { centerId: st
 
       <div className="grid grid-cols-2 gap-4">
         <FormField label="نوع الإجابة" required>
-          <select {...register('questionType')} className={selectCls}>
+          <select value={qType} onChange={(e) => setValue('questionType', e.target.value)} className={selectCls}>
             <option value="text">نص حر (Text)</option>
             <option value="textarea">نص طويل (Textarea)</option>
             <option value="select">قائمة منسدلة (Select)</option>
             <option value="radio">خيارات متعددة (Radio)</option>
+            <option value="checkbox">مربعات اختيار (Checkbox)</option>
           </select>
         </FormField>
         

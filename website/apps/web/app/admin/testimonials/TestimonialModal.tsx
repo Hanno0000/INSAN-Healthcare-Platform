@@ -8,6 +8,7 @@ import { useToast } from '@/components/admin/ui/Toast';
 import Modal from '@/components/admin/ui/Modal';
 import FormField, { inputCls, textareaCls, selectCls } from '@/components/admin/ui/FormField';
 import BilingualInput from '@/components/admin/ui/BilingualInput';
+import ImageUpload from '@/components/admin/ui/ImageUpload';
 
 interface Props { open: boolean; onClose: () => void; editing: any; onSaved: () => void; }
 
@@ -24,9 +25,10 @@ export default function TestimonialModal({ open, onClose, editing, onSaved }: Pr
       name: editing.name ?? { ar: '', en: '' },
       content: editing.content ?? { ar: '', en: '' },
       role: editing.role ?? { ar: '', en: '' },
+      photo: editing.photo ?? '',
       rating: editing.rating ?? 5,
       hospitalId: editing.hospitalId ?? '',
-    } : { name: { ar: '', en: '' }, content: { ar: '', en: '' }, role: { ar: '', en: '' }, rating: 5, hospitalId: '' });
+    } : { name: { ar: '', en: '' }, content: { ar: '', en: '' }, role: { ar: '', en: '' }, photo: '', rating: 5, hospitalId: '' });
   }, [editing, reset]);
 
   const mut = useMutation({
@@ -62,6 +64,7 @@ export default function TestimonialModal({ open, onClose, editing, onSaved }: Pr
             </select>
           </FormField>
         </div>
+        <ImageUpload label="صورة شخصية (Photo) - اختياري" value={watch('photo') || ''} onChange={(url) => setValue('photo', url)} />
         <div className="flex justify-end gap-3 pt-2">
           <button type="button" onClick={onClose} className="px-4 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50 transition">إلغاء</button>
           <button type="submit" disabled={mut.isPending} className="px-5 py-2 text-sm rounded-xl bg-[#0B1F3A] text-white hover:bg-[#0E7C86] transition disabled:opacity-50">

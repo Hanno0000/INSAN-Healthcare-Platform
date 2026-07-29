@@ -23,12 +23,5 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@nestjs/core",
-      "@prisma/client",
-      "@prisma/engines",
-      "prisma"
-    ]
-  }
+  "packageManager": "pnpm@9.15.0"
 }

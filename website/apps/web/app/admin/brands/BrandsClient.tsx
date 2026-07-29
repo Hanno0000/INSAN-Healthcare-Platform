@@ -53,7 +53,12 @@ export default function BrandsClient() {
 
   return (
     <div>
-      <PageHeader title="العلامات التجارية" subtitle="إدارة علامات المنظومة" action="إضافة علامة" onAction={() => { setEditing(null); setModalOpen(true); }} />
+      <PageHeader 
+        title="العلامات التجارية" 
+        subtitle="إدارة فروع ومشاريع المنصة (مثل منصة إنسان التعليمية، أكاديمية إنسان، الخ). تُستخدم لربط حسابات التواصل والأخبار." 
+        action="إضافة علامة" 
+        onAction={() => { setEditing(null); setModalOpen(true); }} 
+      />
       <div className="bg-white rounded-2xl border border-gray-100 p-4">
         <DataTable columns={columns} data={(data?.data as any[] ?? [])} loading={isLoading} />
       </div>

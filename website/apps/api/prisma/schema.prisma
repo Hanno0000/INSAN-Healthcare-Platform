@@ -272,6 +272,7 @@ model Doctor {
   appointments AppointmentRequest[]
   hospitals    DoctorHospital[]
   centers      DoctorMedicalCenter[]
+  reviews      DoctorReview[]
 
   @@index([status])
   @@index([isFeatured])
@@ -414,6 +415,7 @@ model AppointmentRequest {
   doctor          Doctor?           @relation(fields: [doctorId], references: [id])
   hospital        Hospital?         @relation(fields: [hospitalId], references: [id])
   medicalCenter   MedicalCenter?    @relation(fields: [medicalCenterId], references: [id])
+  review          DoctorReview?
 
   @@index([status])
   @@index([createdAt])
@@ -605,4 +607,29 @@ enum MediaType {
   VIDEO
   PDF
   DOCUMENT
+}
+
+model DoctorReview {
+  id            String             @id @default(cuid())
+  doctorId      String
+  appointmentId String?            @unique
+  phone         String
+  rating        Int                @default(5)
+  comment       String?
+  status        ReviewStatus       @default(PENDING)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  doctor        Doctor             @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  appointment   AppointmentRequest? @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+
+  @@index([doctorId])
+  @@index([phone])
+  @@index([status])
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }

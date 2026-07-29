@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
+import seedData from './seed-data.json';
 
 const prisma = new PrismaClient();
 
@@ -286,95 +287,93 @@ async function seedAiSettings() {
     });
   }
 
-  console.log('    ✓ AI settings seeded');
+  // Add Gemini Provider
+  await prisma.aiProvider.upsert({
+    where: { name: 'Gemini' },
+    create: {
+      name: 'Gemini',
+      modelName: 'gemini-1.5-pro',
+      apiKey: 'AIzaSyCeHHK07FmxQQacEzHOdldNa1bSoOYLLH8',
+      priority: 1,
+      isActive: true,
+    },
+    update: {
+      modelName: 'gemini-1.5-pro',
+      apiKey: 'AIzaSyCeHHK07FmxQQacEzHOdldNa1bSoOYLLH8',
+      isActive: true,
+    },
+  });
+
+  console.log('    ✓ AI settings and Gemini Provider seeded');
 }
 
 // ========================= HOSPITALS =========================
 
 async function seedHospitals() {
   console.log('  → Seeding hospitals...');
-
-  const hospitalDefs = [
-    {
-      slug: 'future-hospital',
-      name: { ar: 'مستشفى المستقبل التخصصي', en: 'Future Specialized Hospital' },
-      shortDescription: {
-        ar: 'مستشفى المستقبل التخصصي — رمز القيادة والابتكار في الرعاية الصحية',
-        en: 'Future Specialized Hospital — A symbol of leadership and innovation in healthcare',
-      },
-      description: {
-        ar: 'مستشفى المستقبل التخصصي هو أحد أبرز المستشفيات ضمن منظومة إنسان للرعاية الصحية.',
-        en: 'Future Specialized Hospital is one of the leading hospitals within the INSAN Healthcare Ecosystem.',
-      },
-      logoUrl: '/logos/future-logo.png',
-      heroImage: '/images/future-hero.jpg',
-      brandColor: '#1B4FCC',
-      status: 'PUBLISHED' as const,
-      metaTitle: { ar: 'مستشفى المستقبل التخصصي | منظومة إنسان', en: 'Future Specialized Hospital | INSAN Platform' },
-      metaDescription: { ar: 'مستشفى المستقبل التخصصي — خدمات طبية متقدمة', en: 'Future Specialized Hospital — Advanced medical services' },
-    },
-    {
-      slug: 'delta-hospital',
-      name: { ar: 'مستشفى الدلتا الدولي', en: 'Delta International Hospital' },
-      shortDescription: {
-        ar: 'مستشفى الدلتا الدولي — إعادة بناء الثقة من خلال التجربة الإنسانية',
-        en: 'Delta International Hospital — Restoring trust through human experience',
-      },
-      description: {
-        ar: 'مستشفى الدلتا الدولي يمثل رحلة التحول والتطوير في منظومة إنسان.',
-        en: 'Delta International Hospital represents the journey of transformation and development within the INSAN ecosystem.',
-      },
-      logoUrl: '/logos/delta-logo.png',
-      heroImage: '/images/delta-hero.jpg',
-      brandColor: '#0E7C86',
-      status: 'PUBLISHED' as const,
-      metaTitle: { ar: 'مستشفى الدلتا الدولي | منظومة إنسان', en: 'Delta International Hospital | INSAN Platform' },
-      metaDescription: { ar: 'مستشفى الدلتا الدولي — تجربة رعاية صحية إنسانية', en: 'Delta International Hospital — A human healthcare experience' },
-    },
-  ];
+  const hospitalDefs = seedData.hospitals;
 
   const hospitals: Record<string, any> = {};
   for (const h of hospitalDefs) {
     const hospital = await prisma.hospital.upsert({
       where: { slug: h.slug },
-      create: h,
-      update: { name: h.name, status: h.status },
+      create: {
+        slug: h.slug,
+        name: h.name,
+        shortDescription: h.shortDescription,
+        description: h.description,
+        logoUrl: h.logoUrl,
+        heroImage: h.heroImage,
+        brandColor: h.brandColor,
+        status: h.status as any,
+        metaTitle: (h as any).metaTitle,
+        metaDescription: (h as any).metaDescription,
+        departments: h.departments,
+        locations: h.locations,
+      },
+      update: { 
+        name: h.name, 
+        status: h.status as any,
+        departments: h.departments,
+        locations: h.locations
+      },
     });
     hospitals[h.slug] = hospital;
   }
 
-  console.log('    ✓ 2 hospitals seeded');
+  console.log(`    ✓ ${hospitalDefs.length} hospitals seeded`);
   return hospitals;
 }
 
 // ========================= MEDICAL CENTERS =========================
 
 async function seedMedicalCenters(hospitals: Record<string, any>) {
-  console.log('  → Seeding 12 medical centers...');
-
-  const centerDefs = [
-    { slug: 'orthopedic-center', name: { ar: 'مركز العناية العظمية والمفاصل', en: 'Orthopedic & Joint Care Center' }, isFeatured: true, hospitalSlugs: ['future-hospital', 'delta-hospital'] },
-    { slug: 'cardiac-center', name: { ar: 'مركز القلب والأوعية الدموية', en: 'Cardiac & Vascular Center' }, isFeatured: true, hospitalSlugs: ['future-hospital', 'delta-hospital'] },
-    { slug: 'womens-health-center', name: { ar: 'مركز صحة المرأة', en: "Women's Health Center" }, isFeatured: true, hospitalSlugs: ['delta-hospital'] },
-    { slug: 'digestive-center', name: { ar: 'مركز الجهاز الهضمي والكبد', en: 'Digestive & Liver Center' }, isFeatured: true, hospitalSlugs: ['delta-hospital'] },
-    { slug: 'neurology-center', name: { ar: 'مركز الأعصاب والدماغ', en: 'Neurology & Brain Center' }, isFeatured: true, hospitalSlugs: ['future-hospital', 'delta-hospital'] },
-    { slug: 'emergency-center', name: { ar: 'مركز الطوارئ', en: 'Emergency Center' }, isFeatured: false, hospitalSlugs: ['delta-hospital'] },
-    { slug: 'icu-center', name: { ar: 'مركز العناية المركزة', en: 'Intensive Care Center' }, isFeatured: false, hospitalSlugs: ['delta-hospital'] },
-    { slug: 'senior-care-center', name: { ar: 'مركز كبارنا للرعاية', en: 'Senior Care Center' }, isFeatured: false, hospitalSlugs: ['delta-hospital'] },
-    { slug: 'ophthalmology-center', name: { ar: 'مركز العيون', en: 'Ophthalmology Center' }, isFeatured: false, hospitalSlugs: ['future-hospital'] },
-    { slug: 'dermatology-center', name: { ar: 'مركز الجلدية والتجميل', en: 'Dermatology & Aesthetics Center' }, isFeatured: false, hospitalSlugs: ['future-hospital'] },
-    { slug: 'pediatrics-center', name: { ar: 'مركز طب الأطفال', en: 'Pediatrics Center' }, isFeatured: false, hospitalSlugs: ['delta-hospital'] },
-    { slug: 'dental-center', name: { ar: 'مركز طب الأسنان', en: 'Dental Center' }, isFeatured: false, hospitalSlugs: ['delta-hospital'] },
-  ];
+  console.log('  → Seeding medical centers...');
+  const centerDefs = seedData.medicalCenters;
+  
+  const centers: Record<string, any> = {};
 
   for (const c of centerDefs) {
-    const { hospitalSlugs, ...centerData } = c;
+    const { hospitalSlugs, clinics, bookingQuestions, ...centerData } = c;
 
     const center = await prisma.medicalCenter.upsert({
       where: { slug: c.slug },
-      create: { ...centerData, status: 'PUBLISHED', description: { ar: '...', en: '...' } },
-      update: { name: centerData.name, status: 'PUBLISHED' },
+      create: { 
+        ...centerData, 
+        status: 'PUBLISHED' as any, 
+        description: { ar: '...', en: '...' }, 
+        clinics: clinics?.length ? { create: clinics } : undefined, 
+        bookingQuestions: bookingQuestions?.length ? { create: bookingQuestions } : undefined 
+      },
+      update: { 
+        name: centerData.name, 
+        status: 'PUBLISHED' as any,
+        clinics: clinics?.length ? { deleteMany: {}, create: clinics } : { deleteMany: {} },
+        bookingQuestions: bookingQuestions?.length ? { deleteMany: {}, create: bookingQuestions } : { deleteMany: {} }
+      },
     });
+    
+    centers[c.slug] = center;
 
     // Create hospital-center junction rows
     for (const hospitalSlug of hospitalSlugs) {
@@ -397,7 +396,8 @@ async function seedMedicalCenters(hospitals: Record<string, any>) {
     }
   }
 
-  console.log('    ✓ 12 medical centers seeded');
+  console.log(`    ✓ ${centerDefs.length} medical centers seeded`);
+  return centers;
 }
 
 // ========================= NAVIGATION =========================
@@ -476,29 +476,54 @@ async function seedPages() {
       update: { title: page.title, status: page.status },
     });
 
-    // Add hero section for home page
-    if (page.slug === 'home') {
-      const existingSection = await prisma.section.findFirst({
-        where: { pageId: p.id, componentType: 'Hero' },
-      });
-      if (!existingSection) {
-        await prisma.section.create({
-          data: {
-            pageId: p.id,
-            componentType: 'Hero',
-            order: 1,
-            isVisible: true,
-            config: {
+    // Add default sections for all pages so they appear in admin panel
+    const existingHero = await prisma.section.findFirst({
+      where: { pageId: p.id, componentType: 'Hero' },
+    });
+    
+    if (!existingHero) {
+      await prisma.section.create({
+        data: {
+          pageId: p.id,
+          componentType: 'Hero',
+          order: 1,
+          isVisible: true,
+          config: {
+            title: page.title,
+            subtitle: { ar: 'وصف قصير تجريبي لهذه الصفحة', en: 'A short dummy description for this page' },
+            ...(page.slug === 'home' ? {
               title: { ar: 'منظومة إنسان للرعاية الصحية', en: 'INSAN Healthcare Platform' },
               subtitle: { ar: 'نبني مؤسسات صحية قوية ومستدامة', en: 'Building strong and sustainable healthcare institutions' },
               ctas: [
                 { label: { ar: 'اكتشف منظومتنا', en: 'Explore Our Ecosystem' }, href: '/hospitals' },
                 { label: { ar: 'تواصل معنا', en: 'Contact Us' }, href: '/contact' },
               ],
-            },
+            } : {})
           },
-        });
-      }
+        },
+      });
+    }
+
+    const existingContent = await prisma.section.findFirst({
+      where: { pageId: p.id, componentType: 'TextContent' },
+    });
+    
+    if (!existingContent) {
+      await prisma.section.create({
+        data: {
+          pageId: p.id,
+          componentType: 'TextContent',
+          order: 2,
+          isVisible: true,
+          config: {
+            heading: { ar: 'محتوى الصفحة', en: 'Page Content' },
+            content: { 
+              ar: 'هذا محتوى تجريبي يظهر في لوحة التحكم ويمكن تعديله لاحقاً.', 
+              en: 'This is dummy content that appears in the admin panel and can be edited later.' 
+            }
+          },
+        },
+      });
     }
   }
 
@@ -609,33 +634,86 @@ async function seedMediaFolders() {
 
 async function seedTestimonials() {
   console.log('  → Seeding testimonials...');
+  const testimonialDefs = seedData.testimonials;
 
-  const existing = await prisma.testimonial.count();
-  if (existing > 0) {
-    console.log('    ✓ Testimonials already exist, skipping');
-    return;
+  for (const t of testimonialDefs) {
+    await prisma.testimonial.create({
+      data: {
+        name: t.name,
+        audience: t.audience as any,
+        quote: t.quote,
+        status: t.status as any,
+        order: t.order,
+      }
+    });
   }
 
-  await prisma.testimonial.createMany({
-    data: [
-      {
-        name: { ar: 'د. أحمد محمد', en: 'Dr. Ahmed Mohamed' },
-        audience: 'DOCTOR',
-        quote: { ar: 'العمل في منظومة إنسان يمنحني الثقة بأنني أقدم أفضل رعاية ممكنة لمرضاي.', en: 'Working within the INSAN ecosystem gives me confidence that I am providing the best possible care for my patients.' },
-        status: 'PUBLISHED',
-        order: 1,
-      },
-      {
-        name: { ar: 'مستثمر', en: 'An Investor' },
-        audience: 'INVESTOR',
-        quote: { ar: 'منظومة إنسان تمثل فرصة استثمارية حقيقية في قطاع الرعاية الصحية المصري.', en: 'The INSAN ecosystem represents a genuine investment opportunity in the Egyptian healthcare sector.' },
-        status: 'PUBLISHED',
-        order: 2,
-      },
-    ],
-  });
+  console.log(`    ✓ ${testimonialDefs.length} testimonials seeded`);
+}
 
-  console.log('    ✓ Testimonials seeded');
+// ========================= DOCTORS =========================
+
+async function seedDoctors(hospitals: Record<string, any>, medicalCenters: Record<string, any>) {
+  console.log('  → Seeding doctors...');
+  const doctorDefs = seedData.doctors;
+
+  for (const d of doctorDefs) {
+    const { hospitalSlugs, medicalCenterSlugs, ...docData } = d;
+
+    const doctor = await prisma.doctor.upsert({
+      where: { slug: d.slug },
+      create: { ...docData, status: 'PUBLISHED' as any },
+      update: { ...docData, status: 'PUBLISHED' as any },
+    });
+
+    // Link hospitals
+    for (const hSlug of hospitalSlugs) {
+      const h = hospitals[hSlug];
+      if (h) {
+        await prisma.doctorHospital.upsert({
+          where: { doctorId_hospitalId: { hospitalId: h.id, doctorId: doctor.id } },
+          create: { hospitalId: h.id, doctorId: doctor.id },
+          update: {}
+        });
+      }
+    }
+
+    // Link centers
+    for (const cSlug of medicalCenterSlugs) {
+      const c = medicalCenters[cSlug];
+      if (c) {
+        await prisma.doctorMedicalCenter.upsert({
+          where: { doctorId_medicalCenterId: { medicalCenterId: c.id, doctorId: doctor.id } },
+          create: { medicalCenterId: c.id, doctorId: doctor.id },
+          update: {}
+        });
+      }
+    }
+  }
+  
+  console.log(`    ✓ ${doctorDefs.length} doctors seeded`);
+}
+
+// ========================= NEWS POSTS =========================
+
+async function seedNewsPosts() {
+  console.log('  → Seeding news posts...');
+  const newsDefs = seedData.newsPosts;
+
+  for (const n of newsDefs) {
+    const { categorySlug, ...postData } = n;
+    const cat = await prisma.newsCategory.findUnique({ where: { slug: categorySlug } });
+
+    if (cat) {
+      await prisma.newsPost.upsert({
+        where: { slug: n.slug },
+        create: { ...postData, status: 'PUBLISHED' as any, categoryId: cat.id },
+        update: { ...postData, status: 'PUBLISHED' as any, categoryId: cat.id },
+      });
+    }
+  }
+
+  console.log(`    ✓ ${newsDefs.length} news posts seeded`);
 }
 
 // ========================= FEATURE FLAGS =========================
@@ -741,12 +819,16 @@ async function main() {
   await seedBrands(); // must run after seedIntegrationSettings
   await seedAiSettings();
   const hospitals = await seedHospitals();
-  await seedMedicalCenters(hospitals);
+  const medicalCenters = await seedMedicalCenters(hospitals);
+  await seedDoctors(hospitals, medicalCenters);
   await seedNavigation();
   await seedPages();
   await seedNewsCategories();
+  await seedNewsPosts();
   await seedKnowledgeBase();
   await seedMediaFolders();
+  // Clear old testimonials before re-seeding
+  await prisma.testimonial.deleteMany();
   await seedTestimonials();
   await seedFeatureFlags();
 

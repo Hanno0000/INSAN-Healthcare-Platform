@@ -8,6 +8,7 @@ import { useToast } from '@/components/admin/ui/Toast';
 import Modal from '@/components/admin/ui/Modal';
 import FormField, { inputCls, selectCls } from '@/components/admin/ui/FormField';
 import BilingualInput from '@/components/admin/ui/BilingualInput';
+import ImageUpload from '@/components/admin/ui/ImageUpload';
 
 interface Props { open: boolean; onClose: () => void; editing: any; onSaved: () => void; }
 
@@ -24,10 +25,11 @@ export default function MedicalCenterModal({ open, onClose, editing, onSaved }: 
       name: editing.name ?? { ar: '', en: '' },
       specialty: editing.specialty ?? { ar: '', en: '' },
       description: editing.description ?? { ar: '', en: '' },
+      heroImage: editing.heroImage ?? '',
       phone: editing.phone ?? '',
       email: editing.email ?? '',
       hospitalIds: editing.hospitals?.map((h: any) => h.id) ?? [],
-    } : { name: { ar: '', en: '' }, specialty: { ar: '', en: '' }, description: { ar: '', en: '' }, phone: '', email: '', hospitalIds: [] });
+    } : { name: { ar: '', en: '' }, specialty: { ar: '', en: '' }, description: { ar: '', en: '' }, heroImage: '', phone: '', email: '', hospitalIds: [] });
   }, [editing, reset]);
 
   const mut = useMutation({
@@ -52,6 +54,7 @@ export default function MedicalCenterModal({ open, onClose, editing, onSaved }: 
         <FormField label="الوصف">
           <BilingualInput arValue={d.ar} enValue={d.en} onArChange={(v) => setValue('description.ar', v)} onEnChange={(v) => setValue('description.en', v)} multiline rows={3} placeholder={{ ar: 'وصف...' , en: 'Description...' }} />
         </FormField>
+        <ImageUpload label="صورة الغلاف (Hero Image)" value={watch('heroImage') || ''} onChange={(url) => setValue('heroImage', url)} />
         <div className="grid grid-cols-2 gap-4">
           <FormField label="الهاتف"><input {...register('phone')} dir="ltr" className={inputCls} placeholder="+966..." /></FormField>
           <FormField label="البريد"><input {...register('email')} type="email" dir="ltr" className={inputCls} placeholder="center@..." /></FormField>

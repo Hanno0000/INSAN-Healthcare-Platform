@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import PublicLayout from '@/components/public/PublicLayout';
 import Breadcrumb from '@/components/public/Breadcrumb';
+import DoctorReviewForm from '@/components/public/DoctorReviewForm';
 import { getDoctor } from '@/lib/public-api';
 import { t } from '@/lib/utils';
 
@@ -109,6 +110,9 @@ export default async function DoctorDetailPage({ params }: Props) {
               </div>
             </div>
           )}
+
+          {/* Add Doctor Review Form */}
+          <DoctorReviewForm doctorId={d.id} />
         </div>
       </section>
     </PublicLayout>

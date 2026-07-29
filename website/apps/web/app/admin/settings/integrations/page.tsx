@@ -157,6 +157,18 @@ export default function IntegrationsSettingsPage() {
         </div>
       )}
 
+      <div className="bg-blue-50 border border-blue-100 rounded-xl p-5 mb-6 text-sm text-blue-800">
+        <h4 className="font-bold flex items-center gap-2 mb-2"><AlertCircle size={16} /> دليل ربط صفحة الفيسبوك</h4>
+        <p className="mb-2">لسحب الأخبار والمنشورات من صفحة الفيسبوك الخاصة بالمستشفى تلقائياً وإضافتها للموقع، اتبع الخطوات التالية:</p>
+        <ol className="list-decimal list-inside space-y-1.5 marker:text-blue-600 marker:font-bold">
+          <li>قم بتسجيل الدخول إلى حساب المطورين <strong>Meta for Developers</strong>.</li>
+          <li>قم بإنشاء تطبيق جديد (App) واختر نوعه (Business).</li>
+          <li>من إعدادات التطبيق، قم بتوليد <strong>Page Access Token</strong> (مفتاح الوصول) مع صلاحيات <code>pages_read_engagement</code> و <code>pages_manage_posts</code>.</li>
+          <li>انسخ رمز الصفحة (Page ID) من إعدادات صفحتك العامة وضعها في الحقل الأول.</li>
+          <li>انسخ مفتاح الوصول (Access Token) الذي قمت بتوليده وضعه في الحقل الثاني.</li>
+        </ol>
+      </div>
+
       {renderKeyCard(
         'Facebook Page ID',
         'FACEBOOK_PAGE_ID',
@@ -169,6 +181,13 @@ export default function IntegrationsSettingsPage() {
         'FACEBOOK_ACCESS_TOKEN',
         <Key className="w-6 h-6" />,
         'توكن الوصول طويل الأمد من فيسبوك.'
+      )}
+
+      {renderKeyCard(
+        'أيام انتظار النشر التلقائي للفيسبوك',
+        'FACEBOOK_SYNC_AUTO_PUBLISH_DAYS',
+        <RefreshCw className="w-6 h-6" />,
+        'عدد الأيام (مثلاً 3) التي ينتظرها النظام قبل نشر البوست المعلق من فيسبوك. اتركها فارغة لإيقاف النشر التلقائي.'
       )}
 
       {renderKeyCard(

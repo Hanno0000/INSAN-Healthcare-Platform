@@ -89,7 +89,7 @@ export default async function HospitalDetailPage({ params }: Props) {
       />
 
       {/* 5 */}
-      <HospitalJourneySection steps={h.journeySteps} />
+      <HospitalJourneySection steps={h.journeySteps} hospitalSlug={h.slug} hospitalId={h.id} />
 
       {/* 6 */}
       <HospitalNewsSection posts={posts} />

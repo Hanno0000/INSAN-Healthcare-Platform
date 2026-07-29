@@ -10,6 +10,7 @@ import PageHeader from '@/components/admin/ui/PageHeader';
 import FormField, { inputCls, selectCls } from '@/components/admin/ui/FormField';
 import BilingualInput from '@/components/admin/ui/BilingualInput';
 import RichTextEditor from '@/components/admin/ui/RichTextEditor';
+import ImageUpload from '@/components/admin/ui/ImageUpload';
 
 export default function NewsEditorClient({ editingId }: { editingId?: string }) {
   const router = useRouter();
@@ -120,14 +121,7 @@ export default function NewsEditorClient({ editingId }: { editingId?: string }) 
           </FormField>
           
           <div>
-            <FormField label="صورة الغلاف (رابط URL)">
-              <input {...register('featuredImage')} dir="ltr" className={inputCls} placeholder="https://..." />
-            </FormField>
-            {featuredImage && (
-              <div className="mt-3 rounded-xl overflow-hidden border border-gray-200 h-32 w-48 relative">
-                <img src={featuredImage} alt="Preview" className="object-cover w-full h-full" onError={(e) => (e.currentTarget.style.display = 'none')} />
-              </div>
-            )}
+            <ImageUpload label="صورة الغلاف (Featured Image)" value={featuredImage || ''} onChange={(url) => setValue('featuredImage', url)} />
           </div>
         </div>
 

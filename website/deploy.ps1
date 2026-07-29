@@ -38,13 +38,14 @@ docker compose --env-file .env.production -f docker-compose.prod.yml up -d --bui
 echo "Waiting 20s for API container to start..."
 sleep 20
 API_CONTAINER=$(docker ps --filter "name=api" --format "{{.Names}}" | head -1)
+echo "Running migrations..."
+docker compose --env-file .env.production -f docker-compose.prod.yml run --rm api npx prisma migrate deploy
+docker compose --env-file .env.production -f docker-compose.prod.yml restart api
 if [ -n "$API_CONTAINER" ]; then
-  echo "Running migrations on container: $API_CONTAINER"
-  docker exec $API_CONTAINER npx prisma migrate deploy
   echo "Running seed on container: $API_CONTAINER"
-  docker exec $API_CONTAINER npx ts-node prisma/seed.ts 2>&1 || echo "Seed skipped (data may already exist)"
+  docker exec $API_CONTAINER npx tsx prisma/seed.ts 2>&1 || echo "Seed skipped (data may already exist)"
 else
-  echo "Warning: API container not found - migration and seed skipped"
+  echo "Warning: API container not found - seed skipped"
 fi
 rm -f __ARCHIVE__
 echo "Done!"

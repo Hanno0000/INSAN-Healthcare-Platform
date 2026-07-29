@@ -33,8 +33,8 @@ export default function AIAssistantPage() {
         apiRequest('/ai/providers'),
         apiRequest('/ai/knowledge-base')
       ]);
-      setProviders(provRes.data || []);
-      setKnowledge(kbRes.data || []);
+      setProviders(Array.isArray(provRes) ? provRes : (provRes.data || []));
+      setKnowledge(Array.isArray(kbRes) ? kbRes : (kbRes.data || []));
     } catch (err) {
       console.error(err);
     } finally {

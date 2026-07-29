@@ -1,0 +1,103 @@
+{
+  "hospitals": [
+    {
+      "slug": "future-hospital",
+      "name": { "ar": "مستشفى المستقبل التخصصي", "en": "Future Specialized Hospital" },
+      "shortDescription": { "ar": "مستشفى المستقبل التخصصي — رمز القيادة والابتكار", "en": "Future Specialized Hospital — Leadership and innovation" },
+      "description": { "ar": "مستشفى المستقبل التخصصي هو أحد أبرز المستشفيات...", "en": "Future Specialized Hospital is a leading hospital..." },
+      "logoUrl": "/logos/future-logo.png",
+      "heroImage": "/images/future-hero.jpg",
+      "brandColor": "#1B4FCC",
+      "status": "PUBLISHED",
+      "departments": [
+        { "slug": "cardiology", "name": { "ar": "قسم القلب", "en": "Cardiology" }, "description": { "ar": "أحدث أجهزة القسطرة", "en": "Advanced cardiac care" }, "image": "/images/dept-cardio.jpg" },
+        { "slug": "orthopedics", "name": { "ar": "قسم العظام", "en": "Orthopedics" }, "description": { "ar": "جراحات المفاصل", "en": "Joint surgeries" }, "image": "/images/dept-ortho.jpg" }
+      ],
+      "locations": [
+        { "name": { "ar": "المبنى الرئيسي", "en": "Main Building" }, "address": { "ar": "التجمع الخامس", "en": "New Cairo" }, "mapsUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d110532.89437171424!2d31.309094!3d30.0328906!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14583d7350cb682f%3A0xc06e30097f56da!2z2KfZhNiq2KzZhdi5INin2YTYrtin2YXYs9iMINmF2K3Yp9mB2LjYqSDYp9mE2YLYp9mH2LHYqQ!5e0!3m2!1sar!2seg!4v1714152542158!5m2!1sar!2seg" }
+      ]
+    },
+    {
+      "slug": "delta-hospital",
+      "name": { "ar": "مستشفى الدلتا الدولي", "en": "Delta International Hospital" },
+      "shortDescription": { "ar": "مستشفى الدلتا الدولي — إعادة بناء الثقة", "en": "Delta International Hospital — Restoring trust" },
+      "description": { "ar": "مستشفى الدلتا يمثل رحلة التحول...", "en": "Delta Hospital represents transformation..." },
+      "logoUrl": "/logos/delta-logo.png",
+      "heroImage": "/images/delta-hero.jpg",
+      "brandColor": "#0E7C86",
+      "status": "PUBLISHED",
+      "departments": [
+        { "slug": "pediatrics", "name": { "ar": "قسم الأطفال", "en": "Pediatrics" }, "description": { "ar": "رعاية متكاملة للأطفال", "en": "Complete care for children" }, "image": "/images/dept-pediatrics.jpg" },
+        { "slug": "general-surgery", "name": { "ar": "الجراحة العامة", "en": "General Surgery" }, "description": { "ar": "أحدث غرف العمليات", "en": "Latest operating rooms" }, "image": "/images/dept-surgery.jpg" }
+      ],
+      "locations": [
+        { "name": { "ar": "فرع المهندسين", "en": "Mohandeseen Branch" }, "address": { "ar": "المهندسين، الجيزة", "en": "Mohandeseen, Giza" }, "mapsUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13813.904803960012!2d31.19632863777033!3d30.051917631317505!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14584126938a9bd5%3A0xc3c5c1655b3f7f!2sMohandeseen%2C%20Agouza%2C%20Giza%20Governorate!5e0!3m2!1sen!2seg!4v1714152542158!5m2!1sen!2seg" }
+      ]
+    }
+  ],
+  "medicalCenters": [
+    { 
+      "slug": "orthopedic-center", 
+      "name": { "ar": "مركز العناية العظمية والمفاصل", "en": "Orthopedic & Joint Care Center" }, 
+      "isFeatured": true, 
+      "hospitalSlugs": ["future-hospital", "delta-hospital"],
+      "clinics": [
+        { "name": { "ar": "عيادة العظام", "en": "Orthopedic Clinic" }, "schedule": { "ar": "السبت والأربعاء 9-5", "en": "Sat & Wed 9-5" } }
+      ],
+      "bookingQuestions": [
+        { "questionText": { "ar": "هل تعاني من أمراض مزمنة؟", "en": "Do you have chronic diseases?" }, "questionType": "radio", "options": [{ "label": { "ar": "نعم", "en": "Yes" }, "value": "yes" }, { "label": { "ar": "لا", "en": "No" }, "value": "no" }], "isRequired": true }
+      ]
+    },
+    { 
+      "slug": "cardiac-center", 
+      "name": { "ar": "مركز القلب والأوعية الدموية", "en": "Cardiac & Vascular Center" }, 
+      "isFeatured": true, 
+      "hospitalSlugs": ["future-hospital", "delta-hospital"],
+      "clinics": [],
+      "bookingQuestions": []
+    }
+  ],
+  "doctors": [
+    {
+      "slug": "dr-ahmed",
+      "name": { "ar": "د. أحمد محمد", "en": "Dr. Ahmed Mohamed" },
+      "title": { "ar": "أستاذ استشاري", "en": "Consultant Professor" },
+      "specialty": { "ar": "جراحة القلب", "en": "Cardiac Surgery" },
+      "bio": { "ar": "خبرة 20 عاماً في جراحات القلب المعقدة.", "en": "20 years of experience in complex cardiac surgeries." },
+      "status": "PUBLISHED",
+      "isFeatured": true,
+      "hospitalSlugs": ["future-hospital"],
+      "medicalCenterSlugs": ["cardiac-center"]
+    },
+    {
+      "slug": "dr-sara",
+      "name": { "ar": "د. سارة كمال", "en": "Dr. Sara Kamal" },
+      "title": { "ar": "أخصائي أول", "en": "Senior Specialist" },
+      "specialty": { "ar": "طب الأطفال", "en": "Pediatrics" },
+      "bio": { "ar": "متخصصة في حديثي الولادة والأطفال.", "en": "Specialized in neonatology and pediatrics." },
+      "status": "PUBLISHED",
+      "isFeatured": false,
+      "hospitalSlugs": ["delta-hospital"],
+      "medicalCenterSlugs": []
+    }
+  ],
+  "newsPosts": [
+    {
+      "slug": "opening-new-branch",
+      "title": { "ar": "افتتاح فرعنا الجديد قريباً", "en": "Opening our new branch soon" },
+      "excerpt": { "ar": "يسعدنا الإعلان عن افتتاح فرعنا الجديد في العاصمة الإدارية.", "en": "We are excited to announce our new branch." },
+      "body": { "ar": "<p>محتوى الخبر بالكامل هنا...</p>", "en": "<p>Full news content here...</p>" },
+      "status": "PUBLISHED",
+      "categorySlug": "ecosystem-news"
+    }
+  ],
+  "testimonials": [
+    {
+      "name": { "ar": "د. أحمد محمد", "en": "Dr. Ahmed Mohamed" },
+      "audience": "DOCTOR",
+      "quote": { "ar": "العمل في منظومة إنسان يمنحني الثقة بأنني أقدم أفضل رعاية ممكنة لمرضاي.", "en": "Working within the INSAN ecosystem gives me confidence that I am providing the best possible care for my patients." },
+      "status": "PUBLISHED",
+      "order": 1
+    }
+  ]
+}

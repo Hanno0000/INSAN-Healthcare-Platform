@@ -53,7 +53,7 @@ export default function AIChatWidget() {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className={`fixed bottom-6 left-6 z-50 p-4 bg-[#0B1F3A] text-white rounded-full shadow-xl hover:bg-[#0E7C86] transition-all transform hover:scale-105 ${isOpen ? 'opacity-0 pointer-events-none scale-75' : 'opacity-100 scale-100'}`}
+        className={`fixed bottom-[100px] md:bottom-8 right-4 md:right-auto md:left-8 z-[100000] p-4 bg-[#0B1F3A] text-white rounded-full shadow-xl hover:bg-[#0E7C86] transition-all transform hover:scale-105 ${isOpen ? 'opacity-0 pointer-events-none scale-75' : 'opacity-100 scale-100'}`}
         aria-label="مساعد إنسان الذكي"
       >
         <MessageCircle size={28} />
@@ -61,8 +61,8 @@ export default function AIChatWidget() {
 
       {/* Chat Window */}
       <div 
-        className={`fixed bottom-6 left-6 z-50 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden flex flex-col transition-all duration-300 transform origin-bottom-left ${isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-75 translate-y-10 pointer-events-none'}`}
-        style={{ height: '500px', maxHeight: 'calc(100vh - 40px)' }}
+        className={`fixed bottom-[100px] md:bottom-24 right-4 md:right-auto md:left-8 z-[100000] w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden flex flex-col transition-all duration-300 transform origin-bottom-right md:origin-bottom-left ${isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-75 translate-y-10 pointer-events-none'}`}
+        style={{ height: '500px', maxHeight: 'calc(100vh - 120px)' }}
       >
         {/* Header */}
         <div className="bg-[#0B1F3A] text-white p-4 flex items-center justify-between">

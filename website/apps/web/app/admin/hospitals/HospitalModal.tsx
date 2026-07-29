@@ -8,6 +8,7 @@ import { useToast } from '@/components/admin/ui/Toast';
 import Modal from '@/components/admin/ui/Modal';
 import FormField, { inputCls, textareaCls, selectCls } from '@/components/admin/ui/FormField';
 import BilingualInput from '@/components/admin/ui/BilingualInput';
+import ImageUpload from '@/components/admin/ui/ImageUpload';
 import { Plus, Trash2 } from 'lucide-react';
 
 interface Props {
@@ -37,10 +38,10 @@ const DEFAULT_HERO_STATS = [
 ];
 
 const DEFAULT_JOURNEY_STEPS = [
-  { icon: 'search', title: { ...EMPTY_BILINGUAL }, desc: { ...EMPTY_BILINGUAL } },
-  { icon: 'calendar', title: { ...EMPTY_BILINGUAL }, desc: { ...EMPTY_BILINGUAL } },
-  { icon: 'stethoscope', title: { ...EMPTY_BILINGUAL }, desc: { ...EMPTY_BILINGUAL } },
-  { icon: 'smile', title: { ...EMPTY_BILINGUAL }, desc: { ...EMPTY_BILINGUAL } },
+  { icon: 'search', image: '', title: { ...EMPTY_BILINGUAL }, desc: { ...EMPTY_BILINGUAL } },
+  { icon: 'calendar', image: '', title: { ...EMPTY_BILINGUAL }, desc: { ...EMPTY_BILINGUAL } },
+  { icon: 'stethoscope', image: '', title: { ...EMPTY_BILINGUAL }, desc: { ...EMPTY_BILINGUAL } },
+  { icon: 'smile', image: '', title: { ...EMPTY_BILINGUAL }, desc: { ...EMPTY_BILINGUAL } },
 ];
 
 const DEFAULT_VALUES = {
@@ -138,7 +139,41 @@ export default function HospitalModal({ open, onClose, editing, onSaved }: Props
     // heroStats و journeySteps صفوف ثابتة — أرسلها كاملة بلا فلترة عناصر فارغة داخل المصفوفة نفسها
     const payload = clean({ ...d });
     if (Array.isArray(d.heroStats) && d.heroStats.some((s: any) => s.value)) payload.heroStats = d.heroStats;
-    if (Array.isArray(d.journeySteps) && d.journeySteps.some((s: any) => s.title?.ar)) payload.journeySteps = d.journeySteps;
+    if (Array.isArray(d.journeySteps)) payload.journeySteps = d.journeySteps;
+    
+    // Ensure departments and locations are not wiped out if the form tabs were unmounted
+    payload.departments = (d.departments?.length ? d.departments : editing?.departments) || [];
+    payload.departments = payload.departments.filter((dept: any) => dept && dept.slug);
+
+    payload.locations = (d.locations?.length ? d.locations : editing?.locations) || [];
+    payload.locations = payload.locations.filter((loc: any) => loc && (loc.name?.ar || loc.name?.en));
+
+
+    // التحقق المسبق (Client-Side Validation) للأقسام
+    for (let i = 0; i < payload.departments.length; i++) {
+      const slug = payload.departments[i].slug;
+      if (!slug || !/^[a-z0-9-]+$/.test(slug)) {
+        toast('error', `القسم رقم ${i + 1}: المعرّف (slug) غير صحيح. استخدم حروف إنجليزية وأرقام وشرطات فقط بدون مسافات.`);
+        setTab('departments');
+        return;
+      }
+      if (!payload.departments[i].name?.ar) {
+        toast('error', `القسم رقم ${i + 1}: الاسم بالعربي مطلوب.`);
+        setTab('departments');
+        return;
+      }
+    }
+
+    // التحقق المسبق للمواقع
+    for (let i = 0; i < payload.locations.length; i++) {
+      const url = payload.locations[i].mapsUrl;
+      if (url && !/^https:\/\/(www\.)?google\.com\/maps\/embed/.test(url)) {
+        toast('error', `الموقع رقم ${i + 1}: رابط خريطة جوجل غير صحيح. تأكد من استخدام رابط (Embed) يبدأ بـ https://www.google.com/maps/embed`);
+        setTab('contact');
+        return;
+      }
+    }
+
     mut.mutate(payload);
   };
 
@@ -147,6 +182,8 @@ export default function HospitalModal({ open, onClose, editing, onSaved }: Props
   const descAr = watch('description.ar'); const descEn = watch('description.en');
   const taglineAr = watch('heroTagline.ar'); const taglineEn = watch('heroTagline.en');
   const addrAr = watch('contactInfo.address.ar'); const addrEn = watch('contactInfo.address.en');
+  const logoUrl = watch('logoUrl');
+  const heroImage = watch('heroImage');
 
   const TABS: { key: typeof tab; label: string }[] = [
     { key: 'basic', label: 'الأساسية' },
@@ -202,12 +239,8 @@ export default function HospitalModal({ open, onClose, editing, onSaved }: Props
           </FormField>
 
           <div className="grid grid-cols-2 gap-4">
-            <FormField label="رابط الشعار (logo)">
-              <input {...register('logoUrl')} type="url" dir="ltr" className={inputCls} placeholder="https://..." />
-            </FormField>
-            <FormField label="رابط صورة الـ Hero">
-              <input {...register('heroImage')} type="url" dir="ltr" className={inputCls} placeholder="https://..." />
-            </FormField>
+            <ImageUpload label="رابط الشعار (Logo URL)" value={logoUrl || ''} onChange={(url) => setValue('logoUrl', url)} />
+            <ImageUpload label="صورة الغلاف (Hero Image)" value={heroImage || ''} onChange={(url) => setValue('heroImage', url)} />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -303,9 +336,7 @@ export default function HospitalModal({ open, onClose, editing, onSaved }: Props
                       multiline rows={3} placeholder={{ ar: 'وصف كامل...', en: 'Full description...' }} />
                   </FormField>
 
-                  <FormField label="رابط صورة القسم">
-                    <input {...register(`departments.${i}.image`)} type="url" dir="ltr" className={inputCls} placeholder="https://..." />
-                  </FormField>
+                  <ImageUpload label="رابط صورة القسم" value={watch(`departments.${i}.image`) || ''} onChange={(url) => setValue(`departments.${i}.image`, url)} />
 
                   <FormField label="أطباء القسم">
                     <div className="max-h-40 overflow-y-auto border border-gray-100 rounded-xl p-2 space-y-1 bg-gray-50">
@@ -340,11 +371,14 @@ export default function HospitalModal({ open, onClose, editing, onSaved }: Props
           {[0, 1, 2, 3].map((i) => (
             <div key={i} className="border border-gray-200 rounded-xl p-4 space-y-3 bg-white">
               <span className="text-xs font-bold text-gray-400">خطوة #{i + 1}</span>
-              <FormField label="الأيقونة">
-                <select {...register(`journeySteps.${i}.icon`)} className={selectCls}>
-                  {ICON_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                </select>
-              </FormField>
+              <div className="grid grid-cols-2 gap-4">
+                <ImageUpload label="صورة الخطوة (اختياري)" value={watch(`journeySteps.${i}.image`) || ''} onChange={(url) => setValue(`journeySteps.${i}.image`, url)} />
+                <FormField label="الأيقونة الاحتياطية">
+                  <select {...register(`journeySteps.${i}.icon`)} className={selectCls}>
+                    {ICON_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                  </select>
+                </FormField>
+              </div>
               <FormField label="العنوان">
                 <BilingualInput
                   arValue={watch(`journeySteps.${i}.title.ar`)} enValue={watch(`journeySteps.${i}.title.en`)}

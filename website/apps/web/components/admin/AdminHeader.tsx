@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useAdminUser } from '@/lib/admin-context';
 import { logout } from '@/lib/auth';
 
@@ -32,8 +33,15 @@ export default function AdminHeader() {
 
         {/* User menu */}
         {user && (
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-600">{user.email}</span>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-600 font-medium">{user.name || user.email}</span>
+            <div className="h-4 w-px bg-gray-200"></div>
+            <Link
+              href="/admin/profile"
+              className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+            >
+              حسابي
+            </Link>
             <button
               onClick={handleLogout}
               className="text-sm text-red-500 hover:text-red-700 transition-colors font-medium"
