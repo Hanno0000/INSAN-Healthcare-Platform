@@ -22,9 +22,11 @@ If you only read one section, read **§4 (the tree)** and **§6 (the data contra
 
 | Document | What it holds |
 |---|---|
-| `business/knowledge/KNOWLEDGE_BASE_SPEC.md` | The entity taxonomy and how to write a knowledge file |
+| `business/brand/MEDICAL_SERVICES_TAXONOMY.md` | **Departments vs Centers vs Clinics — shared with the Website Platform** |
+| `business/knowledge/KNOWLEDGE_BASE_SPEC.md` | How to write a knowledge file, and the entity registry |
 | `docs/architecture/WORKER_CONTRACTS_V2.md` | Exact input/output columns per worker |
 | `docs/roadmap/GAP_REGISTER.md` | What is missing, in priority order |
+| `docs/OPERATIONAL_AUDIT.md` · `docs/AUDIT_B_OUTPUT_AND_PORTFOLIO.md` | The two audits, machinery and product |
 | `business/brand/MASTER_BRAND_ARCHITECTURE.md` | Brand hierarchy — governs everything here |
 
 ---
@@ -45,33 +47,50 @@ INSAN  (Master Brand — Egyptian Healthcare Platform)
 Each hospital contains **Medical Services**. This is where an important distinction
 lives, and getting it wrong is the single most common modelling error in this project.
 
-### 1.1 Medical Services — three different levels
+### 1.1 Medical Services — three sibling kinds
 
-`Medical Services` is a *category*, not a list. It contains three kinds of entity,
-and they are **not interchangeable**:
+> **Canonical definition:** `business/brand/MEDICAL_SERVICES_TAXONOMY.md`
+> That document is the source of truth and is shared with the Website Platform.
+> The summary below exists so this page reads on its own; if the two ever
+> disagree, the taxonomy wins.
+
+`Medical Services` is a *category*, not a list. It contains three kinds of entity that
+sit at the **same level as siblings** — peers, not parent and child:
 
 ```
 Medical Services
 │
-├── A. Departments / Critical Services
-│      Hospital-wide clinical operations. Not a "center", has no clinic roster.
+├── A. Departments  (أقسام)
+│      Hospital-wide clinical operations. No clinic roster. Never a "center".
 │      ICU · Emergency · Operating Rooms · Radiology · Laboratory
 │
-├── B. Medical Centers                                   (Signature Brands)
-│      A branded concept that groups clinics AND other services under one identity.
-│      Replaces the old "one clinic per specialty" model.
-│      Each center owns:  Features · Services · Specialized Clinics · Clinic Schedule
+├── B. Medical Centers  (المراكز الطبية)                  (Signature Brands)
+│      A branded grouping of several clinics of one specialty family,
+│      PLUS the non-clinic services that specialty needs.
+│      Today every center sits inside a hospital; standalone is a future step.
 │
-└── C. Outpatient Clinics
-       The individual clinic roster (30–40). A clinic may sit inside a Center,
-       or stand alone under general Outpatient.
+└── C. Outpatient Clinics  (العيادات الخارجية)
+       The individual clinic roster (30–40).
+       A clinic MAY belong to a center — and may not.
 ```
 
-**Why this matters.** A center is a marketing and operating *concept* — "Orthopedic &
-Sports Injury Center" — which contains the fracture clinic, the sports clinic, plus
-imaging and screening services. A department like ICU is not a center and has no
-clinics. Modelling them in one flat list is what produced the conflict described in
-§9.1.
+**A center is not merely a group of clinics.** Orthopedic & Sports Injury Center
+contains the orthopedic, rheumatology and sports-injury clinics **plus** examinations,
+imaging and laboratory services. The clinics are part of the center's services, not
+the whole of them.
+
+**Outpatient Clinics is its own Medical Service, not a sub-level of centers.** A
+Gynaecology clinic can exist with no Gynaecology center. In data terms:
+
+| Relationship | Nullable |
+|---|---|
+| Clinic → Hospital | **No** — every clinic is in a hospital |
+| Clinic → Medical Center | **Yes** — a clinic may have no center |
+| Medical Center → Hospital | **Yes** *(always set today; standalone centers are planned)* |
+
+**Why this matters here.** Modelling these three in one flat list is what produced the
+conflict in §9.1 — five Departments filed as Centers while six real Centers had no
+card at all.
 
 ### 1.2 The twelve Medical Centers
 
