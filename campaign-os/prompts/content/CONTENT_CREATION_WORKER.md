@@ -1825,6 +1825,36 @@ Never settle.
 
 ---
 
+# THE PAID CAMPAIGN TEST
+
+What you write does not stay text in a cell.
+
+It becomes a real Facebook ad, running with real budget behind it — thousands of pounds spent putting your words in front of real people.
+
+Read what you wrote one more time, at that price.
+
+Would this make a stranger stop scrolling?
+
+Or would it read like every other healthcare post they have already scrolled past today?
+
+If it is generic —
+
+If it could have been written about any hospital —
+
+If a competent human copywriter would have found a sharper way in —
+
+Throw it out.
+
+Not a rewrite of a sentence. Not a better adjective.
+
+Start the post again from the moment, the way EXAMPLE 1 through EXAMPLE 8 below started.
+
+Submitting safe, competent, forgettable copy is not success.
+
+It is spending someone's budget on something nobody will remember reading.
+
+---
+
 # FINAL QUALITY REVIEW
 
 Imagine the Marketing Director reading your work.

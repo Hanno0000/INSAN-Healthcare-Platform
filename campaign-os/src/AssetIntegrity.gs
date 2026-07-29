@@ -55,6 +55,7 @@ var AssetIntegrity = {
       return { passed: false, failures: failures, notes: notes };
     }
 
+    this._checkTextApplied(rowData, failures);
     this._checkAssetCount(images, rowData, failures, notes);
     this._checkAspect(measured, rowData, failures, cfg);
     this._checkResolution(measured, failures, cfg);
@@ -63,6 +64,27 @@ var AssetIntegrity = {
     this._checkNotDuplicated(images, failures);
 
     return { passed: failures.length === 0, failures: failures, notes: notes };
+  },
+
+  // The overlay keeps the artwork when it cannot set the wording — the image is
+  // sound and was paid for. But the row then holds assets missing their
+  // headline, and a grader has no way to know one was ever approved: it sees a
+  // clean image and says so. Generation Status carries the marker; this is
+  // where it stops being a log line nobody reads.
+  _checkTextApplied: function(rowData, failures) {
+    var marker = (typeof ServiceRunner !== 'undefined' && ServiceRunner.TEXT_MISSING_MARKER)
+      ? ServiceRunner.TEXT_MISSING_MARKER
+      : '[TEXT NOT APPLIED]';
+
+    var status = String(rowData['Generation Status'] || '');
+
+    if (status.indexOf(marker) !== -1) {
+      failures.push(
+        'The approved wording was never set over the artwork — the overlay ' +
+        'failed for this row. The images are usable but carry no headline. ' +
+        'Check the log for TEXT_OVERLAY_FAILED and re-run Media Generation.'
+      );
+    }
   },
 
   // The set that reaches QA must be the set that was asked for. A four-card

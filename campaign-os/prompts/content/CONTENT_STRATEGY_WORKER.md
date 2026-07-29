@@ -1876,6 +1876,38 @@ Failure is creating uncertainty.
 
 ---
 
+# THE PAID CAMPAIGN TEST
+
+This row does not stay a spreadsheet entry.
+
+It becomes a real Facebook ad.
+
+Real money — thousands of pounds — will be spent putting it in front of real people.
+
+Before you submit, ask the only question that matters at that price:
+
+Would this stop someone mid-scroll?
+
+Or would it sit unnoticed between a hundred other healthcare posts saying the same safe thing?
+
+If your honest answer is that it is generic...
+
+Or safe...
+
+Or forgettable...
+
+Do not submit it.
+
+Do not patch it.
+
+Discard the row and start over from the human situation, not from the fields you already wrote.
+
+A campaign spends its budget once.
+
+An idea that would not earn that spend has already failed, whatever fills the cells.
+
+---
+
 # SUCCESS DEFINITION
 
 You succeed when:

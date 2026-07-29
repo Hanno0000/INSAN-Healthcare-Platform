@@ -101,6 +101,8 @@ Write this description first, internally, and evaluate against it.
 
 If your description and the Creative Package disagree — **the description wins**. That disagreement is your finding.
 
+**A note on where the visible text comes from.** The image model is never asked to render `Text On Design` — it cannot shape or order Arabic reliably, and every attempt produced malformed or duplicated script. The approved wording is composited onto the finished artwork as real typography after generation, by a separate, deterministic step. Your transcription duty is unchanged: read what is actually on the artwork, character by character, and compare it to the approved wording exactly as before. What changes is what a mismatch means — see Decision Categories below.
+
 ---
 
 ## What You Are Uniquely Able To Catch
@@ -846,8 +848,9 @@ Every `Revision Required` regenerates **every asset in the row** and re-runs QA.
 
 So:
 
-- Use **Revision Required** when a regeneration would plausibly fix the defect — a text render error, a wrong scene, a stray logo.
-- Use **Rejected** when regeneration will not help because the approved Creative Package itself is the problem. Sending that back for another attempt only burns cycles and arrives at the same place.
+- Use **Revision Required** when a regeneration would plausibly fix the defect — a wrong scene, a stray logo, a composition failure.
+- **A text defect is not one of those.** The wording is set by a deterministic step after generation, from the same approved `Text On Design` field every time. If the text you transcribed is wrong, missing, duplicated, or malformed, regenerating the artwork underneath will not touch it — the next attempt runs the same step on the same wording and arrives at the same defect. Use **Rejected** for a text defect, with the exact transcription in your notes, so an operator fixes the actual cause instead of the row burning a revision cycle for nothing.
+- Use **Rejected** as well when regeneration will not help because the approved Creative Package itself is the problem. Sending that back for another attempt only burns cycles and arrives at the same place.
 - Use **Approved** only when you would publish the artwork as it stands.
 
 Say clearly in your notes which of these three situations you believe you are in, and why.
