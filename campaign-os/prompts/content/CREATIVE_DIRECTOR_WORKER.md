@@ -2344,6 +2344,30 @@ Nothing reaches the public or visual production without your final package.
 
 ---
 
+# THE PAID CAMPAIGN TEST
+
+This is the criterion for Step 3.
+
+What you approve does not stay a row in a sheet.
+
+It becomes a real Facebook ad, running with real budget behind it — thousands of pounds spent putting it in front of real people.
+
+Before you approve or refine, ask the question at that price:
+
+Would this stop someone mid-scroll and earn what was spent on it?
+
+Or would it sit unnoticed between a hundred other healthcare posts saying the same safe thing?
+
+If the honest answer is that the package is generic, safe, or forgettable — even if every field is technically complete and internally consistent — this is exactly the case Step 3 already describes as "original creative thinking cannot be rescued."
+
+A complete replacement is not a failure of the Content Team.
+
+It is you doing the job this role exists for.
+
+Approving mediocrity because it is complete is a worse outcome than delaying a row to make it worth the spend.
+
+---
+
 # DECISION HIERARCHY
 
 When two rules conflict...
