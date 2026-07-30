@@ -744,6 +744,20 @@ var ServiceRunner = {
           result.prompts.length + ' prompt(s)'
         );
 
+        // Its own line in the Execution Log. The generation entry below reports
+        // zero tokens because generating an image spends none — but composing
+        // the prompt does, ~11k of manual per row, and it was recorded nowhere.
+        // The image path was the one part of the system whose cost and cache
+        // behaviour could not be read off the log at all.
+        var usage = result.usage || {};
+        Logger.logSuccess(
+          'MEDIA_DESIGNER', rowNumber, 0,
+          usage.inputTokens || 0, usage.outputTokens || 0,
+          'Composed ' + result.prompts.length + ' prompt(s) | ' +
+          AIProvider.cacheSummary(usage) +
+          (usage.failedOver ? ' | FAILOVER: ' + usage.failedOver : '')
+        );
+
         return result.prompts;
 
       } catch (designerErr) {

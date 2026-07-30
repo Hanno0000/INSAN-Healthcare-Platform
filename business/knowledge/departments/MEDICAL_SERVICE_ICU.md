@@ -8,6 +8,7 @@ status: Active
 entity_id: MED-001
 entity_name_en: Intensive Care Unit
 entity_name_ar: وحدة العناية المركزة
+campaign_name: ICU Center
 service_level: DEPARTMENT
 campaign_type: Medical Services
 parent: null

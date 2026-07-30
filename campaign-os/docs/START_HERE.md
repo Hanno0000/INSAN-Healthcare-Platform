@@ -211,7 +211,7 @@ The right-hand column is what has changed since — **none of it verified in pro
 | **88%** | of finished posts open with one of five rhetorical formulas | Creative memory fixed; a second opening is produced per post; a portfolio critic measures the whole plan |
 | **18%** | agreement between the three systems describing the medical centers | Unchanged — needs the brand owner, not code |
 | **~9.7M of 10.8M** | input tokens byte-identical across rows, caching blocked by one line | Line removed; Anthropic cache breakpoint in place; Gemini implicit caching needs measuring |
-| **5%** | of the knowledge base written — 2 files for ~40 entities | 7 files. 5 build a campaign card, 2 await operator facts |
+| **5%** | of the knowledge base written — 2 files for ~40 entities | 7 files. 5 build a campaign card, covering 29 of 132 scheduled slots today and 35 after one rename in the sheet; 2 await operator facts and would add 24 more |
 | **2 of 10** | workers own the ends of the chain, and neither exists | W1 and W2 exist and are untested. W9 and W10 still do not |
 
 **The one-sentence reading, still true:** the machinery is in better shape than its
@@ -242,17 +242,53 @@ New code: `CardBuilder.gs` · `PlannerRunner.gs` · `PortfolioCritic.gs` ·
 `VisualPlan.gs`. New prompts: `prompts/planning/CAMPAIGN_CARD_BUILDER.md` ·
 `CAMPAIGN_PLANNER.md`.
 
+**A fourth pass, 2026-07-30 — pre-run hardening.** A static review of the path
+in §6.4 item 1, before it is run rather than after, plus the offline work that
+did not need the sheet. Six defects, each of which would have cost a live run:
+
+| | Defect | Effect |
+|---|---|---|
+| 1 | Cards were filed under the entity's name, not the campaign's | ICU's card would have served **none** of its 11 slots. `campaign_name` added; `Check Knowledge File` now reports the slot count |
+| 2 | Visual QA loaded at most four assets, then failed the row for being short | Any carousel over four cards dead-ends: the failure says re-run generation, and re-running reproduces it |
+| 3 | Cache share was computed with Anthropic's token convention for both providers | Understates Gemini by roughly half — on the exact figure §6.4 item 5 asks you to read |
+| 4 | The Media Designer's inference was logged as zero tokens | The whole image path was invisible to the cost and cache measurement. It now has its own log line and a cache breakpoint |
+| 5 | `Refresh Cache` skipped `CONFIG.SERVICES` and the planning prompts | Editing `MEDIA_GENERATION_SERVICE.md` or `CAMPAIGN_CARD_BUILDER.md` in Drive did nothing for six hours, and looked exactly like an edit that had landed |
+| 6 | A cache-write failure discarded a file that had been read | Reported as "prompt file not found, check the folder ID". `CREATIVE_DIRECTOR_WORKER.md` is 77KB against a 100KB limit |
+
+Also: **Kabarona now builds a card** (§6.2), and the five questions blocking
+Emergency and Delta are written out in
+`business/knowledge/NEEDS_OPERATOR_QUESTIONS.md`.
+
+⚠️ **Eight files changed and must be re-pasted into the Apps Script editor:**
+`AIProvider.gs` · `CardBuilder.gs` · `DriveLoader.gs` · `MediaDesigner.gs` ·
+`PlannerRunner.gs` · `PortfolioCritic.gs` · `ServiceRunner.gs` ·
+`WorkerRunner.gs`. Still nothing verified in production.
+
 ### 6.2 The knowledge base
 
-| File | Slots | State |
-|---|---|---|
-| `MEDICAL_SERVICE_ICU.md` | — | ✅ builds a card |
-| `SUPPORTING_MEET_OUR_DOCTORS.md` | 6 | ✅ builds a card |
-| `SUPPORTING_PATIENT_JOURNEY.md` | 6 | ✅ builds a card |
-| `SUPPORTING_SUCCESS_STORIES.md` | 6 | ✅ builds a card |
-| `MEDICAL_SERVICE_EMERGENCY.md` | 16 | 🟠 3 `NEEDS-OPERATOR` markers |
-| `HOSPITAL_DELTA.md` | 8 | 🟠 2 `NEEDS-OPERATOR` markers |
-| `PROGRAM_KABARONA.md` | — | 🟠 missing 2 sections + front matter |
+| File | Campaign it serves | Slots | State |
+|---|---|---|---|
+| `MEDICAL_SERVICE_ICU.md` | ICU Center | 11 | ✅ builds a card |
+| `PROGRAM_KABARONA.md` | Kabarona Continuous Care Program ⚠️ | 6 | ✅ builds a card |
+| `SUPPORTING_MEET_OUR_DOCTORS.md` | Meet Our Doctors | 6 | ✅ builds a card |
+| `SUPPORTING_PATIENT_JOURNEY.md` | Patient Journey | 6 | ✅ builds a card |
+| `SUPPORTING_SUCCESS_STORIES.md` | Success Stories | 6 | ✅ builds a card |
+| `MEDICAL_SERVICE_EMERGENCY.md` | Emergency Center | 16 | 🟠 3 `NEEDS-OPERATOR` markers |
+| `HOSPITAL_DELTA.md` | Delta Restore Trust | 8 | 🟠 2 `NEEDS-OPERATOR` markers |
+
+**29 of 132 slots** are covered today, **35 once the Kabarona rename below
+lands**, and **59** once the two 🟠 files are filled. The middle column is the
+join key and it is not always the entity's name — see the trap in §7. Kabarona
+was closed on 2026-07-30 by rewriting its front matter and renaming two
+headings; no content was invented.
+
+⚠️ **One rename owed in the sheet.** The spelling was unified on the brand
+documents' *Kabarona*; the calendar still says *Kobarna*. Rename **6 Content
+Calendar rows and 1 Campaign Cards row** to `Kabarona Continuous Care Program`.
+Until then `Check Knowledge File` will correctly report that card as orphaned.
+
+The five questions behind the 🟠 markers are written out, in Arabic, in
+`business/knowledge/NEEDS_OPERATOR_QUESTIONS.md`.
 
 A `NEEDS-OPERATOR` marker names exactly what is needed and W1 refuses to build past
 one — deliberately. **Those sections need facts only the operator has** (Emergency's
@@ -287,10 +323,20 @@ In this order. Steps 1–3 are one-time.
    unverified thing in the system and it blocks judging anything visual.
    **Do this before turning on `CONFIG.VISUAL_PLAN.ENABLED`** — otherwise the first
    run is testing two unknowns and neither result means anything.
+
+   A static review of that path on 2026-07-30 fixed four defects ahead of the run
+   and left three things for the operator to check first:
+   **use a `Static` row, not a carousel** (the overlay does a Slides copy-export-trash
+   per asset, and a carousel spends that budget three times over);
+   run `testTextOverlay()` from the editor to prove the two overlay templates really
+   carry their page sizes; and confirm `CONFIG.MEDIA_MODELS.IMAGE` still resolves —
+   three of the historical failures were an image model that had been renamed.
 2. **Fill the `NEEDS-OPERATOR` sections** in Emergency and Delta. 24 scheduled posts
    are waiting on them, and they are the largest remaining input gap.
-3. **Build cards** from the files that are ready, and check one field by field against
-   its knowledge file.
+3. **Build cards** from the five files that are ready, and check one field by field
+   against its knowledge file. Run **Check Knowledge File** first on each — it now
+   also reports how many scheduled slots the card would serve, and costs no
+   inference. A card that serves zero is joined to nothing.
 4. **Run W2 on a small cycle** — three days, one page — before planning a month.
 5. **Measure caching.** Read the `Cached:` figure in the Execution Log. If Gemini's
    implicit caching is working, the caching project is finished; if it is zero across
@@ -324,6 +370,8 @@ In this order. Steps 1–3 are one-time.
 | **A missing column fails silently** | `SheetWriter.writeCell` skips a column the sheet does not have, logs one line, and the run reports success | Maintenance → Create Managed Columns, then Preflight Check. Any code writing a new column must add it to `CONFIG.MANAGED_COLUMNS`. |
 | **`\b` does not work on Arabic** | JavaScript defines `\b` on `[A-Za-z0-9_]`, so a regex like `/^أصعب\b/` matches nothing and silently reports zero | Use `(?![؀-ۿ])`. This bug was live in the portfolio critic and only surfaced because it was tested against real Arabic openings. |
 | **Claude rejects `temperature`** | The Claude 5 family returns HTTP 400 on any non-default sampling parameter, and every worker declares one | Handled in `ClaudeProvider`, which no longer forwards it. Do not re-add it. |
+| **A knowledge file's entity name is not the campaign's name** | W1 files the card under that name and `Content Pipeline` looks it up per post. The ICU file names "Intensive Care Unit"; the calendar schedules "ICU Center". A card filed under the entity name is orphaned — correct in every field, joined to nothing, and the strategy fields still arrive blank | Set `campaign_name` in the front matter, and run **Check Knowledge File** before building: it reports the slot count and names the near misses. |
+| **Reference photographs are configured but absent** | Every domain folder under `business/Media/Services/` exists and matches `CONFIG.PROJECT_ASSETS.DOMAINS`, and every one is empty — the actual photos are still a `.zip` in `Services/Pics/`. `Brand Identity` has its images one level down in `Png/`, and the loader does not recurse | Generation falls back to AI_GENERATED silently. Unzip into the matching domain folders before judging any visual output. |
 | **The audits are a baseline, not a status** | They describe 2026-07-29 and are deliberately unedited. Reading them as current state will send you to redo finished work | §6 is the status. The audits are the evidence. |
 
 ---

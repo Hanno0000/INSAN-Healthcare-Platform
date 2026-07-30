@@ -2,6 +2,7 @@
 entity_id:      HOSP-002
 entity_name_en: Delta International Hospital
 entity_name_ar: مستشفى الدلتا الدولي
+campaign_name:  Delta Restore Trust
 service_level:  HOSPITAL
 campaign_type:  Hospital
 parent:         INSAN

@@ -94,6 +94,7 @@ Every file opens with this block. W1 reads it to decide how to build the card.
 entity_id:      MED-003
 entity_name_en: Orthopedic & Sports Injury Center
 entity_name_ar: مركز العظام وإصابات الملاعب
+campaign_name:  Orthopedic Center   # only when it differs from entity_name_en
 service_level:  CENTER          # DEPARTMENT | CENTER | CLINIC | PROGRAM
                                 # | CORPORATE | HOSPITAL | SUPPORTING
 campaign_type:  Medical Services
@@ -106,6 +107,45 @@ last_updated:   2026-07-29
 ```
 
 `service_level` is mandatory and is what stops a Department being modelled as a Center.
+
+### 4.1 `campaign_name` — the join key
+
+**This file describes an entity. The calendar schedules a campaign. They are
+not always called the same thing.**
+
+W1 files the card under `campaign_name` where it is present and under
+`entity_name_en` where it is not, and that name is what `Content Pipeline`
+looks up once per scheduled post. A card filed under a name no calendar row
+uses is **orphaned**: every field correct, joined to nothing, and the twelve
+strategy fields still arrive blank — the 67% defect again, this time underneath
+a card that reported success.
+
+Measured against the live workbook on 2026-07-30:
+
+| File | Entity | Calendar campaign | Slots |
+|---|---|---|---|
+| `MEDICAL_SERVICE_ICU.md` | Intensive Care Unit | **ICU Center** | 11 |
+| `MEDICAL_SERVICE_EMERGENCY.md` | Emergency Department | **Emergency Center** | 16 |
+| `HOSPITAL_DELTA.md` | Delta International Hospital | **Delta Restore Trust** | 8 |
+| `PROGRAM_KABARONA.md` | Kabarona Program | **Kabarona Continuous Care Program** ¹ | 6 |
+| the three `SUPPORTING_*` files | — | identical to the entity name | 18 |
+
+Note what the first two show: the calendar calls ICU and Emergency "Centers"
+while `MEDICAL_SERVICES_TAXONOMY.md` §2 A makes them **Departments**. Both
+statements stay: `campaign_name` carries what the campaign is *called*,
+`service_level` carries what the entity *is*. Renaming the campaign is a
+separate decision and belongs to the brand owner.
+
+¹ ⚠️ **Pending one rename in the sheet.** The calendar currently spells this
+`Kobarna Continuous Care Program`. The spelling was unified on the brand
+documents' *Kabarona* on 2026-07-30, so **6 Content Calendar rows and 1 Campaign
+Cards row must be renamed** before this file's card will join to anything.
+`Check Knowledge File` reports it as orphaned until they are — which is the
+point of the check.
+
+**Before building any card:** AI Workers → Planning → **Check Knowledge File**
+reports how many scheduled slots the name would serve, and names the near
+misses when the answer is zero. It costs no inference.
 
 ---
 
@@ -266,14 +306,19 @@ All ❌.
 
 | | Count | Scheduled slots |
 |---|---|---|
-| ✅ Written, builds a campaign card | **5** — ICU, Meet Our Doctors, Patient Journey, Success Stories, Kabarona¹ | 29 |
+| ✅ Written, builds a campaign card | **5** — ICU, Kabarona, Meet Our Doctors, Patient Journey, Success Stories | **35** |
 | 🟠 Structurally complete, awaiting operator facts | **2** — Emergency, Delta | 24 |
-| ❌ Not started | ~33 | 79 |
+| ❌ Not started | ~33 | 73 |
 
-¹ Kabarona is written but does **not** currently build a card: its front matter
-predates §4 and it is missing the *Why This Service Exists* and *Differentiators*
-sections. Two short additions would close it — the highest return per hour left in
-the knowledge base.
+*Updated 2026-07-30 (second pass).* Kabarona now builds a card: its front matter
+was rewritten to §4 and two headings were renamed to the ones the gate matches —
+*Why This Program Exists* → *Why This Service Exists*, *What Makes The Program
+Different* → *Differentiators*. No content was added or invented.
+
+All five are joined to real calendar rows, verified against the workbook. Before
+`campaign_name` existed, ICU's card would have been filed as "Intensive Care
+Unit" and served **none** of its 11 slots — the five ready files covered 18
+slots, not 35. Filling Emergency and Delta takes it to **59 of 132**.
 
 **How to check any file:** AI Workers → Planning → **Check Knowledge File**. It runs
 W1's full validation gate and reports what is missing, without spending an

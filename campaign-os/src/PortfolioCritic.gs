@@ -451,7 +451,8 @@ var PortfolioCritic = {
       response.inputTokens, response.outputTokens,
       'Reviewed ' + measured.total + ' rows (' + measured.written + ' with copy) | ' +
       'Formulaic openings: ' + measured.formulaicShare + '% | ' +
-      'Findings: ' + (parsed.findings || []).length
+      'Findings: ' + (parsed.findings || []).length +
+      ' | ' + AIProvider.cacheSummary(response)
     );
 
     return { measured: measured, digest: digest, review: parsed };

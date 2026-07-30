@@ -428,7 +428,8 @@ var PlannerRunner = {
       'Planned ' + accepted.length + ' slots from row ' + result.startRow +
       ' | Eligible campaigns: ' + check.ready.length +
       (check.missing.length ? ' | Refused (no card): ' + check.missing.join(', ') : '') +
-      (rejected.length ? ' | Dropped ineligible: ' + rejected.join(', ') : '')
+      (rejected.length ? ' | Dropped ineligible: ' + rejected.join(', ') : '') +
+      ' | ' + AIProvider.cacheSummary(response)
     );
 
     return {

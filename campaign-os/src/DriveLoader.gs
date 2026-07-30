@@ -20,7 +20,22 @@ var DriveLoader = {
       var file = files.next();
       var content = file.getBlob().getDataAsString('UTF-8');
 
-      CacheService.getScriptCache().put(cacheKey, content, CONFIG.CACHE_DURATION);
+      // Caching is an optimisation, and it must not be able to lose a file that
+      // was read successfully. CacheService refuses a value over 100KB by
+      // throwing; CREATIVE_DIRECTOR_WORKER.md is already 77KB and these files
+      // only grow. Inside the outer catch, that throw returned null — and the
+      // caller reports null as "prompt file not found, check the folder ID",
+      // sending the operator to look for a file that is sitting right there.
+      try {
+        CacheService.getScriptCache().put(cacheKey, content, CONFIG.CACHE_DURATION);
+      } catch (cacheErr) {
+        Logger.log(
+          'DriveLoader | ' + fileName + ' (' + content.length + ' chars) was ' +
+          'read but not cached: ' + cacheErr.toString() +
+          ' It will be re-read from Drive on every call.'
+        );
+      }
+
       return content;
 
     } catch (e) {
@@ -386,23 +401,71 @@ var DriveLoader = {
       'drive_' + CONFIG.VISUAL_PROMPTS_FOLDER_ID
     ]);
 
-    var docNames;
-    for (var workerName in CONFIG.WORKERS) {
-      docNames = CONFIG.WORKERS[workerName].docs;
+    // Services as well as workers. Media Generation lives under CONFIG.SERVICES,
+    // so Refresh Cache walked straight past MEDIA_GENERATION_SERVICE.md — the
+    // second largest prompt in the system. Editing it in Drive and refreshing
+    // did nothing for six hours, and looked exactly like an edit that had
+    // taken effect.
+    // The planning workers are not in either registry — they read their manual
+    // from PLANNING_PROMPTS_FOLDER_ID, which is a Script Property — so their
+    // prompts were unreachable from here too.
+    var planningFolder =
+      PropertiesService.getScriptProperties().getProperty('PLANNING_PROMPTS_FOLDER_ID') ||
+      CONFIG.PROMPTS_FOLDER_ID;
 
-      for (var i = 0; i < docNames.length; i++) {
-        cache.remove('drive_' + CONFIG.DOCS_FOLDER_ID + '_' + docNames[i]);
+    var planning = [CONFIG.CARD_BUILDER, CONFIG.CAMPAIGN_PLANNER, CONFIG.PORTFOLIO_CRITIC];
+
+    for (var q = 0; q < planning.length; q++) {
+      var promptFile = planning[q] && planning[q].promptFile;
+      if (promptFile) {
+        cache.remove('drive_' + planningFolder + '_' + promptFile);
       }
+    }
 
-      var isVisualWorker = CONFIG.WORKERS[workerName].sheetName === CONFIG.VISUAL_PIPELINE.SHEET_NAME;
-      var promptFolder = isVisualWorker
-        ? CONFIG.VISUAL_PROMPTS_FOLDER_ID
-        : CONFIG.PROMPTS_FOLDER_ID;
+    // Brand documents the planning workers name inline rather than through a
+    // docs array — CardBuilder loads the first two, PlannerRunner the last two.
+    // If a call site there starts reading a different document, add it here.
+    var planningDocs = [
+      'MASTER_BRAND_ARCHITECTURE.md', 'AI_CREATIVE_CONSTITUTION.md',
+      'PROJECT_DECISIONS.md', 'PROJECT_STRUCTURE.md'
+    ];
 
-      cache.remove(
-        'drive_' + promptFolder + '_' +
-        CONFIG.WORKERS[workerName].promptFile
-      );
+    for (var b = 0; b < planningDocs.length; b++) {
+      cache.remove('drive_' + CONFIG.DOCS_FOLDER_ID + '_' + planningDocs[b]);
+    }
+
+    var registries = [CONFIG.WORKERS || {}, CONFIG.SERVICES || {}];
+
+    for (var r = 0; r < registries.length; r++) {
+      var registry = registries[r];
+
+      for (var name in registry) {
+        var entry = registry[name] || {};
+        var docNames = entry.docs || [];
+
+        for (var i = 0; i < docNames.length; i++) {
+          cache.remove('drive_' + CONFIG.DOCS_FOLDER_ID + '_' + docNames[i]);
+        }
+
+        // A service keeps its own docs under its worker block — the Media
+        // Designer's live in .designer.docs — and those are loaded from the
+        // same folder, so they go stale the same way.
+        var nested = (entry.designer && entry.designer.docs) || [];
+        for (var n = 0; n < nested.length; n++) {
+          cache.remove('drive_' + CONFIG.DOCS_FOLDER_ID + '_' + nested[n]);
+        }
+
+        if (!entry.promptFile) {
+          continue;
+        }
+
+        var isVisual = entry.sheetName === CONFIG.VISUAL_PIPELINE.SHEET_NAME;
+        var promptFolder = isVisual
+          ? CONFIG.VISUAL_PROMPTS_FOLDER_ID
+          : CONFIG.PROMPTS_FOLDER_ID;
+
+        cache.remove('drive_' + promptFolder + '_' + entry.promptFile);
+      }
     }
   }
 };

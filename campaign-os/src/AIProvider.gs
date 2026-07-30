@@ -130,6 +130,38 @@ var AIProvider = {
     return null;
   },
 
+  // One log fragment describing what this call took from cache, correct for
+  // either provider.
+  //
+  // Share cached depends on which token convention the response carries:
+  // Gemini's promptTokenCount already includes the cached prefix, Anthropic's
+  // input_tokens does not. Dividing by (cached + inputTokens) is right for
+  // Anthropic and understates Gemini by roughly half — on precisely the number
+  // the whole caching effort is judged by. Written once, here, so the two call
+  // sites cannot disagree.
+  cacheSummary: function(response) {
+    var cached = (response && response.cachedTokens) || 0;
+    var cacheWrite = (response && response.cacheWriteTokens) || 0;
+    var input = (response && response.inputTokens) || 0;
+
+    if (!cached && !cacheWrite) {
+      return 'Cached: 0';
+    }
+
+    var total = response && response.inputIncludesCached
+      ? input
+      : input + cached;
+
+    var share = total ? Math.round((cached / total) * 100) : 0;
+    var summary = 'Cached: ' + cached + ' (' + share + '% of input)';
+
+    if (cacheWrite) {
+      summary += ' | Cache written: ' + cacheWrite;
+    }
+
+    return summary;
+  },
+
   getProviderName: function() {
     return CONFIG.AI_PROVIDER;
   },
@@ -326,8 +358,12 @@ var ClaudeProvider = {
     // is ~0.1x input, a write ~1.25x — so both are surfaced.
     return {
       text: text,
+      provider: 'claude',
       finishReason: parsed.stop_reason || '',
       inputTokens: usage.input_tokens || 0,
+      // input_tokens excludes anything read from cache; Gemini's equivalent
+      // includes it. See the note on the Gemini return.
+      inputIncludesCached: false,
       outputTokens: usage.output_tokens || 0,
       totalTokens: (usage.input_tokens || 0) + (usage.output_tokens || 0),
       cachedTokens: usage.cache_read_input_tokens || 0,
@@ -471,9 +507,15 @@ var GeminiProvider = {
     // Until the timestamp was removed from the prompt header it was structurally
     // always zero; logging it is what makes the caching work measurable instead
     // of assumed. (Audit A, finding F5, and §9 Phase 0 step 2.)
+    // promptTokenCount is the whole prompt, cached part included — unlike
+    // Anthropic, where input_tokens counts only what was not served from cache.
+    // A caller computing "share cached" has to know which convention it is
+    // holding, so the provider is named in the result rather than guessed at.
     return {
       text: text.trim(),
+      provider: 'gemini',
       inputTokens: usageMetadata.promptTokenCount || 0,
+      inputIncludesCached: true,
       outputTokens: usageMetadata.candidatesTokenCount || 0,
       totalTokens: usageMetadata.totalTokenCount || 0,
       cachedTokens: usageMetadata.cachedContentTokenCount || 0,

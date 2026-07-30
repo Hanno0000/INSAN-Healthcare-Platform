@@ -26,26 +26,39 @@ var MediaDesigner = {
 
   WORKER_NAME: 'MEDIA_GENERATION',
 
-  // Returns { prompts: [...], blocked: bool, blockedReason: '' }.
+  // Returns { prompts: [...], blocked: bool, blockedReason: '', usage: {...} }.
   //
   // One prompt per asset, in order. A carousel gets genuinely different scenes
   // because the designer is asked for them, not because a "|" was split.
   compose: function(rowData, assetCount, options) {
     options = options || {};
 
-    var context = this._buildContext(rowData, assetCount, options);
+    var built = this._buildContext(rowData, assetCount, options);
 
     Logger.log(
       'MEDIA_DESIGNER | composing ' + assetCount + ' prompt(s) | context ' +
-      context.length + ' chars (~' + Math.round(context.length / 4) + ' tokens)'
+      built.text.length + ' chars (~' + Math.round(built.text.length / 4) + ' tokens)'
     );
 
-    var response = AIProvider.call(context, {
+    var response = AIProvider.call(built.text, {
       temperature: this._config().temperature,
-      provider: this._config().provider
+      provider: this._config().provider,
+
+      // The manual is 11,074 tokens and is re-sent for every row. Without a
+      // breakpoint the Anthropic path pays all of it fresh each time, and this
+      // worker is a candidate to move there — the visual manual is the second
+      // largest prompt in the system. Gemini ignores the marker and matches
+      // implicitly. (Audit A, finding F5.)
+      cachePrefix: built.staticPart
     });
 
     var parsed = this._parse(response.text, assetCount);
+
+    // Handed back so the caller can put it in the Execution Log. This is the
+    // only inference in the image path, and it was logged as zero tokens on
+    // every row — which is what made the whole visual path invisible to the
+    // cost and caching measurement the content workers are judged by.
+    parsed.usage = response;
 
     if (parsed.blocked) {
       Logger.log('MEDIA_DESIGNER | blocked: ' + parsed.blockedReason);
@@ -59,21 +72,30 @@ var MediaDesigner = {
     return service.designer || {};
   },
 
+  // Returns { text, staticPart }. The static part — header, manual, project
+  // docs — is identical on every row and is where the cache breakpoint goes.
+  // Split here rather than recomputed by the caller so there is one definition
+  // of where the reusable part ends; a second, parallel one would drift, and
+  // the failure mode of that is a silent 100% cache miss.
   _buildContext: function(rowData, assetCount, options) {
-    var sections = [];
-
-    sections.push(this._header());
-    sections.push(this._trainingManual());
+    var staticSections = [this._header(), this._trainingManual()];
 
     var docs = this._projectDocs();
     if (docs) {
-      sections.push(docs);
+      staticSections.push(docs);
     }
 
-    sections.push(this._brief(rowData));
-    sections.push(this._contract(rowData, assetCount, options));
+    var staticPart = staticSections.filter(function(s) { return s; }).join('\n\n');
 
-    return sections.filter(function(s) { return s; }).join('\n\n');
+    var dynamic = [
+      this._brief(rowData),
+      this._contract(rowData, assetCount, options)
+    ].filter(function(s) { return s; }).join('\n\n');
+
+    return {
+      text: dynamic ? staticPart + '\n\n' + dynamic : staticPart,
+      staticPart: staticPart
+    };
   },
 
   // No per-call values here — see ContextBuilder._buildHeader. This header

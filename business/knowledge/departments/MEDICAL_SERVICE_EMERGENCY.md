@@ -2,6 +2,7 @@
 entity_id:      MED-002
 entity_name_en: Emergency Department
 entity_name_ar: قسم الطوارئ
+campaign_name:  Emergency Center
 service_level:  DEPARTMENT
 campaign_type:  Medical Services
 parent:         null

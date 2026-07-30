@@ -787,11 +787,14 @@ function checkKnowledgeFile() {
     var check = CardBuilder.validate(file.content, fileName);
     var lines = [fileName + '  (' + file.folder + ')', ''];
 
+    var campaignName = CardBuilder.campaignNameFor(check.frontMatter);
+
     if (check.ok) {
       lines.push('Ready. A card can be built from this file.');
       lines.push('');
-      lines.push('entity: ' + check.frontMatter.entity_name_en);
-      lines.push('level:  ' + check.frontMatter.service_level);
+      lines.push('entity:   ' + check.frontMatter.entity_name_en);
+      lines.push('campaign: ' + campaignName);
+      lines.push('level:    ' + check.frontMatter.service_level);
     } else {
       lines.push('Not ready — ' +
         (check.problems.length + check.gaps.length) + ' item(s) outstanding:');
@@ -805,6 +808,28 @@ function checkKnowledgeFile() {
         lines.push('• line ' + check.gaps[g].line + ' — "' +
           check.gaps[g].section + '" needs you' +
           (check.gaps[g].note ? ': ' + check.gaps[g].note : ''));
+      }
+    }
+
+    // Whether a card under this name would be joined to anything. A file can
+    // pass every structural check and still produce a card no scheduled row
+    // looks up, and that failure is invisible in the card itself. Reported here
+    // because this check costs no inference — the point of it is to be run
+    // before the build, not after.
+    var usage = CardBuilder.calendarUsage(campaignName);
+
+    if (usage) {
+      lines.push('');
+      if (usage.slots) {
+        lines.push('Calendar: serves ' + usage.slots + ' scheduled slot(s) as "' +
+          campaignName + '".');
+      } else {
+        lines.push('Calendar: NO row is named "' + campaignName + '" — a card ' +
+          'built now would be joined to nothing.');
+        if (usage.near.length) {
+          lines.push('Close names in the calendar: ' + usage.near.join(', '));
+          lines.push('Set campaign_name in the front matter to the one you mean.');
+        }
       }
     }
 
@@ -1961,7 +1986,18 @@ function runWorker(workerName, rowNumber) {
     // Visual QA evaluates artwork, so it must receive the artwork. Without this
     // it only ever saw the Drive URL as text and graded the brief, not the image.
     if (upperName === 'VISUAL_QA_WORKER') {
-      var qaImages = DriveLoader.loadImagesFromCell(rowData['Generated Assets']);
+      // Load as many assets as the row declares. loadImagesFromCell defaults to
+      // four, and the integrity gate below compares what was loaded against
+      // Asset Count — so a five- to ten-card carousel (CONFIG allows ten) had
+      // its sixth card onwards silently dropped and then failed as an
+      // "incomplete set". That failure throws by design and tells the operator
+      // to re-run Media Generation, which regenerates the same complete set and
+      // fails the same way: a dead end reachable by any carousel over four.
+      var declaredAssets = parseInt(rowData['Asset Count'], 10);
+      var qaImages = DriveLoader.loadImagesFromCell(
+        rowData['Generated Assets'],
+        (!isNaN(declaredAssets) && declaredAssets > 0) ? declaredAssets : null
+      );
 
       if (!qaImages.length) {
         throw new Error(
@@ -2075,20 +2111,7 @@ function runWorker(workerName, rowNumber) {
     // Cache performance, per call. Roughly 9.7M of 10.8M input tokens per plan
     // are byte-identical across rows, so this number is the measure of whether
     // the caching work is doing anything. Zero on every row means it is not.
-    var cached = aiResponse.cachedTokens || 0;
-    var cacheWrite = aiResponse.cacheWriteTokens || 0;
-
-    if (cached || cacheWrite) {
-      var share = aiResponse.inputTokens
-        ? Math.round((cached / (cached + aiResponse.inputTokens)) * 100)
-        : 0;
-      details += ' | Cached: ' + cached + ' (' + share + '% of input)';
-      if (cacheWrite) {
-        details += ' | Cache written: ' + cacheWrite;
-      }
-    } else {
-      details += ' | Cached: 0';
-    }
+    details += ' | ' + AIProvider.cacheSummary(aiResponse);
 
     details += ' | Prompt: ' + prefixHash;
 

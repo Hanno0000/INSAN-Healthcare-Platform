@@ -3,7 +3,21 @@ document_type: Knowledge Base
 entity_type: Medical Service
 entity_name: Kabarona Program
 owner: INSAN
-status: Active
+
+entity_id:      PROG-001
+entity_name_en: Kabarona Program
+entity_name_ar: برنامج كبارنا
+# The join key: Content Pipeline looks the card up by this name once per post.
+# The sheet spelled it "Kobarna"; the spelling was unified on the brand
+# documents' "Kabarona" on 2026-07-30, so the calendar must match.
+campaign_name:  Kabarona Continuous Care Program
+service_level:  PROGRAM
+campaign_type:  Signature Program
+parent:         INSAN
+hospitals:      [Future, Delta]
+status:         Active
+version:        1.0
+last_updated:   2026-07-30
 
 related_campaigns:
   - Kabarona Program
@@ -111,7 +125,7 @@ Provide seniors with professional, continuous and compassionate healthcare that 
 
 ---
 
-# Why This Program Exists
+# Why This Service Exists
 
 Older adults often experience fragmented healthcare journeys.
 
@@ -568,7 +582,7 @@ The communication emphasis is continuity of care during recovery.
 
 ---
 
-# What Makes The Program Different
+# Differentiators
 
 The value of the program is not any single feature.
 

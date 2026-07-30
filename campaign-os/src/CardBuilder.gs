@@ -419,6 +419,103 @@ var CardBuilder = {
 
   // ---------------------------------------------------------------- writing
 
+  // The name the card is filed under, which is the join key the whole pipeline
+  // turns on: Content Pipeline looks the campaign up in Campaign Cards once per
+  // scheduled post.
+  //
+  // A knowledge file describes an *entity*, and an entity's name is not always
+  // the *campaign's*. Measured against the live workbook: the ICU file names
+  // "Intensive Care Unit" while the calendar schedules "ICU Center" (11 slots),
+  // the Emergency file names "Emergency Department" against "Emergency Center"
+  // (16), and the Delta file names the hospital against "Delta Restore Trust"
+  // (8). Filing the card under the entity name leaves the VLOOKUP returning
+  // blank on all 35 — the 67% defect again, this time arriving underneath a
+  // card that reported success.
+  //
+  // So a file may state campaign_name when the two differ. Where it does not,
+  // the entity name is the campaign name — true of every supporting campaign.
+  campaignNameFor: function(frontMatter) {
+    var explicit = String((frontMatter || {}).campaign_name || '').trim();
+    return explicit || String((frontMatter || {}).entity_name_en || '').trim();
+  },
+
+  // How many scheduled posts a card under this name would actually serve.
+  //
+  // Zero means the card is orphaned: correct in itself, joined to nothing, and
+  // indistinguishable from a working one until 132 rows arrive with no
+  // strategy. Returns null when the calendar cannot be read, so an offline
+  // check is never blocked by it.
+  calendarUsage: function(campaignName) {
+    try {
+      var sheetName = (CONFIG.CAMPAIGN_PLANNER || {}).CALENDAR_SHEET_NAME ||
+        'Content Calendar';
+      var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+
+      if (!sheet) {
+        return null;
+      }
+
+      var nameCol = SheetSchema._getColumnMap(sheetName)['Campaign Name'];
+      var lastRow = sheet.getLastRow();
+
+      if (!nameCol || lastRow < CONFIG.DATA_START_ROW) {
+        return null;
+      }
+
+      var values = sheet
+        .getRange(CONFIG.DATA_START_ROW, nameCol, lastRow - CONFIG.DATA_START_ROW + 1, 1)
+        .getValues();
+
+      var wanted = String(campaignName || '').trim().toLowerCase();
+      var slots = 0;
+      var others = {};
+
+      for (var i = 0; i < values.length; i++) {
+        var name = String(values[i][0] || '').trim();
+
+        if (!name) {
+          continue;
+        }
+
+        if (name.toLowerCase() === wanted) {
+          slots++;
+        } else {
+          others[name] = (others[name] || 0) + 1;
+        }
+      }
+
+      return { slots: slots, near: slots ? [] : this._nearNames(wanted, others) };
+
+    } catch (e) {
+      Logger.log('CARD_BUILDER | calendar usage unavailable: ' + e.toString());
+      return null;
+    }
+  },
+
+  // Calendar names sharing a word with the one asked for. The mismatch is
+  // almost always a rename rather than a genuinely absent campaign, so naming
+  // the candidates turns "no rows use this" into an obvious one-line fix.
+  _nearNames: function(wanted, others) {
+    var words = wanted.split(/[^a-z0-9؀-ۿ]+/).filter(function(w) {
+      return w.length > 3;
+    });
+
+    var hits = [];
+
+    for (var name in others) {
+      var lower = name.toLowerCase();
+
+      for (var w = 0; w < words.length; w++) {
+        if (lower.indexOf(words[w]) !== -1) {
+          hits.push(name + ' (' + others[name] + ' slots)');
+          break;
+        }
+      }
+    }
+
+    return hits.slice(0, 5);
+  },
+
   _findCardRow: function(campaignName) {
     var sheetName = CONFIG.CAMPAIGN_CARDS_SHEET_NAME;
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
@@ -499,7 +596,7 @@ var CardBuilder = {
 
     // The knowledge file decides what the entity is; the front matter is more
     // reliable than a model re-reading it, so identity comes from there.
-    parsed['Campaign Name'] = check.frontMatter.entity_name_en;
+    parsed['Campaign Name'] = this.campaignNameFor(check.frontMatter);
     parsed['Service Level'] = check.frontMatter.service_level;
 
     var target = this._findCardRow(parsed['Campaign Name']);
@@ -551,6 +648,20 @@ var CardBuilder = {
 
     if (parsed._insufficient && parsed._insufficient.length) {
       details += ' | Not supported by the file: ' + parsed._insufficient.join(', ');
+    }
+
+    details += ' | ' + AIProvider.cacheSummary(response);
+
+    // A card nothing schedules is worth saying out loud. It is the one failure
+    // this worker cannot see in its own output: every field correct, joined to
+    // no row in the calendar.
+    var usage = this.calendarUsage(parsed['Campaign Name']);
+
+    if (usage) {
+      details += usage.slots
+        ? ' | Serves ' + usage.slots + ' scheduled slot(s)'
+        : ' | ORPHANED: no calendar row is named "' + parsed['Campaign Name'] + '"' +
+          (usage.near.length ? ' — close names: ' + usage.near.join(', ') : '');
     }
 
     Logger.logSuccess(
