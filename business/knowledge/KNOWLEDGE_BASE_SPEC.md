@@ -278,16 +278,32 @@ All ❌.
 | Meet Our Doctors | `supporting/SUPPORTING_MEET_OUR_DOCTORS.md` | 6 | ✅ builds a card |
 | Patient Journey | `supporting/SUPPORTING_PATIENT_JOURNEY.md` | 6 | ✅ builds a card |
 | Success Stories | `supporting/SUPPORTING_SUCCESS_STORIES.md` | 6 | ✅ builds a card |
-| Meet Our Team | `supporting/SUPPORTING_MEET_OUR_TEAM.md` | 5 | ❌ |
-| Behind The Scenes | `supporting/SUPPORTING_BEHIND_THE_SCENES.md` | 5 |
-| Hospital Life | `supporting/SUPPORTING_HOSPITAL_LIFE.md` | 5 |
-| FAQ | `supporting/SUPPORTING_FAQ.md` | 3 |
-| Community Impact (CSR) | `supporting/SUPPORTING_CSR.md` | 3 |
-| Visiting Professors | `supporting/SUPPORTING_VISITING_PROFESSORS.md` | 2 |
-| Patient Guides | `supporting/SUPPORTING_PATIENT_GUIDES.md` | 2 |
-| Medical Education | `supporting/SUPPORTING_MEDICAL_EDUCATION.md` | 1 |
+| Meet Our Team | `supporting/SUPPORTING_MEET_OUR_TEAM.md` | 5 | ✅ builds a card |
+| Behind The Scenes | `supporting/SUPPORTING_BEHIND_THE_SCENES.md` | 5 | ✅ builds a card |
+| Hospital Life | `supporting/SUPPORTING_HOSPITAL_LIFE.md` | 5 | ✅ builds a card |
+| FAQ | `supporting/SUPPORTING_FAQ.md` | 3 | ❌ |
+| Community Impact (CSR) | `supporting/SUPPORTING_CSR.md` | 3 | ❌ |
+| Visiting Professors | `supporting/SUPPORTING_VISITING_PROFESSORS.md` | 2 | ❌ |
+| Patient Guides | `supporting/SUPPORTING_PATIENT_GUIDES.md` | 2 | ❌ |
+| Medical Education | `supporting/SUPPORTING_MEDICAL_EDUCATION.md` | 1 | ❌ |
 
-All ❌.
+### 7.6.1 The three-campaign boundary
+
+Meet Our Team, Behind The Scenes and Hospital Life describe the same two buildings and
+will collapse into one another unless the boundary is enforced. Each file carries the
+same routing test, and it is the first thing to check before writing:
+
+| If the post is fundamentally about… | It belongs to |
+|---|---|
+| a **person** — who they are, what they decide | Meet Our Team |
+| a **process** — what happens that nobody sees | Behind The Scenes |
+| a **place and its rhythm** — what it feels like here | Hospital Life |
+
+A post can contain all three. File it by what would be lost if you removed it.
+
+Audit B's finding that 88% of posts shared five opening formulas came from exactly
+this kind of unnoticed convergence — three campaigns producing one campaign is the
+same failure at the plan level.
 
 ### 7.7 Educational
 
@@ -313,19 +329,23 @@ thing, which is how two sources of truth begin.
 
 | | Count | Scheduled slots |
 |---|---|---|
-| ✅ Written, builds a campaign card | **5** — ICU, Kabarona, Meet Our Doctors, Patient Journey, Success Stories | **35** |
+| ✅ Written, builds a campaign card | **8** — ICU, Kabarona, Meet Our Doctors, Patient Journey, Success Stories, Meet Our Team, Behind The Scenes, Hospital Life | **50** |
 | 🟠 Structurally complete, awaiting operator facts | **2** — Emergency, Delta | 24 |
-| ❌ Not started | ~33 | 73 |
+| ❌ Not started | ~30 | 58 |
 
-*Updated 2026-07-30 (second pass).* Kabarona now builds a card: its front matter
-was rewritten to §4 and two headings were renamed to the ones the gate matches —
-*Why This Program Exists* → *Why This Service Exists*, *What Makes The Program
-Different* → *Differentiators*. No content was added or invented.
+*Updated 2026-07-30 (third pass).* Kabarona was closed by rewriting its front
+matter to §4 and renaming two headings to the ones the gate matches — *Why This
+Program Exists* → *Why This Service Exists*, *What Makes The Program Different* →
+*Differentiators*. No content was added or invented. Then **Meet Our Team**,
+**Behind The Scenes** and **Hospital Life** were written from the committed brand
+documents, ~1,000 lines each, adding 15 slots.
 
-All five are joined to real calendar rows, verified against the workbook. Before
-`campaign_name` existed, ICU's card would have been filed as "Intensive Care
-Unit" and served **none** of its 11 slots — the five ready files covered 18
-slots, not 35. Filling Emergency and Delta takes it to **59 of 132**.
+Every ready file is joined to a real calendar row, verified against the workbook.
+Before `campaign_name` existed, ICU's card would have been filed as "Intensive
+Care Unit" and served **none** of its 11 slots.
+
+**Coverage: 44 of 132 slots today**, 50 once the Kabarona rename lands in the
+sheet, **74 once Emergency and Delta are answered.**
 
 **How to check any file:** AI Workers → Planning → **Check Knowledge File**. It runs
 W1's full validation gate and reports what is missing, without spending an

@@ -213,7 +213,7 @@ The right-hand column is what has changed since — **none of it verified in pro
 | **88%** | of finished posts open with one of five rhetorical formulas | Creative memory fixed; a second opening is produced per post; a portfolio critic measures the whole plan |
 | **18%** | agreement between the three systems describing the medical centers | Unchanged — needs the brand owner, not code |
 | **~9.7M of 10.8M** | input tokens byte-identical across rows, caching blocked by one line | Line removed; Anthropic cache breakpoint in place; Gemini implicit caching needs measuring |
-| **5%** | of the knowledge base written — 2 files for ~40 entities | 7 files. 5 build a campaign card, covering 29 of 132 scheduled slots today and 35 after one rename in the sheet; 2 await operator facts and would add 24 more |
+| **5%** | of the knowledge base written — 2 files for ~40 entities | 10 files. 8 build a campaign card, covering 44 of 132 scheduled slots today and 50 after one rename in the sheet; 2 await operator facts and would add 24 more |
 | **2 of 10** | workers own the ends of the chain, and neither exists | W1 and W2 exist and are untested. W9 and W10 still do not |
 
 **The one-sentence reading, still true:** the machinery is in better shape than its
@@ -287,14 +287,23 @@ production.
 | `SUPPORTING_MEET_OUR_DOCTORS.md` | Meet Our Doctors | 6 | ✅ builds a card |
 | `SUPPORTING_PATIENT_JOURNEY.md` | Patient Journey | 6 | ✅ builds a card |
 | `SUPPORTING_SUCCESS_STORIES.md` | Success Stories | 6 | ✅ builds a card |
+| `SUPPORTING_MEET_OUR_TEAM.md` | Meet Our Team | 5 | ✅ builds a card |
+| `SUPPORTING_BEHIND_THE_SCENES.md` | Behind The Scenes | 5 | ✅ builds a card |
+| `SUPPORTING_HOSPITAL_LIFE.md` | Hospital Life | 5 | ✅ builds a card |
 | `MEDICAL_SERVICE_EMERGENCY.md` | Emergency Center | 16 | 🟠 3 `NEEDS-OPERATOR` markers |
 | `HOSPITAL_DELTA.md` | Delta Restore Trust | 8 | 🟠 2 `NEEDS-OPERATOR` markers |
 
-**29 of 132 slots** are covered today, **35 once the Kabarona rename below
-lands**, and **59** once the two 🟠 files are filled. The middle column is the
+**44 of 132 slots** are covered today, **50 once the Kabarona rename below
+lands**, and **74** once the two 🟠 files are filled. The middle column is the
 join key and it is not always the entity's name — see the trap in §7. Kabarona
 was closed on 2026-07-30 by rewriting its front matter and renaming two
 headings; no content was invented.
+
+⚠️ **The last three describe the same two buildings and will merge into one
+campaign unless the boundary is enforced.** Each file carries the same routing
+test: a post about **a person** is Meet Our Team, about **a process** is Behind
+The Scenes, about **a place and its rhythm** is Hospital Life. Three campaigns
+producing one campaign is Audit B's B1 finding at the plan level.
 
 ⚠️ **One rename owed in the sheet.** The spelling was unified on the brand
 documents' *Kabarona*; the calendar still says *Kobarna*. Rename **6 Content
