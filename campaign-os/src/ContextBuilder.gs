@@ -1,23 +1,75 @@
 var ContextBuilder = {
 
-  buildContext: function(workerName, rowData) {
+  // rowNumber is the row being written. Creative memory needs it to look
+  // backwards from the current position; without it the window cannot be
+  // anchored anywhere meaningful. See _recentApprovedRows.
+  buildContext: function(workerName, rowData, rowNumber) {
     var workerConfig = CONFIG.WORKERS[workerName];
 
     if (!workerConfig) {
       throw new Error('Unknown worker: ' + workerName);
     }
 
-    var sections = [];
+    var dynamic = [
+      this._buildRowData(workerConfig, rowData),
+      this._buildCreativeMemory(workerName, rowData, rowNumber),
+      this._buildOutputFormat(workerConfig)
+    ].filter(function(s) { return s; }).join('\n\n');
 
-    sections.push(this._buildHeader(workerName));
-    sections.push(this._buildWorkerPrompt(workerName));
-    sections.push(this._buildProjectDocs(workerName));
-    sections.push(this._buildControlledVocabulary(workerConfig));
-    sections.push(this._buildRowData(workerConfig, rowData));
-    sections.push(this._buildCreativeMemory(workerName, rowData));
-    sections.push(this._buildOutputFormat(workerConfig));
+    var prefix = this.staticPrefixFor(workerName);
 
-    return sections.filter(function(s) { return s; }).join('\n\n');
+    return dynamic ? prefix + '\n\n' + dynamic : prefix;
+  },
+
+  // The part of the prompt that is identical on every row for a given worker:
+  // the header, the training manual and the project documents — roughly 90% of
+  // the input, and about 9.7M of the 10.8M tokens a 132-row plan spends.
+  //
+  // Built here rather than inline in buildContext so there is exactly one
+  // definition of where the static part ends. A cache breakpoint computed from
+  // a second, parallel definition would drift from the prompt it is meant to
+  // describe, and the failure mode of that is silent: a 100% miss rate that
+  // looks like caching simply not working.
+  staticPrefixFor: function(workerName) {
+    var workerConfig = CONFIG.WORKERS[workerName];
+
+    if (!workerConfig) {
+      throw new Error('Unknown worker: ' + workerName);
+    }
+
+    return [
+      this._buildHeader(workerName),
+      this._buildWorkerPrompt(workerName),
+      this._buildProjectDocs(workerName),
+      this._buildControlledVocabulary(workerConfig)
+    ].filter(function(s) { return s; }).join('\n\n');
+  },
+
+  // A short fingerprint of the cacheable prefix, logged per call.
+  //
+  // A stale cache is the one genuine quality risk in this work: a prompt edited
+  // in Drive while the cache still holds the old text produces rows from the old
+  // prompt with no error and no warning. Prompts are cached for six hours, so
+  // this is not hypothetical. The hash makes the drift visible — when it changes,
+  // the prompt changed; when cached tokens stay high across a hash change,
+  // something is serving text nobody edited.
+  staticPrefixHash: function(prefixText) {
+    try {
+      var bytes = Utilities.computeDigest(
+        Utilities.DigestAlgorithm.MD5, prefixText, Utilities.Charset.UTF_8
+      );
+      var hex = '';
+
+      for (var i = 0; i < 4; i++) {
+        var b = (bytes[i] + 256) % 256;
+        hex += (b < 16 ? '0' : '') + b.toString(16);
+      }
+
+      return hex;
+
+    } catch (e) {
+      return 'nohash';
+    }
   },
 
   // The writing prompts have always instructed workers to learn from earlier
@@ -27,13 +79,13 @@ var ContextBuilder = {
   //
   // This supplies the missing history — recent notes to learn from, and recent
   // openings to avoid repeating.
-  _buildCreativeMemory: function(workerName, rowData) {
+  _buildCreativeMemory: function(workerName, rowData, rowNumber) {
     if (workerName !== 'CONTENT_CREATION_WORKER' &&
         workerName !== 'CREATIVE_DIRECTOR_WORKER') {
       return '';
     }
 
-    var history = this._recentApprovedRows(rowData, 4);
+    var history = this._recentApprovedRows(rowData, 4, rowNumber);
 
     if (!history.length) {
       return '';
@@ -87,28 +139,40 @@ var ContextBuilder = {
   // Reads a small window of earlier rows from the Content Pipeline. Kept cheap
   // and failure-tolerant: creative memory is an enhancement, and a problem here
   // must never stop a row from being produced.
-  _recentApprovedRows: function(rowData, limit) {
+  //
+  // The window is anchored to the row being written, not to the bottom of the
+  // sheet. getLastRow() reports ~1000 here because validation and formulas
+  // extend that far, while every finished row sits at the top — so a window of
+  // lastRow-24 scanned rows 976-1000 on every call and found nothing, always.
+  // The feature never once returned a result. (Audit B, finding B2.)
+  _recentApprovedRows: function(rowData, limit, rowNumber) {
     try {
       var sheetName = CONFIG.SHEET_NAME;
       var currentId = String(rowData[CONFIG.COLUMN_NAMES.CONTENT_ID] || '').trim();
-      var lastRow = SheetSchema.getLastRow(sheetName);
 
-      if (lastRow < CONFIG.DATA_START_ROW) {
+      // Earlier rows only. Later rows are either unwritten or belong to work
+      // this row must not learn from — it precedes them.
+      var anchor = rowNumber
+        ? rowNumber - 1
+        : SheetSchema.getLastRow(sheetName);
+
+      if (anchor < CONFIG.DATA_START_ROW) {
         return [];
       }
 
       var columnMap = SheetSchema._getColumnMap(sheetName);
       var copyCol = columnMap['Creative Director Post Copy'];
+      var draftCol = columnMap['Post Copy (AI)'];
       var notesCol = columnMap['Creative Director Notes'];
       var idCol = columnMap[CONFIG.COLUMN_NAMES.CONTENT_ID];
 
-      if (!copyCol) {
+      if (!copyCol && !draftCol) {
         return [];
       }
 
       var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-      var scanFrom = Math.max(CONFIG.DATA_START_ROW, lastRow - 24);
-      var height = lastRow - scanFrom + 1;
+      var scanFrom = Math.max(CONFIG.DATA_START_ROW, anchor - 24);
+      var height = anchor - scanFrom + 1;
       var width = sheet.getLastColumn();
       var block = sheet.getRange(scanFrom, 1, height, width).getValues();
 
@@ -117,7 +181,17 @@ var ContextBuilder = {
       // Newest first — recent work is the most relevant.
       for (var r = block.length - 1; r >= 0 && found.length < limit; r--) {
         var row = block[r];
-        var copy = String(row[copyCol - 1] || '').trim();
+        var copy = copyCol ? String(row[copyCol - 1] || '').trim() : '';
+
+        // The pipeline runs a worker across every row before the next worker
+        // starts, so when the Content Creation Worker reaches row N the
+        // Creative Director has not written any row yet — and its own drafts
+        // for rows 2..N-1 are the only openings that exist for this plan. The
+        // approved copy is preferred where it exists; the draft is what stops
+        // W4 from being blind to the plan it is halfway through writing.
+        if (!copy && draftCol) {
+          copy = String(row[draftCol - 1] || '').trim();
+        }
 
         if (!copy) {
           continue;
@@ -141,11 +215,16 @@ var ContextBuilder = {
     }
   },
 
+  // Deliberately contains nothing that changes between calls. Every caching
+  // mechanism — Gemini implicit, Gemini explicit, Anthropic cache_control —
+  // matches a prefix from byte zero, so a timestamp on the third line of the
+  // prompt held the cacheable prefix to two lines and made ~9.7M of 10.8M
+  // input tokens per plan unavoidably fresh. Nothing ever read it.
+  // (Audit A, findings F5 and F18.)
   _buildHeader: function(workerName) {
     return [
       'You are executing inside the INSAN Healthcare AI Operating System.',
       'Worker: ' + workerName,
-      'Time: ' + new Date().toISOString(),
       '',
       'Follow your training instructions exactly.',
       'Read all project documentation before making decisions.',

@@ -5,6 +5,16 @@ entity_name: Intensive Care Unit (ICU)
 owner: INSAN
 status: Active
 
+entity_id: MED-001
+entity_name_en: Intensive Care Unit
+entity_name_ar: وحدة العناية المركزة
+service_level: DEPARTMENT
+campaign_type: Medical Services
+parent: null
+hospitals: [Future, Delta]
+version: 1.0
+last_updated: 2026-07-30
+
 related_campaigns:
   - ICU Awareness Campaign
   - Physician Referral Communication

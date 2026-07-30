@@ -73,6 +73,44 @@ var AIProvider = {
 
     var provider = options.provider || CONFIG.AI_PROVIDER;
 
+    try {
+      return this._callProvider(provider, prompt, options);
+
+    } catch (e) {
+      var alternate = this._alternateTo(provider);
+
+      // Failover covers the failures that actually happen. 15 rows failed to a
+      // deprecated model, 16 to quota and 13 to overload — 31 of them while a
+      // working second provider sat configured and unused. A model that
+      // vanishes from one vendor is not a reason to lose the row.
+      // (Audit A, §1 and finding F12.)
+      if (!alternate || !this.isConfigured(alternate)) {
+        throw e;
+      }
+
+      Logger.log(
+        'PROVIDER_FAILOVER | ' + provider + ' failed (' + e.toString() + ') | ' +
+        'retrying on ' + alternate
+      );
+
+      var failoverOptions = {};
+      for (var key in options) {
+        failoverOptions[key] = options[key];
+      }
+      failoverOptions.provider = alternate;
+
+      // The model name belongs to the provider that failed. Left in place it
+      // would be sent to the alternate, which rejects it — turning one failure
+      // into two and hiding the original cause.
+      delete failoverOptions.model;
+
+      var result = this._callProvider(alternate, prompt, failoverOptions);
+      result.failedOver = provider + ' → ' + alternate;
+      return result;
+    }
+  },
+
+  _callProvider: function(provider, prompt, options) {
     switch (provider) {
       case 'gemini':
         return GeminiProvider.call(prompt, options);
@@ -84,6 +122,12 @@ var AIProvider = {
           this.getAvailableProviders().join(', ')
         );
     }
+  },
+
+  _alternateTo: function(provider) {
+    if (provider === 'gemini') return 'claude';
+    if (provider === 'claude') return 'gemini';
+    return null;
   },
 
   getProviderName: function() {
@@ -141,7 +185,27 @@ var ClaudeProvider = {
       });
     }
 
-    content.push({ type: 'text', text: prompt });
+    // Anthropic caching is a prefix match from byte zero and it is opt-in: the
+    // request must mark where the reusable part ends. Splitting the prompt into
+    // two text blocks does not change a single byte the model reads — the blocks
+    // are concatenated in order — but it gives the API the breakpoint it needs.
+    //
+    // Without this, removing the timestamp bought nothing on this provider: the
+    // prefix was cacheable and nothing ever asked for it to be cached.
+    // A cache read bills ~0.1x input; the write ~1.25x. The Creative Director
+    // sends ~20,130 input tokens a row, ~90% of it identical row to row.
+    var split = this._splitOnPrefix(prompt, options.cachePrefix);
+
+    if (split) {
+      content.push({
+        type: 'text',
+        text: split.prefix,
+        cache_control: { type: 'ephemeral' }
+      });
+      content.push({ type: 'text', text: split.rest });
+    } else {
+      content.push({ type: 'text', text: prompt });
+    }
 
     var payload = {
       model: model,
@@ -149,8 +213,15 @@ var ClaudeProvider = {
       messages: [{ role: 'user', content: content }]
     };
 
+    // temperature is deliberately not forwarded. The Claude 5 family rejects
+    // temperature, top_p and top_k with HTTP 400 on any non-default value, and
+    // every worker declares one — so sending it fails the row three times and
+    // stops the batch. Steering on this provider is done through the prompt.
     if (options.temperature != null) {
-      payload.temperature = options.temperature;
+      Logger.log(
+        'CLAUDE | temperature ' + options.temperature + ' not sent — ' +
+        'rejected by ' + model + '. Steer via the prompt instead.'
+      );
     }
 
     var requestOptions = {
@@ -179,8 +250,58 @@ var ClaudeProvider = {
     return this._parseResponse(body);
   },
 
+  // Returns the prompt cut into a cacheable prefix and the rest, or null when
+  // the split cannot be made safely.
+  //
+  // The prefix is verified to actually be a prefix of the prompt rather than
+  // trusted. If ContextBuilder and the caller ever disagree about where the
+  // static part ends, this returns null and the call proceeds uncached — a
+  // missed discount, not a corrupted prompt.
+  //
+  // Anthropic will not cache a prefix below its per-model minimum (1024 tokens
+  // on the Claude 5 family). Marking a short prefix is not an error, it simply
+  // does nothing, so the floor here is a rough character equivalent used only to
+  // avoid spending a breakpoint on something that cannot pay.
+  _splitOnPrefix: function(prompt, prefix) {
+    if (!prefix || typeof prefix !== 'string') {
+      return null;
+    }
+
+    if (prefix.length < 4000 || prefix.length >= prompt.length) {
+      return null;
+    }
+
+    if (prompt.substring(0, prefix.length) !== prefix) {
+      Logger.log(
+        'CLAUDE_CACHE | prefix did not match the prompt — sending uncached. ' +
+        'ContextBuilder.staticPrefixFor and buildContext have diverged.'
+      );
+      return null;
+    }
+
+    return { prefix: prefix, rest: prompt.substring(prefix.length) };
+  },
+
   _parseResponse: function(body) {
     var parsed = JSON.parse(body);
+
+    // The Claude 5 family thinks by default, and thinking is charged against
+    // max_tokens alongside the answer. A package that runs out of budget
+    // returns valid JSON containing truncated JSON — which fails in the parser
+    // as "could not extract", naming the wrong cause. Say what happened.
+    if (parsed.stop_reason === 'max_tokens') {
+      throw new Error(
+        'Claude hit max_tokens (' + CONFIG.CLAUDE_MAX_OUTPUT_TOKENS + ') before ' +
+        'finishing. The output is truncated. Raise CLAUDE_MAX_OUTPUT_TOKENS.'
+      );
+    }
+
+    if (parsed.stop_reason === 'refusal') {
+      throw new Error(
+        'Claude declined this request (stop_reason: refusal). Nothing was ' +
+        'written. Review the row content before re-running.'
+      );
+    }
 
     if (!parsed.content || !parsed.content.length) {
       throw new Error('Claude returned no content');
@@ -197,11 +318,20 @@ var ClaudeProvider = {
 
     var usage = parsed.usage || {};
 
+    // totalTokens is not in the Anthropic response; sum it so a caller reading
+    // the return value gets the same shape from either provider.
+    //
+    // cachedTokens is what tells us whether the caching work paid. Anthropic
+    // reports reads and writes separately and prices them differently — a read
+    // is ~0.1x input, a write ~1.25x — so both are surfaced.
     return {
       text: text,
       finishReason: parsed.stop_reason || '',
       inputTokens: usage.input_tokens || 0,
-      outputTokens: usage.output_tokens || 0
+      outputTokens: usage.output_tokens || 0,
+      totalTokens: (usage.input_tokens || 0) + (usage.output_tokens || 0),
+      cachedTokens: usage.cache_read_input_tokens || 0,
+      cacheWriteTokens: usage.cache_creation_input_tokens || 0
     };
   },
 
@@ -337,11 +467,16 @@ var GeminiProvider = {
 
     var usageMetadata = parsed.usageMetadata || {};
 
+    // cachedContentTokenCount is how many input tokens were served from cache.
+    // Until the timestamp was removed from the prompt header it was structurally
+    // always zero; logging it is what makes the caching work measurable instead
+    // of assumed. (Audit A, finding F5, and §9 Phase 0 step 2.)
     return {
       text: text.trim(),
       inputTokens: usageMetadata.promptTokenCount || 0,
       outputTokens: usageMetadata.candidatesTokenCount || 0,
       totalTokens: usageMetadata.totalTokenCount || 0,
+      cachedTokens: usageMetadata.cachedContentTokenCount || 0,
       finishReason: candidate.finishReason || 'UNKNOWN'
     };
   },

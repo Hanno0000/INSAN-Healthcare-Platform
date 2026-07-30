@@ -416,10 +416,14 @@ var SheetWriter = {
     );
   },
 
-  writeWorkflowStatus: function(rowNumber, status, sheetName) {
+  // Writes the machine state. Deliberately not "Workflow Status" — that column
+  // is the operator's editorial workflow and shares only one value with this
+  // state machine, so every write here used to be rejected by its dropdown.
+  // (Audit A, finding F4.)
+  writePipelineState: function(rowNumber, state, sheetName) {
     var resolvedSheet = sheetName || CONFIG.SHEET_NAME;
     return this.writeCell(
-      rowNumber, CONFIG.COLUMN_NAMES.WORKFLOW_STATUS, status, resolvedSheet
+      rowNumber, CONFIG.COLUMN_NAMES.PIPELINE_STATE, state, resolvedSheet
     );
   },
 
@@ -489,5 +493,124 @@ var SheetWriter = {
       this.relaxSheetValidation(CONFIG.SHEET_NAME),
       this.relaxSheetValidation(CONFIG.VISUAL_PIPELINE.SHEET_NAME)
     ];
+  },
+
+  // Rebuilds one sheet's dropdowns from CONFIG.CONTROLLED_VOCABULARY, making
+  // this file the single vocabulary source. Four fields disagreed between code
+  // and sheet — the worker produced exactly what the code asked for and the
+  // dropdown refused it, 19 times. (Audit A, finding F4.)
+  //
+  // Every rule is written allowInvalid, so a value outside the list is flagged
+  // for review rather than blocking a worker mid-run. Columns absent from the
+  // sheet are reported, never created — a missing dropdown column is a schema
+  // question, and guessing where it belongs is how a positional VLOOKUP breaks.
+  syncSheetValidation: function(sheetName) {
+    var sheet = this._getSheet(sheetName);
+
+    if (!sheet) {
+      return { sheet: sheetName, error: 'Sheet not found' };
+    }
+
+    var columnMap = SheetSchema._getColumnMap(sheetName);
+    var lastRow = Math.max(sheet.getLastRow(), CONFIG.DATA_START_ROW);
+    var applied = [];
+    var absent = [];
+
+    for (var columnName in CONFIG.CONTROLLED_VOCABULARY) {
+      var col = columnMap[columnName];
+
+      if (!col) {
+        absent.push(columnName);
+        continue;
+      }
+
+      var values = CONFIG.CONTROLLED_VOCABULARY[columnName];
+
+      var rule = SpreadsheetApp.newDataValidation()
+        .requireValueInList(values, true)
+        .setAllowInvalid(true)
+        .setHelpText(
+          columnName + ' — allowed values come from CONFIG.gs. ' +
+          'Anything else is recorded in the Execution Log for review.'
+        )
+        .build();
+
+      sheet
+        .getRange(CONFIG.DATA_START_ROW, col, lastRow - CONFIG.DATA_START_ROW + 1, 1)
+        .setDataValidation(rule);
+
+      applied.push(columnName);
+    }
+
+    SpreadsheetApp.flush();
+
+    Logger.log(
+      'VOCABULARY_SYNCED | Sheet: ' + sheetName +
+      ' | Columns written: ' + applied.length +
+      ' | Not present on this sheet: ' + absent.length
+    );
+
+    return { sheet: sheetName, applied: applied, absent: absent };
+  },
+
+  syncAllValidationFromConfig: function() {
+    return [
+      this.syncSheetValidation(CONFIG.SHEET_NAME),
+      this.syncSheetValidation(CONFIG.VISUAL_PIPELINE.SHEET_NAME),
+      this.syncSheetValidation(CONFIG.CAMPAIGN_CARDS_SHEET_NAME)
+    ];
+  },
+
+  // Creates the columns code writes but cannot invent. writeCell skips a
+  // missing column with nothing but a log line, so a renamed or freshly copied
+  // sheet loses those writes silently — which is exactly how the machine state
+  // ended up in the operator's Workflow Status column.
+  //
+  // Appends only. Never inserts: Campaign Cards O:Z is addressed positionally
+  // by the Content Pipeline VLOOKUP, and an insert before column Z moves every
+  // strategy field out from under it.
+  ensureManagedColumns: function() {
+    var results = [];
+    var managed = CONFIG.MANAGED_COLUMNS || [];
+
+    for (var i = 0; i < managed.length; i++) {
+      var spec = managed[i];
+      var sheet = this._getSheet(spec.sheet);
+
+      if (!sheet) {
+        results.push({
+          sheet: spec.sheet, column: spec.column, status: 'sheet not found'
+        });
+        continue;
+      }
+
+      if (SheetSchema._getColumnMap(spec.sheet)[spec.column]) {
+        results.push({
+          sheet: spec.sheet, column: spec.column, status: 'already present'
+        });
+        continue;
+      }
+
+      var newCol = sheet.getLastColumn() + 1;
+      sheet.getRange(CONFIG.HEADER_ROW, newCol).setValue(spec.column);
+
+      // The column map is cached for six hours. Without this, every write to
+      // the new column for the rest of the day resolves against a map that
+      // predates it and is skipped.
+      SheetSchema.invalidateColumnMap(spec.sheet);
+
+      results.push({
+        sheet: spec.sheet,
+        column: spec.column,
+        status: 'created in column ' + newCol
+      });
+
+      Logger.log(
+        'MANAGED_COLUMN_CREATED | Sheet: ' + spec.sheet +
+        ' | Column: ' + spec.column + ' | Position: ' + newCol
+      );
+    }
+
+    return results;
   }
 };

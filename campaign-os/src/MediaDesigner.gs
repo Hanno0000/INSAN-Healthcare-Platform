@@ -76,11 +76,13 @@ var MediaDesigner = {
     return sections.filter(function(s) { return s; }).join('\n\n');
   },
 
+  // No per-call values here — see ContextBuilder._buildHeader. This header
+  // reproduced the same cache blocker; the manual behind it is 11,074 tokens
+  // and is re-sent on every asset. (Audit A, finding F18.)
   _header: function() {
     return [
       'You are executing inside the INSAN Healthcare AI Operating System.',
       'Worker: MEDIA GENERATION SERVICE',
-      'Time: ' + new Date().toISOString(),
       '',
       'Your training manual follows. Follow it exactly.'
     ].join('\n');

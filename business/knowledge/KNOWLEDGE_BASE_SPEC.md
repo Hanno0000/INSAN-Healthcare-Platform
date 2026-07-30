@@ -177,8 +177,8 @@ Specifically avoid:
 
 | Entity | File | Status |
 |---|---|---|
-| ICU | `departments/MEDICAL_SERVICE_ICU.md` | ✅ |
-| Emergency | `departments/MEDICAL_SERVICE_EMERGENCY.md` | ❌ **16 slots scheduled** |
+| ICU | `departments/MEDICAL_SERVICE_ICU.md` | ✅ builds a card |
+| Emergency | `departments/MEDICAL_SERVICE_EMERGENCY.md` | 🟠 **16 slots** — structurally complete, awaiting operator facts in Core Features, Service Journey and Institutional Knowledge |
 | Operating Rooms | `departments/MEDICAL_SERVICE_OPERATIONS.md` | ❌ |
 | Radiology & Imaging | `departments/MEDICAL_SERVICE_RADIOLOGY.md` | ❌ |
 | Laboratory | `departments/MEDICAL_SERVICE_LABORATORY.md` | ❌ |
@@ -228,17 +228,17 @@ All ❌.
 
 | Entity | File | Status |
 |---|---|---|
-| Delta International | `hospitals/HOSPITAL_DELTA.md` | ❌ — 8 slots |
+| Delta International | `hospitals/HOSPITAL_DELTA.md` | 🟠 **8 slots** — brand strategy complete, awaiting institutional facts and the trust-context question in Core Features |
 | Future Specialized | `hospitals/HOSPITAL_FUTURE.md` | ❌ |
 
 ### 7.6 Supporting campaigns
 
-| Campaign | File | Slots |
-|---|---|---|
-| Meet Our Doctors | `supporting/SUPPORTING_MEET_OUR_DOCTORS.md` | 6 |
-| Patient Journey | `supporting/SUPPORTING_PATIENT_JOURNEY.md` | 6 |
-| Success Stories | `supporting/SUPPORTING_SUCCESS_STORIES.md` | 6 |
-| Meet Our Team | `supporting/SUPPORTING_MEET_OUR_TEAM.md` | 5 |
+| Campaign | File | Slots | Status |
+|---|---|---|---|
+| Meet Our Doctors | `supporting/SUPPORTING_MEET_OUR_DOCTORS.md` | 6 | ✅ builds a card |
+| Patient Journey | `supporting/SUPPORTING_PATIENT_JOURNEY.md` | 6 | ✅ builds a card |
+| Success Stories | `supporting/SUPPORTING_SUCCESS_STORIES.md` | 6 | ✅ builds a card |
+| Meet Our Team | `supporting/SUPPORTING_MEET_OUR_TEAM.md` | 5 | ❌ |
 | Behind The Scenes | `supporting/SUPPORTING_BEHIND_THE_SCENES.md` | 5 |
 | Hospital Life | `supporting/SUPPORTING_HOSPITAL_LIFE.md` | 5 |
 | FAQ | `supporting/SUPPORTING_FAQ.md` | 3 |
@@ -262,10 +262,29 @@ All ❌.
 
 ### 7.8 Totals
 
-| | Written | Missing |
+*Updated 2026-07-30, after the top five by scheduled volume were written.*
+
+| | Count | Scheduled slots |
 |---|---|---|
-| Entities | **2** | **~38** |
-| Scheduled slots they cover | 11 of 132 | 121 of 132 |
+| ✅ Written, builds a campaign card | **5** — ICU, Meet Our Doctors, Patient Journey, Success Stories, Kabarona¹ | 29 |
+| 🟠 Structurally complete, awaiting operator facts | **2** — Emergency, Delta | 24 |
+| ❌ Not started | ~33 | 79 |
+
+¹ Kabarona is written but does **not** currently build a card: its front matter
+predates §4 and it is missing the *Why This Service Exists* and *Differentiators*
+sections. Two short additions would close it — the highest return per hour left in
+the knowledge base.
+
+**How to check any file:** AI Workers → Planning → **Check Knowledge File**. It runs
+W1's full validation gate and reports what is missing, without spending an
+inference.
+
+**What 🟠 means.** Every section derivable from the committed brand documents is
+written. The sections that require facts only the operator has carry an explicit
+`<!-- NEEDS-OPERATOR: ... -->` marker naming exactly what is needed. W1 refuses to
+build a card past an unresolved marker — deliberately, because a card built on an
+invented operational fact becomes the strategy for every post about that entity, and
+nothing downstream can tell it was a guess.
 
 ---
 

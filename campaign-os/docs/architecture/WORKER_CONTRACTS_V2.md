@@ -24,7 +24,7 @@ that is an architecture bug — fix the contract, do not let the worker invent.
 
 ---
 
-## W1 — Campaign Card Builder 🔴
+## W1 — Campaign Card Builder 🟡
 
 **Purpose.** Turn a knowledge file into a campaign strategy row.
 
@@ -34,8 +34,17 @@ that is an architecture bug — fix the contract, do not let the worker invent.
 |---|---|
 | **Reads** | `business/knowledge/**/*.md` — the whole file, plus its front matter |
 | **Writes** | One row in `Campaign Cards` |
-| **Prompt** | `prompts/planning/CAMPAIGN_CARD_BUILDER.md` 🔴 |
-| **Code** | `src/CardBuilder.gs` 🔴 |
+| **Prompt** | `prompts/planning/CAMPAIGN_CARD_BUILDER.md` 🟢 |
+| **Code** | `src/CardBuilder.gs` 🟢 |
+| **Menu** | AI Workers → Planning → Build Campaign Card / Check Knowledge File |
+
+🟡 Built 2026-07-30, not yet verified in production — no card has been generated
+against the live sheet. The validation gate is tested against the reference
+implementation; the model call is not.
+
+**Requires** two Script Properties: `KNOWLEDGE_FOLDER_ID` (the Drive folder holding
+`business/knowledge`, searched recursively) and optionally
+`PLANNING_PROMPTS_FOLDER_ID` (falls back to `PROMPTS_FOLDER_ID`).
 
 **Output columns**
 
@@ -47,15 +56,21 @@ that is an architecture bug — fix the contract, do not let the worker invent.
 | Depth (AA:AF) | Core Positioning · Human Insight · Invisible Product · Psychological Transformation · Trust Platform Type · Narrative Arc |
 | Provenance | Knowledge Source · Card Built At |
 
-**Fails when**
-- A required knowledge section is missing → name the section, write nothing
-- `service_level` absent from front matter
-- Entity name does not resolve to a known entity
+**Fails when** — all checked in code, before any inference
+- A required knowledge section is missing, or present with nothing under it
+- A section still carries an unresolved `NEEDS-OPERATOR` marker → names the section
+  and the line
+- `service_level` absent from front matter, or outside the controlled vocabulary
+- `entity_name_en` absent
+- The knowledge file is not found under `KNOWLEDGE_FOLDER_ID`
 
 **Never**
-- Invents a fact not in the file
+- Invents a fact not in the file. A field the file does not support is returned as
+  `INSUFFICIENT`, recorded in the log and left blank — a blank cell is visibly
+  missing, a filled one is indistinguishable from a derived answer
 - Writes a partial card
-- Overwrites a hand-entered campaign decision without recording it
+- Overwrites a hand-entered campaign decision. `Priority`, `Duration`,
+  `Target Posts` and `Status` are kept when already set, and reported
 
 ---
 

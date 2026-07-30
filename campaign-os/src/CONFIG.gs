@@ -356,8 +356,161 @@ var CONFIG = {
     VISUAL_STAGE: 'VISUAL_STAGE',
     CONTENT_ID: 'Content ID',
     REVISION_NUMBER: 'Revision Number',
-    WORKFLOW_STATUS: 'Workflow Status',
+
+    // Was 'Workflow Status'. The code's state machine and the operator's
+    // editorial workflow were sharing one column; see CONTROLLED_VOCABULARY.
+    // Created automatically by ensureManagedColumns() if absent.
+    PIPELINE_STATE: 'Pipeline State',
+
     NOTES: 'Notes'
+  },
+
+  // Sheets whose dropdowns are generated from CONTROLLED_VOCABULARY.
+  CAMPAIGN_CARDS_SHEET_NAME: 'Campaign Cards',
+
+  // ================================
+  // W1 — CAMPAIGN CARD BUILDER
+  // Turns one knowledge file into one Campaign Cards row. Runs once per
+  // campaign, on demand — not per post. The knowledge file is ~16,000 tokens;
+  // reading it once per campaign costs ~640K tokens across the plan, reading it
+  // once per post would cost ~2.1M. That difference is why the card exists.
+  //
+  // Two folder IDs are read from Script Properties rather than hardcoded here:
+  // KNOWLEDGE_FOLDER_ID (required) and PLANNING_PROMPTS_FOLDER_ID (optional,
+  // falls back to PROMPTS_FOLDER_ID). Eleven hardcoded Google IDs already block
+  // a second tenant; this does not add a twelfth. (Audit A, finding F17.)
+  // ================================
+
+  CARD_BUILDER: {
+    promptFile: 'CAMPAIGN_CARD_BUILDER.md',
+    temperature: 0.3,
+    provider: null,   // null inherits AI_PROVIDER
+    model: null,
+
+    // A section still carrying this marker has not been written by anyone who
+    // knows the answer. Building a card from it would launder a gap into a
+    // finished-looking strategy — which is the failure this worker exists to
+    // stop. The scan is deterministic and runs before the model is called.
+    GAP_MARKER: 'NEEDS-OPERATOR',
+
+    // Checked in code against the file's headings before any inference. These
+    // are Template.md's [REQUIRED] sections: the ones a campaign card cannot be
+    // derived from without inventing.
+    //
+    // Matched on substrings rather than exact titles, because real files name
+    // these sections around the entity. The reference implementation calls them
+    // "Service Definition", "Service Differentiators" and "What The ICU Should
+    // Never Promise"; an Emergency file would say "the Emergency Department" in
+    // the same place. Exact-title matching would have rejected the very file
+    // KNOWLEDGE_BASE_SPEC §6 holds up as the standard.
+    REQUIRED_SECTIONS: [
+      { name: 'Definition',                   match: ['definition'] },
+      { name: 'Why This Service Exists',      match: ['why this service exists', 'why this exists', 'why it exists'] },
+      { name: 'Positioning',                  match: ['positioning'] },
+      { name: 'Core Promise',                 match: ['core promise'] },
+      { name: 'Human Problem',                match: ['human problem'] },
+      { name: 'Human Insight',                match: ['human insight'] },
+      { name: 'Invisible Product',            match: ['invisible product'] },
+      { name: 'Psychological Transformation', match: ['psychological transformation'] },
+      { name: 'Audience',                     match: ['audience'] },
+      { name: 'Core Features',                match: ['core features'] },
+      { name: 'Differentiators',              match: ['differentiator'] },
+      { name: 'What We Are Really Selling',   match: ['really selling'] },
+      { name: 'Psychological Barriers',       match: ['psychological barrier'] },
+      { name: 'Narrative Themes',             match: ['narrative theme'] },
+      { name: 'Content Pillars',              match: ['content pillar'] },
+      { name: 'Never Promise',                match: ['never promise'] },
+      { name: 'Relationship With INSAN',      match: ['relationship with insan', 'relationship with the insan'] }
+    ],
+
+    // Campaign decisions belong to the operator, not to the knowledge file —
+    // priority and post count are planning choices, not facts about the entity.
+    // A rebuild refreshes everything derived and leaves these alone when they
+    // already hold a value, reporting what it kept.
+    OPERATOR_OWNED: [
+      'Priority', 'Duration', 'Target Posts', 'Status'
+    ],
+
+    // The twelve strategy fields must stay in Campaign Cards O:Z — the Content
+    // Pipeline VLOOKUP addresses them by position, not by name.
+    OUTPUT_FIELDS: {
+      'Umbrella Campaign': 'free',
+      'Master Brand': 'free',
+      'Sub-Brand': 'free',
+      'Medical Center': 'free',
+      'Service Level': 'controlled',
+      'Business Goal': 'free',
+      'Marketing Goal': 'free',
+      'Priority': 'free',
+      'Duration': 'free',
+      'Target Posts': 'free',
+      'Status': 'free',
+      'Execution Guidance': 'free',
+      'Desired Audience Perception': 'free',
+      'Campaign Philosophy': 'free',
+      'Trust Platform': 'free',
+      'Core Message': 'free',
+      'Trust Promise': 'free',
+      'Emotional Trigger': 'free',
+      'Psychological Barrier': 'free',
+      'Content Pillars': 'free',
+      'Approved Content Angles': 'free',
+      'Non-Negotiable Rules': 'free',
+      'CTA Strategy': 'controlled',
+      'Primary KPI': 'free',
+      'Target Audience': 'free',
+      'Core Positioning': 'free',
+      'Human Insight': 'free',
+      'Invisible Product': 'free',
+      'Psychological Transformation': 'free',
+      'Trust Platform Type': 'controlled',
+      'Narrative Arc': 'free'
+    }
+  },
+
+  // Columns code writes that must exist for a write to land. writeCell skips a
+  // missing column and only logs it, so a rename or a fresh copy of the sheet
+  // loses the write silently. Checked and created by ensureManagedColumns().
+  // Appended at the end of the sheet, never inserted: the Content Pipeline
+  // VLOOKUP addresses Campaign Cards O:Z positionally, and an inserted column
+  // shifts every strategy field out from under it.
+  MANAGED_COLUMNS: [
+    { sheet: 'Content Pipeline', column: 'Pipeline State' },
+    { sheet: 'Campaign Cards', column: 'Service Level' }
+  ],
+
+  // ================================
+  // REQUIRED INPUTS PER WORKER
+  // A worker given empty inputs does not fail — it invents, and the invention
+  // reads as confident work. 67% of pipeline rows reached the Content Strategy
+  // Worker with all twelve strategy fields blank and it produced a strategy for
+  // every one of them. (Audit A, findings F1 and F2.)
+  //
+  // Checked in code before the model call: an incomplete row costs milliseconds
+  // and names the missing fields, instead of costing a full inference and
+  // returning something plausible.
+  //
+  // These lists are deliberately the minimum without which the worker's own
+  // decision would be invention rather than derivation — not every field it
+  // reads. Widen or narrow them here; nothing else needs to change.
+  // ================================
+
+  REQUIRED_INPUTS: {
+    CONTENT_STRATEGY_WORKER: [
+      'Campaign Name', 'Campaign Philosophy', 'Core Message',
+      'Target Audience', 'Content Pillars', 'Trust Promise'
+    ],
+    CONTENT_CREATION_WORKER: [
+      'Content Objective', 'Content Angle', 'Content Type',
+      'Content Format', 'Hook', 'Post Structure', 'Language Style'
+    ],
+    CREATIVE_DIRECTOR_WORKER: [
+      'Post Copy (AI)', 'Design Prompt (AI)'
+    ],
+    VISUAL_PLANNER_WORKER: [
+      'Creative Director Design Prompt', 'Visual Concept',
+      'Visual Focus', 'Design Mood', 'Composition'
+    ]
   },
 
   // ================================
@@ -499,6 +652,17 @@ var CONFIG = {
         'SYSTEM_CONSTANTS.md'
       ],
       temperature: 0.5,
+
+      // The one worker on the alternate provider. Chosen because it is both the
+      // most expensive call in the system (~20,130 input tokens) and the owner
+      // of the copy that actually gets published — so it is where a second
+      // opinion is worth paying for, and where a Gemini outage hurts most.
+      //
+      // REQUIRES ANTHROPIC_API_KEY in Script Properties. Without the key this
+      // worker fails on every row with a named error — it does not fall back to
+      // Gemini. Set the key before pasting this file into the Apps Script editor.
+      provider: 'claude',
+
       readColumns: [
         'Content ID', 'Publishing Date', 'Calendar ID', 'Publishing Page',
         'Campaign Group', 'Campaign Name', 'Hospital Brand',
@@ -753,8 +917,34 @@ var CONFIG = {
       'Pending', 'Under Review', 'Approved',
       'Rejected', 'Needs Revision'
     ],
-    'Workflow Status': [
+    // Two different concepts used to share the name "Workflow Status": the
+    // code's state machine and the operator's editorial workflow. They agreed
+    // on exactly one value, so every machine write landed in a human column and
+    // was rejected. They are now separate columns. (Audit A, finding F4.)
+    //
+    // Pipeline State is written only by code. Workflow Status is written only by
+    // a human — it is listed here so this file stays the single source for every
+    // dropdown in the sheet, not because anything in code writes it.
+    'Pipeline State': [
       'NEW', 'READY', 'PROCESSING', 'COMPLETED', 'FAILED'
+    ],
+    'Workflow Status': [
+      'Content Writing', 'Design', 'Review',
+      'Publishing', 'Completed', 'On Hold'
+    ],
+
+    // Stops a Department being filed as a Center. Defined in
+    // MEDICAL_SERVICES_TAXONOMY.md §5; lives on Campaign Cards.
+    'Service Level': [
+      'DEPARTMENT', 'CENTER', 'CLINIC', 'PROGRAM',
+      'CORPORATE', 'HOSPITAL', 'SUPPORTING'
+    ],
+
+    // Which of the master brand's standards a campaign sits on. From
+    // Template.md, "Relationship With INSAN".
+    'Trust Platform Type': [
+      'Leadership', 'Transparency', 'Governance',
+      'Innovation', 'Safety', 'Continuity', 'Expertise'
     ],
     'VISUAL_STAGE': [
       'READY', 'PLANNING', 'GENERATING', 'QA',

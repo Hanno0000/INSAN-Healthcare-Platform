@@ -220,10 +220,11 @@ a defect.
                     └───────────────────┬──────────────────────┘
                                         │
     ╔═══════════════════════════════════▼══════════════════════════════════╗
-    ║  W1   CAMPAIGN CARD BUILDER                              ❌ NOT BUILT ║
+    ║  W1   CAMPAIGN CARD BUILDER                             🟡 UNVERIFIED ║
     ║       in : knowledge file (full)                                     ║
     ║       out: one row in Campaign Cards                                 ║
     ║       runs: once per campaign, on demand                             ║
+    ║       refuses: missing section, empty section, unresolved gap marker ║
     ╚═══════════════════════════════════╤══════════════════════════════════╝
                                         ↓
                     ┌──────────────────────────────────────────┐
@@ -444,9 +445,9 @@ concept or delete.
 
 | Layer | Status |
 |---|---|
-| Knowledge base | 🔴 2 of ~40 entities |
+| Knowledge base | 🟠 7 of ~40 entities — 5 build a card, 2 await operator facts |
 | Campaign Cards | 🟠 16 of ~41, depth 1 of 16 |
-| W1 Card Builder | 🔴 not built |
+| W1 Card Builder | 🟡 built 2026-07-30, no production run yet |
 | W2 Planner | 🔴 not built (human) |
 | Content Team | 🟢 built, running |
 | Visual Team | 🟢 built; Media Designer + TextOverlay + AssetIntegrity unverified in production |

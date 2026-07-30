@@ -134,6 +134,10 @@ function onOpen() {
     .addItem('Production Control Center', 'showControlCenter')
     .addSeparator()
     .addSubMenu(SpreadsheetApp.getUi()
+      .createMenu('Planning')
+      .addItem('Build Campaign Card from Knowledge File', 'runCardBuilder')
+      .addItem('Check Knowledge File', 'checkKnowledgeFile'))
+    .addSubMenu(SpreadsheetApp.getUi()
       .createMenu('Content Team')
       .addItem('Strategy Worker', 'runContentStrategyWorker')
       .addItem('Content Creator', 'runContentCreationWorker')
@@ -154,6 +158,8 @@ function onOpen() {
       .createMenu('Maintenance')
       .addItem('Preflight Check', 'preflightCheck')
       .addItem('Check Project Assets', 'checkProjectAssets')
+      .addItem('Create Managed Columns (run once)', 'createManagedColumns')
+      .addItem('Sync Dropdowns from CONFIG (run once)', 'syncVocabularyFromConfig')
       .addItem('Unblock Dropdowns (run once)', 'relaxDataValidation')
       .addItem('Review Vocabulary Gaps', 'showVocabularyGaps')
       .addSeparator()
@@ -344,6 +350,22 @@ function preflightCheck() {
     var problems = [];
     var checked = 0;
 
+    // A column code writes but the sheet does not have is the quietest failure
+    // in the system: writeCell logs one line and returns false, and the run
+    // reports success. Check the schema before checking the data.
+    var managed = CONFIG.MANAGED_COLUMNS || [];
+    for (var m = 0; m < managed.length; m++) {
+      var spec = managed[m];
+
+      if (!SheetSchema.validateColumnExists(spec.column, spec.sheet)) {
+        problems.push(
+          'Column "' + spec.column + '" is missing from ' + spec.sheet +
+          ' — every write to it is silently skipped. ' +
+          'Run Maintenance → Create Managed Columns.'
+        );
+      }
+    }
+
     for (var row = CONFIG.DATA_START_ROW; row <= Math.min(lastRow, 20); row++) {
       var data = SheetSchema.getRowData(row, sheetName);
 
@@ -445,6 +467,206 @@ function relaxDataValidation() {
 
   } catch (e) {
     ui.alert('Data Validation', 'Failed: ' + e.toString(), ui.ButtonSet.OK);
+  }
+}
+
+
+// ================================
+// W1 — CAMPAIGN CARD BUILDER
+// ================================
+
+function _askForKnowledgeFile(title) {
+  var ui = SpreadsheetApp.getUi();
+
+  var response = ui.prompt(
+    title,
+    'Knowledge file name, exactly as it appears in Drive.\n\n' +
+    'Examples:\n' +
+    '  MEDICAL_SERVICE_EMERGENCY.md\n' +
+    '  SUPPORTING_MEET_OUR_DOCTORS.md\n' +
+    '  HOSPITAL_DELTA.md\n\n' +
+    'Subfolders are searched automatically.',
+    ui.ButtonSet.OK_CANCEL
+  );
+
+  if (response.getSelectedButton() !== ui.Button.OK) {
+    return null;
+  }
+
+  var name = String(response.getResponseText()).trim();
+
+  if (!name) {
+    return null;
+  }
+
+  return /\.md$/i.test(name) ? name : name + '.md';
+}
+
+
+// Reads a knowledge file and reports whether a card can be built from it —
+// without spending an inference. Run this while writing a file.
+function checkKnowledgeFile() {
+  var ui = SpreadsheetApp.getUi();
+  var fileName = _askForKnowledgeFile('Check Knowledge File');
+
+  if (!fileName) {
+    return;
+  }
+
+  try {
+    var file = CardBuilder.findKnowledgeFile(fileName);
+    var check = CardBuilder.validate(file.content, fileName);
+    var lines = [fileName + '  (' + file.folder + ')', ''];
+
+    if (check.ok) {
+      lines.push('Ready. A card can be built from this file.');
+      lines.push('');
+      lines.push('entity: ' + check.frontMatter.entity_name_en);
+      lines.push('level:  ' + check.frontMatter.service_level);
+    } else {
+      lines.push('Not ready — ' +
+        (check.problems.length + check.gaps.length) + ' item(s) outstanding:');
+      lines.push('');
+
+      for (var i = 0; i < check.problems.length; i++) {
+        lines.push('• ' + check.problems[i]);
+      }
+
+      for (var g = 0; g < check.gaps.length; g++) {
+        lines.push('• line ' + check.gaps[g].line + ' — "' +
+          check.gaps[g].section + '" needs you' +
+          (check.gaps[g].note ? ': ' + check.gaps[g].note : ''));
+      }
+    }
+
+    ui.alert('Knowledge File', lines.join('\n'), ui.ButtonSet.OK);
+
+  } catch (e) {
+    ui.alert('Knowledge File', e.message || e.toString(), ui.ButtonSet.OK);
+  }
+}
+
+
+function runCardBuilder() {
+  var ui = SpreadsheetApp.getUi();
+  var fileName = _askForKnowledgeFile('Build Campaign Card');
+
+  if (!fileName) {
+    return;
+  }
+
+  try {
+    var result = CardBuilder.build(fileName);
+    var lines = [
+      'Card ' + (result.existed ? 'rebuilt' : 'created') +
+        ' on row ' + result.row + '.',
+      '',
+      result.written.length + ' fields written from ' + result.fileName + '.'
+    ];
+
+    if (result.preserved.length) {
+      lines.push('');
+      lines.push('Kept your planning decisions, unchanged:');
+      for (var p = 0; p < result.preserved.length; p++) {
+        lines.push('   ' + result.preserved[p]);
+      }
+    }
+
+    if (result.insufficient.length) {
+      lines.push('');
+      lines.push('Left blank — the knowledge file does not support them:');
+      for (var i = 0; i < result.insufficient.length; i++) {
+        lines.push('   ' + result.insufficient[i]);
+      }
+      lines.push('');
+      lines.push('Add the material to the knowledge file and rebuild. Filling');
+      lines.push('these in the card by hand loses the fix on the next rebuild.');
+    }
+
+    ui.alert('Campaign Card', lines.join('\n'), ui.ButtonSet.OK);
+
+  } catch (e) {
+    ui.alert('Campaign Card', e.message || e.toString(), ui.ButtonSet.OK);
+  }
+}
+
+
+// Creates the columns code writes but cannot invent. Run this before syncing
+// dropdowns, so a newly created column gets its validation in the same session.
+function createManagedColumns() {
+  var ui = SpreadsheetApp.getUi();
+
+  try {
+    var results = SheetWriter.ensureManagedColumns();
+    var lines = ['Columns code writes:', ''];
+
+    for (var i = 0; i < results.length; i++) {
+      lines.push('• ' + results[i].sheet + ' — ' + results[i].column +
+        ': ' + results[i].status);
+    }
+
+    lines.push('');
+    lines.push('New columns are appended at the end of the sheet, never');
+    lines.push('inserted — Campaign Cards O:Z is addressed positionally by the');
+    lines.push('Content Pipeline VLOOKUP. Do not move them left of column Z.');
+
+    ui.alert('Managed Columns', lines.join('\n'), ui.ButtonSet.OK);
+
+  } catch (e) {
+    ui.alert('Managed Columns', 'Failed: ' + e.toString(), ui.ButtonSet.OK);
+  }
+}
+
+
+// Rewrites every dropdown in the three sheets from CONFIG.CONTROLLED_VOCABULARY,
+// making CONFIG.gs the single vocabulary source. Four fields disagreed between
+// code and sheet and cost 19 rejected writes; this is the root-cause fix.
+function syncVocabularyFromConfig() {
+  var ui = SpreadsheetApp.getUi();
+
+  var confirm = ui.alert(
+    'Sync Dropdowns from CONFIG?',
+    'Every dropdown listed in CONFIG.CONTROLLED_VOCABULARY will be rewritten ' +
+    'on Content Pipeline, Visual Pipeline and Campaign Cards.\n\n' +
+    'Values you added to a dropdown by hand and did not add to CONFIG.gs will ' +
+    'be dropped from the list. Existing cell contents are never changed — a ' +
+    'value outside the new list stays in place and is flagged for review.\n\n' +
+    'Proceed?',
+    ui.ButtonSet.YES_NO
+  );
+
+  if (confirm !== ui.Button.YES) {
+    return;
+  }
+
+  try {
+    var results = SheetWriter.syncAllValidationFromConfig();
+    var lines = [];
+
+    for (var i = 0; i < results.length; i++) {
+      var r = results[i];
+
+      if (r.error) {
+        lines.push('• ' + r.sheet + ' — ' + r.error);
+        continue;
+      }
+
+      lines.push('• ' + r.sheet + ' — ' + r.applied.length + ' dropdowns written');
+
+      if (r.absent.length) {
+        lines.push('   not on this sheet: ' + r.absent.join(', '));
+      }
+    }
+
+    lines.push('');
+    lines.push('Reel, Video and Motion Graphic are gone from Content Format —');
+    lines.push('the pipeline has no generation path for them, and choosing one');
+    lines.push('spent strategy, copy and creative direction before failing.');
+
+    ui.alert('Vocabulary Sync', lines.join('\n'), ui.ButtonSet.OK);
+
+  } catch (e) {
+    ui.alert('Vocabulary Sync', 'Failed: ' + e.toString(), ui.ButtonSet.OK);
   }
 }
 
@@ -1217,30 +1439,48 @@ function _applyCreativeCritic(values, rowNumber) {
 }
 
 
-// The fields visual production cannot proceed without. Checking them in code
-// costs nothing and gives an exact answer; asking a language model to notice an
-// empty cell costs a full inference and gives a probable one.
-var REQUIRED_CREATIVE_FIELDS = [
-  'Creative Director Design Prompt',
-  'Visual Concept',
-  'Visual Focus',
-  'Design Mood',
-  'Composition'
-];
-
-function _missingCreativeFields(rowData) {
+// Checking required inputs in code costs nothing and gives an exact answer;
+// asking a language model to notice an empty cell costs a full inference and
+// gives a probable one. The per-worker lists live in CONFIG.REQUIRED_INPUTS.
+//
+// "None" and "N/A" count as empty. They appear in the sheet where a field was
+// answered rather than filled, and a worker reading them as content produces
+// strategy about the absence of strategy.
+function _missingRequiredInputs(workerName, rowData) {
+  var required = (CONFIG.REQUIRED_INPUTS || {})[workerName] || [];
   var missing = [];
 
-  for (var i = 0; i < REQUIRED_CREATIVE_FIELDS.length; i++) {
-    var field = REQUIRED_CREATIVE_FIELDS[i];
+  for (var i = 0; i < required.length; i++) {
+    var field = required[i];
     var value = String(rowData[field] || '').trim();
+    var lowered = value.toLowerCase();
 
-    if (!value || value.toLowerCase() === 'none' || value.toLowerCase() === 'n/a') {
+    if (!value || lowered === 'none' || lowered === 'n/a' || lowered === '[empty]') {
       missing.push(field);
     }
   }
 
   return missing;
+}
+
+
+// A refusal is only useful if it says where the gap came from. Each worker sits
+// downstream of a different producer, so "empty input" means a different repair
+// in each case.
+function _refusalRemedy(workerName) {
+  switch (workerName) {
+    case 'CONTENT_STRATEGY_WORKER':
+      return 'These arrive by VLOOKUP from Campaign Cards — the campaign has ' +
+             'no card, or the card has no strategy. Build the card first.';
+    case 'CONTENT_CREATION_WORKER':
+      return 'Run the Strategy Worker on this row first.';
+    case 'CREATIVE_DIRECTOR_WORKER':
+      return 'Run the Content Creator on this row first.';
+    case 'VISUAL_PLANNER_WORKER':
+      return 'Return the row to the Creative Director.';
+    default:
+      return 'Fill them before re-running.';
+  }
 }
 
 
@@ -1308,10 +1548,31 @@ function runWorker(workerName, rowNumber) {
 
   try {
     if (isContentPipeline) {
-      SheetWriter.writeWorkflowStatus(rowNumber, 'PROCESSING', sheetName);
+      SheetWriter.writePipelineState(rowNumber, 'PROCESSING', sheetName);
     }
 
     var rowData = SheetSchema.getRowData(rowNumber, sheetName);
+
+    // Required inputs are checked before anything is written or loaded. A
+    // deterministic check on empty cells costs milliseconds and names the exact
+    // fields; a model asked to notice them costs a full inference and returns a
+    // probable answer. Checked here rather than after the context is assembled
+    // so a refused row neither reads Drive nor bumps its revision counter.
+    //
+    // This is what makes input starvation visible. Two thirds of rows reached
+    // the Content Strategy Worker with every strategy field blank and it wrote
+    // a strategy for all of them — the workers were not failing, they were
+    // inventing, because nothing had been said. (Audit A, findings F1 and F2.)
+    var missing = _missingRequiredInputs(upperName, rowData);
+
+    if (missing.length) {
+      throw new Error(
+        toDisplayName(upperName) + ' refused row ' + rowNumber + ': ' +
+        missing.length + ' required input' + (missing.length === 1 ? '' : 's') +
+        ' empty — ' + missing.join(', ') + '. ' +
+        _refusalRemedy(upperName)
+      );
+    }
 
     if (upperName === 'CONTENT_CREATION_WORKER') {
       var existingContentId = rowData[CONFIG.COLUMN_NAMES.CONTENT_ID];
@@ -1334,21 +1595,7 @@ function runWorker(workerName, rowNumber) {
       }
     }
 
-    var context = ContextBuilder.buildContext(upperName, rowData);
-
-    // Field completeness is a deterministic check. Running it before the model
-    // call means an incomplete package fails in milliseconds at no token cost,
-    // instead of ~15 seconds later via a model asked to notice empty cells.
-    if (upperName === 'VISUAL_PLANNER_WORKER') {
-      var missing = _missingCreativeFields(rowData);
-
-      if (missing.length) {
-        throw new Error(
-          'Creative Package incomplete — cannot plan production. Missing: ' +
-          missing.join(', ') + '. Return the row to the Creative Director.'
-        );
-      }
-    }
+    var context = ContextBuilder.buildContext(upperName, rowData, rowNumber);
 
     // The Visual Planner owns the Production Mode decision but has no way to
     // look inside a Drive folder. Tell it what actually exists, so the decision
@@ -1379,6 +1626,17 @@ function runWorker(workerName, rowNumber) {
     var callOptions = {
       temperature: workerConfig.temperature
     };
+
+    // Where the reusable part of this prompt ends. Passed to the provider so
+    // Anthropic can be given a cache breakpoint; Gemini ignores it and relies on
+    // implicit prefix caching, which needs no marker.
+    var cachePrefix = ContextBuilder.staticPrefixFor(upperName);
+    callOptions.cachePrefix = cachePrefix;
+
+    // Logged every call so a prompt edited in Drive is visible as a changed
+    // fingerprint. Prompts are cached for six hours: without this, an edit that
+    // has not reached the workers looks exactly like an edit that has.
+    var prefixHash = ContextBuilder.staticPrefixHash(cachePrefix);
 
     // Per-worker provider and model, when the worker declares them. Absent
     // both, the global defaults apply and nothing changes.
@@ -1489,7 +1747,7 @@ function runWorker(workerName, rowNumber) {
     }
 
     if (isContentPipeline) {
-      SheetWriter.writeWorkflowStatus(rowNumber, 'COMPLETED', sheetName);
+      SheetWriter.writePipelineState(rowNumber, 'COMPLETED', sheetName);
     }
 
     var endTime = new Date().getTime();
@@ -1502,6 +1760,30 @@ function runWorker(workerName, rowNumber) {
     }
 
     details += ' | AI: ' + aiResponse.finishReason;
+
+    // Cache performance, per call. Roughly 9.7M of 10.8M input tokens per plan
+    // are byte-identical across rows, so this number is the measure of whether
+    // the caching work is doing anything. Zero on every row means it is not.
+    var cached = aiResponse.cachedTokens || 0;
+    var cacheWrite = aiResponse.cacheWriteTokens || 0;
+
+    if (cached || cacheWrite) {
+      var share = aiResponse.inputTokens
+        ? Math.round((cached / (cached + aiResponse.inputTokens)) * 100)
+        : 0;
+      details += ' | Cached: ' + cached + ' (' + share + '% of input)';
+      if (cacheWrite) {
+        details += ' | Cache written: ' + cacheWrite;
+      }
+    } else {
+      details += ' | Cached: 0';
+    }
+
+    details += ' | Prompt: ' + prefixHash;
+
+    if (aiResponse.failedOver) {
+      details += ' | FAILOVER: ' + aiResponse.failedOver;
+    }
 
     if (parsed.isPartial) {
       Logger.logPartial(upperName, rowNumber, runtime, details);
@@ -1534,9 +1816,9 @@ function runWorker(workerName, rowNumber) {
 
     if (isContentPipeline) {
       try {
-        SheetWriter.writeWorkflowStatus(rowNumber, 'FAILED', sheetName);
+        SheetWriter.writePipelineState(rowNumber, 'FAILED', sheetName);
       } catch (writeErr) {
-        Logger.log('Failed to write FAILED status: ' + writeErr.toString());
+        Logger.log('Failed to write FAILED state: ' + writeErr.toString());
       }
     }
 

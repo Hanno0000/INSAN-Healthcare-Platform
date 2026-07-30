@@ -73,7 +73,7 @@ writes.
 **The workers — 10 designed, 6 built:**
 
 ```
-W1  Campaign Card Builder   ❌ not built    knowledge file → campaign card
+W1  Campaign Card Builder   🟡 unverified   knowledge file → campaign card
 W2  Campaign Planner        ❌ not built    operator brief → calendar        (human today)
 W3  Content Strategy        ✅ built        → Content Pipeline S:AJ
 W4  Content Creation        ✅ built        → Content Pipeline AK:AN
@@ -190,8 +190,23 @@ the healthiest part of the system.
 
 ## 6. The agreed next action
 
-**Phase 0 from `VERDICT_AND_IMPROVEMENTS.md` §5.** About an hour, and it changes no
-output at all:
+> **Updated 2026-07-30.** Phases 0, 1 and 2 have been implemented. The code changes
+> are in `campaign-os/src/`; the knowledge files are in `business/knowledge/`.
+> **Nothing has run in production yet** — every change still needs to be pasted into
+> the Apps Script editor, and three one-time menu actions need running. See
+> `VERDICT_AND_IMPROVEMENTS.md` §5 for the phase list and the sprint notes below it.
+>
+> Immediate next actions, in order:
+> 1. Copy the changed `src/*.gs` files into the Apps Script editor.
+> 2. Add `ANTHROPIC_API_KEY` and `KNOWLEDGE_FOLDER_ID` to Script Properties.
+> 3. Run Maintenance → **Create Managed Columns**, then **Sync Dropdowns from
+>    CONFIG**, then **Preflight Check**.
+> 4. Fill the two `NEEDS-OPERATOR` sections in `MEDICAL_SERVICE_EMERGENCY.md` and
+>    `HOSPITAL_DELTA.md` — 24 scheduled posts are waiting on them.
+> 5. Build cards from the five files that are ready, and verify one against the
+>    sheet.
+
+The original Phase 0, kept for reference:
 
 1. **Fix the creative-memory window.** `ContextBuilder._buildCreativeMemory` anchors its
    scan to the bottom of the sheet instead of the row being written, so it always reads
