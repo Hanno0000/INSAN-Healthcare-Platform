@@ -293,12 +293,19 @@ All ❌.
 
 | Campaign | File | Slots |
 |---|---|---|
-| Medical Myths & Facts | `supporting/EDUCATIONAL_MYTHS_FACTS.md` | 3 |
+| Medical Myths & Facts ² | `supporting/EDUCATIONAL_MYTHS_FACTS.md` | 3 |
 | Health Awareness | `supporting/EDUCATIONAL_HEALTH_AWARENESS.md` | 2 |
 | Prevention Tips | `supporting/EDUCATIONAL_PREVENTION_TIPS.md` | 2 |
 | Seasonal Campaigns | `supporting/EDUCATIONAL_SEASONAL.md` | 1 |
 
 All ❌.
+
+² The calendar schedules this campaign under **two names** — `Myth vs Fact`
+(2 slots) and `Medical Myths & Facts` (1 slot). Confirmed by the operator on
+2026-07-30 to be one campaign. The 3 above is the combined figure. **Rename the
+two `Myth vs Fact` rows to `Medical Myths & Facts`** so one knowledge file
+serves all three; until then the split would need two files describing the same
+thing, which is how two sources of truth begin.
 
 ### 7.8 Totals
 

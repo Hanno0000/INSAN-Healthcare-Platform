@@ -154,6 +154,10 @@ function onOpen() {
       .addItem('Visual QA', 'runVisualQAWorker')
       .addSeparator()
       .addItem('Run Full Visual Pipeline', 'runFullVisualPipeline'))
+    .addSubMenu(SpreadsheetApp.getUi()
+      .createMenu('Publishing & Ads')
+      .addItem('Publish Approved Rows', 'runPublishingWorker')
+      .addItem('Draft Paid Ads', 'runPaidAdsWorker'))
     .addSeparator()
     .addItem('Resume Last Run', 'resumeLastRun')
     .addSeparator()
@@ -1334,6 +1338,94 @@ function runVisualQAWorker() {
 function runFullVisualPipeline() {
   runVisualPipeline();
 }
+
+// ================================
+// W9 / W10 — PUBLISHING AND PAID ADS
+// ================================
+
+function runPublishingWorker() {
+  var ui = SpreadsheetApp.getUi();
+  var dryRun = !!(CONFIG.PUBLISHING || {}).DRY_RUN;
+
+  var range = askForRowRange(CONFIG.VISUAL_PIPELINE.SHEET_NAME);
+  if (!range) return;
+
+  // Publishing is the only irreversible action in this system, so the
+  // confirmation says what will actually happen rather than "Proceed?". In dry
+  // run it says that too — an operator who thinks they are testing and is not
+  // is the failure this text exists to prevent.
+  var confirm = Browser.msgBox(
+    dryRun ? 'Publish — DRY RUN' : 'Publish — LIVE',
+    'Rows: ' + range.start + ' to ' + range.end + '\n\n' +
+    (dryRun
+      ? 'DRY RUN is on. Every row will be resolved in full — page, token,\n' +
+        'copy and assets — and nothing will be posted.\n\n' +
+        'Turn it off in CONFIG.PUBLISHING.DRY_RUN when you are ready.'
+      : 'LIVE. Approved rows in this range will be POSTED to real Facebook\n' +
+        'pages. This cannot be undone from the sheet.') +
+    '\n\nProceed?',
+    Browser.Buttons.YES_NO
+  );
+
+  if (confirm !== 'yes') return;
+
+  var result = PublishingRunner.run(range.start, range.end);
+
+  ui.alert(
+    'Publishing',
+    (result.dryRun ? 'DRY RUN — nothing was posted.\n\n' : '') +
+    'Published: ' + result.published + '\n' +
+    'Skipped:   ' + result.skipped + '\n' +
+    'Failed:    ' + result.failed +
+    (result.interrupted
+      ? '\n\nStopped early — resume from row ' + result.nextRow
+      : '') +
+    '\n\nThe Execution Log carries the reason for every skip.',
+    ui.ButtonSet.OK
+  );
+}
+
+
+function runPaidAdsWorker() {
+  var ui = SpreadsheetApp.getUi();
+
+  var range = askForRowRange(CONFIG.VISUAL_PIPELINE.SHEET_NAME);
+  if (!range) return;
+
+  var confirm = Browser.msgBox(
+    'Draft Paid Ads',
+    'Rows: ' + range.start + ' to ' + range.end + '\n\n' +
+    'Drafts one Ads Pipeline row per published post that does not have one.\n' +
+    'No money is spent, nothing is launched, and budget is left blank for\n' +
+    'you to set.' +
+    '\n\nProceed?',
+    Browser.Buttons.YES_NO
+  );
+
+  if (confirm !== 'yes') return;
+
+  if (!offerCacheRefresh()) return;
+
+  try {
+    var result = AdsRunner.run(range.start, range.end);
+
+    ui.alert(
+      'Paid Ads',
+      'Drafted: ' + result.drafted + '\n' +
+      'Skipped: ' + result.skipped + '  (not published, or already drafted)\n' +
+      'Failed:  ' + result.failed +
+      (result.interrupted
+        ? '\n\nStopped early — resume from row ' + result.nextRow
+        : '') +
+      '\n\nEvery row needs a budget and a human before it goes anywhere.',
+      ui.ButtonSet.OK
+    );
+
+  } catch (e) {
+    ui.alert('Paid Ads', e.message || e.toString(), ui.ButtonSet.OK);
+  }
+}
+
 
 function runVisualWorker(workerName) {
   var lastRow = SheetSchema.getVisualLastRow();

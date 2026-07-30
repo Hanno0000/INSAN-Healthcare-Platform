@@ -239,44 +239,99 @@ their contents. Anything decidable by arithmetic belongs in `AssetIntegrity`, no
 
 ---
 
-## W9 — Publishing Worker 🔴 *(currently human)*
+## W9 — Publishing Worker 🟡
+
+🟡 Built 2026-07-30. **`CONFIG.PUBLISHING.DRY_RUN` ships `true`** — it resolves
+the page, the token, the copy and every asset for real and calls nothing.
 
 | | |
 |---|---|
-| **Reads** | Visual Pipeline `A:AB` where `VISUAL_STAGE = PUBLISHING` |
+| **Reads** | Visual Pipeline `A:AB` where `VISUAL_STAGE = PUBLISHING`, plus the Content Pipeline row with the same `Content ID` |
 | **Writes** | Visual Pipeline `AC:AE` — Publishing Status · Publishing Timestamp · Live Post URL |
-| **Prompt** | `prompts/publishing/PUBLISHING_WORKER.md` 🔴 |
-| **Code** | `src/PublishingRunner.gs` 🔴 |
+| **Prompt** | **none, deliberately** — see below |
+| **Code** | `src/PublishingRunner.gs` 🟢 |
+| **Menu** | AI Workers → Publishing & Ads → Publish Approved Rows |
 
-**Requires** Facebook Graph API page tokens per page, in Script Properties.
+**No model call, on purpose.** Every decision publishing needs was made and
+owned upstream: the copy by the Creative Director, the artwork by Visual QA, the
+page by the planner. Publishing is the one step with nothing left to judge, and
+the contract rule is one decision, one owner — so this worker makes none. It
+supersedes the `prompts/publishing/PUBLISHING_WORKER.md` this document
+previously called for.
 
-**Must**
-- Publish to the page named in `Publishing Page` — never a default
-- Attach every asset in order for a carousel
-- Post copy = `Creative Director Post Copy` + merged hashtags
-- Refuse any row not `Approved` by W8
-- Be idempotent — a re-run must never double-post. Check `Live Post URL` first.
+**Requires** two Script Properties per page: `FB_PAGE_ID_<PAGE>` and
+`FB_PAGE_TOKEN_<PAGE>`, where `<PAGE>` is the page name upper-cased with
+non-alphanumerics replaced by `_` — `FB_PAGE_ID_FUTURE`, `FB_PAGE_TOKEN_DELTA`.
+A page token posts as the brand and is kept out of `CONFIG.gs` for that reason.
+
+**Reads two sheets.** `Publishing Page` and `Creative Director Post Copy` live
+in the Content Pipeline; the Visual Pipeline's read-only section carries the
+creative package, not the schedule. This reads upstream and writes nothing back,
+so the one-way rule holds.
+
+**Refuses**
+- Any row not at `VISUAL_STAGE = PUBLISHING` and not `Approved` by W8
+- A row already carrying a `Live Post URL` — skipped, never reposted
+- A row whose `Publishing Status` still carries the in-flight marker. That means
+  a previous run died between posting and recording it, which is the only window
+  where a re-run can double-post. It needs a human to look at the page.
+- An empty or out-of-vocabulary `Publishing Page`. **There is no default page.**
+- An empty `Final Asset URL`, an unreadable asset, or a set that does not match
+  `Asset Count`. Never partial: a three-card post of a four-card carousel breaks
+  the sequence the copy refers to and cannot be edited into shape afterwards.
+
+**Carousels upload unpublished first.** Each card is posted to `/photos` with
+`published=false`, then one `/feed` call attaches them all. Uploading published
+would put every card on the page as its own post.
+
+**Not in `STAGE_ORDER.VISUAL`** — deliberately. Everything in that list is
+cleared when an earlier stage re-runs, and blanking a `Live Post URL` would make
+the system forget a post that is live on a real page, taking the idempotency
+guard with it.
 
 ---
 
-## W10 — Paid Ads Worker 🔴 *(currently human)*
+## W10 — Paid Ads Worker 🟡
+
+🟡 Built 2026-07-30, no production run.
 
 | | |
 |---|---|
-| **Reads** | `Campaign Cards` (audience, KPI, goal) + the published post |
-| **Writes** | New tab `Ads Pipeline` 🔴 |
-| **Prompt** | `prompts/ads/PAID_ADS_WORKER.md` 🔴 |
-| **Code** | `src/AdsRunner.gs` 🔴 |
+| **Reads** | `Campaign Cards` (audience, KPI, goal, CTA) + the published Visual Pipeline row + its Content Pipeline row |
+| **Writes** | `Ads Pipeline` — one row per published post |
+| **Prompt** | `prompts/ads/PAID_ADS_WORKER.md` 🟢 |
+| **Code** | `src/AdsRunner.gs` 🟢 |
+| **Menu** | AI Workers → Publishing & Ads → Draft Paid Ads |
 
-**Proposed columns**
+**Columns** — the tab is created on first run from `CONFIG.PAID_ADS.COLUMNS`, and
+a missing column is appended rather than assumed.
 
 Content ID · Campaign Name · Page · Live Post URL · Objective · Target Audience ·
 Age Range · Gender · Location · Interests · Budget · Duration · Placements ·
-Ad Status · Ad ID · Results
+Ad Status · Ad ID · Results · Drafted At
 
-**Boundary — important.** W10 **drafts the specification only**. It does not spend
-money. A human approves budget and launches. Automating spend is out of scope until
-the rest of the chain has a production track record.
+**Boundary — enforced, not stated.** `Budget`, `Ad Status`, `Ad ID` and `Results`
+are **not in the worker's output schema at all**, so there is no path by which a
+model fills them. Budget is where a human takes responsibility for spend; the
+other three record what happened after a human launched, and a model writing
+them would be reporting a spend that never occurred.
+
+**Refuses**
+- A post with no campaign card, by name. The card carries the audience and the
+  KPI, which is the entire input — targeting derived from a post instead would
+  be invented, and invented targeting spends real money on the wrong people
+  while looking like a considered choice.
+- Overwriting an existing draft. The operator edits these rows; a second run
+  that rewrote them would delete a human's work with a model's guess.
+
+**Never targets on health conditions.** Interests may describe an interest in
+health; they may not describe having an illness. The rule holds even when the
+campaign is about that condition.
+
+**Why it exists at all.** `Target Audience` and `Primary KPI` are written on
+every campaign card and nothing downstream has ever read them (Audit B, B4 —
+88% of finished posts sit in one funnel stage). This is where they finally have
+to become specific enough to buy against.
 
 ---
 

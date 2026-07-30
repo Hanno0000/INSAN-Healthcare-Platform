@@ -286,23 +286,24 @@ a defect.
     ╚═══════════════════════════════════╤══════════════════════════════════╝
                                         ↓
     ╔═══════════════════════════════════▼══════════════════════════════════╗
-    ║  W9   PUBLISHING WORKER                                  ❌ NOT BUILT ║
-    ║       in : approved assets + copy + page                             ║
-    ║       out: Visual Pipeline AC:AE   (columns reserved)                ║
-    ║       currently: HUMAN                                               ║
+    ║  W9   PUBLISHING WORKER                                 🟡 UNVERIFIED ║
+    ║       in : approved assets + copy + page (two sheets)                ║
+    ║       out: Visual Pipeline AC:AE                                     ║
+    ║       no model call — nothing left to judge at this step             ║
+    ║       DRY_RUN ships true; refuses a row it cannot prove is safe      ║
     ╚═══════════════════════════════════╤══════════════════════════════════╝
                                         ↓
     ╔═══════════════════════════════════▼══════════════════════════════════╗
-    ║  W10  PAID ADS WORKER                                    ❌ NOT BUILT ║
+    ║  W10  PAID ADS WORKER                                   🟡 UNVERIFIED ║
     ║       in : campaign card + published post                            ║
-    ║       out: NEW TAB "Ads Pipeline" — audience, budget, objective,     ║
-    ║            placements, keywords, schedule                            ║
-    ║       currently: HUMAN                                               ║
+    ║       out: TAB "Ads Pipeline" — objective, audience, placements      ║
+    ║       drafts a specification; budget is not in its schema            ║
     ╚══════════════════════════════════════════════════════════════════════╝
 ```
 
-**Status: 6 of 10 workers built.** The two ends of the chain — planning and
-publishing/advertising — are entirely manual.
+**Status: 10 of 10 workers built, 4 of them never run.** The chain is complete in
+code for the first time. Nothing after the Content and Visual teams has made a
+live call: W1, W2, W9 and W10 all exist and all are unverified.
 
 ---
 
@@ -372,11 +373,14 @@ looks it up from Campaign Cards. Keeping both is how the two sources drift.
 | AC:AE | Publishing status, timestamp, live URL | W9 ❌ |
 | AF | AI Worker | every worker |
 
-### Ads Pipeline ❌ — proposed new tab
+### Ads Pipeline 🟡 — created on first run
 
 Content ID · Campaign Name · Page · Live Post URL · Objective · Target Audience ·
-Age/Gender/Location · Interests · Budget · Duration · Placements · Ad Status ·
-Ad ID · Results — written by **W10**.
+Age Range · Gender · Location · Interests · Budget · Duration · Placements ·
+Ad Status · Ad ID · Results · Drafted At.
+
+Written by **W10** — except `Budget`, `Ad Status`, `Ad ID` and `Results`, which
+are outside its output schema entirely and belong to the operator.
 
 ---
 
@@ -461,8 +465,8 @@ concept or delete.
 | Deterministic visual plan | 🟡 built, off by default until the visual pipeline is verified |
 | Content Team | 🟢 built, running |
 | Visual Team | 🟢 built; Media Designer + TextOverlay + AssetIntegrity unverified in production |
-| W9 Publishing | 🔴 not built (human) |
-| W10 Paid Ads | 🔴 not built (human) |
+| W9 Publishing | 🟡 built 2026-07-30, dry run by default, no live post yet |
+| W10 Paid Ads | 🟡 built 2026-07-30, no production run yet |
 | Website platform | 🟢 separate project — see `website/Docs/CURRENT_STATE.md` |
 
 ---

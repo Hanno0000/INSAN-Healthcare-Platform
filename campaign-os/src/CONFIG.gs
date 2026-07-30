@@ -915,6 +915,99 @@ var CONFIG = {
   },
 
   // ================================
+  // W9 — PUBLISHING
+  // Takes an approved row live on a Facebook page. There is no model call here
+  // and there should not be: every decision was already made and owned
+  // upstream — the copy by the Creative Director, the artwork by Visual QA, the
+  // page by the planner. Publishing is the one step in the chain with nothing
+  // left to judge, and a worker asked to judge nothing invents something.
+  //
+  // DRY_RUN is true. This worker performs the only irreversible action in the
+  // system, on real public pages, and has never run. In dry run it resolves the
+  // page, the token, the copy and every asset, reports exactly what it would
+  // post, and calls nothing. Turn it off deliberately, on one row.
+  // ================================
+
+  PUBLISHING: {
+    DRY_RUN: true,
+
+    GRAPH_VERSION: 'v21.0',
+    GRAPH_HOST: 'https://graph.facebook.com',
+
+    // Script Properties, one pair per page in CONTROLLED_VOCABULARY
+    // 'Publishing Page'. The page name is upper-cased and non-alphanumerics
+    // become underscores: "Future" -> FB_PAGE_ID_FUTURE / FB_PAGE_TOKEN_FUTURE.
+    //
+    // Not in this file, deliberately. A page token posts as the brand; it does
+    // not belong in a source file that gets copied between deployments.
+    PAGE_ID_PREFIX: 'FB_PAGE_ID_',
+    PAGE_TOKEN_PREFIX: 'FB_PAGE_TOKEN_',
+
+    // Written to Publishing Status before the first API call and cleared after
+    // the result is recorded. A row still carrying it was interrupted between
+    // posting and writing the URL — which is the one state where a re-run could
+    // double-post — so it is refused until an operator checks the page.
+    IN_FLIGHT_MARKER: 'IN FLIGHT',
+
+    // Facebook truncates a post at roughly 250 characters behind "See more".
+    // Not enforced — long-form has a place, and every finished post measured
+    // 914–1,593 characters (Audit B, B7) — but a post is never published
+    // without the length being stated in the log.
+    VISIBLE_CHARS: 250
+  },
+
+  // ================================
+  // W10 — PAID ADS
+  // Drafts an ad specification for a post that is already live. It does not
+  // spend money, does not create campaigns, and touches no ad account: it
+  // writes a row a human reads, edits and executes.
+  //
+  // That boundary is the design, not a phase. Automating spend before the rest
+  // of the chain has a production track record would put a model in charge of
+  // the only irreversible thing more expensive than publishing.
+  // ================================
+
+  PAID_ADS: {
+    SHEET_NAME: 'Ads Pipeline',
+    promptFile: 'PAID_ADS_WORKER.md',
+    temperature: 0.4,
+    provider: null,   // null inherits AI_PROVIDER
+    model: null,
+
+    docs: [
+      'MASTER_BRAND_ARCHITECTURE.md',
+      'AI_CREATIVE_CONSTITUTION.md',
+      'PROJECT_DECISIONS.md'
+    ],
+
+    // Created by ensureAdsPipelineSheet() on first run. Content ID is the join
+    // back to the row that produced the post.
+    COLUMNS: [
+      'Content ID', 'Campaign Name', 'Page', 'Live Post URL',
+      'Objective', 'Target Audience', 'Age Range', 'Gender', 'Location',
+      'Interests', 'Budget', 'Duration', 'Placements',
+      'Ad Status', 'Ad ID', 'Results', 'Drafted At'
+    ],
+
+    // The worker proposes everything except money and outcome. Budget is the
+    // operator's decision and Ad Status/Ad ID/Results are recorded after a
+    // human launches — a model filling them would be reporting a spend that
+    // never happened.
+    OUTPUT_FIELDS: {
+      'Objective': 'controlled',
+      'Target Audience': 'free',
+      'Age Range': 'free',
+      'Gender': 'controlled',
+      'Location': 'free',
+      'Interests': 'free',
+      'Duration': 'free',
+      'Placements': 'free'
+    },
+
+    OPERATOR_OWNED: ['Budget', 'Ad Status', 'Ad ID', 'Results']
+  },
+
+  // ================================
   // VISUAL ASSET FOLDER CONFIG
   // ================================
 
@@ -1015,6 +1108,17 @@ var CONFIG = {
     'Service Level': [
       'DEPARTMENT', 'CENTER', 'CLINIC', 'PROGRAM',
       'CORPORATE', 'HOSPITAL', 'SUPPORTING'
+    ],
+
+    // Meta's campaign objectives, in the vocabulary the Ads Manager uses. W10
+    // picks from this list; anything outside it is a value a human would have
+    // to translate before the campaign could be created.
+    'Objective': [
+      'Awareness', 'Traffic', 'Engagement', 'Leads', 'App Promotion', 'Sales'
+    ],
+
+    'Gender': [
+      'All', 'Men', 'Women'
     ],
 
     // Which of the master brand's standards a campaign sits on. From

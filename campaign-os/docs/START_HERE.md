@@ -99,14 +99,16 @@ W5  Creative Director       ✅ running      → refines S:AJ, approves AO:AS
 W6  Visual Planner          ✅ running      → Visual Pipeline S:U  (replaceable, see §6)
 W7  Media Designer          🟡 unverified   → the image prompt
 W8  Visual QA               ✅ running      → Visual Pipeline Y:AB
-W9  Publishing              ❌ not built    → AC:AE (columns reserved)      (human today)
-W10 Paid Ads                ❌ not built    → a new Ads Pipeline tab        (human today)
+W9  Publishing              🟡 unverified   → AC:AE   (dry run by default)
+W10 Paid Ads                🟡 unverified   → Ads Pipeline (drafts, never spends)
 ```
 
 🟡 means the code exists and is tested, but has never made a live API call.
 
-Publishing and ads are still done by hand. Planning is no longer — W2 exists, but
-it has not been run.
+**All ten workers now exist in code.** Five of them have never run. Publishing
+and ads are still done by hand until W9 and W10 are verified — W9 ships with
+`DRY_RUN` on, so running it changes nothing until that is deliberately turned
+off.
 
 ---
 
@@ -259,10 +261,22 @@ Also: **Kabarona now builds a card** (§6.2), and the five questions blocking
 Emergency and Delta are written out in
 `business/knowledge/NEEDS_OPERATOR_QUESTIONS.md`.
 
-⚠️ **Eight files changed and must be re-pasted into the Apps Script editor:**
-`AIProvider.gs` · `CardBuilder.gs` · `DriveLoader.gs` · `MediaDesigner.gs` ·
-`PlannerRunner.gs` · `PortfolioCritic.gs` · `ServiceRunner.gs` ·
-`WorkerRunner.gs`. Still nothing verified in production.
+**A fifth pass, 2026-07-30 — W9 and W10.** The chain is complete in code for the
+first time. `PublishingRunner.gs` takes an approved row live on a Facebook page
+and makes no model call: every decision publishing needs was already owned
+upstream, so the worker's whole job is refusing the rows it cannot prove are
+safe. It ships with `DRY_RUN` on. `AdsRunner.gs` drafts an ad specification for
+a post that is already live, and `Budget`, `Ad Status`, `Ad ID` and `Results`
+are outside its output schema entirely — there is no path by which it reports a
+spend. New prompt: `prompts/ads/PAID_ADS_WORKER.md`. 23 automated checks cover
+the guards.
+
+⚠️ **Files changed and to be pasted into the Apps Script editor:**
+`AIProvider.gs` · `CardBuilder.gs` · `CONFIG.gs` · `DriveLoader.gs` ·
+`MediaDesigner.gs` · `PlannerRunner.gs` · `PortfolioCritic.gs` ·
+`ServiceRunner.gs` · `WorkerRunner.gs`, plus two new files —
+**`PublishingRunner.gs`** and **`AdsRunner.gs`**. Still nothing verified in
+production.
 
 ### 6.2 The knowledge base
 
@@ -308,11 +322,29 @@ In this order. Steps 1–3 are one-time.
 2. **Script Properties:** add `ANTHROPIC_API_KEY` (or the Creative Director fails on
    every row) and `KNOWLEDGE_FOLDER_ID` (the Drive folder holding
    `business/knowledge`; subfolders are searched). Optionally
-   `PLANNING_PROMPTS_FOLDER_ID`.
-3. **Upload the new prompt folder** `prompts/planning/` and the new knowledge folders
-   to Drive.
+   `PLANNING_PROMPTS_FOLDER_ID` and `ADS_PROMPTS_FOLDER_ID`.
+
+   **For W9 only, and only when you reach it:** `FB_PAGE_ID_<PAGE>` and
+   `FB_PAGE_TOKEN_<PAGE>` for each of INSAN, FUTURE and DELTA. Nothing else in
+   the system needs them, and W9 refuses by name when one is missing rather than
+   falling back to another page.
+3. **Upload the new prompt folders** `prompts/planning/` and `prompts/ads/`, and the
+   new knowledge folders, to Drive.
 4. **AI Workers → Maintenance → Create Managed Columns**, then **Sync Dropdowns from
    CONFIG**, then **Preflight Check** — which must report no schema problems.
+
+   **Three renames owed in the sheet**, all decided on 2026-07-30 and all
+   affecting the join key. Nothing downstream is wrong until a card is built
+   against the old name:
+
+   | In | From | To | Rows |
+   |---|---|---|---|
+   | Content Calendar | `Kobarna Continuous Care Program` | `Kabarona Continuous Care Program` | 6 |
+   | Campaign Cards | `Kobarna Continuous Care Program` | `Kabarona Continuous Care Program` | 1 |
+   | Content Calendar | `Myth vs Fact` | `Medical Myths & Facts` | 2 |
+
+   The first two unify the spelling on the brand documents. The third merges two
+   names for one campaign, so a single knowledge file serves all three slots.
 5. **Verify one thing at a time**, and expect the first run of anything to be the
    interesting one.
 
@@ -341,7 +373,15 @@ In this order. Steps 1–3 are one-time.
 5. **Measure caching.** Read the `Cached:` figure in the Execution Log. If Gemini's
    implicit caching is working, the caching project is finished; if it is zero across
    rows, explicit caching is worth building (`PROMPT_CACHING_PLAN.md` step 4).
-6. Then Phase 4: W9 Publishing, W10 Paid Ads, the shared entity registry.
+6. **Verify W9 on one row, in dry run first.** The code landed 2026-07-30 with
+   `CONFIG.PUBLISHING.DRY_RUN = true`: it resolves the page, the token, the copy
+   and every asset for real and posts nothing. Run it that way, read what it says
+   it would post, and only then turn the flag off — on **one** row, on the page
+   you least mind getting wrong. It is the only irreversible action in the system.
+7. **Draft ads for that post with W10** and read the row. It cannot spend: budget
+   and results are outside its output schema.
+8. Then the rest of Phase 4: the approved-asset library, the events calendar, the
+   shared entity registry, and the eleven hardcoded IDs.
 
 ### 6.5 Known open items not yet addressed
 
