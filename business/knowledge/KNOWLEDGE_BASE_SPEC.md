@@ -252,17 +252,35 @@ Specifically avoid:
 
 ### 7.4 Corporate
 
-| Campaign | File | Slots |
-|---|---|---|
-| Why INSAN? | `corporate/CORPORATE_WHY_INSAN.md` | 1 |
-| Why Trust Us | `corporate/CORPORATE_WHY_TRUST_US.md` | 3 |
-| Brand Identity | `corporate/CORPORATE_BRAND_IDENTITY.md` | 1 |
-| Healthcare Leadership | `corporate/CORPORATE_LEADERSHIP.md` | 3 |
-| Healthcare Innovation | `corporate/CORPORATE_INNOVATION.md` | 2 |
-| Growth & Transformation | `corporate/CORPORATE_GROWTH.md` | 1 |
-| Digital Healthcare Transformation | `corporate/CORPORATE_DIGITAL.md` | 1 |
+| Campaign | File | Slots | Status |
+|---|---|---|---|
+| Why INSAN? | `corporate/CORPORATE_WHY_INSAN.md` | 1 | ✅ builds a card |
+| Why Trust Us | `corporate/CORPORATE_WHY_TRUST_US.md` | 3 | ✅ builds a card |
+| Brand Identity | `corporate/CORPORATE_BRAND_IDENTITY.md` | 1 | ❌ |
+| Healthcare Leadership | `corporate/CORPORATE_LEADERSHIP.md` | 3 | ❌ |
+| Healthcare Innovation | `corporate/CORPORATE_INNOVATION.md` | 2 | ❌ |
+| Growth & Transformation | `corporate/CORPORATE_GROWTH.md` | 1 | ❌ |
+| Digital Healthcare Transformation | `corporate/CORPORATE_DIGITAL.md` | 1 | ❌ |
 
-All ❌.
+### 7.4.1 The corporate routing test
+
+Seven corporate campaigns describe the same organisation. Each answers a different
+question, and the question is the boundary. Recorded in full in
+`CORPORATE_WHY_INSAN.md`, which is the cluster anchor:
+
+| The question the reader is asking | The campaign |
+|---|---|
+| "What is this?" | Why INSAN? |
+| "What do you believe?" | Brand Identity |
+| "Why should I believe you?" | Why Trust Us |
+| "What do you think healthcare should be?" | Healthcare Leadership |
+| "What are you building?" | Healthcare Innovation |
+| "Where are you going, and what has changed?" | Growth & Transformation |
+| "What does the digital side look like?" | Digital Healthcare Transformation |
+
+**Why INSAN? must be scheduled first.** Every other corporate campaign assumes the
+reader already knows what INSAN is; *Why Trust Us* scheduled ahead of it asks someone
+to trust a thing they cannot name.
 
 ### 7.5 Hospitals
 
@@ -329,9 +347,9 @@ thing, which is how two sources of truth begin.
 
 | | Count | Scheduled slots |
 |---|---|---|
-| ✅ Written, builds a campaign card | **8** — ICU, Kabarona, Meet Our Doctors, Patient Journey, Success Stories, Meet Our Team, Behind The Scenes, Hospital Life | **50** |
+| ✅ Written, builds a campaign card | **10** — ICU, Kabarona, Meet Our Doctors, Patient Journey, Success Stories, Meet Our Team, Behind The Scenes, Hospital Life, Why INSAN?, Why Trust Us | **54** |
 | 🟠 Structurally complete, awaiting operator facts | **2** — Emergency, Delta | 24 |
-| ❌ Not started | ~30 | 58 |
+| ❌ Not started | ~28 | 54 |
 
 *Updated 2026-07-30 (third pass).* Kabarona was closed by rewriting its front
 matter to §4 and renaming two headings to the ones the gate matches — *Why This
@@ -344,8 +362,11 @@ Every ready file is joined to a real calendar row, verified against the workbook
 Before `campaign_name` existed, ICU's card would have been filed as "Intensive
 Care Unit" and served **none** of its 11 slots.
 
-**Coverage: 44 of 132 slots today**, 50 once the Kabarona rename lands in the
-sheet, **74 once Emergency and Delta are answered.**
+Then the corporate cluster was opened with **Why INSAN?** — which carries the
+routing test all seven corporate campaigns inherit — and **Why Trust Us**.
+
+**Coverage: 48 of 132 slots today**, 54 once the Kabarona rename lands in the
+sheet, **78 once Emergency and Delta are answered.**
 
 **How to check any file:** AI Workers → Planning → **Check Knowledge File**. It runs
 W1's full validation gate and reports what is missing, without spending an
