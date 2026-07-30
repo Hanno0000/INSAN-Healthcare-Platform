@@ -210,36 +210,62 @@ is laid in the same step.
 
 ## Part 5 — Recommended order
 
-**Phase 0 — one hour, changes no output**
+> **Status as of 2026-07-30.** Phases 0–3 are implemented and committed to `main`.
+> ✅ means written and covered by automated checks. **It does not mean verified in
+> production — nothing below has made a live API call.** The one item that requires
+> a production run is the one item still open in Phase 3.
+>
+> Current state and next actions: `START_HERE.md` §6.
 
-1. Fix the creative-memory window *(B·B2 — direct cause of B·B1)*
-2. Delete the timestamp line in `ContextBuilder.gs` **and** `MediaDesigner.gs` *(A·F5, A·F18)*
-3. Add `ANTHROPIC_API_KEY`, switch one worker to Claude *(A·F12)*
+**Phase 0 — one hour, changes no output** ✅
 
-**Phase 1 — correctness before quality**
+1. ✅ Fix the creative-memory window *(B·B2 — direct cause of B·B1)*
+   — anchored to the row being written; also falls back to the draft copy so W4
+   sees openings from its own plan
+2. ✅ Delete the timestamp line in `ContextBuilder.gs` **and** `MediaDesigner.gs`
+   *(A·F5, A·F18)*
+3. ✅ Add `ANTHROPIC_API_KEY`, switch one worker to Claude *(A·F12)*
+   — Creative Director. Required removing `temperature`, which the Claude 5 family
+   rejects with a 400; without that fix the first row would have failed three times
+4. ✅ Log cached tokens from both providers *(A·F5 — from Audit A §9)*
 
-4. One vocabulary source between code and sheet *(A·F4)*
-5. Remove unmakeable formats from the dropdown *(A·F11)*
-6. Refuse rows with empty required inputs *(A·F2)*
-7. Add `Service Level` to Campaign Cards *(A·F10)*
+**Phase 1 — correctness before quality** ✅
 
-**Phase 2 — close the input gap (the real work)**
+5. ✅ One vocabulary source between code and sheet *(A·F4)*
+   — `syncVocabularyFromConfig` writes every dropdown in all three sheets.
+   `Workflow Status` was two concepts in one column; the machine state moved to a
+   new `Pipeline State`
+6. ✅ Remove unmakeable formats from the dropdown *(A·F11)* — falls out of item 5
+7. ✅ Refuse rows with empty required inputs *(A·F2)*
+   — per-worker required lists in `CONFIG.REQUIRED_INPUTS`, checked before any write
+8. ✅ Add `Service Level` to Campaign Cards *(A·F10)* — appended, never inserted
+9. ✅ *(added)* Automatic provider failover — what would have rescued the 31 rows
 
-8. Write the top five knowledge files by scheduled volume *(A·F3)*
-9. Build W1 Campaign Card Builder *(A·F1, A·F7)*
-10. Enable caching with a content-hash key *(A·F5)*
+**Phase 2 — close the input gap (the real work)** ✅
 
-**Phase 3 — improvements**
+10. 🟠 Write the top five knowledge files by scheduled volume *(A·F3)*
+    — all five written and structurally complete. Three build cards now; Emergency
+    and Delta carry `NEEDS-OPERATOR` markers on sections needing facts only the
+    operator has
+11. ✅ Build W1 Campaign Card Builder *(A·F1, A·F7)*
+12. ✅ Enable caching *(A·F5)* — prompt split with an Anthropic cache breakpoint,
+    verified byte-identical to the previous assembly. Explicit Gemini caching
+    deliberately not built: measure implicit caching first, per the plan's own step 3
 
-11. I1 portfolio critic · I3 retire Visual Planner · I2 two openings
-12. Verify Media Designer + TextOverlay + AssetIntegrity on one row *(A·F19)*
-13. Build W2 Campaign Planner *(A·F8)*, with I6 conversational brief
+**Phase 3 — improvements** — code ✅, verification ⬜
 
-**Phase 4 — close the loop**
+13. ✅ I1 portfolio critic · ✅ I3 deterministic visual plan (off by default) ·
+    ✅ I2 two openings
+14. ⬜ **Verify Media Designer + TextOverlay + AssetIntegrity on one row** *(A·F19)*
+    — **the only item in Phases 0–3 still open.** It is a production run, not code.
+    Do it before enabling `CONFIG.VISUAL_PLAN.ENABLED`
+15. ✅ Build W2 Campaign Planner *(A·F8)*, with I6 conversational brief
 
-14. I4 asset library · I5 events calendar
-15. W9 Publishing · W10 Paid Ads *(drafts specs, does not spend)*
-16. I7 shared entity registry · move the 11 hardcoded IDs to properties
+**Phase 4 — close the loop** ⬜
+
+16. ⬜ I4 asset library · I5 events calendar
+17. ⬜ W9 Publishing · W10 Paid Ads *(drafts specs, does not spend)*
+18. ⬜ I7 shared entity registry · move the 11 hardcoded IDs to properties
 
 ---
 

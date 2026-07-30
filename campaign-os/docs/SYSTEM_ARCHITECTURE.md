@@ -234,12 +234,20 @@ a defect.
                     └───────────────────┬──────────────────────┘
                                         │
     ╔═══════════════════════════════════▼══════════════════════════════════╗
-    ║  W2   CAMPAIGN PLANNER                                   ❌ NOT BUILT ║
-    ║       in : operator brief — duration, pages, posts/day, campaign mix ║
+    ║  W2   CAMPAIGN PLANNER                                  🟡 UNVERIFIED ║
+    ║       in : operator brief — duration, pages, posts/day, objective    ║
     ║            + Campaign Cards (all)                                    ║
     ║       out: Content Calendar rows                                     ║
-    ║       runs: once per planning cycle    currently: HUMAN              ║
+    ║       runs: once per planning cycle                                  ║
+    ║       refuses: any campaign without a usable card, by name           ║
     ╚═══════════════════════════════════╤══════════════════════════════════╝
+                                        │
+                    ┌──────────────────────────────────────────┐
+                    │  PORTFOLIO CRITIC          🟡 UNVERIFIED │
+                    │  reads the whole plan, once, before      │
+                    │  production spends anything on it        │
+                    │  ~15k tokens against 10.8M               │
+                    └───────────────────┬──────────────────────┘
                                         ↓
                     ┌──────────────────────────────────────────┐
                     │  TAB: Content Calendar                   │
@@ -448,7 +456,9 @@ concept or delete.
 | Knowledge base | 🟠 7 of ~40 entities — 5 build a card, 2 await operator facts |
 | Campaign Cards | 🟠 16 of ~41, depth 1 of 16 |
 | W1 Card Builder | 🟡 built 2026-07-30, no production run yet |
-| W2 Planner | 🔴 not built (human) |
+| W2 Planner | 🟡 built 2026-07-30, no production run yet |
+| Portfolio critic | 🟡 built 2026-07-30, no production run yet |
+| Deterministic visual plan | 🟡 built, off by default until the visual pipeline is verified |
 | Content Team | 🟢 built, running |
 | Visual Team | 🟢 built; Media Designer + TextOverlay + AssetIntegrity unverified in production |
 | W9 Publishing | 🔴 not built (human) |

@@ -4,7 +4,24 @@
 > this repository, read this file completely before opening anything else or writing any
 > code.
 >
-> **Updated:** 2026-07-29
+> **Updated:** 2026-07-30
+
+---
+
+> ## ⚠️ Read this before you start work
+>
+> **Phases 0, 1, 2 and 3 of the agreed plan are implemented.** If you were told to
+> "start at Phase 0", that instruction is out of date — Phase 0 was three changes
+> and they are committed. **Do not redo them.**
+>
+> Everything is in git, on `main`. What has *not* happened is a production run:
+> the code has never been pasted into the Apps Script editor, and no worker built
+> in these phases has made a single live API call.
+>
+> **Where the work actually stands is §6.** Read §1–§5 for the business and the
+> system, then go to §6 — do not infer the current state from anything else in
+> this document, or from the audits, which describe the system as it was measured
+> on 2026-07-29 and are deliberately left unedited as the baseline.
 
 ---
 
@@ -74,18 +91,22 @@ writes.
 
 ```
 W1  Campaign Card Builder   🟡 unverified   knowledge file → campaign card
-W2  Campaign Planner        ❌ not built    operator brief → calendar        (human today)
-W3  Content Strategy        ✅ built        → Content Pipeline S:AJ
-W4  Content Creation        ✅ built        → Content Pipeline AK:AN
-W5  Creative Director       ✅ built        → refines S:AJ, approves AO:AS
-W6  Visual Planner          ✅ built        → Visual Pipeline S:U
+W2  Campaign Planner        🟡 unverified   operator brief → calendar
+--  Portfolio Critic        🟡 unverified   whole plan → what one row cannot show
+W3  Content Strategy        ✅ running      → Content Pipeline S:AJ
+W4  Content Creation        ✅ running      → Content Pipeline AK:AN
+W5  Creative Director       ✅ running      → refines S:AJ, approves AO:AS
+W6  Visual Planner          ✅ running      → Visual Pipeline S:U  (replaceable, see §6)
 W7  Media Designer          🟡 unverified   → the image prompt
-W8  Visual QA               ✅ built        → Visual Pipeline Y:AB
+W8  Visual QA               ✅ running      → Visual Pipeline Y:AB
 W9  Publishing              ❌ not built    → AC:AE (columns reserved)      (human today)
 W10 Paid Ads                ❌ not built    → a new Ads Pipeline tab        (human today)
 ```
 
-Both ends of the chain — planning and publishing/ads — are still done by hand.
+🟡 means the code exists and is tested, but has never made a live API call.
+
+Publishing and ads are still done by hand. Planning is no longer — W2 exists, but
+it has not been run.
 
 ---
 
@@ -120,8 +141,12 @@ means here:
 
 | | |
 |---|---|
-| `business/knowledge/departments/MEDICAL_SERVICE_ICU.md` | 2,761 lines. **The reference standard** — the depth every entity file is supposed to reach. Only two exist. |
+| `business/knowledge/departments/MEDICAL_SERVICE_ICU.md` | 2,772 lines. **The reference standard** — the depth every entity file is supposed to reach |
 | `business/knowledge/KNOWLEDGE_BASE_SPEC.md` | The registry: which entities have a file, which do not, and how many posts each is scheduled for |
+
+Seven files exist now, not two. If you want to see how a *supporting campaign* file
+differs from an *entity* file — it describes the campaign, not a medical service —
+read `business/knowledge/supporting/SUPPORTING_SUCCESS_STORIES.md` as well.
 
 ### Layer 2 — The system. How the machine works.
 
@@ -138,6 +163,12 @@ of them.
 
 **Do not re-analyse this system.** Two full audits were completed 2026-07-29 and
 everything is committed.
+
+**Read these as the baseline, not the status.** They measure the system as it was on
+2026-07-29 and are deliberately unedited, so later work can be compared against them.
+Most of what they describe has since been addressed — each carries a status table at
+the top, and `§6` of this file is the authority. Treating them as current will send
+you to rebuild finished work.
 
 | Order | Document | Answers |
 |---|---|---|
@@ -170,54 +201,112 @@ they disagree with Layer 3, Layer 3 wins.
 
 ## 5. The state of things, in numbers
 
-Every figure below was measured, not estimated. Evidence in the audits.
+Every figure below was measured on 2026-07-29, not estimated. Evidence in the audits.
+The right-hand column is what has changed since — **none of it verified in production.**
 
-| | |
-|---|---|
-| **67%** | of Content Pipeline rows reach the workers with all twelve strategy fields blank |
-| **26%** | of worker calls failed (78 of 298), 60% of them external API conditions |
-| **88%** | of finished posts open with one of five rhetorical formulas |
-| **18%** | agreement between the three systems that describe the medical centers |
-| **~9.7M of 10.8M** | input tokens are byte-identical across rows, and caching is blocked by one line |
-| **5%** | of the knowledge base is written — 2 files for ~40 entities |
-| **2 of 10** | workers own the two ends of the chain, and neither exists |
+| Measured 2026-07-29 | | Now |
+|---|---|---|
+| **67%** | of Content Pipeline rows reach the workers with all twelve strategy fields blank | Workers now refuse such a row by name. The rows still have no strategy — refusing is the point, so the gap is visible instead of silent |
+| **26%** | of worker calls failed (78 of 298), 60% external API conditions | Providers now fail over to each other |
+| **88%** | of finished posts open with one of five rhetorical formulas | Creative memory fixed; a second opening is produced per post; a portfolio critic measures the whole plan |
+| **18%** | agreement between the three systems describing the medical centers | Unchanged — needs the brand owner, not code |
+| **~9.7M of 10.8M** | input tokens byte-identical across rows, caching blocked by one line | Line removed; Anthropic cache breakpoint in place; Gemini implicit caching needs measuring |
+| **5%** | of the knowledge base written — 2 files for ~40 entities | 7 files. 5 build a campaign card, 2 await operator facts |
+| **2 of 10** | workers own the ends of the chain, and neither exists | W1 and W2 exist and are untested. W9 and W10 still do not |
 
-**The one-sentence reading:** the machinery is in better shape than its inputs. Every
-sprint so far was spent improving prompt quality, and the prompts are — on measurement —
-the healthiest part of the system.
+**The one-sentence reading, still true:** the machinery is in better shape than its
+inputs. The difference is that the inputs now fail loudly instead of quietly.
 
 ---
 
-## 6. The agreed next action
+## 6. Where the work actually stands
 
-> **Updated 2026-07-30.** Phases 0, 1 and 2 have been implemented. The code changes
-> are in `campaign-os/src/`; the knowledge files are in `business/knowledge/`.
-> **Nothing has run in production yet** — every change still needs to be pasted into
-> the Apps Script editor, and three one-time menu actions need running. See
-> `VERDICT_AND_IMPROVEMENTS.md` §5 for the phase list and the sprint notes below it.
->
-> Immediate next actions, in order:
-> 1. Copy the changed `src/*.gs` files into the Apps Script editor.
-> 2. Add `ANTHROPIC_API_KEY` and `KNOWLEDGE_FOLDER_ID` to Script Properties.
-> 3. Run Maintenance → **Create Managed Columns**, then **Sync Dropdowns from
->    CONFIG**, then **Preflight Check**.
-> 4. Fill the two `NEEDS-OPERATOR` sections in `MEDICAL_SERVICE_EMERGENCY.md` and
->    `HOSPITAL_DELTA.md` — 24 scheduled posts are waiting on them.
-> 5. Build cards from the five files that are ready, and verify one against the
->    sheet.
+**This is the section to trust.** The audits in Layer 3 describe the system as it was
+on 2026-07-29 and are deliberately unedited — they are the baseline, not the status.
 
-The original Phase 0, kept for reference:
+### 6.1 Done, in git, never run
 
-1. **Fix the creative-memory window.** `ContextBuilder._buildCreativeMemory` anchors its
-   scan to the bottom of the sheet instead of the row being written, so it always reads
-   empty rows and has never returned anything. This is the direct cause of the 88%
-   repeated openings.
-2. **Delete the timestamp line** in `ContextBuilder.gs:148` **and** `MediaDesigner.gs:83`.
-   It is the third line of every prompt, changes every call, and blocks all prompt
-   caching. Nothing reads it.
-3. **Enable the Claude fallback** — add `ANTHROPIC_API_KEY` to Script Properties and set
-   `provider: 'claude'` on one worker. The code path already exists; 31 rows failed to
-   Gemini availability while it sat unused.
+Phases 0–3 of `VERDICT_AND_IMPROVEMENTS.md` §5 are implemented across three working
+sessions. Roughly 140 automated checks pass against the real files. **No worker built
+in these phases has made a live API call, and no code has been pasted into the Apps
+Script editor.**
+
+| Phase | What landed |
+|---|---|
+| **0** | Creative-memory window anchored to the row being written · timestamp deleted from both prompt headers · Claude enabled on the Creative Director |
+| **1** | `Pipeline State` split from the operator's `Workflow Status` · `CONFIG.gs` made the single vocabulary source · workers refuse rows whose required inputs are empty · `Service Level` added · automatic provider failover · cached-token logging |
+| **2** | **W1 Campaign Card Builder** · prompt split for real Anthropic caching · **five knowledge files** by scheduled volume |
+| **3** | **W2 Campaign Planner** · **Portfolio Critic** · a second opening per post · deterministic visual planning (off by default) |
+
+New code: `CardBuilder.gs` · `PlannerRunner.gs` · `PortfolioCritic.gs` ·
+`VisualPlan.gs`. New prompts: `prompts/planning/CAMPAIGN_CARD_BUILDER.md` ·
+`CAMPAIGN_PLANNER.md`.
+
+### 6.2 The knowledge base
+
+| File | Slots | State |
+|---|---|---|
+| `MEDICAL_SERVICE_ICU.md` | — | ✅ builds a card |
+| `SUPPORTING_MEET_OUR_DOCTORS.md` | 6 | ✅ builds a card |
+| `SUPPORTING_PATIENT_JOURNEY.md` | 6 | ✅ builds a card |
+| `SUPPORTING_SUCCESS_STORIES.md` | 6 | ✅ builds a card |
+| `MEDICAL_SERVICE_EMERGENCY.md` | 16 | 🟠 3 `NEEDS-OPERATOR` markers |
+| `HOSPITAL_DELTA.md` | 8 | 🟠 2 `NEEDS-OPERATOR` markers |
+| `PROGRAM_KABARONA.md` | — | 🟠 missing 2 sections + front matter |
+
+A `NEEDS-OPERATOR` marker names exactly what is needed and W1 refuses to build past
+one — deliberately. **Those sections need facts only the operator has** (Emergency's
+equipment, staffing and response times; Delta's history and what changed under INSAN).
+Inventing them would put fabricated operational claims about a real hospital into the
+source of truth for 24 published posts.
+
+Check any file without spending an inference: **AI Workers → Planning → Check
+Knowledge File**.
+
+### 6.3 What the operator must do before anything runs
+
+In this order. Steps 1–3 are one-time.
+
+1. **Copy `src/*.gs` into the Apps Script editor.** Nothing takes effect until this
+   happens — see §7.
+2. **Script Properties:** add `ANTHROPIC_API_KEY` (or the Creative Director fails on
+   every row) and `KNOWLEDGE_FOLDER_ID` (the Drive folder holding
+   `business/knowledge`; subfolders are searched). Optionally
+   `PLANNING_PROMPTS_FOLDER_ID`.
+3. **Upload the new prompt folder** `prompts/planning/` and the new knowledge folders
+   to Drive.
+4. **AI Workers → Maintenance → Create Managed Columns**, then **Sync Dropdowns from
+   CONFIG**, then **Preflight Check** — which must report no schema problems.
+5. **Verify one thing at a time**, and expect the first run of anything to be the
+   interesting one.
+
+### 6.4 The next work, in order
+
+1. **Verify the visual pipeline on one row** — `MediaDesigner`, `TextOverlay` and
+   `AssetIntegrity` have never completed a production run (A·F19). This is the oldest
+   unverified thing in the system and it blocks judging anything visual.
+   **Do this before turning on `CONFIG.VISUAL_PLAN.ENABLED`** — otherwise the first
+   run is testing two unknowns and neither result means anything.
+2. **Fill the `NEEDS-OPERATOR` sections** in Emergency and Delta. 24 scheduled posts
+   are waiting on them, and they are the largest remaining input gap.
+3. **Build cards** from the files that are ready, and check one field by field against
+   its knowledge file.
+4. **Run W2 on a small cycle** — three days, one page — before planning a month.
+5. **Measure caching.** Read the `Cached:` figure in the Execution Log. If Gemini's
+   implicit caching is working, the caching project is finished; if it is zero across
+   rows, explicit caching is worth building (`PROMPT_CACHING_PLAN.md` step 4).
+6. Then Phase 4: W9 Publishing, W10 Paid Ads, the shared entity registry.
+
+### 6.5 Known open items not yet addressed
+
+- **18% agreement** between the three systems describing the medical centers. Needs a
+  brand-owner decision, not code — see `MEDICAL_SERVICES_TAXONOMY.md` §6.
+- **Redundant tabs** — `Master Campaign Library`, `Campaign Defaults`,
+  `Campaign Overview` (G8, G9).
+- **Eleven hardcoded Google IDs** in `CONFIG.gs` (F17). Two new ones now read from
+  Script Properties instead; the original eleven have not moved.
+- **Kabarona** is two short sections away from building a card — the highest return
+  per hour left in the knowledge base.
 
 ---
 
@@ -231,7 +320,11 @@ The original Phase 0, kept for reference:
 | **Code is copied by hand** | Editing `src/*.gs` changes nothing until it is pasted into the Apps Script editor | After any code change, tell the operator which files to copy. |
 | **Prompts are cached six hours** | Editing a prompt in Drive changes nothing until the cache clears | Run `Refresh Cache` from the sheet's AI Workers menu. |
 | **`gh` CLI is not installed** | Cannot open pull requests from the terminal | Give the operator a prefilled GitHub compare URL. |
-| **Sheet dropdowns fight the code** | Workers write valid values that the sheet rejects — 19 failures so far | See Audit A §2. Four vocabularies disagree between `CONFIG.gs` and `SYSTEM_CONSTANTS`. |
+| **Sheet dropdowns fight the code** | Workers write valid values that the sheet rejects — 19 failures so far | **Fixed in code, needs one run:** Maintenance → Sync Dropdowns from CONFIG. |
+| **A missing column fails silently** | `SheetWriter.writeCell` skips a column the sheet does not have, logs one line, and the run reports success | Maintenance → Create Managed Columns, then Preflight Check. Any code writing a new column must add it to `CONFIG.MANAGED_COLUMNS`. |
+| **`\b` does not work on Arabic** | JavaScript defines `\b` on `[A-Za-z0-9_]`, so a regex like `/^أصعب\b/` matches nothing and silently reports zero | Use `(?![؀-ۿ])`. This bug was live in the portfolio critic and only surfaced because it was tested against real Arabic openings. |
+| **Claude rejects `temperature`** | The Claude 5 family returns HTTP 400 on any non-default sampling parameter, and every worker declares one | Handled in `ClaudeProvider`, which no longer forwards it. Do not re-add it. |
+| **The audits are a baseline, not a status** | They describe 2026-07-29 and are deliberately unedited. Reading them as current state will send you to redo finished work | §6 is the status. The audits are the evidence. |
 
 ---
 
@@ -249,4 +342,7 @@ The original Phase 0, kept for reference:
 ---
 
 *If you have read this file and the four documents in §4, you know what a two-week
-investigation found. Start at Phase 0.*
+investigation found and what three working sessions built on top of it.*
+
+***Start at §6.4 — and remember that nothing built since 2026-07-29 has run in
+production. The first live run of any of it is the interesting one.***

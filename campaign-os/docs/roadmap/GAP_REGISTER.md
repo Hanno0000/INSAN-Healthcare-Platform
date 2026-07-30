@@ -12,6 +12,30 @@ Ordered by impact on output quality, not by effort.
 
 ---
 
+> ## Status, 2026-07-30
+>
+> The gap descriptions below are the 2026-07-29 measurement and are left unedited.
+> This table is what has changed. **Nothing here has been verified in production.**
+>
+> | | Gap | State |
+> |---|---|---|
+> | G1 | Two thirds of rows have no strategy | 🟠 The mechanism is built — W1 exists, workers refuse a starved row by name — but the rows still have no strategy until cards are built from knowledge files. **Made loud, not yet closed.** |
+> | G2 | Workers accept empty input | ✅ `CONFIG.REQUIRED_INPUTS` per worker, checked before any write |
+> | G3 | Knowledge base 5% written | 🟠 7 files. 5 build a card; Emergency and Delta await operator facts |
+> | G4 | Depth columns unused | ✅ W1 writes all six |
+> | G5 | Campaign Planner does not exist | ✅ W2 built, unverified |
+> | G6 | Publishing and Paid Ads do not exist | ⬜ Unchanged |
+> | G7 | Service levels conflated | ✅ Column added; the 16 existing rows still need correcting by hand |
+> | G8 | Four tabs describe the same concept | ⬜ Unchanged |
+> | G9 | Content Calendar duplicates campaign data | ⬜ Unchanged |
+> | G10 | Prompt length | ⬜ Deliberately untouched — caching removes the cost without deleting the asset |
+> | G11 | Three components unverified in production | ⬜ **Still open, and now the oldest blocker.** Needs one row, end to end |
+> | G12 | Template.md was headings only | ✅ Fixed 2026-07-29 |
+>
+> Current state and next actions: `START_HERE.md` §6.
+
+---
+
 ## Severity
 
 | | |

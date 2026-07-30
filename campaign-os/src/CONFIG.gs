@@ -369,6 +369,54 @@ var CONFIG = {
   CAMPAIGN_CARDS_SHEET_NAME: 'Campaign Cards',
 
   // ================================
+  // PORTFOLIO CRITIC
+  // Reads the whole plan once, before production spends anything on it.
+  // Everything a number can settle is settled in code; the model is asked only
+  // what the numbers mean. One call per plan against 132 rows of production.
+  // ================================
+
+  PORTFOLIO_CRITIC: {
+    temperature: 0.3,
+    provider: null,   // null inherits AI_PROVIDER
+    model: null
+  },
+
+  // ================================
+  // DETERMINISTIC VISUAL PLAN (opt-in)
+  // Replaces the Visual Planner's model call with computation. Saves 6,584
+  // input tokens a row and removes a worker from the maintenance surface.
+  //
+  // OFF by default, deliberately. The visual pipeline has never completed a
+  // production run (Audit A, finding F19). Verify it on the path that has been
+  // running, then turn this on and verify the change separately — otherwise a
+  // first run is testing two unknowns at once and neither result means
+  // anything.
+  // ================================
+
+  VISUAL_PLAN: {
+    ENABLED: false
+  },
+
+  // ================================
+  // W2 — CAMPAIGN PLANNER
+  // Turns an operator brief into Content Calendar rows. Its most important
+  // behaviour is refusal: a campaign with no usable card cannot be scheduled,
+  // and saying so before the plan exists is the only moment that gap is cheap.
+  // ================================
+
+  CAMPAIGN_PLANNER: {
+    promptFile: 'CAMPAIGN_PLANNER.md',
+    CALENDAR_SHEET_NAME: 'Content Calendar',
+    temperature: 0.4,
+    provider: null,
+    model: null,
+
+    // PROJECT_DECISIONS.md §4: maximum 3 posts a day across all pages,
+    // averaging 1.5–2. Consistency over volume.
+    MAX_POSTS_PER_DAY: 3
+  },
+
+  // ================================
   // W1 — CAMPAIGN CARD BUILDER
   // Turns one knowledge file into one Campaign Cards row. Runs once per
   // campaign, on demand — not per post. The knowledge file is ~16,000 tokens;
@@ -476,6 +524,7 @@ var CONFIG = {
   // shifts every strategy field out from under it.
   MANAGED_COLUMNS: [
     { sheet: 'Content Pipeline', column: 'Pipeline State' },
+    { sheet: 'Content Pipeline', column: 'Alternative Opening' },
     { sheet: 'Campaign Cards', column: 'Service Level' }
   ],
 
@@ -630,13 +679,35 @@ var CONFIG = {
       ],
       writeColumns: [
         'Post Copy (AI)', 'Primary Hashtags',
-        'Secondary Hashtags', 'Design Prompt (AI)'
+        'Secondary Hashtags', 'Design Prompt (AI)',
+        'Alternative Opening'
       ],
       outputFields: {
         'Post Copy (AI)': 'free',
         'Primary Hashtags': 'free',
         'Secondary Hashtags': 'free',
-        'Design Prompt (AI)': 'free'
+        'Design Prompt (AI)': 'free',
+
+        // Facebook truncates at roughly 250 characters and the median post here
+        // is 1,199, so the first line is the entire product for most readers —
+        // and 88% of finished posts open with one of five constructions.
+        //
+        // Output is remarkably cheap against input on this worker: 715 output
+        // tokens against 18,885 in. A second opening costs about 3% more and
+        // doubles the choice at the exact point where the portfolio converges.
+        // Requested through the schema rather than by editing a 2,196-line
+        // prompt that was tuned over a full sprint.
+        'Alternative Opening': 'free'
+      },
+
+      // Per-field guidance, injected into the generated output schema. Used
+      // where a field needs more direction than "free text" and less than a
+      // prompt edit.
+      outputHints: {
+        'Alternative Opening': 'a genuinely different first line for this same ' +
+          'post — different construction, not a reworded version of the one ' +
+          'above. If the main opening is temporal ("لما .."), a question or a ' +
+          'quotation, this one must not be. One line only, no hashtags'
       }
     },
 
@@ -678,7 +749,13 @@ var CONFIG = {
         'Design Mood', 'Composition', 'Visual Elements',
         'Do NOT Show', 'Text On Design', 'Design Notes',
         'Post Copy (AI)', 'Primary Hashtags',
-        'Secondary Hashtags', 'Design Prompt (AI)'
+        'Secondary Hashtags', 'Design Prompt (AI)',
+
+        // The second opening W4 produced. The Creative Director owns the final
+        // copy, so it is the worker best placed to judge whether the
+        // alternative is the stronger one — and it is the only reader that sees
+        // both alongside the recent openings in creative memory.
+        'Alternative Opening'
       ],
       writeColumns: [
         'Content Objective', 'Content Angle', 'Content Type',

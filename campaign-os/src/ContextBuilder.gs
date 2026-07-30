@@ -348,13 +348,21 @@ var ContextBuilder = {
       fieldNames.push(fieldName);
     }
 
+    var hints = workerConfig.outputHints || {};
     var schemaLines = [];
+
     for (var j = 0; j < fieldNames.length; j++) {
       var fname = fieldNames[j];
       var ftype = outputFields[fname];
-      var description = ftype === 'controlled'
-        ? '(use EXACT value from controlled vocabulary)'
-        : '(free text - be creative and specific)';
+
+      // A per-field hint from CONFIG wins over the generic wording. It is how a
+      // new output field gets specific direction without editing a tuned
+      // prompt file.
+      var description = hints[fname]
+        ? '(' + hints[fname] + ')'
+        : (ftype === 'controlled'
+            ? '(use EXACT value from controlled vocabulary)'
+            : '(free text - be creative and specific)');
 
       schemaLines.push('  "' + fname + '": "...' + description + '..."');
     }

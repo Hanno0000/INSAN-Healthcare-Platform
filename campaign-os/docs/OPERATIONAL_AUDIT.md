@@ -16,6 +16,16 @@ corrected in §7.
 
 Findings are ordered by cost of leaving them alone.
 
+> ### ⚠️ This document is a baseline, not a status
+>
+> Every measurement here is from **2026-07-29** and is deliberately left unedited.
+> It is the evidence the plan was built on, and it stays fixed so later work can be
+> measured against it.
+>
+> **Most of these findings have since been addressed in code.** Reading this as the
+> current state will send you to redo finished work. The status is
+> `START_HERE.md` §6; per-finding status is in §8 below.
+
 ---
 
 ## 1. Production reliability — 26% of all worker calls failed
@@ -261,6 +271,32 @@ Two conclusions in the first audit were wrong, and one was imprecise.
 
 Severity: 🔴 silently degrades most output · 🟠 blocks automation or a subset ·
 🟡 correctness risk · ⚪ cleanup
+
+> **Status column added 2026-07-30.** ✅ addressed in code and covered by automated
+> checks — **not** verified in production. ⬜ open.
+>
+> | | Finding | Status |
+> |---|---|---|
+> | F1 | 67% of rows have no strategy | 🟠 W1 built; rows still need cards built from knowledge files |
+> | F2 | Workers accept empty input and invent | ✅ |
+> | F3 | Knowledge base 5% written | 🟠 7 of ~40; two await operator facts |
+> | F4 | Code and sheet vocabularies disagree | ✅ one run of Sync Dropdowns applies it |
+> | F5 | Caching blocked by one timestamp line | ✅ line removed, Anthropic breakpoint in place, cached tokens logged. Gemini implicit caching needs measuring |
+> | F6 | 26% call failure, 60% external | ✅ automatic provider failover |
+> | F7 | Depth columns unused | ✅ W1 writes all six |
+> | F8 | Campaign Planner not built | ✅ W2 built |
+> | F9 | Publishing + Ads not built | ⬜ |
+> | F10 | Service levels conflated | ✅ column added; 16 rows still need correcting |
+> | F11 | Sheet offers formats the pipeline cannot make | ✅ |
+> | F12 | Claude fallback dormant | ✅ enabled on the Creative Director |
+> | F13 | Four tabs describe campaigns | ⬜ |
+> | F14 | Content Calendar duplicates card data | ⬜ |
+> | F15 | Docs claim unbuilt features | 🟠 the four docs in the reading path are current; six under `architecture/` and `roadmap/` still carry Sprint 1 headers |
+> | F16 | Six docs stuck at Sprint 1 status | ⬜ |
+> | F17 | 11 hardcoded IDs block multi-tenant | 🟠 two new IDs read from Script Properties; the original eleven have not moved |
+> | F18 | MediaDesigner reproduces the cache blocker | ✅ |
+> | F19 | Three new components unverified | ⬜ **still open — needs a production run, and it now blocks the visual work** |
+> | F20 | Template.md was headings only | ✅ |
 
 | # | Finding | Sev | Evidence |
 |---|---|---|---|

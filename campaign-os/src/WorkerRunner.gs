@@ -136,7 +136,10 @@ function onOpen() {
     .addSubMenu(SpreadsheetApp.getUi()
       .createMenu('Planning')
       .addItem('Build Campaign Card from Knowledge File', 'runCardBuilder')
-      .addItem('Check Knowledge File', 'checkKnowledgeFile'))
+      .addItem('Check Knowledge File', 'checkKnowledgeFile')
+      .addSeparator()
+      .addItem('Plan a Cycle', 'runCampaignPlanner')
+      .addItem('Review Plan Before Production', 'runPortfolioCritic'))
     .addSubMenu(SpreadsheetApp.getUi()
       .createMenu('Content Team')
       .addItem('Strategy Worker', 'runContentStrategyWorker')
@@ -467,6 +470,272 @@ function relaxDataValidation() {
 
   } catch (e) {
     ui.alert('Data Validation', 'Failed: ' + e.toString(), ui.ButtonSet.OK);
+  }
+}
+
+
+// ================================
+// W2 — CAMPAIGN PLANNER
+// ================================
+
+// The brief is collected as a conversation, not a form — and the questions it
+// leaves open are asked before anything is planned rather than resolved by
+// assumption. Assumption is what produced a calendar naming 41 campaigns
+// against 16 cards.
+function runCampaignPlanner() {
+  var ui = SpreadsheetApp.getUi();
+
+  try {
+    var cards = PlannerRunner.readCards();
+    var names = [];
+
+    for (var key in cards) {
+      names.push(cards[key].name);
+    }
+
+    if (!names.length) {
+      ui.alert('Campaign Planner',
+        'Campaign Cards is empty. Build at least one card before planning:\n' +
+        'AI Workers → Planning → Build Campaign Card from Knowledge File.',
+        ui.ButtonSet.OK);
+      return;
+    }
+
+    var check = PlannerRunner.checkCampaigns(names, cards);
+
+    // What can be scheduled, stated before anything is asked. An operator
+    // planning against campaigns that cannot be used is the failure this
+    // worker exists to stop, and it is cheapest to stop here.
+    var summary = [
+      'Ready to schedule: ' + check.ready.length + ' campaign(s).',
+      ''
+    ];
+
+    if (check.thin.length) {
+      summary.push('Card exists but carries almost no strategy — scheduling');
+      summary.push('these produces posts written from nothing:');
+      for (var t = 0; t < check.thin.length; t++) {
+        summary.push('   ' + check.thin[t]);
+      }
+      summary.push('');
+    }
+
+    if (check.inactive.length) {
+      summary.push('Not Active, so excluded: ' + check.inactive.join(', '));
+      summary.push('');
+    }
+
+    summary.push('Continue?');
+
+    if (ui.alert('Campaign Planner', summary.join('\n'), ui.ButtonSet.OK_CANCEL) !==
+        ui.Button.OK) {
+      return;
+    }
+
+    var brief = _collectPlanningBrief(ui, check);
+
+    if (!brief) {
+      return;
+    }
+
+    var confirm = ui.alert(
+      'Confirm Plan',
+      brief.days + ' days × ' + brief.pages.length + ' page(s) × ' +
+      brief.postsPerDay + ' post(s) = ' +
+      (brief.days * brief.pages.length * brief.postsPerDay) + ' calendar rows.\n\n' +
+      'Starting ' + brief.startText + '.\n' +
+      'Pages: ' + brief.pages.join(', ') + '\n' +
+      'Objective: ' + (brief.objective || 'not stated') + '\n\n' +
+      'Rows are appended to Content Calendar. Proceed?',
+      ui.ButtonSet.YES_NO
+    );
+
+    if (confirm !== ui.Button.YES) {
+      return;
+    }
+
+    var result = PlannerRunner.plan(brief);
+    var lines = [
+      result.written + ' calendar rows written, from row ' + result.startRow + '.',
+      ''
+    ];
+
+    if (result.check.missing.length) {
+      lines.push('Refused — no card: ' + result.check.missing.join(', '));
+      lines.push('');
+    }
+
+    if (result.rejected.length) {
+      lines.push('Dropped — the planner named a campaign that is not eligible: ' +
+        result.rejected.join(', '));
+      lines.push('');
+    }
+
+    if (result.notes) {
+      lines.push(result.notes);
+      lines.push('');
+    }
+
+    lines.push('Next: check the transfer formula has pulled strategy into');
+    lines.push('Content Pipeline, then run Planning → Review Plan Before');
+    lines.push('Production before spending anything on it.');
+
+    ui.alert('Campaign Planner', lines.join('\n'), ui.ButtonSet.OK);
+
+  } catch (e) {
+    ui.alert('Campaign Planner', e.message || e.toString(), ui.ButtonSet.OK);
+  }
+}
+
+
+// Asks only what it cannot work out, and states the constraint each answer sits
+// inside so the operator is choosing rather than guessing.
+function _collectPlanningBrief(ui, check) {
+  var config = CONFIG.CAMPAIGN_PLANNER || {};
+
+  var daysResponse = ui.prompt('Campaign Planner — 1 of 4',
+    'How many days should this plan cover?\n\nExample: 7',
+    ui.ButtonSet.OK_CANCEL);
+
+  if (daysResponse.getSelectedButton() !== ui.Button.OK) return null;
+
+  var days = parseInt(daysResponse.getResponseText(), 10);
+  if (!days || days < 1) {
+    ui.alert('Campaign Planner', 'That is not a number of days.', ui.ButtonSet.OK);
+    return null;
+  }
+
+  var pagesResponse = ui.prompt('Campaign Planner — 2 of 4',
+    'Which pages? Comma-separated.\n\n' +
+    // One source. A second hardcoded page list here would drift from the
+    // dropdown the same way four vocabularies drifted from the sheet.
+    'Available: ' + (CONFIG.CONTROLLED_VOCABULARY['Publishing Page'] || []).join(', ') +
+    '\n\nExample: INSAN, Future, Delta',
+    ui.ButtonSet.OK_CANCEL);
+
+  if (pagesResponse.getSelectedButton() !== ui.Button.OK) return null;
+
+  var pages = String(pagesResponse.getResponseText()).split(',')
+    .map(function(p) { return p.trim(); })
+    .filter(function(p) { return p; });
+
+  if (!pages.length) {
+    ui.alert('Campaign Planner', 'No pages given.', ui.ButtonSet.OK);
+    return null;
+  }
+
+  var perDayResponse = ui.prompt('Campaign Planner — 3 of 4',
+    'Posts per page per day?\n\n' +
+    'PROJECT_DECISIONS caps this at ' + (config.MAX_POSTS_PER_DAY || 3) +
+    ' across all pages and recommends an average of 1.5–2.\n' +
+    'Consistency over volume.\n\nExample: 1',
+    ui.ButtonSet.OK_CANCEL);
+
+  if (perDayResponse.getSelectedButton() !== ui.Button.OK) return null;
+
+  var postsPerDay = parseInt(perDayResponse.getResponseText(), 10);
+  if (!postsPerDay || postsPerDay < 1) {
+    ui.alert('Campaign Planner', 'That is not a number of posts.', ui.ButtonSet.OK);
+    return null;
+  }
+
+  var dailyTotal = postsPerDay * pages.length;
+
+  if (dailyTotal > (config.MAX_POSTS_PER_DAY || 3)) {
+    var over = ui.alert('Above the agreed ceiling',
+      postsPerDay + ' per page across ' + pages.length + ' pages is ' +
+      dailyTotal + ' posts a day.\n\n' +
+      'PROJECT_DECISIONS §4 caps the ecosystem at ' +
+      (config.MAX_POSTS_PER_DAY || 3) + ' a day, averaging 1.5–2, on the ' +
+      'principle of consistency over volume.\n\n' +
+      'Plan it anyway?',
+      ui.ButtonSet.YES_NO);
+
+    if (over !== ui.Button.YES) return null;
+  }
+
+  var objectiveResponse = ui.prompt('Campaign Planner — 4 of 4',
+    'What is this cycle for?\n\n' +
+    'It decides the funnel mix and the CTA balance.\n' +
+    'Example: build trust for Delta, and bookings for the outpatient clinics',
+    ui.ButtonSet.OK_CANCEL);
+
+  if (objectiveResponse.getSelectedButton() !== ui.Button.OK) return null;
+
+  var start = new Date();
+  start.setDate(start.getDate() + 1);
+
+  return {
+    days: days,
+    pages: pages,
+    postsPerDay: postsPerDay,
+    objective: String(objectiveResponse.getResponseText()).trim(),
+    emphasis: '',
+    campaigns: check.ready.map(function(c) { return c.name; }),
+    startDate: start,
+    startText: Utilities.formatDate(start, Session.getScriptTimeZone(), 'yyyy-MM-dd')
+  };
+}
+
+
+// Reads the whole plan and reports what no single-row worker can see.
+// Costs one call. Run it before production, and again after the content team
+// has written copy — the first pass catches the shape of the plan, the second
+// catches what the writing actually converged on.
+function runPortfolioCritic() {
+  var ui = SpreadsheetApp.getUi();
+  var range = askForRowRange();
+
+  if (!range) {
+    return;
+  }
+
+  try {
+    var result = PortfolioCritic.review(range.start, range.end);
+    var m = result.measured;
+    var review = result.review;
+    var lines = [];
+
+    lines.push(review.verdict || '');
+    lines.push('');
+    lines.push('Measured across ' + m.total + ' rows (' + m.written +
+      ' with copy written):');
+    lines.push('   openings using a known formula: ' + m.formulaicShare + '%');
+    lines.push('   near-identical openings: ' + m.duplicates.length);
+    lines.push('   same campaign twice on a page in a day: ' + m.clashes.length);
+
+    var findings = review.findings || [];
+
+    if (findings.length) {
+      lines.push('');
+      lines.push('─────────────────────────────');
+
+      for (var i = 0; i < findings.length; i++) {
+        var f = findings[i];
+        lines.push('');
+        lines.push('[' + String(f.severity || '').toUpperCase() + '] ' + f.what);
+        if (f.where) {
+          lines.push('   where: ' + f.where);
+        }
+        if (f.fix) {
+          lines.push('   fix:   ' + f.fix);
+        }
+      }
+    } else {
+      lines.push('');
+      lines.push('No portfolio-level problems found.');
+    }
+
+    if (review.strongest) {
+      lines.push('');
+      lines.push('─────────────────────────────');
+      lines.push('If you change one thing: ' + review.strongest);
+    }
+
+    ui.alert('Plan Review', lines.join('\n'), ui.ButtonSet.OK);
+
+  } catch (e) {
+    ui.alert('Plan Review', e.message || e.toString(), ui.ButtonSet.OK);
   }
 }
 
@@ -1572,6 +1841,48 @@ function runWorker(workerName, rowNumber) {
         ' empty — ' + missing.join(', ') + '. ' +
         _refusalRemedy(upperName)
       );
+    }
+
+    // The Visual Planner's three outputs are computable. When the deterministic
+    // path is enabled the model is not called at all — 6,584 input tokens a row
+    // spent deciding things the code already knows. The completeness gate above
+    // still runs, because an incomplete creative package must still be refused.
+    if (upperName === 'VISUAL_PLANNER_WORKER' &&
+        typeof VisualPlan !== 'undefined' && VisualPlan.isEnabled()) {
+
+      var computed = VisualPlan.plan(rowData);
+      var computedWritten = [];
+
+      for (var field in computed) {
+        if (SheetWriter.writeCell(rowNumber, field, computed[field], sheetName)) {
+          computedWritten.push(field);
+        }
+      }
+
+      SheetWriter.writeAIWorkerTag(rowNumber, 'VISUAL_PLAN (deterministic)', sheetName);
+      _applyVisualPlannerStageMapping(rowNumber, computed, sheetName);
+
+      var computedRuntime = new Date().getTime() - startTime;
+
+      Logger.logSuccess(
+        upperName, rowNumber, computedRuntime, 0, 0,
+        'Computed without a model call | Written: ' + computedWritten.join(', ') +
+        ' | Asset Count: ' + computed['Asset Count'] +
+        ' | Mode: ' + computed['Production Mode'] +
+        ' | Saved ~6,584 input tokens'
+      );
+
+      return {
+        success: true,
+        row: rowNumber,
+        worker: upperName,
+        values: computed,
+        written: computedWritten,
+        warnings: [],
+        runtime: computedRuntime,
+        deterministic: true,
+        tokens: { input: 0, output: 0, total: 0 }
+      };
     }
 
     if (upperName === 'CONTENT_CREATION_WORKER') {

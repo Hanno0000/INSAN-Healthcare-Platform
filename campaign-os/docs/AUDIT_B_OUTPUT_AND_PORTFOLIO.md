@@ -21,6 +21,24 @@ Every finding below was invisible to Audit A's method.
 
 ---
 
+> ### ⚠️ Baseline, not status
+>
+> Measured **2026-07-29** across 33 finished posts, and deliberately left unedited so
+> later work can be measured against it. Status as of 2026-07-30:
+>
+> | | Finding | Status |
+> |---|---|---|
+> | B1 | 88% of posts open with one of five formulas | 🟠 Three mechanisms now exist — the creative-memory fix, a second opening per post, and a portfolio critic that measures the whole plan. **None has run.** The 88% stands until new posts are written |
+> | B2 | The feature built to prevent B1 has never executed | ✅ Window anchored to the row being written; verified by simulation against the live sheet's shape |
+> | B3 | Three systems disagree about what the business contains | ⬜ Needs a brand-owner decision, not code |
+> | B4–B6 | Carousel dominance · single-stage funnel · scattered hashtags | 🟠 The portfolio critic measures all three. Fixing them is a planning decision it now surfaces |
+> | B7–B10 | see below | ⬜ |
+>
+> The portfolio critic reproduces this audit's own B1 measurement from this audit's
+> own data — that is what its test suite checks. Current state: `START_HERE.md` §6.
+
+---
+
 ## B1 🔴 — 88% of posts open with one of five rhetorical formulas
 
 Facebook truncates a post at roughly 250 characters. **The median post here is 1,199

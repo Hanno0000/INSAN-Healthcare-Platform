@@ -2,6 +2,14 @@
 
 Egyptian Healthcare Ecosystem - Digital Identity & Marketing Infrastructure
 
+> ## → Start at [`campaign-os/docs/START_HERE.md`](campaign-os/docs/START_HERE.md)
+>
+> That file is the entry point. It explains the business, the system and where the
+> work currently stands, and it sets the order to read everything else in.
+>
+> **Do not start from this README.** It is a one-screen index and the links under
+> "Quick Reference" below are older than the documents they point at.
+
 ## Project Structure
 
 ```
@@ -37,7 +45,11 @@ Strategic and brand documentation.
 
 ## Quick Reference
 
-- **Brand Architecture:** `business/brand/MASTER_BRAND_ARCHITECTURE.md`
-- **System Architecture:** `campaign-os/docs/architecture/VISUAL_PRODUCTION_ARCHITECTURE.md`
-- **Website Specs:** `website/docs/00_README_FOR_BUILDER.md`
+- **Entry point:** `campaign-os/docs/START_HERE.md` ← read this first
+- **Where the work stands:** `campaign-os/docs/START_HERE.md` §6
+- **Brand Architecture:** `business/brand/MASTER_BRAND_ARCHITECTURE.md` *(governs everything)*
+- **System Architecture:** `campaign-os/docs/SYSTEM_ARCHITECTURE.md`
+- **Worker contracts:** `campaign-os/docs/architecture/WORKER_CONTRACTS_V2.md`
+- **Knowledge base spec:** `business/knowledge/KNOWLEDGE_BASE_SPEC.md`
+- **Website:** `website/Docs/CURRENT_STATE.md` *(separate project)*
 - **Project Roadmap:** `business/strategy/PROJECT_ROADMAP.md`

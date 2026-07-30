@@ -74,7 +74,24 @@ implementation; the model call is not.
 
 ---
 
-## W2 — Campaign Planner 🔴 *(currently human)*
+## W2 — Campaign Planner 🟡
+
+🟡 Built 2026-07-30, not yet verified in production. Code `src/PlannerRunner.gs`,
+prompt `prompts/planning/CAMPAIGN_PLANNER.md`, menu AI Workers → Planning →
+**Plan a Cycle**.
+
+**The refusal is the feature.** Before anything is planned it reads every card
+and separates: campaigns with real strategy, campaigns whose card is a name with
+empty fields, campaigns that are not Active, and campaigns with no card at all.
+Only the first group can be scheduled, and the model is never shown the others —
+so an ineligible name cannot enter the plan even if the model asks for it. The
+returned plan is then re-checked against the eligible list in code, because a
+guard that is not enforced is a request.
+
+The brief is collected as four questions rather than a form, and every gap the
+brief leaves — including a named campaign with no card — is raised before
+planning rather than resolved by assumption. Assumption is what produced a
+calendar naming 41 campaigns against 16 cards.
 
 **Purpose.** Turn an operator brief into a filled calendar.
 
@@ -154,7 +171,7 @@ protects them by owner precedence.
 
 ---
 
-## W6 — Visual Planner 🟢
+## W6 — Visual Planner 🟢 *(replaceable by computation)*
 
 | | |
 |---|---|
@@ -163,6 +180,20 @@ protects them by owner precedence.
 | **Prompt** | `prompts/visual/VISUAL_PLANNER_WORKER.md` (796 lines) |
 
 Validates production readiness. Has **no creative authority** — by design.
+
+**All three outputs are computable**, and `src/VisualPlan.gs` computes them.
+`CONFIG.VISUAL_PLAN.ENABLED` switches the model call off; the completeness gate
+still runs, so an incomplete creative package is still refused.
+
+Saves 6,584 input tokens per row, and on Asset Count it is more accurate than
+the worker: a carousel's real count is the number of scenes the Creative
+Director wrote, and `ServiceRunner` throws when the two disagree. Counting the
+scenes cannot disagree with them.
+
+**Off by default.** The visual pipeline has never completed a production run
+(A·F19). Verify it on the path that has been running, then enable this and
+verify the change on its own — a first run testing two unknowns tells you
+nothing about either.
 
 ---
 
