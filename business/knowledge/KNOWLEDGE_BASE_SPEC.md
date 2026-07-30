@@ -257,7 +257,7 @@ Specifically avoid:
 | Why INSAN? | `corporate/CORPORATE_WHY_INSAN.md` | 1 | ✅ builds a card |
 | Why Trust Us | `corporate/CORPORATE_WHY_TRUST_US.md` | 3 | ✅ builds a card |
 | Brand Identity | `corporate/CORPORATE_BRAND_IDENTITY.md` | 1 | ❌ |
-| Healthcare Leadership | `corporate/CORPORATE_LEADERSHIP.md` | 3 | ❌ |
+| Healthcare Leadership | `corporate/CORPORATE_LEADERSHIP.md` | 3 | ✅ builds a card |
 | Healthcare Innovation | `corporate/CORPORATE_INNOVATION.md` | 2 | ❌ |
 | Growth & Transformation | `corporate/CORPORATE_GROWTH.md` | 1 | ❌ |
 | Digital Healthcare Transformation | `corporate/CORPORATE_DIGITAL.md` | 1 | ❌ |
@@ -299,7 +299,7 @@ to trust a thing they cannot name.
 | Meet Our Team | `supporting/SUPPORTING_MEET_OUR_TEAM.md` | 5 | ✅ builds a card |
 | Behind The Scenes | `supporting/SUPPORTING_BEHIND_THE_SCENES.md` | 5 | ✅ builds a card |
 | Hospital Life | `supporting/SUPPORTING_HOSPITAL_LIFE.md` | 5 | ✅ builds a card |
-| FAQ | `supporting/SUPPORTING_FAQ.md` | 3 | ❌ |
+| FAQ | `supporting/SUPPORTING_FAQ.md` | 3 | ✅ builds a card |
 | Community Impact (CSR) | `supporting/SUPPORTING_CSR.md` | 3 | ❌ |
 | Visiting Professors | `supporting/SUPPORTING_VISITING_PROFESSORS.md` | 2 | ❌ |
 | Patient Guides | `supporting/SUPPORTING_PATIENT_GUIDES.md` | 2 | ❌ |
@@ -347,9 +347,9 @@ thing, which is how two sources of truth begin.
 
 | | Count | Scheduled slots |
 |---|---|---|
-| ✅ Written, builds a campaign card | **10** — ICU, Kabarona, Meet Our Doctors, Patient Journey, Success Stories, Meet Our Team, Behind The Scenes, Hospital Life, Why INSAN?, Why Trust Us | **54** |
+| ✅ Written, builds a campaign card | **12** — ICU, Kabarona, Meet Our Doctors, Patient Journey, Success Stories, Meet Our Team, Behind The Scenes, Hospital Life, FAQ, Why INSAN?, Why Trust Us, Healthcare Leadership | **60** |
 | 🟠 Structurally complete, awaiting operator facts | **2** — Emergency, Delta | 24 |
-| ❌ Not started | ~28 | 54 |
+| ❌ Not started | ~26 | 48 |
 
 *Updated 2026-07-30 (third pass).* Kabarona was closed by rewriting its front
 matter to §4 and renaming two headings to the ones the gate matches — *Why This
@@ -363,10 +363,11 @@ Before `campaign_name` existed, ICU's card would have been filed as "Intensive
 Care Unit" and served **none** of its 11 slots.
 
 Then the corporate cluster was opened with **Why INSAN?** — which carries the
-routing test all seven corporate campaigns inherit — and **Why Trust Us**.
+routing test all seven corporate campaigns inherit — followed by **Why Trust Us**
+and **Healthcare Leadership**, and the practical **FAQ**.
 
-**Coverage: 48 of 132 slots today**, 54 once the Kabarona rename lands in the
-sheet, **78 once Emergency and Delta are answered.**
+**Coverage: 54 of 132 slots today**, 60 once the Kabarona rename lands in the
+sheet, **84 once Emergency and Delta are answered.**
 
 **How to check any file:** AI Workers → Planning → **Check Knowledge File**. It runs
 W1's full validation gate and reports what is missing, without spending an
