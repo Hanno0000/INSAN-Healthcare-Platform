@@ -213,7 +213,7 @@ The right-hand column is what has changed since — **none of it verified in pro
 | **88%** | of finished posts open with one of five rhetorical formulas | Creative memory fixed; a second opening is produced per post; a portfolio critic measures the whole plan |
 | **18%** | agreement between the three systems describing the medical centers | Unchanged — needs the brand owner, not code |
 | **~9.7M of 10.8M** | input tokens byte-identical across rows, caching blocked by one line | Line removed; Anthropic cache breakpoint in place; Gemini implicit caching needs measuring |
-| **5%** | of the knowledge base written — 2 files for ~40 entities | 16 files. 14 build a campaign card, covering 58 of 132 scheduled slots today and 66 after the sheet renames; 2 await operator facts and would add 24 more |
+| **5%** | of the knowledge base written — 2 files for ~40 entities | 20 files. 18 build a campaign card, covering 63 of 132 scheduled slots today and 71 after the sheet renames; 2 await operator facts and would add 24 more |
 | **2 of 10** | workers own the ends of the chain, and neither exists | W1 and W2 exist and are untested. W9 and W10 still do not |
 
 **The one-sentence reading, still true:** the machinery is in better shape than its
@@ -295,12 +295,14 @@ production.
 | `SUPPORTING_FAQ.md` | FAQ | 3 | ✅ builds a card |
 | `SUPPORTING_CSR.md` | Community Impact (CSR) | 3 | ✅ builds a card |
 | `EDUCATIONAL_MYTHS_FACTS.md` | Medical Myths & Facts ⚠️ | 3 | ✅ builds a card |
-| `CORPORATE_WHY_INSAN.md` | Why INSAN? | 1 | ✅ builds a card |
-| `MEDICAL_SERVICE_EMERGENCY.md` | Emergency Center | 16 | 🟠 3 `NEEDS-OPERATOR` markers |
-| `HOSPITAL_DELTA.md` | Delta Restore Trust | 8 | 🟠 2 `NEEDS-OPERATOR` markers |
+| `CORPORATE_INNOVATION.md` | Healthcare Innovation | 2 | ✅ builds a card |
+| `CORPORATE_WHY_INSAN.md` · `CORPORATE_BRAND_IDENTITY.md` · `CORPORATE_GROWTH.md` · `CORPORATE_DIGITAL.md` | Why INSAN? · Brand Identity · Growth & Transformation · Digital Transformation | 1 each | ✅ build cards |
+| `MEDICAL_SERVICE_EMERGENCY.md` | Emergency Center | 16 | 🟠 3 operator markers |
+| `HOSPITAL_DELTA.md` | Delta Restore Trust | 8 | 🟠 2 operator markers |
 
-**58 of 132 slots** are covered today, **66 once the renames below land**, and
-**90** once the two 🟠 files are filled. The middle column is the
+**63 of 132 slots** are covered today, **71 once the renames below land**, and
+**95** once the two 🟠 files are filled. **The Corporate cluster is complete** —
+all seven campaigns, sharing one routing test. The middle column is the
 join key and it is not always the entity's name — see the trap in §7. Kabarona
 was closed on 2026-07-30 by rewriting its front matter and renaming two
 headings; no content was invented.

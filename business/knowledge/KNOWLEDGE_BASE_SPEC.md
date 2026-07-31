@@ -147,6 +147,17 @@ point of the check.
 reports how many scheduled slots the name would serve, and names the near
 misses when the answer is zero. It costs no inference.
 
+### 4.2 A trap: never write the gap marker's literal name
+
+The gap detector scans for the marker string anywhere in the file, on any line.
+A knowledge file that *mentions* the marker — explaining the convention, or
+noting that another file carries one — trips its own gate and is refused, with
+nothing actually missing.
+
+Write *"an unresolved operator marker"* instead. Only place the real marker where
+a section genuinely needs the operator. This caught `CORPORATE_GROWTH.md` on
+2026-07-31.
+
 ---
 
 ## 5. Document sections
@@ -256,11 +267,11 @@ Specifically avoid:
 |---|---|---|---|
 | Why INSAN? | `corporate/CORPORATE_WHY_INSAN.md` | 1 | ✅ builds a card |
 | Why Trust Us | `corporate/CORPORATE_WHY_TRUST_US.md` | 3 | ✅ builds a card |
-| Brand Identity | `corporate/CORPORATE_BRAND_IDENTITY.md` | 1 | ❌ |
+| Brand Identity | `corporate/CORPORATE_BRAND_IDENTITY.md` | 1 | ✅ builds a card |
 | Healthcare Leadership | `corporate/CORPORATE_LEADERSHIP.md` | 3 | ✅ builds a card |
-| Healthcare Innovation | `corporate/CORPORATE_INNOVATION.md` | 2 | ❌ |
-| Growth & Transformation | `corporate/CORPORATE_GROWTH.md` | 1 | ❌ |
-| Digital Healthcare Transformation | `corporate/CORPORATE_DIGITAL.md` | 1 | ❌ |
+| Healthcare Innovation | `corporate/CORPORATE_INNOVATION.md` | 2 | ✅ builds a card |
+| Growth & Transformation | `corporate/CORPORATE_GROWTH.md` | 1 | ✅ builds a card |
+| Digital Healthcare Transformation | `corporate/CORPORATE_DIGITAL.md` | 1 | ✅ builds a card |
 
 ### 7.4.1 The corporate routing test
 
@@ -347,9 +358,12 @@ thing, which is how two sources of truth begin.
 
 | | Count | Scheduled slots |
 |---|---|---|
-| ✅ Written, builds a campaign card | **14** — ICU, Kabarona, Meet Our Doctors, Patient Journey, Success Stories, Meet Our Team, Behind The Scenes, Hospital Life, FAQ, Community Impact, Medical Myths & Facts, Why INSAN?, Why Trust Us, Healthcare Leadership | **66** |
+| ✅ Written, builds a campaign card | **18** — the seven Corporate campaigns, ICU, Kabarona, Medical Myths & Facts, and the eight Supporting campaigns written so far | **71** |
 | 🟠 Structurally complete, awaiting operator facts | **2** — Emergency, Delta | 24 |
-| ❌ Not started | ~24 | 42 |
+| ❌ Not started | ~20 | 37 |
+
+**The Corporate cluster is complete** — all seven campaigns, sharing the routing
+test in §7.4.1.
 
 *Updated 2026-07-30 (third pass).* Kabarona was closed by rewriting its front
 matter to §4 and renaming two headings to the ones the gate matches — *Why This
@@ -369,8 +383,11 @@ and **Healthcare Leadership**, and the practical **FAQ**.
 Then **Community Impact (CSR)** and **Medical Myths & Facts** — the latter
 carrying the routing test the four educational campaigns inherit.
 
-**Coverage: 58 of 132 slots today**, 66 once the two renames land in the sheet
-(Kabarona, and the two `Myth vs Fact` rows), **90 once Emergency and Delta are
+The Corporate cluster was then completed — Brand Identity, Healthcare
+Innovation, Growth & Transformation and Digital Healthcare Transformation.
+
+**Coverage: 63 of 132 slots today**, 71 once the two renames land in the sheet
+(Kabarona, and the two `Myth vs Fact` rows), **95 once Emergency and Delta are
 answered.**
 
 **How to check any file:** AI Workers → Planning → **Check Knowledge File**. It runs
