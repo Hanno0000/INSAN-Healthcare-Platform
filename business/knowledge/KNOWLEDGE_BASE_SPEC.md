@@ -300,7 +300,7 @@ to trust a thing they cannot name.
 | Behind The Scenes | `supporting/SUPPORTING_BEHIND_THE_SCENES.md` | 5 | ✅ builds a card |
 | Hospital Life | `supporting/SUPPORTING_HOSPITAL_LIFE.md` | 5 | ✅ builds a card |
 | FAQ | `supporting/SUPPORTING_FAQ.md` | 3 | ✅ builds a card |
-| Community Impact (CSR) | `supporting/SUPPORTING_CSR.md` | 3 | ❌ |
+| Community Impact (CSR) | `supporting/SUPPORTING_CSR.md` | 3 | ✅ builds a card |
 | Visiting Professors | `supporting/SUPPORTING_VISITING_PROFESSORS.md` | 2 | ❌ |
 | Patient Guides | `supporting/SUPPORTING_PATIENT_GUIDES.md` | 2 | ❌ |
 | Medical Education | `supporting/SUPPORTING_MEDICAL_EDUCATION.md` | 1 | ❌ |
@@ -327,7 +327,7 @@ same failure at the plan level.
 
 | Campaign | File | Slots |
 |---|---|---|
-| Medical Myths & Facts ² | `supporting/EDUCATIONAL_MYTHS_FACTS.md` | 3 |
+| Medical Myths & Facts ² | `supporting/EDUCATIONAL_MYTHS_FACTS.md` | 3 | ✅ builds a card |
 | Health Awareness | `supporting/EDUCATIONAL_HEALTH_AWARENESS.md` | 2 |
 | Prevention Tips | `supporting/EDUCATIONAL_PREVENTION_TIPS.md` | 2 |
 | Seasonal Campaigns | `supporting/EDUCATIONAL_SEASONAL.md` | 1 |
@@ -347,9 +347,9 @@ thing, which is how two sources of truth begin.
 
 | | Count | Scheduled slots |
 |---|---|---|
-| ✅ Written, builds a campaign card | **12** — ICU, Kabarona, Meet Our Doctors, Patient Journey, Success Stories, Meet Our Team, Behind The Scenes, Hospital Life, FAQ, Why INSAN?, Why Trust Us, Healthcare Leadership | **60** |
+| ✅ Written, builds a campaign card | **14** — ICU, Kabarona, Meet Our Doctors, Patient Journey, Success Stories, Meet Our Team, Behind The Scenes, Hospital Life, FAQ, Community Impact, Medical Myths & Facts, Why INSAN?, Why Trust Us, Healthcare Leadership | **66** |
 | 🟠 Structurally complete, awaiting operator facts | **2** — Emergency, Delta | 24 |
-| ❌ Not started | ~26 | 48 |
+| ❌ Not started | ~24 | 42 |
 
 *Updated 2026-07-30 (third pass).* Kabarona was closed by rewriting its front
 matter to §4 and renaming two headings to the ones the gate matches — *Why This
@@ -366,8 +366,12 @@ Then the corporate cluster was opened with **Why INSAN?** — which carries the
 routing test all seven corporate campaigns inherit — followed by **Why Trust Us**
 and **Healthcare Leadership**, and the practical **FAQ**.
 
-**Coverage: 54 of 132 slots today**, 60 once the Kabarona rename lands in the
-sheet, **84 once Emergency and Delta are answered.**
+Then **Community Impact (CSR)** and **Medical Myths & Facts** — the latter
+carrying the routing test the four educational campaigns inherit.
+
+**Coverage: 58 of 132 slots today**, 66 once the two renames land in the sheet
+(Kabarona, and the two `Myth vs Fact` rows), **90 once Emergency and Delta are
+answered.**
 
 **How to check any file:** AI Workers → Planning → **Check Knowledge File**. It runs
 W1's full validation gate and reports what is missing, without spending an
