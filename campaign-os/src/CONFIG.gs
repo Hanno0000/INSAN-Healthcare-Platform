@@ -129,15 +129,39 @@ var CONFIG = {
     // and Visual Elements. Matching is deterministic and needs no model call.
     // Order matters: the first domain with a keyword hit wins, so the more
     // specific domains are listed first.
+    //
+    // ⚠️ Matching is plain substring, with no word boundary. A keyword that is a
+    // substring of an unrelated word fires on that word: 'ward' matches "award",
+    // 'dental' matches "accidental", and a bare 'management' matches the Pain
+    // Management Center. Every keyword below that would be ambiguous alone is
+    // therefore written as a compound phrase. Prefer a keyword that misses to one
+    // that fires wrongly — a miss falls back to AI generation, a wrong hit puts a
+    // photograph of the laundry behind a post about the ICU.
+    //
+    // Arabic keywords are normalised the same way as the row text, so write them
+    // naturally: the leading definite article, ة/ه and أ/ا are all handled.
     DOMAINS: [
       { key: 'nicu', folder: 'Services/Neonatal Intensive Care Unit',
         keywords: ['nicu', 'neonatal', 'newborn', 'حضانة', 'حديثي الولادة'] },
       { key: 'icu', folder: 'Services/Intensive Care Unit',
         keywords: ['icu', 'intensive care', 'critical care', 'عناية مركزة', 'رعاية حرجة'] },
+      // Before 'icu' would be wrong and after it is safe: no keyword here is a
+      // substring of one there. It is its own signposted unit at the hospital.
+      { key: 'intermediate-care', folder: 'Services/Intermediate Care Unit',
+        keywords: ['intermediate care', 'step-down', 'stepdown', 'رعاية متوسطة'] },
+      // Ahead of the support domains so 'غسيل الكلى' is never read as laundry.
+      { key: 'dialysis', folder: 'Services/Dialysis Unit',
+        keywords: ['dialysis', 'haemodialysis', 'hemodialysis', 'غسيل كلوي', 'غسيل الكلى'] },
       { key: 'emergency', folder: 'Services/Emergency Department',
         keywords: ['emergency', 'triage', 'ambulance', 'طوارئ', 'إسعاف'] },
       { key: 'operating-room', folder: 'Services/Operating Room',
         keywords: ['operating', 'surgery', 'surgical', 'theatre', 'عمليات', 'جراحة'] },
+      { key: 'sterilization', folder: 'Services/Sterilization',
+        keywords: ['sterilization', 'sterilisation', 'disinfection', 'تعقيم', 'تطهير'] },
+      // Ahead of 'radiology', which claims the generic word 'imaging'. An
+      // ultrasound brief that says "imaging" should still get the ultrasound room.
+      { key: 'diagnostics', folder: 'Services/Diagnostics',
+        keywords: ['ultrasound', 'sonar', 'echocardiograph', 'موجات صوتية', 'سونار'] },
       { key: 'radiology', folder: 'Services/Radiology Department',
         keywords: ['radiology', 'imaging', 'x-ray', 'mri', 'ct scan', 'أشعة'] },
       { key: 'laboratory', folder: 'Services/Laboratory',
@@ -148,8 +172,38 @@ var CONFIG = {
       // to AI generation until it exists. Create Services/Pharmacy to enable.
       { key: 'pharmacy', folder: 'Services/Pharmacy',
         keywords: ['pharmacy', 'pharmacist', 'medication', 'صيدلية', 'دواء'] },
+      // Not the bare word 'dental' — it is a substring of "accidental".
+      { key: 'dental', folder: 'Services/Dental Center',
+        keywords: ['dental clinic', 'dental center', 'dental centre', 'dentist', 'أسنان'] },
+      // Ahead of 'outpatient-clinic', which is where 'reception' used to live:
+      // "clinic reception" should resolve to the reception, not a consulting room.
+      { key: 'reception-waiting', folder: 'Facility/Reception & Waiting',
+        keywords: ['reception', 'waiting area', 'waiting room', 'lounge', 'استقبال', 'انتظار'] },
       { key: 'outpatient-clinic', folder: 'Services/Outpatient Clinic',
-        keywords: ['outpatient', 'clinic', 'consultation', 'reception', 'عيادة', 'استقبال', 'كشف'] },
+        keywords: ['outpatient', 'clinic', 'consultation', 'عيادة', 'كشف'] },
+      // Not 'ward' on its own — it is a substring of "award".
+      { key: 'inpatient-room', folder: 'Services/Inpatient Rooms',
+        keywords: ['inpatient', 'patient room', 'hospital room', 'hospital ward',
+                   'bedside', 'غرفة المريض', 'جناح المرضى', 'تنويم', 'إقامة المريض'] },
+      // Only the compound phrase. A bare 'nurse' would answer a post about a
+      // nurse with a photograph of an empty desk.
+      { key: 'nursing-station', folder: 'Facility/Nursing Stations',
+        keywords: ['nursing station', 'nurses station', 'nurse station', 'محطة التمريض',
+                   'مكتب التمريض'] },
+      // Back of house. 'غسيل' alone is not used — it is the first word of
+      // "غسيل الكلى" and belongs to the dialysis domain above.
+      { key: 'support-services', folder: 'Facility/Support Services',
+        keywords: ['laundry', 'linen', 'medical gas', 'oxygen supply', 'oxygen plant',
+                   'plant room', 'مغسلة', 'غسيل الملابس', 'الغازات الطبية', 'الأكسجين'] },
+      // Not a bare 'management' — that is the Pain Management Center.
+      { key: 'administration', folder: 'Facility/Administration',
+        keywords: ['administration', 'administrative office', 'management office',
+                   'meeting room', 'boardroom', 'مجلس الإدارة', 'مكتب الإدارة', 'اجتماع'] },
+      // Not a bare 'building' — "building trust" is a phrase this brand uses
+      // constantly, and it is not a request for a photograph of the facade.
+      { key: 'hospital-exterior', folder: 'Facility/Hospital Exterior',
+        keywords: ['exterior', 'facade', 'hospital building', 'hospital entrance',
+                   'واجهة', 'مبنى المستشفى', 'مدخل المستشفى'] },
       { key: 'branding', folder: 'Brand Identity',
         keywords: ['brand', 'identity', 'logo', 'هوية'] }
     ]

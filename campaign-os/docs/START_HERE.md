@@ -20,8 +20,9 @@
 >
 > Everything is in git, on `main`. What has *not* happened is a production run:
 > **the code has never been pasted into the Apps Script editor, and not one worker
-> built since 2026-07-29 has made a single live API call.** Roughly 140 automated
-> checks pass against the real files; none of them proves the system runs.
+> built since 2026-07-29 has made a single live API call.** **219 automated checks**
+> pass against the real files — `node campaign-os/tests/run.js` — and none of them
+> proves the system runs.
 >
 > **Where the work actually stands is §6.** Read §1–§5 for the business and the
 > system, then go to §6 — do not infer the current state from anything else in
@@ -272,9 +273,16 @@ Six working sessions. Every line below is committed to `main` and **none of it h
 run in production.**
 
 Phases 0–3 of `VERDICT_AND_IMPROVEMENTS.md` §5 are implemented across three working
-sessions. Roughly 140 automated checks pass against the real files. **No worker built
-in these phases has made a live API call, and no code has been pasted into the Apps
-Script editor.**
+sessions. **No worker built in these phases has made a live API call, and no code has
+been pasted into the Apps Script editor.**
+
+⚠️ **Corrected 2026-07-31.** This section previously claimed "roughly 140 automated
+checks pass". They had been run as throwaway scripts in earlier sessions and never
+committed, so nobody could re-run them and the claim could not be checked. There is
+now a committed harness — **219 checks**, `node campaign-os/tests/run.js`, no
+dependencies and no network. It covers the logic layer only: every Apps Script
+service is stubbed to throw, so nothing here writes a cell, reads Drive or calls a
+model. See `campaign-os/tests/README.md`.
 
 | Phase | What landed |
 |---|---|
