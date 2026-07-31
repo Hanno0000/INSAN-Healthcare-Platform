@@ -13,10 +13,41 @@ node_modules
 *.eps
 *.pdf
 *.pptx
-*.jpeg
-*.jpg
 *.psd
 *.zip
+
+# Media — never pushed.
+#
+# This repository is public. Photography and video of the two hospitals is real
+# facility material, some of it showing identifiable patients, and publishing it
+# is not a side effect anyone should be able to cause with `git add -A`.
+# What gets pushed is the project itself: code, documentation, structure, specs,
+# prompts and the knowledge Markdown. Media lives on Drive, which is where the
+# workers read it from anyway — nothing breaks by keeping it out of git.
+#
+# Note: this does not untrack what was committed before the rule existed —
+# 66 .png, 6 .ai, 5 .svg and 3 .jpeg under business/brand/logos/ are already in
+# the public history and staying there is a separate decision.
+*.jpeg
+*.jpg
+*.png
+*.gif
+*.webp
+*.bmp
+*.tif
+*.tiff
+*.heic
+*.heif
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+*.m4v
+*.mp3
+*.wav
+*.m4a
+*.aac
 
 # OS
 .DS_Store
