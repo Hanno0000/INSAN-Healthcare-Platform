@@ -2,6 +2,9 @@
 
 > **Created:** 2026-07-27, after Validation Run #002
 > **Purpose:** One numbered list of every known defect, so none is rediscovered later.
+> **Status:** **Historical** — content and visual defects from earlier sprints.
+> Superseded as a status source by the two audits and START_HERE.md §6.
+> See docs/DOCUMENT_STATUS.md.
 > **Status key:** ✅ fixed · 🔧 fix ready, untested · ⏳ open · 💤 deferred by decision
 
 Every issue carries the evidence it was found from. Nothing here is speculative.

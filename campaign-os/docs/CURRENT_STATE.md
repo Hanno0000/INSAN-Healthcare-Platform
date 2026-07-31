@@ -2,8 +2,13 @@
 
 > **Version:** 1.6
 > **Date:** 2026-07-27
-> **Status:** Sprint 3 -- Pipeline Integrity Fixes complete. Awaiting Validation Run #002.
-> **Canonical Handoff Document** -- Primary entry point for Campaign OS development.
+> **Status: Superseded** by `START_HERE.md` §6, which is the authority on where the
+> work stands. This file describes Sprint 3 and contains claims later found untrue —
+> keep it for the story of how the system got here, not for the state of it.
+> See `docs/DOCUMENT_STATUS.md`.
+>
+> ~~**Canonical Handoff Document** -- Primary entry point for Campaign OS development.~~
+> **It is no longer the entry point.** `START_HERE.md` is.
 > **Scope:** Campaign OS only. For Website Platform, see `website/Docs/CURRENT_STATE.md`.
 
 ---

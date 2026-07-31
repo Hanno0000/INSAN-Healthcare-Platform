@@ -4,7 +4,8 @@ INSAN Healthcare AI Operating System
 
 Version: 5.0
 
-Status: Sprint 1 — Visual Language Integration
+Status: **Current** — the stage machine still runs as described. The Publishing
+Service stage is now PublishingRunner.gs (W9). See docs/DOCUMENT_STATUS.md.
 
 Date: July 2026
 

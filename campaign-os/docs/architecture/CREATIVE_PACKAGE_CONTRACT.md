@@ -3,7 +3,8 @@
 INSAN Healthcare AI Operating System
 
 Version: 2.0
-Status: Sprint 1 — Step 2 Complete
+Status: **Current** — the Content → Visual handoff in detail. Sits under
+WORKER_CONTRACTS_V2.md. See docs/DOCUMENT_STATUS.md.
 Date: July 2026
 
 ---

@@ -4,7 +4,10 @@
 > this repository, read this file completely before opening anything else or writing any
 > code.
 >
-> **Updated:** 2026-07-30
+> **Updated:** 2026-07-31
+> **Status:** **Current** — the entry point. §6 is the authority on where the work
+> stands. Every other document declares its own status; the index is
+> `campaign-os/docs/DOCUMENT_STATUS.md`.
 
 ---
 
@@ -192,8 +195,12 @@ you to rebuild finished work.
 untrue. Read them for background if you want the story of how the system got here; where
 they disagree with Layer 3, Layer 3 wins.
 
-⚠️ Six documents under `campaign-os/docs/architecture/` and `docs/roadmap/` still carry
-`Status: Sprint 1`. They are stale. Finding A·F15/F16.
+✅ **Every document now declares its own status** — Current, Baseline, Historical,
+Superseded or Proposal — and `campaign-os/docs/DOCUMENT_STATUS.md` is the index.
+Findings A·F15 and A·F16 are closed. Two claims the audit counted are still worth
+knowing: the **Model Router** described by four documents has never been built, and
+OCR verification remains deliberately deferred. The **Publishing Service** those
+documents reserve columns for now exists.
 
 ### If you only have time for four
 
@@ -455,8 +462,15 @@ In this order. Steps 1–3 are one-time.
   writes down the four divergences by name. What it cannot do is decide them:
   whether the website's Ophthalmology and Dermatology centers exist is a
   brand-owner question, and the code deliberately does not guess.
-- **Redundant tabs** — `Master Campaign Library`, `Campaign Defaults`,
-  `Campaign Overview` (G8, G9).
+- **Redundant tabs** (G8, G9). **The decision and the migration order are written** —
+  `roadmap/TAB_CONSOLIDATION.md`. Nothing is executed, because every step is a change
+  to the live sheet. Two things worth knowing before you touch it: `Campaign Overview`
+  duplicates the cards' identity block exactly and is the clearest deletion in the
+  workbook; and the `Content Calendar` carries **26 columns** of campaign strategy
+  copied onto every row, which the Content Pipeline already looks up — that is how
+  the two drift. Also found while measuring it: **W2's contract requires it to
+  respect Master Campaign Library page eligibility, and `PlannerRunner.gs` never
+  reads that tab.**
 - ~~**Eleven hardcoded Google IDs** in `CONFIG.gs` (F17).~~ **Closed 2026-07-31.**
   All eleven, plus the publishing page list, now read from Script Properties and
   fall back to the value in `CONFIG.gs` when a property is absent — so nothing

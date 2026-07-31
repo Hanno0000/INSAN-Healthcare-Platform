@@ -4,7 +4,8 @@ INSAN Healthcare AI Operating System
 
 Version: 9.0
 
-Status: Sprint 1 — Visual Language Integration
+Status: **Superseded** by architecture/WORKER_CONTRACTS_V2.md. Kept for the
+visual-team detail V2 summarises. See docs/DOCUMENT_STATUS.md.
 
 Date: July 2026
 

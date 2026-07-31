@@ -3,7 +3,12 @@
 > **Written:** 2026-07-27
 > **For:** a fresh session, with no memory of the sprint that produced it.
 > **Goal:** cut input cost substantially without changing a single word of output.
-> **Status:** proposal — nothing below has been implemented.
+> **Status:** **Partly implemented.** Steps 1–3 landed in Phase 0 — the timestamp
+> removed from both prompt headers, cached tokens logged from both providers, and
+> an Anthropic cache breakpoint in place. **Step 4, explicit Gemini caching, is
+> deliberately not built** until implicit caching has been measured on a real run.
+> The original line here said nothing had been implemented; that stopped being
+> true on 2026-07-30. See docs/DOCUMENT_STATUS.md.
 
 ---
 

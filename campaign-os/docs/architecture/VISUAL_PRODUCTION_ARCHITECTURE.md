@@ -4,7 +4,9 @@ INSAN Healthcare AI Operating System
 
 Version: 9.0
 
-Status: Sprint 1 — Visual Language Integration
+Status: **Current, with caveats** — ⚠️ the **Model Router** described here has
+never been built; the file carries an inline correction where it makes the claim.
+See docs/DOCUMENT_STATUS.md.
 
 Date: July 2026
 

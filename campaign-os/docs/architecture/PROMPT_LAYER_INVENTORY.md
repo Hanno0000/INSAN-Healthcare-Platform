@@ -4,7 +4,9 @@ INSAN Healthcare AI Operating System
 
 Date: July 2026
 
-Status: Sprint 1 — Visual Language Integration
+Status: **Current, with caveats** — written before MediaDesigner.gs existed, so
+the image path described here is now composed by a worker rather than by string
+concatenation. See docs/DOCUMENT_STATUS.md.
 
 ---
 

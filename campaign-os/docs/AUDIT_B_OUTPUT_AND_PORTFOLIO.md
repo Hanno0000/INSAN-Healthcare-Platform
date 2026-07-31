@@ -2,6 +2,8 @@
 
 > **Version:** 1.0
 > **Date:** 2026-07-29
+> **Status:** **Baseline** — measured 2026-07-29 and deliberately unedited. Status
+> table below. See docs/DOCUMENT_STATUS.md.
 > **Lens:** Backwards from the published post. What does the audience actually receive?
 > **Independent of:** `OPERATIONAL_AUDIT.md` (Audit A), which examined the machinery.
 > **Purpose:** a second, differently-angled reading, to be merged with Audit A.

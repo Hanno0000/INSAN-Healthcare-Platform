@@ -3,6 +3,8 @@
 > **Purpose:** Turn one paid run into a decision, not an impression.
 > **Date created:** 2026-07-27
 > **Closes:** TD-005 (End-to-End Validation Checklist)
+> **Status:** **Historical** — the run it was written for has not happened.
+> Superseded by START_HERE.md §6.4. See docs/DOCUMENT_STATUS.md.
 
 ---
 

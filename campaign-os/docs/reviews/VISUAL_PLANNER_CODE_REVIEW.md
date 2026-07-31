@@ -2,6 +2,8 @@
 
 **Date:** 2026-07-26
 **Reviewer:** AI Assistant
+**Status:** **Historical** — a point-in-time review. VisualPlan.gs now computes
+deterministically what this reviewed. See docs/DOCUMENT_STATUS.md.
 **Verdict:** PASS — Production Ready
 
 ---

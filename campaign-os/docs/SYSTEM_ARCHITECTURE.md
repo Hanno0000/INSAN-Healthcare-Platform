@@ -2,7 +2,8 @@
 
 > **Version:** 1.0
 > **Date:** 2026-07-29
-> **Status:** Target architecture. Sections marked ❌ are not built yet.
+> **Status:** **Current** — all ten workers now exist in code; 🟡 marks the five
+> that have never run. See docs/DOCUMENT_STATUS.md.
 > **Audience:** Any engineer or AI worker joining this project with no prior context.
 
 ---

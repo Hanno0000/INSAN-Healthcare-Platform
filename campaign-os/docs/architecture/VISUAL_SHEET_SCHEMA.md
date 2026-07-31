@@ -4,7 +4,8 @@ INSAN Healthcare AI Operating System
 
 Version: 8.0
 
-Status: Sprint 1 — Visual Language Integration
+Status: **Current** — the Visual Pipeline columns as they are. The Publishing
+Service columns reserved below are now written by W9. See docs/DOCUMENT_STATUS.md.
 
 Date: July 2026
 

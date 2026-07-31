@@ -1,4 +1,13 @@
 
+> **Status: Superseded** by `CONFIG.gs`. Phase 1 made CONFIG the single vocabulary
+> source, and Maintenance → **Sync Dropdowns from CONFIG** writes the sheet from it.
+> **A vocabulary edited here changes nothing.** Kept because this file is loaded as
+> a project document by the content workers, so its *content* still reaches them —
+> but `CONFIG.CONTROLLED_VOCABULARY` is what the code and the dropdowns obey.
+> See `docs/DOCUMENT_STATUS.md`.
+
+---
+
 ## Purpose
 This file contains the controlled vocabulary and operating constants used by all AI Workers in the INSAN Content System.
 

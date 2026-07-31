@@ -1,7 +1,8 @@
 # Sprint 2 — Visual Production Quality Hardening
 
 **Source of Truth:** Validation Run #001
-**Status:** IN PROGRESS
+**Status:** **Historical** — Sprint 2 is finished. A record of it, not a plan.
+Current plan: VERDICT_AND_IMPROVEMENTS.md §5. See docs/DOCUMENT_STATUS.md.
 **Objective:** Raise quality of the next Production Run. No feature additions.
 
 ---

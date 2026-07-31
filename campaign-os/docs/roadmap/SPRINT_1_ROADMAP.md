@@ -3,7 +3,8 @@
 Campaign OS — Official Sprint Reference
 
 Version: 5.0
-Status: Active — In Progress
+Status: **Historical** — Sprint 1 is finished. This is a record of it, not a
+plan. Current plan: VERDICT_AND_IMPROVEMENTS.md §5. See docs/DOCUMENT_STATUS.md.
 Date: July 2026
 
 ---

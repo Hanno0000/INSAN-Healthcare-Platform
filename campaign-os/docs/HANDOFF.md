@@ -2,6 +2,10 @@
 
 > **Written:** 2026-07-27
 > **For:** whoever picks this up next — most likely a fresh context window with no memory of this work.
+> **Status: Superseded** by `START_HERE.md`. Kept for the story of how the system
+> got here; where it disagrees with `START_HERE.md` §6, §6 wins.
+> See `docs/DOCUMENT_STATUS.md`.
+>
 > **Read this before `CURRENT_STATE.md`.** That document describes the architecture as designed. This one describes what was actually wrong with it, why, and what remains.
 
 ---

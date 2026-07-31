@@ -3,7 +3,8 @@
 INSAN Healthcare AI Operating System
 
 Version: 1.0
-Status: Implementation Checklist
+Status: **Historical** — a checklist from an earlier sprint. ⚠️ its Model Router
+section describes something that was never built. See docs/DOCUMENT_STATUS.md.
 Date: July 2026
 
 ---

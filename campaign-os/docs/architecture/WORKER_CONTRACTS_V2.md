@@ -3,6 +3,8 @@
 > **Version:** 2.0
 > **Date:** 2026-07-29
 > **Supersedes:** `VISUAL_WORKER_CONTRACTS.md` (visual team only — kept for detail)
+> **Status:** **Current** — per-worker I/O with build status.
+> See `docs/DOCUMENT_STATUS.md`.
 > **Parent document:** `docs/SYSTEM_ARCHITECTURE.md`
 
 Every worker in the system, in execution order. For each: what it reads, what it
@@ -115,7 +117,11 @@ mix           : 30% → [Emergency, ICU, Cardiac]
 
 **Must respect**
 - Requested mix percentages, within one slot
-- `Master Campaign Library` page eligibility — Primary / Secondary per page
+- ⚠️ `Master Campaign Library` page eligibility — Primary / Secondary per page.
+  **Not implemented:** `PlannerRunner.gs` does not read that tab at all. This clause
+  is a contract with nothing behind it, and it is the reason
+  `roadmap/TAB_CONSOLIDATION.md` moves page eligibility into `Campaign Cards`
+  before that tab can be deleted.
 - No campaign twice on the same page on the same day
 - Only campaigns with `Status = Active` **and an existing card**
 

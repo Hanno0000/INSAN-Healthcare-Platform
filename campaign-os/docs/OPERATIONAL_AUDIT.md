@@ -3,6 +3,8 @@
 > **Version:** 1.0
 > **Date:** 2026-07-29
 > **Method:** Live sheet data, 298 production log entries, all source files, all six prompts.
+> **Status:** **Baseline** — measured 2026-07-29 and deliberately unedited. Not the
+> current state; per-finding status is in §8. See docs/DOCUMENT_STATUS.md.
 > **Scope:** Findings that survived verification. Every number here was computed, not estimated.
 > **Companion to:** `GAP_REGISTER.md` (coverage gaps) · `SYSTEM_ARCHITECTURE.md` (structure)
 

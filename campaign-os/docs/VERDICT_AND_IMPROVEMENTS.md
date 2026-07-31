@@ -2,6 +2,8 @@
 
 > **Version:** 1.0
 > **Date:** 2026-07-29
+> **Status:** **Current** — the judgement and the phased plan. Phase status is
+> maintained in §5. See docs/DOCUMENT_STATUS.md.
 > **Companion to:** `OPERATIONAL_AUDIT.md` (Audit A) · `AUDIT_B_OUTPUT_AND_PORTFOLIO.md` (Audit B)
 > **Why this exists:** the two audits catalogue defects. This document carries the
 > professional judgement and the proposed improvements — material that was delivered

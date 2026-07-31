@@ -3,7 +3,8 @@
 INSAN Healthcare AI Operating System
 
 Version: 1.0
-Status: Implementation Plan
+Status: **Historical** — largely delivered. Superseded as the plan by
+VERDICT_AND_IMPROVEMENTS.md §5. See docs/DOCUMENT_STATUS.md.
 Date: July 2026
 
 ---

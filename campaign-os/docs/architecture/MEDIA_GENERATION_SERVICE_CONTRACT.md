@@ -4,7 +4,9 @@ INSAN Healthcare AI Operating System
 
 Version: 2.0
 
-Status: Sprint 1 — Visual Language Integration
+Status: **Current, with caveats** — ⚠️ the **Model Router** described below has
+never been built. Model selection is CONFIG.MEDIA_MODELS. Prompt composition is
+now MediaDesigner.gs; see WORKER_CONTRACTS_V2.md W7 and docs/DOCUMENT_STATUS.md.
 
 Date: July 2026
 
