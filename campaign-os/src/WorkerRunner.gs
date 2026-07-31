@@ -129,6 +129,8 @@ var RunControl = {
 
 
 function onOpen() {
+  ConfigResolver.apply();
+
   SpreadsheetApp.getUi()
     .createMenu('AI Workers')
     .addItem('Production Control Center', 'showControlCenter')
@@ -139,6 +141,7 @@ function onOpen() {
       .addItem('Check Knowledge File', 'checkKnowledgeFile')
       .addSeparator()
       .addItem('Plan a Cycle', 'runCampaignPlanner')
+      .addItem('What Is Coming', 'showUpcomingEvents')
       .addItem('Review Plan Before Production', 'runPortfolioCritic'))
     .addSubMenu(SpreadsheetApp.getUi()
       .createMenu('Content Team')
@@ -169,6 +172,7 @@ function onOpen() {
       .addItem('Sync Dropdowns from CONFIG (run once)', 'syncVocabularyFromConfig')
       .addItem('Unblock Dropdowns (run once)', 'relaxDataValidation')
       .addItem('Review Vocabulary Gaps', 'showVocabularyGaps')
+      .addItem('Deployment Identifiers', 'showDeploymentIdentifiers')
       .addSeparator()
       .addItem('Background Job Status', 'showJobStatus')
       .addItem('Cancel Background Job', 'cancelActiveJob'))
@@ -1909,6 +1913,8 @@ function _composeFinalPostCopy(values) {
 
 
 function runWorker(workerName, rowNumber) {
+  ConfigResolver.apply();
+
   var startTime = new Date().getTime();
   var upperName = workerName.toUpperCase().trim();
 

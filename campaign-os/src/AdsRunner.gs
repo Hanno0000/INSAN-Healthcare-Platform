@@ -86,6 +86,10 @@ var AdsRunner = {
   // Every published row that has no draft yet. Publishing is the trigger: an ad
   // specification for a post that does not exist has nothing to point at.
   run: function(startRow, endRow) {
+    // Identifiers from Script Properties where set, CONFIG.gs otherwise.
+    // Idempotent; see ConfigResolver (Audit A, F17).
+    ConfigResolver.apply();
+
     var sheetName = CONFIG.VISUAL_PIPELINE.SHEET_NAME;
     var lastRow = SheetSchema.getLastRow(sheetName);
 

@@ -915,6 +915,68 @@ var CONFIG = {
   },
 
   // ================================
+  // EGYPTIAN EVENTS CALENDAR  (improvement I5)
+  //
+  // Nothing in this system knew a season was coming. Audit B recorded it as
+  // B10: no way to plan around Ramadan, Eid or awareness days — which are the
+  // highest-attention windows of the year in this market, and the only content
+  // that genuinely cannot be produced retrospectively.
+  //
+  // The planner reads this so a cycle that overlaps a period is told so before
+  // it is planned, not after it is published.
+  //
+  // ⚠️ MOVEABLE dates are entered by hand, per year, and are never computed.
+  // Ramadan and Eid follow the Hijri calendar and are confirmed locally by
+  // announcement; a tabular approximation is routinely a day out. A wrong
+  // Ramadan date would misplan a month of content about medication timing, so
+  // this system refuses to guess — it says the date is missing instead.
+  // ================================
+
+  EVENTS_CALENDAR: {
+    ENABLED: true,
+
+    // Gregorian, recurring every year. Safe to compute.
+    FIXED: [
+      { key: 'world-cancer-day',      name: 'World Cancer Day',            month: 2,  day: 4,  leadDays: 14, weight: 'medium' },
+      { key: 'mothers-day-eg',        name: "Mother's Day (Egypt)",        month: 3,  day: 21, leadDays: 10, weight: 'high' },
+      { key: 'world-health-day',      name: 'World Health Day',            month: 4,  day: 7,  leadDays: 14, weight: 'medium' },
+      { key: 'world-hypertension-day',name: 'World Hypertension Day',      month: 5,  day: 17, leadDays: 14, weight: 'high' },
+      { key: 'world-no-tobacco-day',  name: 'World No Tobacco Day',        month: 5,  day: 31, leadDays: 14, weight: 'medium' },
+      { key: 'world-blood-donor-day', name: 'World Blood Donor Day',       month: 6,  day: 14, leadDays: 10, weight: 'medium' },
+      { key: 'summer-heat',           name: 'Peak summer heat',            month: 7,  day: 1,  leadDays: 21, weight: 'high',
+        endMonth: 8, endDay: 31 },
+      { key: 'school-return',         name: 'School return',               month: 9,  day: 15, leadDays: 14, weight: 'medium' },
+      { key: 'world-heart-day',       name: 'World Heart Day',             month: 9,  day: 29, leadDays: 14, weight: 'high' },
+      { key: 'breast-cancer-month',   name: 'Breast Cancer Awareness Month', month: 10, day: 1, leadDays: 21, weight: 'high',
+        endMonth: 10, endDay: 31 },
+      { key: 'first-cold-week',       name: 'First cold week',             month: 11, day: 15, leadDays: 14, weight: 'medium' },
+      { key: 'world-diabetes-day',    name: 'World Diabetes Day',          month: 11, day: 14, leadDays: 14, weight: 'high' },
+      { key: 'exam-season',           name: 'Exam season',                 month: 12, day: 20, leadDays: 14, weight: 'medium',
+        endMonth: 1, endDay: 31 }
+    ],
+
+    // Hijri-based and locally announced. **The operator fills these in.**
+    // Format: 'YYYY-MM-DD'. An empty string means "not yet known", and the
+    // system reports it as missing rather than estimating.
+    //
+    // Ramadan is the single most valuable content window in the Egyptian year
+    // for a healthcare organisation, and the one that most needs lead time —
+    // clinical review of medication-timing content has to happen before the
+    // month starts, not during it.
+    MOVEABLE: [
+      { key: 'ramadan',     name: 'Ramadan',            leadDays: 30, weight: 'critical',
+        dates: { /* '2027': { start: '', end: '' } */ } },
+      { key: 'eid-fitr',    name: 'Eid al-Fitr',        leadDays: 14, weight: 'high',
+        dates: {} },
+      { key: 'eid-adha',    name: 'Eid al-Adha',        leadDays: 14, weight: 'high',
+        dates: {} }
+    ],
+
+    // How far past the window's end an event still counts as relevant.
+    TRAILING_DAYS: 3
+  },
+
+  // ================================
   // W9 — PUBLISHING
   // Takes an approved row live on a Facebook page. There is no model call here
   // and there should not be: every decision was already made and owned

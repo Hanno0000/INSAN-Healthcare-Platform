@@ -271,12 +271,28 @@ are outside its output schema entirely — there is no path by which it reports 
 spend. New prompt: `prompts/ads/PAID_ADS_WORKER.md`. 23 automated checks cover
 the guards.
 
+**A sixth pass, 2026-07-31 — the calendar and the identifiers.**
+
+**The events calendar (I5)** closes Audit B's B10: nothing in this system knew a
+season was coming. `EventsCalendar.gs` answers what falls inside — or just
+before — the window being planned, and the planner now receives it in its brief.
+It **never computes a Hijri date**: Ramadan and Eid are entered by hand per year,
+and a year with no entry is reported as missing rather than estimated. A Ramadan
+date one day out would misplan a month of medication-timing content. New menu
+item: Planning → **What Is Coming**.
+
+**F17 is closed.** All eleven hardcoded Google identifiers, plus the publishing
+page list, now resolve from Script Properties with the `CONFIG.gs` value as the
+fallback — so a second deployment is a configuration exercise rather than a code
+fork, and the current one is unaffected until a property is set. New menu item:
+Maintenance → **Deployment Identifiers**.
+
 ⚠️ **Files changed and to be pasted into the Apps Script editor:**
 `AIProvider.gs` · `CardBuilder.gs` · `CONFIG.gs` · `DriveLoader.gs` ·
 `MediaDesigner.gs` · `PlannerRunner.gs` · `PortfolioCritic.gs` ·
-`ServiceRunner.gs` · `WorkerRunner.gs`, plus two new files —
-**`PublishingRunner.gs`** and **`AdsRunner.gs`**. Still nothing verified in
-production.
+`ServiceRunner.gs` · `WorkerRunner.gs`, plus four new files —
+**`PublishingRunner.gs`** · **`AdsRunner.gs`** · **`EventsCalendar.gs`** ·
+**`ConfigResolver.gs`**. Still nothing verified in production.
 
 ### 6.2 The knowledge base
 
@@ -402,8 +418,15 @@ In this order. Steps 1–3 are one-time.
    you least mind getting wrong. It is the only irreversible action in the system.
 7. **Draft ads for that post with W10** and read the row. It cannot spend: budget
    and results are outside its output schema.
-8. Then the rest of Phase 4: the approved-asset library, the events calendar, the
-   shared entity registry, and the eleven hardcoded IDs.
+8. **Enter this year's Ramadan and Eid dates** in `CONFIG.EVENTS_CALENDAR.MOVEABLE`.
+   The events calendar (I5) landed 2026-07-31 and the planner now reads it — but it
+   refuses to estimate a Hijri date, so until the dates are entered it will say it
+   does not know them. **AI Workers → Planning → What Is Coming** shows what is
+   recorded and what is missing. Ramadan needs the most notice: the
+   medication-timing content has to be written and clinically reviewed before the
+   month starts.
+9. Then the rest of Phase 4: the approved-asset library (I4) and the shared entity
+   registry (I7).
 
 ### 6.5 Known open items not yet addressed
 
@@ -411,8 +434,11 @@ In this order. Steps 1–3 are one-time.
   brand-owner decision, not code — see `MEDICAL_SERVICES_TAXONOMY.md` §6.
 - **Redundant tabs** — `Master Campaign Library`, `Campaign Defaults`,
   `Campaign Overview` (G8, G9).
-- **Eleven hardcoded Google IDs** in `CONFIG.gs` (F17). Two new ones now read from
-  Script Properties instead; the original eleven have not moved.
+- ~~**Eleven hardcoded Google IDs** in `CONFIG.gs` (F17).~~ **Closed 2026-07-31.**
+  All eleven, plus the publishing page list, now read from Script Properties and
+  fall back to the value in `CONFIG.gs` when a property is absent — so nothing
+  changes until one is set. **Maintenance → Deployment Identifiers** shows which
+  are set, without printing any value.
 - **Kabarona** is two short sections away from building a card — the highest return
   per hour left in the knowledge base.
 

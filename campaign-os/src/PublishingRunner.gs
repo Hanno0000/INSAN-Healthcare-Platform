@@ -26,6 +26,10 @@ var PublishingRunner = {
   // ------------------------------------------------------------------ batch
 
   run: function(startRow, endRow) {
+    // Identifiers from Script Properties where set, CONFIG.gs otherwise.
+    // Idempotent; see ConfigResolver (Audit A, F17).
+    ConfigResolver.apply();
+
     var sheetName = CONFIG.VISUAL_PIPELINE.SHEET_NAME;
     var lastRow = SheetSchema.getLastRow(sheetName);
 

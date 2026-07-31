@@ -37,6 +37,10 @@ var CardBuilder = {
   // the operator sets one property instead of seven, and moving a file between
   // levels does not break the link.
   findKnowledgeFile: function(fileName) {
+    // Identifiers from Script Properties where set, CONFIG.gs otherwise.
+    // Idempotent; see ConfigResolver (Audit A, F17).
+    ConfigResolver.apply();
+
     var rootId = this._property('KNOWLEDGE_FOLDER_ID');
 
     if (!rootId) {

@@ -421,6 +421,10 @@ var PortfolioCritic = {
   // -------------------------------------------------------------- the entry
 
   review: function(startRow, endRow) {
+    // Identifiers from Script Properties where set, CONFIG.gs otherwise.
+    // Idempotent; see ConfigResolver (Audit A, F17).
+    ConfigResolver.apply();
+
     var startTime = new Date().getTime();
     var config = this._config();
 

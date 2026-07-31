@@ -252,6 +252,13 @@ var PlannerRunner = {
       'objective     : ' + (brief.objective || 'not stated'),
       'emphasis      : ' + (brief.emphasis || 'none stated'),
       '',
+
+      // What the system could not see at all before: whether this window
+      // overlaps a period that changes what is worth publishing. A plan made
+      // blind to Ramadan is a normal month scheduled over the highest-attention
+      // window of the year. (Audit B, B10 — improvement I5.)
+      EventsCalendar.briefBlock(brief.startDate, brief.days),
+      '',
       '=== CAMPAIGNS YOU MAY SCHEDULE ===',
       '',
       'These all have a usable card. Nothing else may appear in the plan.',
@@ -367,6 +374,10 @@ var PlannerRunner = {
   // -------------------------------------------------------------- the entry
 
   plan: function(brief) {
+    // Identifiers from Script Properties where set, CONFIG.gs otherwise.
+    // Idempotent; see ConfigResolver (Audit A, F17).
+    ConfigResolver.apply();
+
     var startTime = new Date().getTime();
     var config = this._config();
 

@@ -8,6 +8,10 @@ var ServiceRunner = {
   _textMissing: false,
 
   runMediaGeneration: function(startRow, endRow) {
+    // Identifiers from Script Properties where set, CONFIG.gs otherwise.
+    // Idempotent; see ConfigResolver (Audit A, F17).
+    ConfigResolver.apply();
+
     var config = CONFIG.SERVICES.MEDIA_GENERATION;
     var sheetName = config.sheetName;
     var lastRow = SheetSchema.getLastRow(sheetName);
