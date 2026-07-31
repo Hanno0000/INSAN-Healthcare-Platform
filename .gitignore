@@ -1,5 +1,38 @@
-# Root-level ignores (repo-wide)
-node_modules
+# Secrets and dependencies — never commit these
 .env
-*.log
+.env.*
+!.env.example
+!.env.*.example
+node_modules
 .cache
+
+# Binaries
+*.xlsx
+*.gsheet
+*.ai
+*.eps
+*.pdf
+*.pptx
+*.jpeg
+*.jpg
+*.psd
+*.zip
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Archive (deprecated files)
+archive/
+
+# Generated assets (large files)
+assets/generated/
+campaign-os/visual-assets/
+
+# Google Drive sync folders (root only)
+/Docs/
+/Prompts/
+/AppsScript/

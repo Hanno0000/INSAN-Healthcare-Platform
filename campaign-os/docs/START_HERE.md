@@ -13,18 +13,23 @@
 
 > ## ⚠️ Read this before you start work
 >
-> **Phases 0, 1, 2 and 3 of the agreed plan are implemented.** If you were told to
-> "start at Phase 0", that instruction is out of date — Phase 0 was three changes
-> and they are committed. **Do not redo them.**
+> **Phases 0 through 4 are implemented. All ten workers exist in code. The
+> knowledge base covers 73 of 132 scheduled slots. Every document declares its own
+> status.** If you were told to start at any phase, that instruction is out of
+> date. **Do not redo any of it.**
 >
 > Everything is in git, on `main`. What has *not* happened is a production run:
-> the code has never been pasted into the Apps Script editor, and no worker built
-> in these phases has made a single live API call.
+> **the code has never been pasted into the Apps Script editor, and not one worker
+> built since 2026-07-29 has made a single live API call.** Roughly 140 automated
+> checks pass against the real files; none of them proves the system runs.
 >
 > **Where the work actually stands is §6.** Read §1–§5 for the business and the
 > system, then go to §6 — do not infer the current state from anything else in
 > this document, or from the audits, which describe the system as it was measured
 > on 2026-07-29 and are deliberately left unedited as the baseline.
+>
+> **What the project needs next is an operator, not a builder.** §6.3 and §6.4 are
+> a list of things only the person with the sheet, the keys and the facts can do.
 
 ---
 
@@ -90,7 +95,7 @@ writes.
 | `Execution Log` | Every worker call, with tokens and runtime. |
 | `SYSTEM_CONSTANTS` | Dropdown vocabularies. |
 
-**The workers — 10 designed, 6 built:**
+**The workers — all ten built, five never run:**
 
 ```
 W1  Campaign Card Builder   🟡 unverified   knowledge file → campaign card
@@ -234,7 +239,37 @@ inputs. The difference is that the inputs now fail loudly instead of quietly.
 **This is the section to trust.** The audits in Layer 3 describe the system as it was
 on 2026-07-29 and are deliberately unedited — they are the baseline, not the status.
 
+### 6.0 The whole operator list, in order
+
+Everything below is something **only the operator can do** — it needs the sheet, a
+key, or a fact that exists nowhere in this repository. Nothing in §6.1 can be
+verified until §6.0 items 1–4 are done, and the order matters where it is numbered.
+
+| # | What | Why it is yours | Detail |
+|---|---|---|---|
+| 1 | **Rotate the leaked credentials** | `.env.production` is tracked in git on a **public** repo and carries the Supabase production `DATABASE_URL` and both JWT signing secrets. Committed 2026-07-29 in `40e6a02`. Deleting the file does not undo it — the history is public. | Rotate first, then `git rm --cached .env.production` |
+| 2 | **Paste `src/*.gs` into the Apps Script editor** | Nothing in this repository takes effect until this happens | §6.1, file list at the end |
+| 3 | **Set the Script Properties** | Keys and folder IDs. `ANTHROPIC_API_KEY` and `KNOWLEDGE_FOLDER_ID` are required; the rest fall back to `CONFIG.gs` | §6.3 |
+| 4 | **Upload to Drive**: `prompts/planning/`, `prompts/ads/`, the knowledge folders, and `ENTITY_REGISTRY.md` | The workers load their manuals from Drive at runtime | §6.3 |
+| 5 | **Create Managed Columns → Sync Dropdowns → Preflight Check** | One-time schema setup. Preflight must report no problems | §6.3 |
+| 6 | **Three renames in the sheet** | Kabarona ×7 rows, `Myth vs Fact` ×2 rows. Until they land, two finished knowledge files are joined to nothing | §6.3 |
+| 7 | **Verify the visual pipeline on one Static row** | `MediaDesigner`, `TextOverlay` and `AssetIntegrity` have never completed a production run. The oldest unverified thing in the system | §6.4 item 1 |
+| 8 | **Answer the five operator questions** | Emergency and Delta. Facts only you have. Worth **24 scheduled posts** | `business/knowledge/NEEDS_OPERATOR_QUESTIONS.md` |
+| 9 | **Enter Ramadan and Eid dates** | Hijri, locally announced. The system refuses to estimate them | §6.4 item 8 |
+| 10 | **Name a clinician to review medical content** | The three educational campaigns must not run without one | `EDUCATIONAL_MYTHS_FACTS.md` |
+| 11 | **Decide the entity divergences** | Do the website's Ophthalmology and Dermatology centers exist? A brand-owner question the code deliberately does not guess at | `ENTITY_REGISTRY.md` §Divergences |
+| 12 | **Facebook page tokens**, when you reach W9 | Two Script Properties per page. W9 refuses by name rather than defaulting to another page | §6.3 |
+| 13 | **Unzip the facility photographs** | `business/Media/Services/Pics/` holds a `.zip`; every domain folder beside it is empty, so generation falls back to AI with no reference | §7 |
+| 14 | **Execute the tab consolidation** | Every step is an edit to live data, and the order is load-bearing | `roadmap/TAB_CONSOLIDATION.md` |
+
+**Items 1–6 are prerequisites.** Item 7 is the first thing that produces evidence.
+
+---
+
 ### 6.1 Done, in git, never run
+
+Six working sessions. Every line below is committed to `main` and **none of it has
+run in production.**
 
 Phases 0–3 of `VERDICT_AND_IMPROVEMENTS.md` §5 are implemented across three working
 sessions. Roughly 140 automated checks pass against the real files. **No worker built
