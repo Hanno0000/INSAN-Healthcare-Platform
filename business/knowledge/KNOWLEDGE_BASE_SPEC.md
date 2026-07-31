@@ -312,9 +312,9 @@ to trust a thing they cannot name.
 | Hospital Life | `supporting/SUPPORTING_HOSPITAL_LIFE.md` | 5 | ✅ builds a card |
 | FAQ | `supporting/SUPPORTING_FAQ.md` | 3 | ✅ builds a card |
 | Community Impact (CSR) | `supporting/SUPPORTING_CSR.md` | 3 | ✅ builds a card |
-| Visiting Professors | `supporting/SUPPORTING_VISITING_PROFESSORS.md` | 2 | ❌ |
-| Patient Guides | `supporting/SUPPORTING_PATIENT_GUIDES.md` | 2 | ❌ |
-| Medical Education | `supporting/SUPPORTING_MEDICAL_EDUCATION.md` | 1 | ❌ |
+| Visiting Professors | `supporting/SUPPORTING_VISITING_PROFESSORS.md` | 2 | ✅ builds a card |
+| Patient Guides | `supporting/SUPPORTING_PATIENT_GUIDES.md` | 2 | ✅ builds a card |
+| Medical Education | `supporting/SUPPORTING_MEDICAL_EDUCATION.md` | 1 | ✅ builds a card |
 
 ### 7.6.1 The three-campaign boundary
 
@@ -336,14 +336,28 @@ same failure at the plan level.
 
 ### 7.7 Educational
 
-| Campaign | File | Slots |
-|---|---|---|
+| Campaign | File | Slots | Status |
+|---|---|---|---|
 | Medical Myths & Facts ² | `supporting/EDUCATIONAL_MYTHS_FACTS.md` | 3 | ✅ builds a card |
-| Health Awareness | `supporting/EDUCATIONAL_HEALTH_AWARENESS.md` | 2 |
-| Prevention Tips | `supporting/EDUCATIONAL_PREVENTION_TIPS.md` | 2 |
-| Seasonal Campaigns | `supporting/EDUCATIONAL_SEASONAL.md` | 1 |
+| Health Awareness | `supporting/EDUCATIONAL_HEALTH_AWARENESS.md` | 2 | ✅ builds a card |
+| Prevention Tips | `supporting/EDUCATIONAL_PREVENTION_TIPS.md` | 2 | ✅ builds a card |
+| Seasonal Campaigns | `supporting/EDUCATIONAL_SEASONAL.md` | 1 | ✅ builds a card |
 
-All ❌.
+### 7.7.1 The educational routing test
+
+All four convey health information and are separated by the reader's starting state.
+Recorded in full in `EDUCATIONAL_MYTHS_FACTS.md`, the cluster anchor:
+
+| If the reader's state is… | It belongs to |
+|---|---|
+| they believe something that is **wrong** | Medical Myths & Facts |
+| they **do not know** something | Health Awareness |
+| they **know but do not act** | Prevention Tips |
+| the **moment** makes it relevant now | Seasonal Campaigns |
+
+**All four require clinical review of every post before publication**, and should not
+run until a named clinician exists to do it. Medical content that is nearly right is
+more dangerous than none: it is authoritative, memorable and shared.
 
 ² The calendar schedules this campaign under **two names** — `Myth vs Fact`
 (2 slots) and `Medical Myths & Facts` (1 slot). Confirmed by the operator on
@@ -358,12 +372,17 @@ thing, which is how two sources of truth begin.
 
 | | Count | Scheduled slots |
 |---|---|---|
-| ✅ Written, builds a campaign card | **18** — the seven Corporate campaigns, ICU, Kabarona, Medical Myths & Facts, and the eight Supporting campaigns written so far | **71** |
+| ✅ Written, builds a campaign card | **24** — all 7 Corporate, all 11 Supporting, all 4 Educational, plus ICU and Kabarona | **81** |
 | 🟠 Structurally complete, awaiting operator facts | **2** — Emergency, Delta | 24 |
-| ❌ Not started | ~20 | 37 |
+| ❌ Not started | ~14 | 27 |
 
-**The Corporate cluster is complete** — all seven campaigns, sharing the routing
-test in §7.4.1.
+**Three clusters are complete** — Corporate (§7.4.1), Supporting (§7.6.1) and
+Educational (§7.7.1), each with its own routing test.
+
+**What remains is what nobody can write without the operator or a clinician:** the
+twelve Medical Centers (21 slots, clinical facts), the remaining Departments,
+Future Hospital, and the Programs. Every one needs facts that exist only inside
+the institutions.
 
 *Updated 2026-07-30 (third pass).* Kabarona was closed by rewriting its front
 matter to §4 and renaming two headings to the ones the gate matches — *Why This
@@ -383,12 +402,15 @@ and **Healthcare Leadership**, and the practical **FAQ**.
 Then **Community Impact (CSR)** and **Medical Myths & Facts** — the latter
 carrying the routing test the four educational campaigns inherit.
 
-The Corporate cluster was then completed — Brand Identity, Healthcare
-Innovation, Growth & Transformation and Digital Healthcare Transformation.
+The Corporate cluster was then completed, followed by the remaining Supporting
+campaigns and the whole Educational cluster.
 
-**Coverage: 63 of 132 slots today**, 71 once the two renames land in the sheet
-(Kabarona, and the two `Myth vs Fact` rows), **95 once Emergency and Delta are
+**Coverage: 73 of 132 slots today**, 81 once the two renames land in the sheet
+(Kabarona, and the two `Myth vs Fact` rows), **105 once Emergency and Delta are
 answered.**
+
+Every file was written from the committed brand documents. None invents an
+operational or clinical fact, and each states plainly what it cannot supply.
 
 **How to check any file:** AI Workers → Planning → **Check Knowledge File**. It runs
 W1's full validation gate and reports what is missing, without spending an
