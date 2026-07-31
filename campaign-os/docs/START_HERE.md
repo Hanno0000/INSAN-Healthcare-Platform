@@ -137,6 +137,7 @@ everything else assumes.
 | 6 | `business/strategy/PROJECT_ROADMAP.md` | The twelve phases, and which are done |
 | 7 | `business/strategy/PROJECT_DECISIONS.md` | Decisions already taken — **do not relitigate these** |
 | 8 | `business/brand/MEDICAL_SERVICES_TAXONOMY.md` | Departments vs Centers vs Clinics. **Shared with the Website Platform.** |
+| 9 | `business/brand/ENTITY_REGISTRY.md` | **The single list of what the ecosystem contains** — every entity, its level, and the campaign name it is filed under. Also names the four places the three systems still disagree. **Shared with the Website Platform.** |
 
 Then read **one knowledge file end to end** to understand what "campaign knowledge"
 means here:
@@ -287,12 +288,26 @@ fallback — so a second deployment is a configuration exercise rather than a co
 fork, and the current one is unaffected until a property is set. New menu item:
 Maintenance → **Deployment Identifiers**.
 
+**The approved-asset library (I4)** closes the oldest dead configuration in the
+system: `CONFIG.VISUAL_ASSETS.approved` had existed since the beginning and no
+code ever read or wrote it. QA approval now files the artwork into it under a
+name that says what it is — Drive ids survive a move, so every URL already in the
+sheet keeps resolving — and Visual Team → **Reuse An Approved Asset** offers
+matching sets for a row. Reuse skips generation, the most expensive line in the
+system, and still goes through QA: reuse changes what artwork costs, not whether
+it is checked. The choice is the operator's, because an automatic substitution
+would put an approved image behind copy nobody checked it against.
+
+**The entity registry (I7)** is `business/brand/ENTITY_REGISTRY.md` — see §6.5.
+
 ⚠️ **Files changed and to be pasted into the Apps Script editor:**
 `AIProvider.gs` · `CardBuilder.gs` · `CONFIG.gs` · `DriveLoader.gs` ·
 `MediaDesigner.gs` · `PlannerRunner.gs` · `PortfolioCritic.gs` ·
-`ServiceRunner.gs` · `WorkerRunner.gs`, plus four new files —
+`ServiceRunner.gs` · `WorkerRunner.gs`, plus six new files —
 **`PublishingRunner.gs`** · **`AdsRunner.gs`** · **`EventsCalendar.gs`** ·
-**`ConfigResolver.gs`**. Still nothing verified in production.
+**`ConfigResolver.gs`** · **`AssetLibrary.gs`** · **`EntityRegistry.gs`**.
+`ENTITY_REGISTRY.md` also has to be uploaded to the docs folder in Drive.
+Still nothing verified in production.
 
 ### 6.2 The knowledge base
 
@@ -425,13 +440,21 @@ In this order. Steps 1–3 are one-time.
    recorded and what is missing. Ramadan needs the most notice: the
    medication-timing content has to be written and clinically reviewed before the
    month starts.
-9. Then the rest of Phase 4: the approved-asset library (I4) and the shared entity
-   registry (I7).
+9. **Run Check Entity Registry once** and decide the four divergences it lists.
+   The two website-only centers are the commercially exposed one.
+10. **Phase 4 is otherwise complete.** What is left is the production run of all
+    of it.
 
 ### 6.5 Known open items not yet addressed
 
-- **18% agreement** between the three systems describing the medical centers. Needs a
-  brand-owner decision, not code — see `MEDICAL_SERVICES_TAXONOMY.md` §6.
+- **18% agreement** between the three systems describing the medical centers.
+  **A registry now exists** — `business/brand/ENTITY_REGISTRY.md` is the single
+  list, and Maintenance → **Check Entity Registry** reports every card that names
+  something the business does not list and every Service Level that contradicts
+  it. Run against today's sheet it finds **8 such cards**. The registry also
+  writes down the four divergences by name. What it cannot do is decide them:
+  whether the website's Ophthalmology and Dermatology centers exist is a
+  brand-owner question, and the code deliberately does not guess.
 - **Redundant tabs** — `Master Campaign Library`, `Campaign Defaults`,
   `Campaign Overview` (G8, G9).
 - ~~**Eleven hardcoded Google IDs** in `CONFIG.gs` (F17).~~ **Closed 2026-07-31.**

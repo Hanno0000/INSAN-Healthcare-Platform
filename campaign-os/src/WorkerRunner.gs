@@ -156,6 +156,7 @@ function onOpen() {
       .addItem('Media Generation', 'runMediaGenerationService')
       .addItem('Visual QA', 'runVisualQAWorker')
       .addSeparator()
+      .addItem('Reuse An Approved Asset', 'reuseApprovedAsset')
       .addItem('Run Full Visual Pipeline', 'runFullVisualPipeline'))
     .addSubMenu(SpreadsheetApp.getUi()
       .createMenu('Publishing & Ads')
@@ -173,6 +174,7 @@ function onOpen() {
       .addItem('Unblock Dropdowns (run once)', 'relaxDataValidation')
       .addItem('Review Vocabulary Gaps', 'showVocabularyGaps')
       .addItem('Deployment Identifiers', 'showDeploymentIdentifiers')
+      .addItem('Check Entity Registry', 'checkEntityRegistry')
       .addSeparator()
       .addItem('Background Job Status', 'showJobStatus')
       .addItem('Cancel Background Job', 'cancelActiveJob'))
@@ -2906,6 +2908,14 @@ function _applyVisualStageMapping(rowNumber, parsedValues, sheetName) {
     var generatedAssets = qaRowData['Generated Assets'];
     if (generatedAssets) {
       SheetWriter.writeCell(rowNumber, 'Final Asset URL', generatedAssets, sheetName);
+      SpreadsheetApp.flush();
+
+      // File the approved artwork so it can be found again. Drive file ids
+      // survive a move, so the URL just written keeps resolving. Never throws:
+      // the library must not be able to fail a row QA has just approved.
+      // (Improvement I4 — CONFIG.VISUAL_ASSETS.approved existed and nothing
+      // ever wrote to it.)
+      AssetLibrary.promote(rowNumber, sheetName);
     }
   }
 
