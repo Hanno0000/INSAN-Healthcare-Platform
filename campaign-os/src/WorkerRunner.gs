@@ -1892,10 +1892,13 @@ function _refusalRemedy(workerName) {
 }
 
 
-// Appends the approved hashtags to the final post copy as one publish-ready
-// block. Any hashtag block the model already added is removed first, so running
-// this twice — or on a row where the writer improvised — cannot duplicate them.
-function _composeFinalPostCopy(values) {
+// Appends the footer to the final post copy as one publish-ready block: the
+// page's standing hashtags merged with this post's own, then the hotline, then
+// the WhatsApp link.
+//
+// Any hashtag block the model already added is removed first, so running this
+// twice — or on a row where the writer improvised — cannot duplicate them.
+function _composeFinalPostCopy(values, page) {
   var copy = String(values['Creative Director Post Copy'] || '').trim();
 
   if (!copy) {
@@ -1915,17 +1918,19 @@ function _composeFinalPostCopy(values) {
   }
 
   var body = lines.join('\n').trim();
-  var tags = [];
 
-  ['Primary Hashtags', 'Secondary Hashtags'].forEach(function(field) {
-    var raw = String(values[field] || '').trim();
-    if (raw) {
-      tags.push(raw.replace(/\s+/g, ' '));
-    }
-  });
+  // The page decides the standing hashtags and the contact lines. Merged here
+  // rather than asked of the writer: a model reproducing six fixed tags gets it
+  // right nineteen times and drops one on the twentieth, and nobody reads
+  // twenty published posts looking for a missing brand tag.
+  var footer = PostFooter.build(
+    page,
+    values['Primary Hashtags'],
+    values['Secondary Hashtags']
+  );
 
-  values['Creative Director Post Copy'] = tags.length
-    ? body + '\n\n' + tags.join('\n')
+  values['Creative Director Post Copy'] = footer
+    ? body + '\n\n' + footer
     : body;
 }
 
@@ -2187,7 +2192,7 @@ function runWorker(workerName, rowNumber) {
     // and it fixes the inconsistency where one row carried them inline and the
     // rest did not.
     if (upperName === 'CREATIVE_DIRECTOR_WORKER') {
-      _composeFinalPostCopy(parsed.values);
+      _composeFinalPostCopy(parsed.values, rowData['Publishing Page']);
       _applyCreativeCritic(parsed.values, rowNumber);
     }
 

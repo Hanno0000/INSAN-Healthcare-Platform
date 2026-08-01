@@ -12,6 +12,7 @@ var ContextBuilder = {
 
     var dynamic = [
       this._buildRowData(workerConfig, rowData),
+      this._buildStandingHashtags(workerName, rowData),
       this._buildCreativeMemory(workerName, rowData, rowNumber),
       this._buildOutputFormat(workerConfig)
     ].filter(function(s) { return s; }).join('\n\n');
@@ -79,6 +80,29 @@ var ContextBuilder = {
   //
   // This supplies the missing history — recent notes to learn from, and recent
   // openings to avoid repeating.
+  // The hashtags this page already carries on every post.
+  //
+  // Dynamic, not part of the cached prefix: it varies by page, and putting it
+  // in the prefix would give three pages three different prefixes and cut the
+  // cache hit rate by two thirds for the sake of four lines.
+  //
+  // The writer is shown these so it does not restate them. It never assembles
+  // the final list — PostFooter does, in code — so a model that ignores this
+  // block costs a duplicate tag, not a missing brand.
+  _buildStandingHashtags: function(workerName, rowData) {
+    if (workerName !== 'CONTENT_CREATION_WORKER') {
+      return '';
+    }
+
+    var brief = PostFooter.briefFor(rowData['Publishing Page']);
+
+    if (!brief) {
+      return '';
+    }
+
+    return '## STANDING HASHTAGS FOR THIS PAGE\n\n' + brief;
+  },
+
   _buildCreativeMemory: function(workerName, rowData, rowNumber) {
     if (workerName !== 'CONTENT_CREATION_WORKER' &&
         workerName !== 'CREATIVE_DIRECTOR_WORKER') {

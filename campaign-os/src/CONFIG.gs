@@ -182,6 +182,8 @@ var CONFIG = {
 
     // Optional. Missing icons degrade to the label alone rather than failing —
     // a post without a small glyph is fine, a post that never shipped is not.
+    // These sit one level above the logos, in Brand Identity itself.
+    ICON_FOLDER: 'Brand Identity',
     ICONS: {
       WHATSAPP: 'icon-whatsapp.png',
       PHONE:    'icon-phone.png'
@@ -224,6 +226,67 @@ var CONFIG = {
     // before anything is drawn: exceeding it is a configuration error, not
     // something to discover on a rejected ad.
     MAX_TEXT_BAND_PCT: 0.16
+  },
+
+  // ================================
+  // POST FOOTER
+  //
+  // What every published post carries under its body: the page's standing
+  // hashtags, then the hotline, then the WhatsApp link.
+  //
+  // These are configuration, not writing. The Content Creation Worker is told
+  // what the standing set is so it does not repeat it, and contributes only the
+  // one or two tags that belong to this specific post — but the merge happens
+  // in code, in `_composeFinalPostCopy`. A model that drops a brand hashtag
+  // would do it silently on one post in twenty, and nobody reads twenty posts
+  // looking for a missing tag.
+  //
+  // Assembled after the Creative Director approves, so the published text is
+  // one block: body, standing + post hashtags, hotline, WhatsApp.
+  // ================================
+
+  POST_FOOTER: {
+    ENABLED: true,
+
+    // Standing tags per page. Arabic and English are kept apart because the
+    // two hashtag columns are split that way — Primary is Arabic, Secondary is
+    // English, and mixing scripts inside one group reads as a mistake.
+    HASHTAGS: {
+      'INSAN': {
+        ar: ['#منصة_إنسان', '#منظومة_إنسان_الصحية', '#إدارة_المستشفيات',
+             '#معايير_موحدة'],
+        en: ['#INSAN', '#HealthcarePlatform', '#EgyptianHealthcarePlatform',
+             '#HospitalOperations']
+      },
+      'Future': {
+        ar: ['#ويدج_جروب_لإدارة_المستشفيات', '#منصة_إنسان',
+             '#مستشفى_المستقبل_التخصصي'],
+        en: ['#FutureHospital', '#InsanHealthcare', '#InsanPlatform']
+      },
+      'Delta': {
+        ar: ['#الثقة_لها_دليل', '#كل_تفصيلة_بتحكي', '#الفرق_في_التجربة',
+             '#لافينير_لإدارة_المستشفيات', '#منصة_إنسان', '#مستشفى_الدلتا_الدولي'],
+        en: ['#InsanPlatform']
+      }
+    },
+
+    // The hotline line, then a blank line, then the WhatsApp line.
+    //
+    // ⚠️ The wa.me numbers are NOT the phone numbers with a country code glued
+    // on. wa.me takes an international number with the leading zero REMOVED:
+    // 01500668657 becomes 201500668657, not 2001500668657. Two of the three
+    // links as first supplied carried the extra zero and would have been dead
+    // on every post they appeared on. Corrected here; `whatsappLink` derives
+    // them from the phone number so the mistake cannot recur by hand.
+    CONTACT_LINES: {
+      'INSAN':  { hotline: ['01100755556', '01500668657'], whatsapp: '01500668657' },
+      'Future': { hotline: ['01122224352', '01151001177'], whatsapp: '01151001177' },
+      'Delta':  { hotline: ['01217778869', '01500668657'], whatsapp: '01217778869' }
+    },
+
+    HOTLINE_LABEL: 'الخط الساخن',
+    WHATSAPP_LABEL: 'للتواصل واتس دوس عاللينك',
+    HOTLINE_SEPARATOR: ' - '
   },
 
   PROJECT_ASSETS: {

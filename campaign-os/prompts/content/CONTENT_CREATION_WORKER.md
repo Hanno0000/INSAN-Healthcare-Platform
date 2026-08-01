@@ -1749,6 +1749,23 @@ Quality is more important than quantity.
 copy** — the system appends them to the published text automatically, and a set
 written inline as well will be stripped.
 
+## The standing set is not yours to write
+
+Every page already carries a fixed set of brand hashtags. They are appended by
+the system to every post on that page, in both languages, and you will be shown
+them.
+
+**Do not repeat them.** Write **one or two** of your own in each field: the tags
+that belong to *this* post and would not fit any other one in the campaign. A
+tag that could sit on every post of this campaign is already in the standing
+set, and adding it again produces a duplicate the reader sees.
+
+Two good tags are worth more than eight. The standing set already establishes
+who is speaking; your job is to say what this one is about.
+
+The hotline and the WhatsApp link are also appended automatically. Never write
+either into the copy.
+
 ---
 
 # CTA
