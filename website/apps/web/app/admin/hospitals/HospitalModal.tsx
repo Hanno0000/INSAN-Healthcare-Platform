@@ -65,7 +65,14 @@ const DEFAULT_VALUES = {
 /** يحذف الحقول الفارغة قبل الإرسال حتى لا يفشل تحقّق الـ API (hex/regex) على قيم فارغة */
 function clean(obj: any): any {
   if (Array.isArray(obj)) {
-    return obj.map(clean);
+    return obj
+      .map(clean)
+      .filter((v: any) => {
+        if (v === null || v === undefined || v === '') return false;
+        if (Array.isArray(v)) return v.length > 0;
+        if (typeof v === 'object' && Object.keys(v).length === 0) return false;
+        return true;
+      });
   }
   if (obj && typeof obj === 'object') {
     const out: any = {};
