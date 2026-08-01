@@ -202,6 +202,7 @@ model Hospital {
   createdAt        DateTime                @default(now())
   updatedAt        DateTime                @updatedAt
   appointments     AppointmentRequest[]
+  clinics          Clinic[]
   doctors          DoctorHospital[]
   medicalCenters   HospitalMedicalCenter[]
   newsPosts        NewsPost[]
@@ -246,13 +247,17 @@ model HospitalMedicalCenter {
 
 model Clinic {
   id              String        @id @default(cuid())
-  medicalCenterId String
+  hospitalId      String
+  medicalCenterId String?
   name            Json
   schedule        Json
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
-  medicalCenter   MedicalCenter @relation(fields: [medicalCenterId], references: [id], onDelete: Cascade)
+  hospital        Hospital      @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+  medicalCenter   MedicalCenter? @relation(fields: [medicalCenterId], references: [id], onDelete: SetNull)
+  appointments    AppointmentRequest[]
 
+  @@index([hospitalId])
   @@index([medicalCenterId])
 }
 
@@ -404,6 +409,7 @@ model AppointmentRequest {
   email           String?
   hospitalId      String?
   medicalCenterId String?
+  clinicId        String?
   doctorId        String?
   preferredDate   DateTime?
   message         String?
@@ -413,6 +419,7 @@ model AppointmentRequest {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   doctor          Doctor?           @relation(fields: [doctorId], references: [id])
+  clinic          Clinic?           @relation(fields: [clinicId], references: [id])
   hospital        Hospital?         @relation(fields: [hospitalId], references: [id])
   medicalCenter   MedicalCenter?    @relation(fields: [medicalCenterId], references: [id])
   review          DoctorReview?
@@ -421,6 +428,7 @@ model AppointmentRequest {
   @@index([createdAt])
   @@index([hospitalId])
   @@index([medicalCenterId])
+  @@index([clinicId])
   @@index([doctorId])
 }
 

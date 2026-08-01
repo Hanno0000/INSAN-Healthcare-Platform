@@ -26,6 +26,8 @@ export async function login(email: string, password: string): Promise<AdminUser>
   return user as AdminUser;
 }
 
+
+
 export async function logout() {
   try {
     await api.auth.logout();

@@ -172,6 +172,10 @@ export async function getBookingQuestions(centerId: string) {
   return pub<SingleResponse<any[]>>(`/medical-centers/${centerId}/questions`, {}, true);
 }
 
+export async function getClinics() {
+  return pub<SingleResponse<Clinic[]>>(`/clinics`, {}, true);
+}
+
 export async function getDoctors(params?: { page?: number; pageSize?: number; search?: string; hospitalId?: string }) {
   return pub<PaginatedResponse<Doctor>>('/doctors', params, !!params?.search);
 }
@@ -200,6 +204,11 @@ export async function getTestimonials(params?: { pageSize?: number }) {
 
 export async function getCmsPage(slug: string) {
   return pub<SingleResponse<CmsPage>>(`/pages/${slug}`);
+}
+
+export async function getPublicSettings(group?: string) {
+  const res = await pub<SingleResponse<any[]>>('/settings', group ? { group } : {});
+  return res?.data ?? [];
 }
 
 export async function getFaqs(params?: { pageSize?: number; search?: string }) {

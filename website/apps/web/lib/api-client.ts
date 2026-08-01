@@ -241,10 +241,19 @@ export const api = {
 
   // Settings
   settings: {
+    listPublic: (group?: string) => apiRequest<Single<any[]>>(`/settings${qs({ group })}`, { skipAuth: true }),
     list: (params?: any) => apiRequest<Single<any[]>>(`/admin/settings${qs(params)}`),
     update: (key: string, value: any) => apiRequest<Single<any>>(`/admin/settings/${key}`, { method: 'PATCH', body: JSON.stringify({ value }) }),
     listFlags: () => apiRequest<Single<any[]>>('/admin/settings/feature-flags'),
     toggleFlag: (key: string, isEnabled: boolean) => apiRequest<Single<any>>(`/admin/settings/feature-flags/${key}`, { method: 'PATCH', body: JSON.stringify({ isEnabled }) }),
+  },
+
+  // FAQs
+  faqs: {
+    list: (params?: any) => apiRequest<Paginated<any>>(`/admin/faqs${qs(params)}`),
+    create: (body: any) => apiRequest<Single<any>>('/admin/faqs', { method: 'POST', body: JSON.stringify(body) }),
+    update: (id: string, body: any) => apiRequest<Single<any>>(`/admin/faqs/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
+    delete: (id: string) => apiRequest(`/admin/faqs/${id}`, { method: 'DELETE' }),
   },
 
   // Navigation

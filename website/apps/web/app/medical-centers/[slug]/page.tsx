@@ -62,7 +62,7 @@ export default async function MedicalCenterDetailPage({ params }: Props) {
               href={`/book?medicalCenterId=${c.id}`}
               className="bg-secondary-500 hover:bg-secondary-500/90 text-white font-semibold px-6 py-3 rounded-xl transition-colors inline-block"
             >
-              احجز موعداً هنا
+              احجز عيادتك
             </Link>
           </div>
         </div>

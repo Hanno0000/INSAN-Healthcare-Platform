@@ -43,7 +43,7 @@ docker compose --env-file .env.production -f docker-compose.prod.yml run --rm ap
 docker compose --env-file .env.production -f docker-compose.prod.yml restart api
 if [ -n "$API_CONTAINER" ]; then
   echo "Running seed on container: $API_CONTAINER"
-  docker exec $API_CONTAINER npx tsx prisma/seed.ts 2>&1 || echo "Seed skipped (data may already exist)"
+  docker exec $API_CONTAINER npx prisma db seed 2>&1 || echo "Seed skipped (data may already exist)"
 else
   echo "Warning: API container not found - seed skipped"
 fi

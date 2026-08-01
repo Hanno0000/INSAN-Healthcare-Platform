@@ -15,11 +15,11 @@ const navItems = [
   { label: 'الأخبار', href: '/admin/news', icon: '📰', module: 'news', action: 'view' },
   { label: 'المواعيد', href: '/admin/appointments', icon: '📅', module: 'appointments', action: 'view' },
   { label: 'رسائل التواصل', href: '/admin/contact-submissions', icon: '✉️', module: 'contact', action: 'view' },
-  { label: 'الشهادات', href: '/admin/testimonials', icon: '⭐', module: 'testimonials', action: 'view' },
+  { label: 'آراء العملاء', href: '/admin/testimonials', icon: '⭐', module: 'testimonials', action: 'view' },
   { label: 'التنقل', href: '/admin/navigation', icon: '🔗', module: 'navigation', action: 'view' },
   { label: 'المستخدمون', href: '/admin/users', icon: '👥', module: 'users', action: 'view' },
   { label: 'الذكاء الاصطناعي', href: '/admin/ai-assistant', icon: '🤖', module: 'ai-chat', action: 'view' },
-  { label: 'العلامات التجارية', href: '/admin/brands', icon: '🏷️', module: 'settings', action: 'manage' },
+  { label: 'الفروع والمؤسسات', href: '/admin/brands', icon: '🏷️', module: 'settings', action: 'manage' },
   { label: 'سجل التدقيق', href: '/admin/audit-log', icon: '📋', module: 'audit', action: 'view' },
   { label: 'الإعدادات', href: '/admin/settings', icon: '⚙️', module: 'settings', action: 'view' },
 ];

@@ -49,6 +49,14 @@ export class MedicalCentersController {
     return ApiResponse.success(data);
   }
 
+  @Get('clinics')
+  async listPublicClinics() {
+    // Return all clinics (for the booking form)
+    // We should ideally add a specific public method in clinicsService, but we can reuse Prisma here if we bypass auth or just add a method to ClinicsService.
+    const data = await this.clinicsService.findAllPublic();
+    return ApiResponse.success(data);
+  }
+
   // ─── Medical Centers Admin ────────────────────────────────────────────────
 
   @Get('admin/medical-centers')

@@ -111,6 +111,8 @@ export class AuthController {
     return { success: true, data: { message: 'Logged out successfully' } };
   }
 
+
+
   @Get('me')
   @UseGuards(JwtAuthGuard)
   async me(@CurrentUser() user: any) {

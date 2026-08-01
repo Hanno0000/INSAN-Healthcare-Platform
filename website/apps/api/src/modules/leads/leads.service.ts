@@ -57,6 +57,7 @@ export class LeadsService {
     if (statuses?.length) where.status = { in: statuses };
     if (filter?.hospitalId) where.hospitalId = filter.hospitalId;
     if (filter?.doctorId) where.doctorId = filter.doctorId;
+    if (filter?.clinicId) where.clinicId = filter.clinicId;
     if (query.search) {
       where.OR = [
         { name: { contains: query.search, mode: 'insensitive' } },
@@ -75,6 +76,7 @@ export class LeadsService {
           hospital: { select: { id: true, slug: true, name: true } },
           medicalCenter: { select: { id: true, slug: true, name: true } },
           doctor: { select: { id: true, slug: true, name: true } },
+          clinic: { select: { id: true, name: true } },
         },
       }),
       this.prisma.appointmentRequest.count({ where }),
@@ -90,6 +92,7 @@ export class LeadsService {
         hospital: true,
         medicalCenter: true,
         doctor: true,
+        clinic: true,
       },
     });
     if (!appt) throw new NotFoundException('Appointment not found');

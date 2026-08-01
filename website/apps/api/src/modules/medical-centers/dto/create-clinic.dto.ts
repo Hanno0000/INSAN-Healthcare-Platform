@@ -19,6 +19,13 @@ export class ClinicScheduleEntryDto {
 }
 
 export class CreateClinicDto {
+  @IsString()
+  hospitalId: string;
+
+  @IsOptional()
+  @IsString()
+  medicalCenterId?: string;
+
   @ValidateNested()
   @Type(() => BilingualDto)
   name: BilingualDto;

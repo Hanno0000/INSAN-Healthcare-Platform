@@ -88,13 +88,36 @@ export default function AIChatWidget() {
           {messages.map((msg, i) => (
             <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div 
-                className={`max-w-[80%] rounded-2xl p-3 text-sm leading-relaxed ${
+                className={`max-w-[80%] rounded-2xl p-3 text-sm leading-relaxed whitespace-pre-wrap ${
                   msg.role === 'user' 
                     ? 'bg-[#0E7C86] text-white rounded-tr-none' 
                     : 'bg-white border border-gray-100 text-gray-800 shadow-sm rounded-tl-none'
                 }`}
               >
-                {msg.text}
+                {msg.text.split('\n').map((line, idx) => (
+                  <span key={idx} className="block min-h-[1rem]">
+                    {line.split(/(\*\*.*?\*\*|\[.*?\]\(.*?\))/g).map((part, j) => {
+                      if (part.startsWith('**') && part.endsWith('**')) {
+                        return <strong key={j} className="font-bold">{part.slice(2, -2)}</strong>;
+                      }
+                      if (part.startsWith('[') && part.includes('](') && part.endsWith(')')) {
+                        const linkMatch = part.match(/\[(.*?)\]\((.*?)\)/);
+                        if (linkMatch) {
+                          return (
+                            <a 
+                              key={j} 
+                              href={linkMatch[2]} 
+                              className="inline-block mt-2 mb-1 mr-1 px-4 py-2 bg-[#E6F4F1] text-[#0E7C86] hover:bg-[#0E7C86] hover:text-white rounded-lg text-sm font-bold border border-[#0E7C86]/20 transition-all shadow-sm"
+                            >
+                              {linkMatch[1]}
+                            </a>
+                          );
+                        }
+                      }
+                      return <span key={j}>{part}</span>;
+                    })}
+                  </span>
+                ))}
               </div>
             </div>
           ))}

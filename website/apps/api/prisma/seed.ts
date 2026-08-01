@@ -203,6 +203,7 @@ async function seedSettings() {
     { key: 'social_instagram', group: 'social', value: 'https://instagram.com/insan' },
     { key: 'social_linkedin', group: 'social', value: 'https://linkedin.com/company/insan' },
     { key: 'social_youtube', group: 'social', value: 'https://youtube.com/c/insan' },
+    { key: 'facebook_sync_review_period_hours', group: 'social', value: 24 },
 
     // Appearance
     { key: 'primary_color', group: 'appearance', value: '#0B1F3A' },
@@ -362,13 +363,13 @@ async function seedMedicalCenters(hospitals: Record<string, any>) {
         ...centerData, 
         status: 'PUBLISHED' as any, 
         description: { ar: '...', en: '...' }, 
-        clinics: clinics?.length ? { create: clinics } : undefined, 
+        clinics: clinics?.length ? { create: clinics.map((c: any) => ({ ...c, hospitalId: hospitals[hospitalSlugs[0]]?.id })) } : undefined, 
         bookingQuestions: bookingQuestions?.length ? { create: bookingQuestions } : undefined 
       },
       update: { 
         name: centerData.name, 
         status: 'PUBLISHED' as any,
-        clinics: clinics?.length ? { deleteMany: {}, create: clinics } : { deleteMany: {} },
+        clinics: clinics?.length ? { deleteMany: {}, create: clinics.map((c: any) => ({ ...c, hospitalId: hospitals[hospitalSlugs[0]]?.id })) } : { deleteMany: {} },
         bookingQuestions: bookingQuestions?.length ? { deleteMany: {}, create: bookingQuestions } : { deleteMany: {} }
       },
     });

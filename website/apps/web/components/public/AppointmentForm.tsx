@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import type { Hospital, MedicalCenter, Doctor } from '@/lib/public-api';
+import type { Hospital, MedicalCenter, Doctor, Clinic } from '@/lib/public-api';
 import { getBookingQuestions } from '@/lib/public-api';
 import { t } from '@/lib/utils';
 import { ChevronLeft, CheckCircle2, Loader2 } from 'lucide-react';
@@ -12,16 +12,18 @@ interface Props {
   hospitals: Hospital[];
   centers: MedicalCenter[];
   doctors: Doctor[];
+  clinics: (Clinic & { hospitalId?: string; medicalCenterId?: string; hospital?: any; medicalCenter?: any })[];
   defaultHospitalId?: string;
   defaultCenterId?: string;
+  defaultClinicId?: string;
   defaultDoctorId?: string;
 }
 
 type Step = 'info' | 'questions' | 'done';
 
 export default function AppointmentForm({
-  hospitals, centers, doctors,
-  defaultHospitalId, defaultCenterId, defaultDoctorId
+  hospitals, centers, doctors, clinics,
+  defaultHospitalId, defaultCenterId, defaultClinicId, defaultDoctorId
 }: Props) {
   const [step, setStep] = useState<Step>('info');
   const [appointmentId, setAppointmentId] = useState<string | null>(null);
@@ -33,6 +35,7 @@ export default function AppointmentForm({
     email: '',
     hospitalId: defaultHospitalId || '',
     medicalCenterId: defaultCenterId || '',
+    clinicId: defaultClinicId || '',
     doctorId: defaultDoctorId || '',
     preferredDate: '',
     message: '',
@@ -79,16 +82,29 @@ export default function AppointmentForm({
     setForm(prev => {
       const nextForm = { ...prev, [name]: value };
       
+      if (name === 'clinicId' && value) {
+        const clinic = clinics.find(c => c.id === value);
+        if (clinic) {
+          if (clinic.hospitalId || clinic.hospital?.id) {
+            nextForm.hospitalId = clinic.hospitalId || clinic.hospital?.id;
+          }
+          if (clinic.medicalCenterId || clinic.medicalCenter?.id) {
+            nextForm.medicalCenterId = clinic.medicalCenterId || clinic.medicalCenter?.id;
+          } else {
+            nextForm.medicalCenterId = ''; // clear if standalone clinic
+          }
+        }
+      }
+
       if (name === 'doctorId' && value) {
         const doc = doctors.find(d => d.id === value);
         if (doc) {
-          // Check for Prisma's join table structure `hospitals: [{ hospital: { id } }]` or flat structure
           const hArr = (doc as any).hospitals || [];
-          if (hArr.length > 0) {
+          if (hArr.length > 0 && !nextForm.hospitalId) {
             nextForm.hospitalId = hArr[0].hospital?.id || hArr[0].id || nextForm.hospitalId;
           }
           const cArr = (doc as any).centers || doc.medicalCenters || [];
-          if (cArr.length > 0) {
+          if (cArr.length > 0 && !nextForm.medicalCenterId) {
             nextForm.medicalCenterId = cArr[0].medicalCenter?.id || cArr[0].id || nextForm.medicalCenterId;
           }
         }
@@ -112,6 +128,7 @@ export default function AppointmentForm({
       if (form.email) body.email = form.email;
       if (form.hospitalId) body.hospitalId = form.hospitalId;
       if (form.medicalCenterId) body.medicalCenterId = form.medicalCenterId;
+      if (form.clinicId) body.clinicId = form.clinicId;
       if (form.doctorId) body.doctorId = form.doctorId;
       if (form.preferredDate) body.preferredDate = new Date(form.preferredDate).toISOString();
       if (form.message) body.message = form.message;
@@ -348,11 +365,22 @@ export default function AppointmentForm({
           <input type="email" name="email" value={form.email} onChange={onChange} placeholder="example@email.com" className={inputCls} />
         </div>
 
+        {/* Clinic */}
+        {clinics && clinics.length > 0 && (
+          <div>
+            <label className="block text-sm font-bold text-heading font-cairo mb-2">العيادة <span className="text-red-500">*</span></label>
+            <select required name="clinicId" value={form.clinicId} onChange={onChange} className={selectCls}>
+              <option value="">اختر العيادة</option>
+              {clinics.map(c => <option key={c.id} value={c.id}>{t(c.name)}</option>)}
+            </select>
+          </div>
+        )}
+
         {/* Hospital */}
         {hospitals.length > 0 && (
           <div>
             <label className="block text-sm font-bold text-heading font-cairo mb-2">المستشفى</label>
-            <select name="hospitalId" value={form.hospitalId} onChange={onChange} className={selectCls}>
+            <select name="hospitalId" value={form.hospitalId} onChange={onChange} className={selectCls} disabled={!!form.clinicId}>
               <option value="">اختر المستشفى (اختياري)</option>
               {hospitals.map(h => <option key={h.id} value={h.id}>{t(h.name)}</option>)}
             </select>
@@ -360,10 +388,10 @@ export default function AppointmentForm({
         )}
 
         {/* Medical Center */}
-        {centers.length > 0 && (
+        {centers.length > 0 && form.medicalCenterId && (
           <div>
             <label className="block text-sm font-bold text-heading font-cairo mb-2">المركز الطبي</label>
-            <select name="medicalCenterId" value={form.medicalCenterId} onChange={onChange} className={selectCls}>
+            <select name="medicalCenterId" value={form.medicalCenterId} onChange={onChange} className={selectCls} disabled={!!form.clinicId}>
               <option value="">اختر المركز الطبي (اختياري)</option>
               {centers.map(c => <option key={c.id} value={c.id}>{t(c.name)}</option>)}
             </select>

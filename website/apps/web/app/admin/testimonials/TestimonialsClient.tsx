@@ -56,8 +56,8 @@ export default function TestimonialsClient() {
   return (
     <div>
       <PageHeader 
-        title="الشهادات (قالوا عنا)" 
-        subtitle="إدارة آراء وانطباعات العملاء، الأطباء والمستثمرين التي تُعرض في أقسام 'قالوا عنا' على الموقع." 
+        title="آراء العملاء (قالوا عنا)" 
+        subtitle="إدارة الشهادات وآراء المرضى والعملاء، الأطباء والمستثمرين التي تُعرض في أقسام 'قالوا عنا' على الموقع." 
         action="إضافة شهادة" 
         onAction={() => { setEditing(null); setModalOpen(true); }} 
       />

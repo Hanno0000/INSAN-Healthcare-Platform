@@ -6,7 +6,7 @@ import { api } from '@/lib/api-client';
 import { useToast } from '@/components/admin/ui/Toast';
 import PageHeader from '@/components/admin/ui/PageHeader';
 import { inputCls } from '@/components/admin/ui/FormField';
-import { Save, ToggleLeft, ToggleRight, Bot } from 'lucide-react';
+import { Save, ToggleLeft, ToggleRight, Bot, Key } from 'lucide-react';
 
 const GROUPS = [
   { key: 'general', label: 'عام' },
@@ -15,6 +15,10 @@ const GROUPS = [
   { key: 'seo', label: 'SEO' },
   { key: 'appearance', label: 'المظهر' },
 ];
+
+const KNOWN_LABELS: Record<string, string> = {
+  'facebook_sync_review_period_hours': 'مدة المراجعة لسحب المنشورات (ساعات)',
+};
 
 function SettingRow({ setting, onSave }: { setting: any; onSave: (key: string, value: any) => void }) {
   const [val, setVal] = useState(
@@ -33,7 +37,7 @@ function SettingRow({ setting, onSave }: { setting: any; onSave: (key: string, v
   return (
     <div className="flex items-start gap-4 py-4 border-b border-gray-50 last:border-0">
       <div className="w-48 shrink-0">
-        <p className="text-sm font-medium text-gray-700">{setting.label?.ar || setting.key}</p>
+        <p className="text-sm font-medium text-gray-700">{KNOWN_LABELS[setting.key] || setting.label?.ar || setting.key}</p>
         <p className="text-xs text-gray-400 font-mono mt-0.5">{setting.key}</p>
       </div>
       <div className="flex-1">
@@ -121,10 +125,14 @@ export default function SettingsClient() {
             ))}
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 p-2 mt-4">
+          <div className="bg-white rounded-2xl border border-gray-100 p-2 mt-4 space-y-1">
              <a href="/admin/settings/ai" className="block w-full text-right px-3 py-2 rounded-xl text-sm transition text-gray-600 hover:bg-gray-50 flex items-center justify-between">
                <span className="font-semibold text-[#0E7C86]">الذكاء الاصطناعي (AI)</span>
                <Bot size={16} className="text-[#0E7C86]" />
+             </a>
+             <a href="/admin/settings/integrations" className="block w-full text-right px-3 py-2 rounded-xl text-sm transition text-gray-600 hover:bg-gray-50 flex items-center justify-between">
+               <span className="font-semibold text-[#0E7C86]">مفاتيح الربط والفيسبوك</span>
+               <Key size={16} className="text-[#0E7C86]" />
              </a>
           </div>
 

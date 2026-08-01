@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أداة إدارة محتوى منظومة إنسان الشاملة (الإصدار النهائي)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #f1f5f9; color: #334155; }
+        .help-text { font-size: 0.75rem; color: #64748b; margin-top: 0.25rem; display: block; }
+        .form-section { background: white; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .form-title { font-size: 1.125rem; font-weight: 700; color: #0f172a; margin-bottom: 1.25rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+        .input-field { width: 100%; border: 1px solid #cbd5e1; border-radius: 0.5rem; padding: 0.6rem 0.8rem; outline: none; transition: all 0.2s; font-size: 0.9rem; background-color: #f8fafc; }
+        .input-field:focus { border-color: #3b82f6; background-color: white; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+        .file-upload-wrapper { position: relative; border: 2px dashed #94a3b8; border-radius: 0.75rem; padding: 1rem; text-align: center; cursor: pointer; transition: all 0.2s; background: #f8fafc; overflow: hidden; }
+        .file-upload-wrapper:hover { border-color: #3b82f6; background: #eff6ff; }
+        .file-upload-input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10; }
+        .image-preview { width: 100%; height: 120px; object-fit: contain; border-radius: 0.5rem; margin-top: 0.5rem; background: white; border: 1px solid #e2e8f0; position: relative; z-index: 5; }
+        .nav-button { width: 100%; text-align: right; padding: 0.75rem 1rem; border-radius: 0.5rem; transition: all 0.2s; display: flex; justify-content: space-between; align-items: center; font-weight: 600; margin-bottom: 0.25rem; border-right: 4px solid transparent; }
+        .nav-button.active { background-color: #eff6ff; color: #1d4ed8; border-right-color: #3b82f6; }
+        .nav-button:hover:not(.active) { background-color: #f8fafc; }
+        .badge { background: #e2e8f0; color: #475569; font-size: 0.7rem; padding: 0.1rem 0.5rem; border-radius: 1rem; font-weight: 700; }
+    </style>
+</head>
+<body>
+    <div id="app" class="min-h-screen pb-24">
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-[#0B1F3A] to-[#1e3a8a] text-white py-6 shadow-lg sticky top-0 z-50">
+            <div class="container mx-auto px-4 flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-black tracking-tight">إنسان <span class="text-blue-300 font-normal text-xl">| أداة إعداد الموقع الشاملة</span></h1>
+                    <p class="text-sm text-blue-100 mt-1 opacity-90">لوحة التحكم السريعة لملء كافة بيانات الموقع (الإعدادات، الأقسام، الصور، والأطباء) في جلسة واحدة.</p>
+                </div>
+                <div class="flex gap-3">
+                    <button @click="exportJSON" class="bg-green-500 hover:bg-green-400 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all shadow-[0_4px_14px_0_rgba(34,197,94,0.39)] flex items-center gap-2 transform hover:-translate-y-0.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                        حفظ واستخراج كملف شامل
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="container mx-auto px-4 mt-8 flex flex-col lg:flex-row gap-8">
+            <!-- Sidebar Navigation -->
+            <aside class="w-full lg:w-1/4">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sticky top-32">
+                    
+                    <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 px-2">الإعدادات الأساسية</div>
+                    <button @click="activeTab = 'settings'" :class="{'active': activeTab === 'settings'}" class="nav-button">
+                        <span>⚙️ إعدادات الموقع العامة</span>
+                    </button>
+                    <button @click="activeTab = 'pages'" :class="{'active': activeTab === 'pages'}" class="nav-button">
+                        <span>📄 الصفحات الثابتة</span>
+                    </button>
+                    <button @click="activeTab = 'faqs'" :class="{'active': activeTab === 'faqs'}" class="nav-button">
+                        <span>❓ الأسئلة الشائعة (FAQ)</span>
+                        <span class="badge">{{ data.faqs.length }}</span>
+                    </button>
+
+                    <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mt-6 mb-3 px-2">المنظومة الطبية</div>
+                    <button @click="activeTab = 'hospitals'" :class="{'active': activeTab === 'hospitals'}" class="nav-button">
+                        <span>🏥 المستشفيات والفروع</span>
+                        <span class="badge">{{ data.hospitals.length }}</span>
+                    </button>
+                    <button @click="activeTab = 'centers'" :class="{'active': activeTab === 'centers'}" class="nav-button">
+                        <span>🏬 المراكز والعيادات</span>
+                        <span class="badge">{{ data.centers.length }}</span>
+                    </button>
+                    <button @click="activeTab = 'doctors'" :class="{'active': activeTab === 'doctors'}" class="nav-button">
+                        <span>👨‍⚕️ فريق الأطباء</span>
+                        <span class="badge">{{ data.doctors.length }}</span>
+                    </button>
+
+                    <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mt-6 mb-3 px-2">المركز الإعلامي والتفاعل</div>
+                    <button @click="activeTab = 'news'" :class="{'active': activeTab === 'news'}" class="nav-button">
+                        <span>📰 الأخبار والمقالات</span>
+                        <span class="badge">{{ data.news.length }}</span>
+                    </button>
+                    <button @click="activeTab = 'testimonials'" :class="{'active': activeTab === 'testimonials'}" class="nav-button">
+                        <span>⭐ آراء وتقييمات العملاء</span>
+                        <span class="badge">{{ data.testimonials.length }}</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="w-full lg:w-3/4">
+                
+                <!-- 0. SETTINGS (General) -->
+                <div v-show="activeTab === 'settings'">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">إعدادات الموقع العامة (General Settings)</h2>
+                    
+                    <!-- SEO & Branding -->
+                    <div class="form-section">
+                        <h3 class="form-title">🔍 معلومات الهوية ومحركات البحث (SEO)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">اسم الموقع الرئيسي (عربي)</label>
+                                <input v-model="data.settings.siteNameAr" class="input-field" placeholder="منظومة إنسان الطبية">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">اسم الموقع (انجليزي)</label>
+                                <input v-model="data.settings.siteNameEn" dir="ltr" class="input-field" placeholder="INSAN Healthcare">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-bold text-gray-700 mb-1">وصف الموقع (يظهر في جوجل)</label>
+                                <textarea v-model="data.settings.siteDescription" class="input-field" rows="2" placeholder="المنظومة الطبية الأولى المتكاملة لتقديم أفضل رعاية..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact & Social -->
+                    <div class="form-section">
+                        <h3 class="form-title">📞 بيانات التواصل والسوشيال ميديا</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">رقم الهاتف الرئيسي</label>
+                                <input v-model="data.settings.phone" dir="ltr" class="input-field" placeholder="19000">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">البريد الإلكتروني</label>
+                                <input v-model="data.settings.email" dir="ltr" class="input-field" placeholder="info@insan.com">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">رابط فيسبوك (Facebook)</label>
+                                <input v-model="data.settings.social.facebook" dir="ltr" class="input-field" placeholder="https://facebook.com/...">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">رابط انستجرام (Instagram)</label>
+                                <input v-model="data.settings.social.instagram" dir="ltr" class="input-field" placeholder="https://instagram.com/...">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">رابط يوتيوب (YouTube)</label>
+                                <input v-model="data.settings.social.youtube" dir="ltr" class="input-field" placeholder="https://youtube.com/...">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">العنوان الرئيسي</label>
+                                <input v-model="data.settings.address" class="input-field" placeholder="القاهرة، مصر">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Brand Logos -->
+                    <div class="form-section">
+                        <h3 class="form-title">🎨 اللوجو (الشعارات)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">اللوجو الرئيسي (للهيدر - Header)</label>
+                                <div class="file-upload-wrapper">
+                                    <input type="file" accept="image/*" class="file-upload-input" @change="handleFileUpload($event, data.settings, 'mainLogo')">
+                                    <img v-if="data.settings.mainLogo" :src="data.settings.mainLogo" class="image-preview">
+                                    <div v-else class="text-sm text-gray-500 mt-4">اضغط لرفع اللوجو</div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">اللوجو المفرغ (للفوتر - Footer)</label>
+                                <div class="file-upload-wrapper bg-gray-800">
+                                    <input type="file" accept="image/*" class="file-upload-input" @change="handleFileUpload($event, data.settings, 'footerLogo')">
+                                    <img v-if="data.settings.footerLogo" :src="data.settings.footerLogo" class="image-preview bg-transparent border-0">
+                                    <div v-else class="text-sm text-gray-300 mt-4">اضغط لرفع لوجو الفوتر</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1. PAGES -->
+                <div v-show="activeTab === 'pages'">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">الصفحات الثابتة (Static Pages)</h2>
+                            <p class="text-sm text-gray-500">أدخل محتوى الصفحات الموجودة فعلياً في الموقع</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section relative" v-for="(pageData, pageKey) in data.pages" :key="pageKey">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-bold text-gray-700 mb-1">عنوان الصفحة ({{ pageData.title }}) *</label>
+                                <input v-model="pageData.title" class="input-field bg-gray-50 font-bold" readonly>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-bold text-gray-700 mb-1">محتوى الصفحة</label>
+                                <textarea v-model="pageData.content" class="input-field" rows="6" placeholder="اكتب محتوى الصفحة هنا... (يمكن استخدام HTML بسيط)"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. FAQS -->
+                <div v-show="activeTab === 'faqs'">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">الأسئلة الشائعة (FAQ)</h2>
+                        <button @click="addFaq" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-sm hover:bg-blue-700">+ سؤال جديد</button>
+                    </div>
+                    <div v-if="data.faqs.length === 0" class="text-center py-10 text-gray-400 bg-white rounded-xl border border-dashed">أضف الأسئلة الشائعة ليقرأها المرضى.</div>
+                    
+                    <div v-for="(faq, i) in data.faqs" :key="'faq'+i" class="form-section relative bg-blue-50/30 border-blue-100">
+                        <button @click="data.faqs.splice(i, 1)" class="absolute top-5 left-5 text-red-500 bg-white px-3 py-1 rounded text-xs font-bold border border-red-100">حذف</button>
+                        <div class="grid grid-cols-1 gap-4">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">السؤال *</label>
+                                <input v-model="faq.question.ar" class="input-field bg-white" placeholder="كيف يمكنني حجز موعد؟">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">الإجابة *</label>
+                                <textarea v-model="faq.answer.ar" class="input-field bg-white" rows="2" placeholder="يمكنك حجز موعد من خلال تطبيقنا أو الاتصال بـ..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. HOSPITALS -->
+                <div v-show="activeTab === 'hospitals'">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">المستشفيات والفروع الرئيسية</h2>
+                            <p class="text-sm text-gray-500 mt-1">أضف جميع المستشفيات الخاصة بالمنظومة هنا. (كل الحقول اختيارية ما عدا الاسم والرابط المميز).</p>
+                        </div>
+                        <button @click="addHospital" class="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-bold text-sm shadow-sm hover:bg-blue-700 transition">+ إضافة مستشفى جديد</button>
+                    </div>
+                    <div v-if="data.hospitals.length === 0" class="text-center py-12 text-gray-400 bg-white rounded-xl border border-dashed">لم تقم بإضافة أي مستشفى بعد. اضغط على الزر بالأعلى للبدء.</div>
+
+                    <div v-for="(h, i) in data.hospitals" :key="'h'+i" class="form-section relative bg-white border-blue-200 border-2">
+                        <button @click="data.hospitals.splice(i, 1)" class="absolute top-5 left-5 text-red-500 bg-red-50 px-3 py-1 rounded text-xs font-bold hover:bg-red-100 transition">حذف المستشفى</button>
+                        
+                        <div class="mb-6 pb-4 border-b border-gray-100">
+                            <h3 class="text-xl font-bold text-blue-900 flex items-center gap-2">
+                                🏥 المستشفى رقم {{ i + 1 }}
+                            </h3>
+                            <p class="text-sm text-gray-500 mt-2">إليك نموذج إدخال بيانات المستشفى. 💡 لا تقلق إذا تركت بعض الخانات فارغة، الموقع مصمم ليتعامل مع البيانات الناقصة بكل سلاسة.</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                            
+                            <!-- 1. الأساسيات -->
+                            <div class="md:col-span-2 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                                <h4 class="font-bold text-gray-700 mb-4 border-b pb-2">البيانات الأساسية (مطلوب)</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-bold text-gray-800 mb-1">اسم المستشفى (عربي) *</label>
+                                        <p class="help-text mb-2">كيف سيظهر الاسم للمرضى في الموقع؟ (مثال: مستشفى إنسان التخصصي)</p>
+                                        <input v-model="h.name.ar" class="input-field border-blue-300 bg-white" placeholder="مستشفى إنسان">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-gray-800 mb-1">الرابط المميز (Slug) *</label>
+                                        <p class="help-text mb-2">هذا هو الرابط الذي سيظهر في المتصفح. (اكتبه بالانجليزية بدون مسافات، استخدم - بدلاً من المسافة)</p>
+                                        <input v-model="h.slug" dir="ltr" class="input-field border-blue-300 font-mono bg-white" placeholder="insan-hospital">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2. التفاصيل الوصفية -->
+                            <div class="md:col-span-2">
+                                <h4 class="font-bold text-gray-700 mb-3 mt-2">وصف المستشفى (اختياري)</h4>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-bold text-gray-700 mb-1">وصف قصير (عربي)</label>
+                                        <p class="help-text mb-1">جملة أو جملتين تظهر في كروت المستشفيات بالصفحة الرئيسية لتعطي لمحة سريعة.</p>
+                                        <textarea v-model="h.shortDescription.ar" class="input-field" rows="2" placeholder="يقدم مستشفى إنسان التخصصي رعاية طبية متكاملة وفق أعلى معايير الجودة العالمية..."></textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-gray-700 mb-1">وصف تفصيلي كامل (عربي)</label>
+                                        <p class="help-text mb-1">هذا هو الوصف الذي يظهر عند دخول العميل لصفحة المستشفى ليقرأ عن تاريخها وإمكانياتها.</p>
+                                        <textarea v-model="h.description.ar" class="input-field" rows="4" placeholder="تأسس المستشفى عام... ويضم غرف عمليات مجهزة..."></textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-gray-700 mb-1">الشعار الجذاب (Hero Tagline)</label>
+                                        <p class="help-text mb-1">الجملة العريضة التي تظهر أعلى صورة المستشفى (مثال: "صحتك هي أولويتنا القصوى").</p>
+                                        <input v-model="h.heroTagline.ar" class="input-field" placeholder="رعاية صحية تثق بها">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 3. التواصل والموقع -->
+                            <div class="md:col-span-2 mt-2">
+                                <h4 class="font-bold text-gray-700 mb-3">التواصل والمكان (اختياري)</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-bold text-gray-700 mb-1">رقم هاتف المستشفى</label>
+                                        <p class="help-text mb-1">إذا كان هناك رقم محدد خاص بهذا المستشفى (وليس الرقم الموحد).</p>
+                                        <input v-model="h.contactPhone" dir="ltr" class="input-field" placeholder="01xxxxxxxxx">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-gray-700 mb-1">لون المستشفى المميز</label>
+                                        <p class="help-text mb-1">كل مستشفى يمكن أن يكون له لون يميز أزراره. اختر اللون أو اتركه فارغاً.</p>
+                                        <div class="flex gap-2 items-center">
+                                            <input type="color" v-model="h.brandColor" class="w-10 h-10 p-0 border-0 rounded">
+                                            <input v-model="h.brandColor" dir="ltr" class="input-field flex-1" placeholder="#0B1F3A">
+                                        </div>
+                                    </div>
+                                    <div class="md:col-span-2">
+                                        <label class="block text-sm font-bold text-gray-700 mb-1">العنوان التفصيلي (عربي)</label>
+                                        <p class="help-text mb-1">أين تقع هذه المستشفى تحديداً؟</p>
+                                        <input v-model="h.location.ar" class="input-field" placeholder="القاهرة، التجمع الخامس، شارع الـ 90...">
+                                    </div>
+                                    <div class="md:col-span-2">
+                                        <label class="block text-sm font-bold text-gray-700 mb-1">رابط خريطة جوجل (Google Maps URL)</label>
+                                        <p class="help-text mb-1">ضع رابط الخريطة ليتمكن المرضى من الوصول للمستشفى بسهولة.</p>
+                                        <input v-model="h.googleMapsUrl" dir="ltr" class="input-field text-sm" placeholder="https://maps.google.com/...">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 4. الصور المرفقة -->
+                            <div class="md:col-span-2 mt-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                                <h4 class="font-bold text-gray-700 mb-3 border-b pb-2">الصور والشعارات (اختياري)</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-bold text-gray-800 mb-1">صورة غلاف المستشفى (Hero Image)</label>
+                                        <p class="help-text mb-3">صورة كبيرة أفقية تظهر في أعلى صفحة المستشفى كخلفية جذابة.</p>
+                                        <div class="file-upload-wrapper bg-white">
+                                            <input type="file" accept="image/*" @change="handleFileUpload($event, h, 'heroImage')" class="file-upload-input">
+                                            <img v-if="h.heroImage" :src="h.heroImage" class="image-preview object-cover w-full h-32 rounded">
+                                            <div v-else class="text-sm mt-3 text-gray-500">اضغط هنا لرفع صورة الغلاف</div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-gray-800 mb-1">لوجو المستشفى (Logo)</label>
+                                        <p class="help-text mb-3">إذا كان للمستشفى شعار مستقل يختلف عن شعار المنظومة الكلية، ارفعه هنا.</p>
+                                        <div class="file-upload-wrapper bg-white">
+                                            <input type="file" accept="image/*" @change="handleFileUpload($event, h, 'logoImage')" class="file-upload-input">
+                                            <img v-if="h.logoImage" :src="h.logoImage" class="image-preview object-contain p-2 w-full h-32 rounded">
+                                            <div v-else class="text-sm mt-3 text-gray-500">اضغط هنا لرفع اللوجو</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. CENTERS & CLINICS & QUESTIONS -->
+                <div v-show="activeTab === 'centers'">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">المراكز والعيادات</h2>
+                            <p class="text-sm text-gray-500">أضف المراكز وعياداتها وأسئلة الحجز الخاصة بها.</p>
+                        </div>
+                        <button @click="addCenter" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-sm hover:bg-blue-700">+ إضافة مركز طبي</button>
+                    </div>
+
+                    <div v-for="(c, i) in data.centers" :key="'c'+i" class="form-section border-t-4 border-[#0E7C86] relative shadow-md">
+                        <button @click="data.centers.splice(i, 1)" class="absolute top-5 left-5 text-red-500 bg-red-50 px-3 py-1 rounded text-xs font-bold">حذف المركز</button>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                            <div><label class="block text-sm font-bold text-gray-700 mb-1">اسم المركز (عربي) *</label><input v-model="c.name.ar" class="input-field" placeholder="مركز القلب"></div>
+                            <div><label class="block text-sm font-bold text-gray-700 mb-1">Slug *</label><input v-model="c.slug" dir="ltr" class="input-field font-mono"></div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">المستشفى التابع له *</label>
+                                <select v-model="c.hospitalSlug" class="input-field">
+                                    <option value="">-- اختر مستشفى --</option>
+                                    <option v-for="h in data.hospitals" :value="h.slug">{{ h.name.ar || h.slug }}</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">اللون المميز للمركز</label>
+                                <div class="flex gap-2">
+                                    <input type="color" v-model="c.brandColor" class="w-10 h-10 p-0 border-0 rounded">
+                                    <input v-model="c.brandColor" dir="ltr" class="input-field flex-1" placeholder="#0E7C86">
+                                </div>
+                            </div>
+                            <div class="md:col-span-2"><label class="block text-sm font-bold text-gray-700 mb-1">نبذة عن المركز</label><textarea v-model="c.description.ar" class="input-field" rows="2"></textarea></div>
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-bold text-gray-600 mb-1">صورة الغلاف أو الشعار (Hero/Logo)</label>
+                                <div class="file-upload-wrapper h-24 flex items-center justify-center p-2"><input type="file" @change="handleFileUpload($event, c, 'image')" class="file-upload-input"><img v-if="c.image" :src="c.image" class="h-20 object-contain"><span v-else>ارفع صورة المركز</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Clinics -->
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 mt-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="font-bold text-gray-800">🩺 العيادات (Clinics)</h4>
+                                <button @click="addClinic(c)" class="bg-green-500 text-white px-3 py-1 rounded text-sm font-bold hover:bg-green-600">+ عيادة</button>
+                            </div>
+                            <div v-for="(clinic, ci) in c.clinics" class="flex gap-3 mb-2 items-center">
+                                <input v-model="clinic.name.ar" class="input-field bg-white flex-1" placeholder="اسم العيادة">
+                                <input v-model="clinic.scheduleText" class="input-field bg-white flex-1" placeholder="المواعيد (اختياري)">
+                                <button @click="c.clinics.splice(ci, 1)" class="text-red-500 font-bold px-2">X</button>
+                            </div>
+                        </div>
+
+                        <!-- Booking Questions -->
+                        <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100 mt-4">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="font-bold text-blue-900">📝 أسئلة الحجز المخصصة (Booking Questions)</h4>
+                                <button @click="addQuestion(c)" class="bg-blue-500 text-white px-3 py-1 rounded text-sm font-bold hover:bg-blue-600">+ سؤال</button>
+                            </div>
+                            <p class="text-xs text-gray-500 mb-3">مثال: هل تعاني من السكر؟ (تظهر للمريض عند الحجز في هذا المركز)</p>
+                            <div v-for="(q, qi) in c.bookingQuestions" class="flex flex-wrap gap-2 mb-3 bg-white p-2 rounded border border-gray-200 items-end">
+                                <div class="flex-1 min-w-[200px]">
+                                    <label class="text-xs font-bold text-gray-600">السؤال *</label>
+                                    <input v-model="q.question.ar" class="input-field text-sm" placeholder="مثال: هل أنت مدخن؟">
+                                </div>
+                                <div class="w-32">
+                                    <label class="text-xs font-bold text-gray-600">نوع الإجابة</label>
+                                    <select v-model="q.type" class="input-field text-sm p-2">
+                                        <option value="BOOLEAN">نعم / لا</option>
+                                        <option value="TEXT">نصي (كتابة)</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center gap-1 pb-2">
+                                    <input type="checkbox" v-model="q.required" class="w-4 h-4">
+                                    <label class="text-xs">إجباري</label>
+                                </div>
+                                <button @click="c.bookingQuestions.splice(qi, 1)" class="text-red-500 font-bold px-2 pb-2">X</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. DOCTORS -->
+                <div v-show="activeTab === 'doctors'">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">الأطباء وفريق العمل</h2>
+                        <button @click="addDoctor" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-sm hover:bg-blue-700">+ إضافة طبيب</button>
+                    </div>
+                    <div v-for="(d, i) in data.doctors" :key="'d'+i" class="form-section relative">
+                        <button @click="data.doctors.splice(i, 1)" class="absolute top-5 left-5 text-red-500 bg-red-50 px-3 py-1 rounded text-xs font-bold">حذف</button>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                            <div class="md:col-span-1">
+                                <div class="file-upload-wrapper h-40 flex flex-col justify-center">
+                                    <input type="file" @change="handleFileUpload($event, d, 'image')" class="file-upload-input">
+                                    <img v-if="d.image" :src="d.image" class="image-preview !h-32 object-cover rounded-full w-32 mx-auto">
+                                    <span v-else class="text-gray-500">ارفع صورة الطبيب</span>
+                                </div>
+                            </div>
+                            <div class="md:col-span-2 grid grid-cols-2 gap-4">
+                                <div class="col-span-2"><label class="block text-sm font-bold text-gray-700 mb-1">الاسم (عربي) *</label><input v-model="d.name.ar" class="input-field"></div>
+                                <div><label class="block text-sm font-bold text-gray-700 mb-1">التخصص</label><input v-model="d.specialty.ar" class="input-field"></div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">المركز الطبي *</label>
+                                    <select v-model="d.centerSlug" class="input-field">
+                                        <option value="">-- اختر مركز --</option>
+                                        <option v-for="c in data.centers" :value="c.slug">{{ c.name.ar || c.slug }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-span-2"><label class="block text-sm font-bold text-gray-700 mb-1">الخبرات والنبذة</label><textarea v-model="d.bio.ar" class="input-field" rows="2"></textarea></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. NEWS -->
+                <div v-show="activeTab === 'news'">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">الأخبار والمقالات الطبية</h2>
+                        <button @click="addNews" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-sm hover:bg-blue-700">+ مقال جديد</button>
+                    </div>
+                    <div v-for="(n, i) in data.news" :key="'n'+i" class="form-section relative">
+                        <button @click="data.news.splice(i, 1)" class="absolute top-5 left-5 text-red-500 bg-red-50 px-3 py-1 rounded text-xs font-bold">حذف</button>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                            <div class="md:col-span-1">
+                                <div class="file-upload-wrapper h-full"><input type="file" @change="handleFileUpload($event, n, 'image')" class="file-upload-input"><img v-if="n.image" :src="n.image" class="image-preview !h-full object-cover"><span v-else>صورة المقال</span></div>
+                            </div>
+                            <div class="md:col-span-2 space-y-3">
+                                <div><label class="block text-sm font-bold text-gray-700 mb-1">عنوان المقال *</label><input v-model="n.title" class="input-field"></div>
+                                <div><label class="block text-sm font-bold text-gray-700 mb-1">المحتوى</label><textarea v-model="n.content" class="input-field" rows="5"></textarea></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. TESTIMONIALS -->
+                <div v-show="activeTab === 'testimonials'">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">آراء وتقييمات العملاء</h2>
+                        <button @click="addTestimonial" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-sm hover:bg-blue-700">+ تقييم جديد</button>
+                    </div>
+                    <div v-for="(t, i) in data.testimonials" :key="'t'+i" class="form-section relative bg-[#fdfbf7]">
+                        <button @click="data.testimonials.splice(i, 1)" class="absolute top-5 left-5 text-red-500 bg-red-50 px-3 py-1 rounded text-xs font-bold">حذف</button>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-sm font-bold text-gray-700 mb-1">اسم المريض</label><input v-model="t.patientName" class="input-field"></div>
+                            <div><label class="block text-sm font-bold text-gray-700 mb-1">التقييم (النجوم)</label><select v-model="t.rating" class="input-field"><option value="5">5 نجوم</option><option value="4">4 نجوم</option><option value="3">3 نجوم</option></select></div>
+                            <div class="col-span-2"><label class="block text-sm font-bold text-gray-700 mb-1">نص الرأي *</label><textarea v-model="t.comment" class="input-field" rows="3"></textarea></div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    activeTab: 'settings',
+                    data: {
+                        settings: {
+                            siteNameAr: '', siteNameEn: '', siteDescription: '',
+                            phone: '', email: '', address: '',
+                            social: { facebook: '', instagram: '', youtube: '' },
+                            mainLogo: null, footerLogo: null
+                        },
+                        pages: {
+                            about: { title: 'من نحن', slug: 'about', content: '' },
+                            privacy: { title: 'سياسة الخصوصية', slug: 'privacy', content: '' },
+                            terms: { title: 'الشروط والأحكام', slug: 'terms', content: '' },
+                            investors: { title: 'علاقات المستثمرين', slug: 'investors', content: '' }
+                        },
+                        faqs: [],
+                        hospitals: [],
+                        centers: [],
+                        doctors: [],
+                        news: [],
+                        testimonials: []
+                    }
+                }
+            },
+            methods: {
+                addFaq() { this.data.faqs.push({ question: {ar: '', en: ''}, answer: {ar: '', en: ''} }); },
+                addHospital() { this.data.hospitals.push({ name: { ar: '', en: '' }, slug: '', shortDescription: {ar: '', en: ''}, description: {ar: '', en: ''}, heroTagline: {ar: '', en: ''}, location: {ar: '', en: ''}, contactPhone: '', brandColor: '', googleMapsUrl: '', heroImage: null, logoImage: null }); },
+                addCenter() { this.data.centers.push({ name: { ar: '', en: '' }, slug: '', hospitalSlug: '', brandColor: '#0E7C86', description: {ar: '', en: ''}, image: null, clinics: [], bookingQuestions: [] }); },
+                addClinic(center) { center.clinics.push({ name: { ar: '', en: '' }, scheduleText: '' }); },
+                addQuestion(center) { center.bookingQuestions.push({ question: {ar: '', en: ''}, type: 'BOOLEAN', required: true }); },
+                addDoctor() { this.data.doctors.push({ name: { ar: '', en: '' }, specialty: { ar: '', en: '' }, bio: {ar: '', en: ''}, centerSlug: '', image: null }); },
+                addNews() { this.data.news.push({ title: '', content: '', image: null }); },
+                addTestimonial() { this.data.testimonials.push({ patientName: '', comment: '', rating: 5 }); },
+                
+                handleFileUpload(event, targetObject, targetProperty) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+                    if (file.size > 8 * 1024 * 1024) {
+                        alert("حجم الصورة كبير جداً (أكثر من 8 ميجابايت). يرجى اختيار صورة أصغر.");
+                        event.target.value = ''; return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = (e) => { targetObject[targetProperty] = e.target.result; };
+                    reader.readAsDataURL(file);
+                },
+                exportJSON() {
+                    const dataStr = JSON.stringify(this.data, null, 2);
+                    const blob = new Blob([dataStr], { type: "application/json" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url; a.download = `insan-full-database-${new Date().getTime()}.json`;
+                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

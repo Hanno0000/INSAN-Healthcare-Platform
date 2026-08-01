@@ -3,9 +3,25 @@ import type { NavItem } from '@/lib/public-api';
 import { t } from '@/lib/utils';
 import { Facebook, Twitter, Instagram, Linkedin, ArrowRight } from 'lucide-react';
 
-interface Props { navItems: NavItem[] }
+interface Props { 
+  navItems: NavItem[];
+  settings?: any[];
+}
 
-export default function Footer({ navItems }: Props) {
+export default function Footer({ navItems, settings = [] }: Props) {
+  const getSetting = (key: string, fallback: string = '') => {
+    const s = settings.find(x => x.key === key);
+    return s ? s.value : fallback;
+  };
+
+  const contactEmail = getSetting('contact_email', 'info@insan-platform.com');
+  const contactPhone = getSetting('contact_phone', '+20 000 000 000');
+  const contactAddress = getSetting('contact_address', 'القاهرة، مصر');
+  const facebookUrl = getSetting('facebook_url', '#');
+  const twitterUrl = getSetting('twitter_url', '#');
+  const instagramUrl = getSetting('instagram_url', '#');
+  const linkedinUrl = getSetting('linkedin_url', '#');
+
   const visible = navItems.filter(n => n.isVisible).sort((a, b) => a.order - b.order);
   const year = new Date().getFullYear();
 
@@ -30,10 +46,10 @@ export default function Footer({ navItems }: Props) {
                 المنظومة الصحية المتكاملة — نربط المرضى بأفضل الكفاءات الطبية في مصر من خلال مستشفياتنا المتخصصة ومراكزنا الطبية المتميزة.
               </p>
               <div className="social-links flex gap-3">
-                <a href="#" className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-accent-500 hover:text-white transition-all"><Twitter className="w-4 h-4" /></a>
-                <a href="#" className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-accent-500 hover:text-white transition-all"><Facebook className="w-4 h-4" /></a>
-                <a href="#" className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-accent-500 hover:text-white transition-all"><Instagram className="w-4 h-4" /></a>
-                <a href="#" className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-accent-500 hover:text-white transition-all"><Linkedin className="w-4 h-4" /></a>
+                <a href={twitterUrl} className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-accent-500 hover:text-white transition-all"><Twitter className="w-4 h-4" /></a>
+                <a href={facebookUrl} className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-accent-500 hover:text-white transition-all"><Facebook className="w-4 h-4" /></a>
+                <a href={instagramUrl} className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-accent-500 hover:text-white transition-all"><Instagram className="w-4 h-4" /></a>
+                <a href={linkedinUrl} className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-accent-500 hover:text-white transition-all"><Linkedin className="w-4 h-4" /></a>
               </div>
             </div>
 
@@ -77,15 +93,15 @@ export default function Footer({ navItems }: Props) {
               <div className="flex flex-col gap-4 font-cairo text-sm">
                 <p>
                   <strong>العنوان:</strong><br />
-                  القاهرة، مصر
+                  {contactAddress}
                 </p>
                 <p>
                   <strong>هاتف:</strong><br />
-                  <a href="tel:+200000000" className="hover:text-accent-500 transition-colors">+20 000 000 000</a>
+                  <a href={`tel:${contactPhone.replace(/[\s-]/g, '')}`} className="hover:text-accent-500 transition-colors">{contactPhone}</a>
                 </p>
                 <p>
                   <strong>البريد الإلكتروني:</strong><br />
-                  <a href="mailto:info@insan-platform.com" className="hover:text-accent-500 transition-colors">info@insan-platform.com</a>
+                  <a href={`mailto:${contactEmail}`} className="hover:text-accent-500 transition-colors">{contactEmail}</a>
                 </p>
               </div>
             </div>

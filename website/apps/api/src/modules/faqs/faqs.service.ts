@@ -25,4 +25,29 @@ export class FaqsService {
 
     return { data, page, pageSize, total };
   }
+
+  async create(data: any) {
+    return this.prisma.faqItem.create({
+      data: {
+        topic: data.topic,
+        question: data.question,
+        answer: data.answer,
+        order: data.order ?? 0,
+        isActive: data.isActive ?? true,
+      }
+    });
+  }
+
+  async update(id: string, data: any) {
+    return this.prisma.faqItem.update({
+      where: { id },
+      data
+    });
+  }
+
+  async remove(id: string) {
+    return this.prisma.faqItem.delete({
+      where: { id }
+    });
+  }
 }

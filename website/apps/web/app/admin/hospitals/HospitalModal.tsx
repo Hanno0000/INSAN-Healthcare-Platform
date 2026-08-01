@@ -141,23 +141,24 @@ export default function HospitalModal({ open, onClose, editing, onSaved }: Props
     if (Array.isArray(d.heroStats) && d.heroStats.some((s: any) => s.value)) payload.heroStats = d.heroStats;
     if (Array.isArray(d.journeySteps)) payload.journeySteps = d.journeySteps;
     
-    // Ensure departments and locations are not wiped out if the form tabs were unmounted
-    payload.departments = (d.departments?.length ? d.departments : editing?.departments) || [];
-    payload.departments = payload.departments.filter((dept: any) => dept && dept.slug);
+    const rawDepts = (d.departments?.length ? d.departments : editing?.departments) || [];
+    payload.departments = rawDepts.filter((dept: any) => {
+      return dept && (dept.slug?.trim() || dept.name?.ar?.trim() || dept.name?.en?.trim());
+    });
 
-    payload.locations = (d.locations?.length ? d.locations : editing?.locations) || [];
-    payload.locations = payload.locations.filter((loc: any) => loc && (loc.name?.ar || loc.name?.en));
-
+    const rawLocs = (d.locations?.length ? d.locations : editing?.locations) || [];
+    payload.locations = rawLocs.filter((loc: any) => loc && (loc.name?.ar?.trim() || loc.name?.en?.trim()));
 
     // التحقق المسبق (Client-Side Validation) للأقسام
     for (let i = 0; i < payload.departments.length; i++) {
-      const slug = payload.departments[i].slug;
+      const slug = payload.departments[i].slug?.trim();
+      payload.departments[i].slug = slug;
       if (!slug || !/^[a-z0-9-]+$/.test(slug)) {
         toast('error', `القسم رقم ${i + 1}: المعرّف (slug) غير صحيح. استخدم حروف إنجليزية وأرقام وشرطات فقط بدون مسافات.`);
         setTab('departments');
         return;
       }
-      if (!payload.departments[i].name?.ar) {
+      if (!payload.departments[i].name?.ar?.trim()) {
         toast('error', `القسم رقم ${i + 1}: الاسم بالعربي مطلوب.`);
         setTab('departments');
         return;

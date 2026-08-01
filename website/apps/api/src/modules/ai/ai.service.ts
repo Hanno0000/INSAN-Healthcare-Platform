@@ -52,6 +52,24 @@ export class AiService {
     return this.prisma.aiProvider.delete({ where: { id } });
   }
 
+  async testProvider(body: any) {
+    try {
+      const provider = {
+        name: body.name,
+        baseUrl: body.baseUrl,
+        apiKey: body.apiKey,
+        modelName: body.modelName,
+        priority: 0,
+        isActive: true,
+      } as AiProvider;
+      
+      const reply = await this.callProvider(provider, [{ role: 'user', content: 'Say "Hello, this is a test from AI" in Arabic.' }]);
+      return { success: true, text: reply };
+    } catch (e) {
+      throw new BadRequestException(e.message);
+    }
+  }
+
   // ==============================
   // Knowledge Base Management
   // ==============================
@@ -150,10 +168,18 @@ export class AiService {
       }
     }
 
-    const systemPrompt = `أنت مساعد ذكي لمنظومة إنسان للرعاية الصحية. 
-مهمتك مساعدة المرضى والعملاء بأدب واحترافية باللغة العربية.
-استخدم المعلومات التالية للإجابة على سؤال المستخدم إن أمكن، ولا تخترع معلومات غير موجودة.
-معلومات سياقية:
+    const systemPrompt = `أنت موظف استقبال طبي محترف (Medical Concierge) ومساعد ذكي لمنصة إنسان للرعاية الصحية.
+مهمتك مساعدة المرضى باحترافية، إيجاز، ولطف باللغة العربية.
+تعليمات هامة جداً:
+1. الإيجاز: تجنب الفقرات الطويلة جداً. استخدم النقاط المنظمة (Bullet points).
+2. التوجيه (Call to Action): في نهاية ردك، قم دائماً بتوجيه المريض إلى القسم المناسب باستخدام رابط. صيغة الرابط يجب أن تكون هكذا حصراً: [النص](الرابط).
+أمثلة للروابط التي يمكنك استخدامها:
+- للحجز: [احجز موعدك الآن](/book) أو [احجز موعدك الآن](/appointments)
+- للأطباء: [ابحث عن طبيب](/doctors)
+- للمستشفيات: [تصفح المستشفيات](/hospitals)
+- للخدمات: [خدماتنا](/services)
+
+معلومات سياقية للإجابة منها:
 ${contextStr || 'لا توجد معلومات مخصصة. أجب بشكل عام ورحب بالعميل.'}`;
 
     // 3. Provider Fallback Logic
@@ -204,7 +230,10 @@ ${contextStr || 'لا توجد معلومات مخصصة. أجب بشكل عام
           messages: messages.map(m => ({ role: m.role, content: m.content })),
         })
       });
-      if (!res.ok) throw new Error(`API error: ${res.statusText}`);
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`API error: ${res.statusText} - ${errText}`);
+      }
       const data = await res.json();
       return data.choices[0].message.content;
     }
@@ -232,9 +261,20 @@ ${contextStr || 'لا توجد معلومات مخصصة. أجب بشكل عام
           contents: geminiMessages,
         })
       });
-      if (!res.ok) throw new Error(`API error: ${res.statusText}`);
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`API error: ${res.statusText} - ${errText}`);
+      }
       const data = await res.json();
-      return data.candidates[0].content.parts[0].text;
+      
+      if (!data.candidates || data.candidates.length === 0) {
+        throw new Error(`Gemini API returned no candidates: ${JSON.stringify(data)}`);
+      }
+      const candidate = data.candidates[0];
+      if (!candidate.content || !candidate.content.parts || candidate.content.parts.length === 0) {
+        throw new Error(`Gemini API response blocked or empty (finishReason: ${candidate.finishReason}): ${JSON.stringify(data)}`);
+      }
+      return candidate.content.parts[0].text;
     }
 
     throw new Error(`Unsupported provider type: ${provider.name}`);

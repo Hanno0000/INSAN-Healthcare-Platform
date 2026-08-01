@@ -44,7 +44,7 @@ export default function DashboardClient() {
     { label: 'الأخبار', value: news?.meta.total ?? '—', icon: <Newspaper size={22} className="text-orange-500" />, href: '/admin/news', color: 'bg-orange-50' },
     { label: 'المواعيد', value: appointments?.meta.total ?? '—', icon: <Calendar size={22} className="text-emerald-600" />, href: '/admin/appointments', color: 'bg-emerald-50' },
     { label: 'رسائل التواصل', value: contacts?.meta.total ?? '—', icon: <Mail size={22} className="text-red-500" />, href: '/admin/contact-submissions', color: 'bg-red-50' },
-    { label: 'الشهادات', value: testimonials?.meta.total ?? '—', icon: <Quote size={22} className="text-yellow-600" />, href: '/admin/testimonials', color: 'bg-yellow-50' },
+    { label: 'آراء العملاء', value: testimonials?.meta.total ?? '—', icon: <Quote size={22} className="text-yellow-600" />, href: '/admin/testimonials', color: 'bg-yellow-50' },
     { label: 'المستخدمون', value: users?.meta.total ?? '—', icon: <Users size={22} className="text-gray-600" />, href: '/admin/users', color: 'bg-gray-100' },
   ];
 

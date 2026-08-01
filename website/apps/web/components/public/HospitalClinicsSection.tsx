@@ -54,7 +54,7 @@ export default function HospitalClinicsSection({ clinics, hospitalId }: Props) {
               )}
 
               <Link
-                href={`/book?medicalCenterId=${clinic.centerId}&hospitalId=${hospitalId}`}
+                href={`/book?clinicId=${clinic.id}&medicalCenterId=${clinic.centerId || ''}&hospitalId=${hospitalId}`}
                 className="block text-center w-full bg-accent-500 hover:bg-accent-600 text-white font-bold py-3 rounded-pill transition-all font-cairo"
               >
                 احجز موعد

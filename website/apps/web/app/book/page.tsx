@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import PublicLayout from '@/components/public/PublicLayout';
 import PageTitle from '@/components/public/PageTitle';
 import AppointmentForm from '@/components/public/AppointmentForm';
-import { getHospitals, getMedicalCenters, getDoctors } from '@/lib/public-api';
+import { getHospitals, getMedicalCenters, getDoctors, getClinics } from '@/lib/public-api';
 
 export const metadata: Metadata = {
   title: 'حجز موعد | منظومة إنسان',
@@ -10,14 +10,15 @@ export const metadata: Metadata = {
 };
 
 interface Props {
-  searchParams: { hospitalId?: string; medicalCenterId?: string; doctorId?: string };
+  searchParams: { hospitalId?: string; medicalCenterId?: string; doctorId?: string; clinicId?: string };
 }
 
 export default async function BookPage({ searchParams }: Props) {
-  const [hospitals, centers, doctors] = await Promise.all([
+  const [hospitals, centers, doctors, clinics] = await Promise.all([
     getHospitals({ pageSize: 50 }),
     getMedicalCenters({ pageSize: 50 }),
     getDoctors({ pageSize: 50 }),
+    getClinics(),
   ]);
 
   return (
@@ -46,8 +47,10 @@ export default async function BookPage({ searchParams }: Props) {
               hospitals={hospitals?.data ?? []}
               centers={centers?.data ?? []}
               doctors={doctors?.data ?? []}
+              clinics={clinics?.data ?? []}
               defaultHospitalId={searchParams.hospitalId}
               defaultCenterId={searchParams.medicalCenterId}
+              defaultClinicId={searchParams.clinicId}
               defaultDoctorId={searchParams.doctorId}
             />
             

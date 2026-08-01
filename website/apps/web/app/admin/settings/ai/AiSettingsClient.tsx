@@ -77,7 +77,7 @@ export default function AiSettingsClient() {
         <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
           {isLoadingProviders ? (
             <div className="p-8 text-center text-gray-500">جاري التحميل...</div>
-          ) : !providers?.data || providers.data.length === 0 ? (
+          ) : (!(Array.isArray(providers) ? providers : providers?.data) || (Array.isArray(providers) ? providers : providers?.data || []).length === 0) ? (
             <div className="p-12 text-center text-gray-500 flex flex-col items-center">
               <Bot size={48} className="text-gray-300 mb-4" />
               <p className="font-semibold text-gray-700">لا يوجد أي نماذج ذكاء اصطناعي</p>
@@ -96,7 +96,7 @@ export default function AiSettingsClient() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {providers.data.map((p: any) => (
+                  {(Array.isArray(providers) ? providers : providers.data || []).map((p: any) => (
                     <tr key={p.id} className="hover:bg-gray-50/50 transition">
                       <td className="p-4 font-medium text-gray-800 flex items-center gap-2">
                         <Bot size={16} className="text-[#0E7C86]" />
@@ -244,8 +244,9 @@ function ProviderEditor({ initial, onClose }: { initial: any; onClose: () => voi
   const testMut = useMutation({
     mutationFn: (data: any) => api.aiProviders.test(data),
     onMutate: () => setTestResult({ loading: true }),
-    onSuccess: (res) => {
-      setTestResult({ loading: false, success: true, msg: 'الاتصال ناجح: ' + res.data.text });
+    onSuccess: (res: any) => {
+      const replyText = res?.data?.text || res?.text || 'نجاح';
+      setTestResult({ loading: false, success: true, msg: 'الاتصال ناجح: ' + replyText });
       toast('success', 'تم التحقق من الاتصال بنجاح');
     },
     onError: (e: any) => {

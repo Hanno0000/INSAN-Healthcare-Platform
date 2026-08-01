@@ -54,8 +54,8 @@ export default function BrandsClient() {
   return (
     <div>
       <PageHeader 
-        title="العلامات التجارية" 
-        subtitle="إدارة فروع ومشاريع المنصة (مثل منصة إنسان التعليمية، أكاديمية إنسان، الخ). تُستخدم لربط حسابات التواصل والأخبار." 
+        title="الفروع والمؤسسات التابعة (العلامات التجارية)" 
+        subtitle="إدارة العلامات التجارية الفرعية ومواقع التواصل الاجتماعي الخاصة بها" 
         action="إضافة علامة" 
         onAction={() => { setEditing(null); setModalOpen(true); }} 
       />

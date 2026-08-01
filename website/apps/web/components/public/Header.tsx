@@ -9,9 +9,12 @@ import { Mail, Phone, Menu, X, ChevronDown } from 'lucide-react';
 import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 import LanguageSwitcher from './LanguageSwitcher';
 
-interface Props { navItems: NavItem[] }
+interface Props { 
+  navItems: NavItem[];
+  settings?: any[];
+}
 
-export default function Header({ navItems }: Props) {
+export default function Header({ navItems, settings = [] }: Props) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const t = useT();
@@ -26,24 +29,37 @@ export default function Header({ navItems }: Props) {
 
   const visible = navItems.filter(n => n.isVisible && !n.parentId).sort((a, b) => a.order - b.order);
 
+  const getSetting = (key: string, fallback: string = '') => {
+    const s = settings.find(x => x.key === key);
+    return s ? s.value : fallback;
+  };
+
+  const contactEmail = getSetting('contact_email', 'info@insan-platform.com');
+  const contactPhone = getSetting('contact_phone', '+20 000 000 000');
+  const whatsappUrl = getSetting('whatsapp_url', 'https://wa.me/200000000');
+  const facebookUrl = getSetting('facebook_url', '#');
+  const twitterUrl = getSetting('twitter_url', '#');
+  const instagramUrl = getSetting('instagram_url', '#');
+  const linkedinUrl = getSetting('linkedin_url', '#');
+
   return (
     <header id="header" className={`fixed top-0 w-full z-50 transition-all duration-300 bg-white shadow-sm`}>
       {/* Top Bar */}
       {!scrolled && (
         <div className="hidden md:flex align-items-center bg-primary-900 text-gray-300 text-xs py-2 px-4 md:px-8 w-full items-center justify-between">
           <div className="flex gap-4">
-            <a href="mailto:info@insan-platform.com" className="flex items-center gap-1.5 hover:text-white transition-colors">
-              <Mail className="w-3.5 h-3.5" /> info@insan-platform.com
+            <a href={`mailto:${contactEmail}`} className="flex items-center gap-1.5 hover:text-white transition-colors">
+              <Mail className="w-3.5 h-3.5" /> {contactEmail}
             </a>
-            <a href="tel:+200000000" className="flex items-center gap-1.5 hover:text-white transition-colors">
-              <Phone className="w-3.5 h-3.5" /> +20 000 000 000
+            <a href={`tel:${contactPhone.replace(/[\s-]/g, '')}`} className="flex items-center gap-1.5 hover:text-white transition-colors">
+              <Phone className="w-3.5 h-3.5" /> {contactPhone}
             </a>
           </div>
           <div className="flex gap-3 items-center">
-            <a href="#" className="hover:text-accent-500 transition-colors"><Twitter className="w-3.5 h-3.5" /></a>
-            <a href="#" className="hover:text-accent-500 transition-colors"><Facebook className="w-3.5 h-3.5" /></a>
-            <a href="#" className="hover:text-accent-500 transition-colors"><Instagram className="w-3.5 h-3.5" /></a>
-            <a href="#" className="hover:text-accent-500 transition-colors"><Linkedin className="w-3.5 h-3.5" /></a>
+            <a href={twitterUrl} className="hover:text-accent-500 transition-colors"><Twitter className="w-3.5 h-3.5" /></a>
+            <a href={facebookUrl} className="hover:text-accent-500 transition-colors"><Facebook className="w-3.5 h-3.5" /></a>
+            <a href={instagramUrl} className="hover:text-accent-500 transition-colors"><Instagram className="w-3.5 h-3.5" /></a>
+            <a href={linkedinUrl} className="hover:text-accent-500 transition-colors"><Linkedin className="w-3.5 h-3.5" /></a>
             <div className="w-px h-3 bg-white/20 mx-1"></div>
             <LanguageSwitcher />
           </div>
@@ -78,7 +94,7 @@ export default function Header({ navItems }: Props) {
         {/* CTA & Mobile Toggle */}
         <div className="flex items-center gap-3">
           {/* Emergency */}
-          <a href="tel:123" className="hidden lg:inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold px-5 py-2.5 rounded-pill shadow-sm transition-all duration-300 font-cairo">
+          <a href={`tel:${contactPhone.replace(/[\s-]/g, '')}`} className="hidden lg:inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold px-5 py-2.5 rounded-pill shadow-sm transition-all duration-300 font-cairo">
             <Phone className="w-4 h-4" /> للطوارئ
           </a>
           
@@ -88,7 +104,7 @@ export default function Header({ navItems }: Props) {
           </Link>
           
           {/* WhatsApp */}
-          <a href="https://wa.me/200000000" target="_blank" rel="noreferrer" className="hidden lg:inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white text-sm font-bold px-5 py-2.5 rounded-pill shadow-sm transition-all duration-300 font-cairo">
+          <a href={whatsappUrl} target="_blank" rel="noreferrer" className="hidden lg:inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white text-sm font-bold px-5 py-2.5 rounded-pill shadow-sm transition-all duration-300 font-cairo">
             <Phone className="w-4 h-4" /> واتساب
           </a>
           

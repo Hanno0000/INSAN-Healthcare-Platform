@@ -2,8 +2,19 @@ import React from 'react';
 import SectionTitle from './SectionTitle';
 import { Phone, Mail, MapPin } from 'lucide-react';
 import Link from 'next/link';
+import { getPublicSettings } from '@/lib/public-api';
 
-export default function HomeContactSection() {
+export default async function HomeContactSection() {
+  const settings = await getPublicSettings();
+  const getSetting = (key: string, fallback: string = '') => {
+    const s = settings.find(x => x.key === key);
+    return s ? s.value : fallback;
+  };
+
+  const contactEmail = getSetting('contact_email', 'info@insan-platform.com');
+  const contactPhone = getSetting('contact_phone', '01234567890');
+  const contactAddress = getSetting('contact_address', 'القاهرة - مصر');
+
   return (
     <section id="contact-section" className="py-20 bg-light-bg">
       <div className="container mx-auto px-4 md:px-8 max-w-7xl">
@@ -26,7 +37,7 @@ export default function HomeContactSection() {
                 </div>
                 <div>
                   <p className="text-sm text-white/60 mb-1">الرقم الموحد</p>
-                  <a href="tel:01234567890" className="text-lg font-bold hover:text-accent-500 transition-colors" dir="ltr">0123 456 7890</a>
+                  <a href={`tel:${contactPhone.replace(/[\s-]/g, '')}`} className="text-lg font-bold hover:text-accent-500 transition-colors" dir="ltr">{contactPhone}</a>
                 </div>
               </div>
               
@@ -36,7 +47,7 @@ export default function HomeContactSection() {
                 </div>
                 <div>
                   <p className="text-sm text-white/60 mb-1">البريد الإلكتروني</p>
-                  <a href="mailto:info@hospitalgroup.com" className="text-lg font-bold hover:text-accent-500 transition-colors">info@hospitalgroup.com</a>
+                  <a href={`mailto:${contactEmail}`} className="text-lg font-bold hover:text-accent-500 transition-colors">{contactEmail}</a>
                 </div>
               </div>
               
@@ -46,7 +57,7 @@ export default function HomeContactSection() {
                 </div>
                 <div>
                   <p className="text-sm text-white/60 mb-1">المقر الرئيسي</p>
-                  <p className="text-lg font-bold">القاهرة - مصر</p>
+                  <p className="text-lg font-bold">{contactAddress}</p>
                 </div>
               </div>
             </div>

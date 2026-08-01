@@ -168,6 +168,8 @@ export class AuthService {
     return { success: true, message: 'Profile updated successfully' };
   }
 
+
+
   private async generateTokens(userId: string, email: string, roleId: string, roleName: string) {
     const payload = { sub: userId, email, roleId, roleName };
 

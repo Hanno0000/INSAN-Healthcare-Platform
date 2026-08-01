@@ -20,7 +20,7 @@ export default function MedicalCenterCard({ center }: { center: MedicalCenter })
         <p className="text-default font-cairo text-sm leading-relaxed mb-3">
           {truncate(t(center.shortDescription), 80)}
         </p>
-        <Link href={`/medical-centers`} className="service-link inline-flex items-center gap-1 text-sm font-bold text-heading hover:text-accent-500 transition-colors font-cairo">
+        <Link href={`/medical-centers/${center.slug}`} className="service-link inline-flex items-center gap-1 text-sm font-bold text-heading hover:text-accent-500 transition-colors font-cairo">
           اعرف المزيد <ArrowRight className="w-3 h-3 rtl:rotate-180" />
         </Link>
       </div>
