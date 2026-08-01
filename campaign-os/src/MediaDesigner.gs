@@ -78,7 +78,17 @@ var MediaDesigner = {
   // of where the reusable part ends; a second, parallel one would drift, and
   // the failure mode of that is a silent 100% cache miss.
   _buildContext: function(rowData, assetCount, options) {
-    var staticSections = [this._header(), this._trainingManual()];
+    // The image is half of what an ad is judged on, and the rejections it
+    // causes — before/after pairings, distressing clinical imagery, bodies
+    // presented as problems — are image rejections, not copy ones. This worker
+    // builds its own context rather than going through ContextBuilder, so the
+    // block is added here too; leaving it out would exempt the half that gets
+    // refused most.
+    var staticSections = [
+      this._header(),
+      AdPolicy.block(),
+      this._trainingManual()
+    ];
 
     var docs = this._projectDocs();
     if (docs) {

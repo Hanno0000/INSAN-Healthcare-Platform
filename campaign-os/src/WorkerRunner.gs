@@ -2194,6 +2194,13 @@ function runWorker(workerName, rowNumber) {
     if (upperName === 'CREATIVE_DIRECTOR_WORKER') {
       _composeFinalPostCopy(parsed.values, rowData['Publishing Page']);
       _applyCreativeCritic(parsed.values, rowNumber);
+
+      // The last point where the published wording exists and nothing has been
+      // spent on it yet. Reports; never blocks. The scan finds shapes, and a
+      // shape is evidence rather than proof — a row stopped by a regex that
+      // misread a sentence costs a rewrite for nothing, while a row flagged in
+      // the log costs a glance.
+      AdPolicy.report(upperName, rowNumber, parsed.values);
     }
 
     var writeResult = SheetWriter.writeToRow(

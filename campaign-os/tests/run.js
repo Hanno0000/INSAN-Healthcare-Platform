@@ -118,7 +118,16 @@ const t = {
     const ok = Array.isArray(haystack)
       ? haystack.indexOf(needle) !== -1
       : String(haystack).indexOf(needle) !== -1;
-    record(ok, description, `${show(haystack)} does not contain ${show(needle)}`);
+
+    // Truncated. A failing `includes` against a whole source file printed the
+    // file, which buries the two other failures under it and makes the run
+    // unreadable — the point of the output is to be scanned.
+    const shown = show(haystack);
+    const brief = shown.length > 220
+      ? shown.slice(0, 200) + `… (${shown.length} chars)`
+      : shown;
+
+    record(ok, description, `does not contain ${show(needle)}\n          in: ${brief}`);
   },
   throws(fn, description) {
     let threw = false;

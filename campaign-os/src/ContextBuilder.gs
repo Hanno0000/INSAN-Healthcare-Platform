@@ -40,10 +40,32 @@ var ContextBuilder = {
 
     return [
       this._buildHeader(workerName),
+      this._buildAdPolicy(workerName),
       this._buildWorkerPrompt(workerName),
       this._buildProjectDocs(workerName),
       this._buildControlledVocabulary(workerConfig)
     ].filter(function(s) { return s; }).join('\n\n');
+  },
+
+  // Meta's advertising rules, for every worker that shapes what a post says or
+  // shows. Every post here runs as a paid ad, so these constrain the writing
+  // rather than being checked afterwards.
+  //
+  // Placed high — directly after the header, before the worker's own manual —
+  // because it overrides the creative documents where they disagree, and a
+  // constraint stated after the thing it constrains reads as an afterthought.
+  //
+  // Part of the CACHED prefix: identical for every row and every worker, so it
+  // is paid for once rather than per row. It comes from code rather than a
+  // Drive document on purpose — a document can go unuploaded, be edited by
+  // anyone, or sit stale in a six-hour cache, and a hard rule that silently
+  // fails to load is worse than no rule because everything still looks fine.
+  _buildAdPolicy: function(workerName) {
+    if (!AdPolicy.appliesTo(workerName)) {
+      return '';
+    }
+
+    return AdPolicy.block();
   },
 
   // A short fingerprint of the cacheable prefix, logged per call.
