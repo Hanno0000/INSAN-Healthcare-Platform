@@ -82,6 +82,45 @@ module.exports = {
         `${page} has no tag containing a space — that publishes as two tags`);
     }
 
+    // --- the new tags, and what they cost ---
+    t.includes(F.HASHTAGS.Delta.en, '#DeltaInternationalHospital',
+      'Delta carries its own name in English — it had six Arabic tags to one');
+    t.includes(F.HASHTAGS.Delta.en, '#LavenirMedical',
+      'and its management company');
+    t.includes(F.HASHTAGS.Future.en, '#WedgeGroup',
+      'Wedge appears in English as well as Arabic');
+    t.notOk(F.HASHTAGS.Future.en.indexOf('#InsanHealthcare') !== -1,
+      '#InsanHealthcare is gone — it said the same thing as #InsanPlatform ' +
+      'sitting beside it');
+
+    for (const page of pages) {
+      t.includes(F.HASHTAGS[page].en, '#EgyptHealthcare',
+        `${page} carries the English market tag`);
+      t.includes(F.HASHTAGS[page].ar, '#الرعاية_الصحية_في_مصر',
+        `${page} carries the Arabic market tag`);
+      t.includes(F.HASHTAGS[page].ar, '#مراكز_طبية_متخصصة',
+        `${page} carries the centres tag, per PROJECT_DECISIONS`);
+    }
+
+    // The sets grow one approved suggestion at a time and the total is not
+    // visible until something is published. This keeps it visible.
+    const counts = PostFooter.counts();
+
+    for (const page of pages) {
+      t.ok(counts[page].ar <= F.MAX_TAGS_PER_LANGUAGE,
+        `${page} carries ${counts[page].ar} Arabic tags, within the ` +
+        `${F.MAX_TAGS_PER_LANGUAGE} the block is meant to hold`);
+      t.ok(counts[page].en <= F.MAX_TAGS_PER_LANGUAGE,
+        `${page} carries ${counts[page].en} English tags, within the limit`);
+    }
+
+    // Nothing is ever truncated — a tag missing from a published post looks
+    // like an oversight nobody can trace.
+    const over = PostFooter.mergeHashtags('Delta', '#أ #ب #ج #د #ه #و', 'ar');
+    t.ok(over.length > F.MAX_TAGS_PER_LANGUAGE,
+      'going over the limit is allowed');
+    t.includes(over, '#و', 'and nothing is dropped when it happens');
+
     // --- merging ---
     const merged = PostFooter.mergeHashtags('INSAN', '#رعاية_مركزة', 'ar');
     t.includes(merged, '#منصة_إنسان', 'the standing set comes through');

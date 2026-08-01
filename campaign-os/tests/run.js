@@ -82,6 +82,16 @@ for (const file of sources) {
   }
 }
 
+// src/Logger.gs defines its own Logger and replaces the stub above. Reinstall
+// it: the real one writes to the Execution Log sheet, and a suite that
+// deliberately exercises a warning path would otherwise print it into the test
+// output as though something had gone wrong.
+global.Logger = {
+  log: (m) => logLines.push(String(m)),
+  logSuccess: (...a) => logLines.push('SUCCESS ' + a.join(' ')),
+  logFailure: (...a) => logLines.push('FAILURE ' + a.join(' '))
+};
+
 // --- Assertions -----------------------------------------------------------
 
 let passed = 0;

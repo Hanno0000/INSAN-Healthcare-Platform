@@ -251,24 +251,49 @@ var CONFIG = {
     // Standing tags per page. Arabic and English are kept apart because the
     // two hashtag columns are split that way — Primary is Arabic, Secondary is
     // English, and mixing scripts inside one group reads as a mistake.
+    // Extended 2026-07-31 on the operator's approval. Three changes beyond the
+    // originals:
+    //
+    //   · every page gained the market tags #EgyptHealthcare and
+    //     #الرعاية_الصحية_في_مصر, plus #مراكز_طبية_متخصصة — the last one carries
+    //     PROJECT_DECISIONS' "centres, not departments" into the tag block
+    //   · Delta gained its own name in English and its management company's;
+    //     it had six Arabic tags against one English
+    //   · Future dropped #InsanHealthcare, which said the same thing as
+    //     #InsanPlatform sitting beside it
+    //
+    // ⚠️ These sets are long. See the note on MAX_TAGS_PER_LANGUAGE below.
     HASHTAGS: {
       'INSAN': {
         ar: ['#منصة_إنسان', '#منظومة_إنسان_الصحية', '#إدارة_المستشفيات',
-             '#معايير_موحدة'],
+             '#معايير_موحدة', '#مراكز_طبية_متخصصة', '#الرعاية_الصحية_في_مصر'],
         en: ['#INSAN', '#HealthcarePlatform', '#EgyptianHealthcarePlatform',
-             '#HospitalOperations']
+             '#HospitalOperations', '#EgyptHealthcare']
       },
       'Future': {
         ar: ['#ويدج_جروب_لإدارة_المستشفيات', '#منصة_إنسان',
-             '#مستشفى_المستقبل_التخصصي'],
-        en: ['#FutureHospital', '#InsanHealthcare', '#InsanPlatform']
+             '#مستشفى_المستقبل_التخصصي', '#مراكز_طبية_متخصصة',
+             '#الرعاية_الصحية_في_مصر'],
+        en: ['#FutureHospital', '#InsanPlatform', '#WedgeGroup',
+             '#EgyptHealthcare']
       },
       'Delta': {
         ar: ['#الثقة_لها_دليل', '#كل_تفصيلة_بتحكي', '#الفرق_في_التجربة',
-             '#لافينير_لإدارة_المستشفيات', '#منصة_إنسان', '#مستشفى_الدلتا_الدولي'],
-        en: ['#InsanPlatform']
+             '#لافينير_لإدارة_المستشفيات', '#منصة_إنسان', '#مستشفى_الدلتا_الدولي',
+             '#مراكز_طبية_متخصصة', '#الرعاية_الصحية_في_مصر'],
+        en: ['#InsanPlatform', '#DeltaInternationalHospital', '#LavenirMedical',
+             '#EgyptHealthcare']
       }
     },
+
+    // Where the block stops being a block and starts being a wall.
+    //
+    // Nothing truncates. This is a reporting threshold: a tag silently dropped
+    // from a published post is worse than a long block, and which one to drop
+    // is a brand decision. Exceeding it is logged when the footer is built and
+    // reported by the tests, so the count stays visible rather than growing
+    // one approved suggestion at a time until somebody notices on a live page.
+    MAX_TAGS_PER_LANGUAGE: 8,
 
     // The hotline line, then a blank line, then the WhatsApp line.
     //

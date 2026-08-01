@@ -106,6 +106,39 @@ var PostFooter = {
       add(extra[j]);
     }
 
+    // Reported, never truncated. Which tag to drop is a brand decision, and a
+    // tag silently missing from a published post is worse than a long block —
+    // it looks like an oversight nobody can trace.
+    var limit = this._config().MAX_TAGS_PER_LANGUAGE || 0;
+
+    if (limit && out.length > limit) {
+      Logger.log(
+        'POST_FOOTER | ' + String(page || '') + ' carries ' + out.length + ' ' +
+        language.toUpperCase() + ' hashtags, over the ' + limit + ' the block ' +
+        'is meant to hold. Nothing was dropped. On Facebook a long tag block ' +
+        'reads as spam and its hashtag discovery is weak, so the cost is real. ' +
+        'Trim CONFIG.POST_FOOTER.HASHTAGS.'
+      );
+    }
+
+    return out;
+  },
+
+  // How many tags each page carries before the writer adds its own. Used by the
+  // tests and worth reading whenever a suggestion is approved: the sets grow one
+  // agreed addition at a time and nobody sees the total until it is published.
+  counts: function() {
+    var sets = this._config().HASHTAGS || {};
+    var out = {};
+
+    for (var page in sets) {
+      out[page] = {
+        ar: (sets[page].ar || []).length,
+        en: (sets[page].en || []).length,
+        total: (sets[page].ar || []).length + (sets[page].en || []).length
+      };
+    }
+
     return out;
   },
 
