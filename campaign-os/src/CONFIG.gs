@@ -579,7 +579,11 @@ var CONFIG = {
   MANAGED_COLUMNS: [
     { sheet: 'Content Pipeline', column: 'Pipeline State' },
     { sheet: 'Content Pipeline', column: 'Alternative Opening' },
-    { sheet: 'Campaign Cards', column: 'Service Level' }
+    { sheet: 'Campaign Cards', column: 'Service Level' },
+    // Stamped once per planning run. The calendar accumulates cycle after
+    // cycle, and dates cannot separate two plans that overlap or a cycle that
+    // was replanned. See Batches.gs.
+    { sheet: 'Content Calendar', column: 'Batch ID' }
   ],
 
   // ================================

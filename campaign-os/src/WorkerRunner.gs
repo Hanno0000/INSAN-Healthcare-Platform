@@ -568,6 +568,9 @@ function runCampaignPlanner() {
     var result = PlannerRunner.plan(brief);
     var lines = [
       result.written + ' calendar rows written, from row ' + result.startRow + '.',
+      '',
+      'This plan is ' + result.batchId + '.',
+      'The critic and the archiver identify it by that, not by row number.',
       ''
     ];
 
@@ -695,7 +698,12 @@ function _collectPlanningBrief(ui, check) {
 // catches what the writing actually converged on.
 function runPortfolioCritic() {
   var ui = SpreadsheetApp.getUi();
-  var range = askForRowRange();
+
+  // Scoped by batch, not by row number. The critic measures repetition across
+  // the rows it is given, so handing it two campaigns at once makes it report
+  // variety as inconsistency — and the operator was the one holding the row
+  // numbers in their head.
+  var range = _askForBatchRange();
 
   if (!range) {
     return;
@@ -2759,6 +2767,117 @@ function runVisualWorkerBatch(workerName, startRow, endRow) {
 // ================================
 // ROW RANGE WITH SHEET SUPPORT
 // ================================
+
+// Picks a planning batch and resolves it to Content Pipeline rows.
+//
+// The operator has been reading row numbers off the sheet to answer this, which
+// is both tedious and the kind of thing that goes wrong quietly — a range one
+// batch too wide makes the critic compare two different campaigns and report
+// the difference between them as a fault.
+//
+// Falls back to the row prompt, because a batch is not always the question:
+// sometimes you want the last twenty rows regardless of which plan they are in.
+function _askForBatchRange() {
+  var ui = SpreadsheetApp.getUi();
+  var batches;
+
+  try {
+    batches = Batches.all();
+  } catch (e) {
+    Logger.log('BATCHES | could not read the calendar: ' + e.toString());
+    return askForRowRange();
+  }
+
+  if (!batches.length) {
+    return askForRowRange();
+  }
+
+  var lines = ['Which plan should the critic read?', ''];
+  var shown = Math.min(batches.length, 9);
+
+  for (var i = 0; i < shown; i++) {
+    lines.push((i + 1) + ')  ' + Batches.describe(batches[i]));
+  }
+
+  lines.push('');
+  lines.push('0)  enter row numbers instead');
+  lines.push('');
+  lines.push('The critic measures repetition across the rows it is given, so a');
+  lines.push('range covering two plans reports their difference as a fault.');
+
+  var choice = ui.prompt('Review Plan Before Production', lines.join('\n'),
+    ui.ButtonSet.OK_CANCEL);
+
+  if (choice.getSelectedButton() !== ui.Button.OK) {
+    return null;
+  }
+
+  var picked = parseInt(choice.getResponseText(), 10);
+
+  if (picked === 0) {
+    return askForRowRange();
+  }
+
+  if (isNaN(picked) || picked < 1 || picked > shown) {
+    ui.alert('Review Plan Before Production', 'No plan with that number.',
+      ui.ButtonSet.OK);
+    return null;
+  }
+
+  var batch = batches[picked - 1];
+  var resolved;
+
+  try {
+    resolved = Batches.rowsIn(batch, CONFIG.SHEET_NAME);
+  } catch (e) {
+    ui.alert('Review Plan Before Production',
+      'Could not resolve this plan onto the Content Pipeline: ' +
+      (e.message || e.toString()), ui.ButtonSet.OK);
+    return null;
+  }
+
+  if (!resolved.rows.length) {
+    ui.alert(
+      'Review Plan Before Production',
+      'None of this plan\'s rows have reached the Content Pipeline yet.\n\n' +
+      'The calendar rows exist; the transfer to the pipeline has not run for ' +
+      'them. There is nothing written to review.',
+      ui.ButtonSet.OK
+    );
+    return null;
+  }
+
+  // Row ranges are contiguous in practice because the transfer preserves order.
+  // When they are not — a row deleted by hand shifts one sheet and not the
+  // other — say so rather than quietly measuring the rows in between.
+  if (!resolved.contiguous) {
+    var proceed = ui.alert(
+      'Review Plan Before Production',
+      'This plan\'s rows are not contiguous in the Content Pipeline ' +
+      '(' + resolved.rows.length + ' rows between ' + resolved.startRow +
+      ' and ' + resolved.endRow + ').\n\n' +
+      'Reviewing the whole span would include rows from another plan. ' +
+      'Continue anyway?',
+      ui.ButtonSet.YES_NO
+    );
+
+    if (proceed !== ui.Button.YES) {
+      return null;
+    }
+  }
+
+  if (resolved.missing > 0) {
+    ui.alert(
+      'Review Plan Before Production',
+      resolved.missing + ' of this plan\'s ' + batch.count + ' calendar rows ' +
+      'have no Content Pipeline row yet. Reviewing what has arrived.',
+      ui.ButtonSet.OK
+    );
+  }
+
+  return { start: resolved.startRow, end: resolved.endRow, batch: batch };
+}
+
 
 function askForRowRange(sheetName) {
   var targetSheet = sheetName || CONFIG.SHEET_NAME;

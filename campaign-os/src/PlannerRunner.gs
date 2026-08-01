@@ -345,11 +345,19 @@ var PlannerRunner = {
     var startRow = Math.max(sheet.getLastRow() + 1, CONFIG.DATA_START_ROW);
     var written = 0;
 
+    // One id for the whole run. The calendar accumulates cycle after cycle and
+    // dates alone cannot separate them — two cycles can overlap, and a replanned
+    // cycle produces a second set of rows for the same days. This is what later
+    // tells the portfolio critic which rows are one plan, and what tells the
+    // archiver which rows finished together.
+    var batchId = Batches.newId();
+
     for (var i = 0; i < plan.length; i++) {
       var entry = plan[i];
       var row = startRow + i;
       var day = parseInt(entry.day, 10) || 1;
 
+      SheetWriter.writeCell(row, Batches.COLUMN, batchId, sheetName);
       SheetWriter.writeCell(row, 'Day',
         this._dateFor(brief.startDate, day - 1), sheetName);
       SheetWriter.writeCell(row, 'Post Slot', entry.slot || 1, sheetName);
@@ -368,7 +376,7 @@ var PlannerRunner = {
       written++;
     }
 
-    return { startRow: startRow, written: written };
+    return { startRow: startRow, written: written, batchId: batchId };
   },
 
   // -------------------------------------------------------------- the entry
@@ -437,6 +445,7 @@ var PlannerRunner = {
       this.WORKER_NAME, result.startRow, runtime,
       response.inputTokens, response.outputTokens,
       'Planned ' + accepted.length + ' slots from row ' + result.startRow +
+      ' | ' + result.batchId +
       ' | Eligible campaigns: ' + check.ready.length +
       (check.missing.length ? ' | Refused (no card): ' + check.missing.join(', ') : '') +
       (rejected.length ? ' | Dropped ineligible: ' + rejected.join(', ') : '') +
@@ -446,6 +455,7 @@ var PlannerRunner = {
     return {
       startRow: result.startRow,
       written: accepted.length,
+      batchId: result.batchId,
       rejected: rejected,
       check: check,
       notes: parsed.notes || ''
