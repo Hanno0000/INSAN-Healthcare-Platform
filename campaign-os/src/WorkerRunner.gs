@@ -176,6 +176,7 @@ function onOpen() {
       .addItem('Review Vocabulary Gaps', 'showVocabularyGaps')
       .addItem('Deployment Identifiers', 'showDeploymentIdentifiers')
       .addItem('Check Entity Registry', 'checkEntityRegistry')
+      .addItem('Archive A Finished Plan', 'archiveFinishedPlan')
       .addSeparator()
       .addItem('Background Job Status', 'showJobStatus')
       .addItem('Cancel Background Job', 'cancelActiveJob'))
@@ -573,6 +574,11 @@ function runCampaignPlanner() {
       'The critic and the archiver identify it by that, not by row number.',
       ''
     ];
+
+    // A new cycle is the natural moment to ask about the last one — but only
+    // about plans that are actually finished. Offering to archive work still in
+    // production would take it out from under the workers mid-way through.
+    _offerToArchive(ui);
 
     if (result.check.missing.length) {
       lines.push('Refused — no card: ' + result.check.missing.join(', '));
@@ -2767,6 +2773,56 @@ function runVisualWorkerBatch(workerName, startRow, endRow) {
 // ================================
 // ROW RANGE WITH SHEET SUPPORT
 // ================================
+
+// Offered after a new plan lands. Silent when there is nothing finished to
+// archive — a prompt that appears every cycle and usually has no answer trains
+// the operator to dismiss it without reading, which is how the one time it
+// matters gets dismissed too.
+//
+// Never throws. A plan that was written successfully must not report failure
+// because the archive check could not run.
+function _offerToArchive(ui) {
+  try {
+    var candidates = Archive.candidates();
+
+    if (!candidates.length) {
+      return;
+    }
+
+    var lines = [
+      candidates.length + ' earlier plan' + (candidates.length === 1 ? ' is' : 's are') +
+        ' finished — every row live on a page:',
+      ''
+    ];
+
+    for (var i = 0; i < Math.min(candidates.length, 5); i++) {
+      lines.push('   ' + Batches.describe(candidates[i].batch));
+    }
+
+    lines.push('');
+    lines.push('Move them out of the working sheets? They are copied into hidden');
+    lines.push('archive sheets first and nothing is deleted until the copy is');
+    lines.push('counted.');
+    lines.push('');
+    lines.push('You can also do this later: Maintenance → Archive A Finished Plan.');
+
+    var answer = ui.alert('Archive Finished Plans', lines.join('\n'),
+      ui.ButtonSet.YES_NO);
+
+    if (answer !== ui.Button.YES) {
+      return;
+    }
+
+    // One at a time, each with its own typed confirmation. Archiving several
+    // plans on a single yes is the kind of convenience that removes a hundred
+    // rows the operator had not pictured.
+    archiveFinishedPlan();
+
+  } catch (e) {
+    Logger.log('ARCHIVE | could not offer archiving: ' + e.toString());
+  }
+}
+
 
 // Picks a planning batch and resolves it to Content Pipeline rows.
 //
