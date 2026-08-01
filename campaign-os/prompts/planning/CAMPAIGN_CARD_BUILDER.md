@@ -118,15 +118,20 @@ These are the only fields that are not distilled from the file — they are choi
 | `Business Goal` | From **Business Objectives**. What the business needs. Concrete. |
 | `Marketing Goal` | From **Marketing Objectives**. What communication must achieve. |
 | `Priority` | `High` / `Medium` / `Low`. Judge from the file's stated business importance. If the file says nothing about priority, `Medium`. |
-| `Duration` | `Ongoing` unless the file describes a bounded campaign. |
 | `Target Posts` | A number. Base it on the breadth of **Content Pillars** and **Narrative Themes** — a file with six pillars and twelve themes supports more posts than one with three and four. |
 | `Status` | `Active`. |
 | `Execution Guidance` | The one paragraph a downstream worker most needs and would otherwise miss. Practical, not inspirational. |
 | `Desired Audience Perception` | From **Brand Perception**. What we want them to believe afterwards. |
 
-If a card already exists, the operator's `Priority`, `Duration`, `Target Posts`
-and `Status` are kept and yours are discarded — those are planning decisions and
-they belong to a human. Fill them anyway; the code decides.
+If a card already exists, the operator's `Priority`, `Target Posts` and `Status`
+are kept and yours are discarded — those are planning decisions and they belong
+to a human. Fill them anyway; the code decides.
+
+Do not emit a `Duration` field. It was removed once it was measured that
+nothing read it: the model produced a value, the code wrote it, and no worker
+or menu action ever consumed it. How long a cycle runs is stated in the
+planning brief, about the cycle in front of the operator, rather than written
+on a card months earlier.
 
 ### 4.3 The twelve strategy fields
 

@@ -41,6 +41,41 @@ module.exports = {
       ['Ad ID', 'Ad Status', 'Budget', 'Results'],
       'the operator-owned list matches what is missing from the schema');
 
+    // --- the card's operator-owned decisions ---
+    //
+    // `Duration` was removed from Campaign Cards on 2026-07-31. It was not
+    // merely unused — the model was asked to produce it, the code wrote it, and
+    // no worker or menu action read it, measured across all 25 source files. A
+    // column nobody reads still costs output tokens and, worse, reads to a
+    // human as though something depends on it.
+    const card = CONFIG.CARD_BUILDER;
+
+    t.notOk(card.OUTPUT_FIELDS.hasOwnProperty('Duration'),
+      'the card builder no longer produces Duration');
+    t.notOk(card.OPERATOR_OWNED.indexOf('Duration') !== -1,
+      'and no longer preserves it');
+
+    // The one in the ads tab is a different field with a real consumer: how
+    // long an ad runs. Removing Duration must never have reached it.
+    t.ok(CONFIG.PAID_ADS.OUTPUT_FIELDS.hasOwnProperty('Duration'),
+      "the ads worker's Duration is untouched — it is how long an ad runs");
+    t.includes(CONFIG.PAID_ADS.COLUMNS, 'Duration',
+      'and still has a column to write into');
+
+    // Every field the operator owns must be a field the builder produces,
+    // or the preserve step guards something that is never written.
+    const orphanOwned = card.OPERATOR_OWNED
+      .filter((f) => !card.OUTPUT_FIELDS.hasOwnProperty(f));
+    t.is(orphanOwned, [],
+      'every operator-owned field is one the card builder actually produces');
+
+    // Status is the only one of the three that is enforced. Worth pinning:
+    // PlannerRunner excludes any card that is not Active, so losing this
+    // silently would let retired campaigns back into a plan.
+    t.includes(card.OPERATOR_OWNED, 'Status',
+      'Status stays operator-owned — the planner excludes any card that is ' +
+      'not Active, which makes it the one that carries weight');
+
     // --- managed columns ---
     // Any code writing a new column must add it here, or SheetWriter skips the
     // write, logs one line, and the run reports success.

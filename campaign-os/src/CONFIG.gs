@@ -529,12 +529,23 @@ var CONFIG = {
     // priority and post count are planning choices, not facts about the entity.
     // A rebuild refreshes everything derived and leaves these alone when they
     // already hold a value, reporting what it kept.
+    //
+    // `Duration` used to be here. Nothing ever read it: the model was asked to
+    // produce it, the code wrote it, and no worker or menu action consumed it —
+    // measured across all 25 source files. The planning brief already states
+    // how long a cycle runs, and it says so about the cycle in front of you
+    // rather than as a value written on a card months earlier.
+    //
+    // `Status` is the one here that carries weight: PlannerRunner excludes any
+    // card that is not Active. `Priority` and `Target Posts` are passed to the
+    // model as context and are not enforced by anything.
     OPERATOR_OWNED: [
-      'Priority', 'Duration', 'Target Posts', 'Status'
+      'Priority', 'Target Posts', 'Status'
     ],
 
-    // The twelve strategy fields must stay in Campaign Cards O:Z — the Content
-    // Pipeline VLOOKUP addresses them by position, not by name.
+    // Field order here does not bind the sheet. Transfer.gs carries the twelve
+    // strategy fields into the Content Pipeline BY NAME; the array formula that
+    // addressed Campaign Cards O:Z positionally is what it replaced.
     OUTPUT_FIELDS: {
       'Umbrella Campaign': 'free',
       'Master Brand': 'free',
@@ -544,7 +555,6 @@ var CONFIG = {
       'Business Goal': 'free',
       'Marketing Goal': 'free',
       'Priority': 'free',
-      'Duration': 'free',
       'Target Posts': 'free',
       'Status': 'free',
       'Execution Guidance': 'free',

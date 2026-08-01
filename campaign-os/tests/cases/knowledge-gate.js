@@ -117,6 +117,36 @@ module.exports = {
       'programs/KBRNA_META_ADS_PLAN.md',
       'programs/Kbrna Campaigns.md'
     ], 'only the two known misfiled documents sit in the knowledge folders');
+
+    // --- the prompt and the schema agree on what a card contains ---
+    //
+    // The prompt is loaded from Drive at runtime and cached for six hours, so a
+    // field it asks for that the schema has dropped is not an error anyone
+    // sees: ResponseParser iterates the schema, so the extra value is quietly
+    // discarded. The model spends output tokens on it every single run.
+    const prompt = fx.repoFile('campaign-os/prompts/planning/CAMPAIGN_CARD_BUILDER.md');
+    const fields = Object.keys(CONFIG.CARD_BUILDER.OUTPUT_FIELDS);
+
+    // Only section 4, "What you produce". Section 3 lists the documents the
+    // worker receives, in tables of the same shape — reading those as field
+    // names is how a check ends up reporting MASTER_BRAND_ARCHITECTURE.md as a
+    // missing card column.
+    const section = /## 4\. What you produce([\s\S]*?)\n## 5\./.exec(prompt);
+    t.ok(section, 'the prompt has a "What you produce" section');
+
+    const asked = [];
+
+    for (const line of (section ? section[1] : '').split('\n')) {
+      const m = /^\|\s*`([^`]+)`\s*\|/.exec(line.trim());
+      if (m) asked.push(m[1]);
+    }
+
+    t.ok(asked.length > 10, 'the prompt specifies the card fields in a table');
+
+    const askedForNothing = asked.filter((f) => fields.indexOf(f) === -1);
+    t.is(askedForNothing, [],
+      'the prompt asks for no field the schema has dropped — Duration was ' +
+      'removed from both together, and a mismatch is invisible at runtime');
   }
 };
 
