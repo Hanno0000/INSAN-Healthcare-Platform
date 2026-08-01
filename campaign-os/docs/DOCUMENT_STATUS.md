@@ -107,6 +107,7 @@ checkable; twenty scattered headers are not.
 | `reviews/VISUAL_PLANNER_CODE_REVIEW.md` | **Historical** | A point-in-time review. `VisualPlan.gs` now computes what it reviewed. |
 | `CURRENT_STATE.md` | **Superseded** | By `START_HERE.md` §6. Contains claims later found untrue; kept for the story of how the system got here. |
 | `HANDOFF.md` | **Superseded** | By `START_HERE.md`. Same caveat. |
+| `HANDOFF_2026-08-02.md` | **Current** | Written for the session picking up the 31→5 file consolidation. Records what the 2026-07-31/08-02 session built, the positional-coupling defect it found, and the two bugs it introduced and caught. |
 
 ---
 
