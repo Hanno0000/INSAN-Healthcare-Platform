@@ -282,6 +282,62 @@ var DriveLoader = {
   },
 
   // Names only — cheap enough to call while building worker context.
+  // One named file from a project-assets subfolder, as a blob.
+  //
+  // Separate from loadProjectAssets, which takes a whole folder as visual
+  // reference for the image model. A logo is not reference material: exactly
+  // one file is wanted, by name, and the wrong one is not a degraded result but
+  // a different company's mark on a real hospital's post.
+  //
+  // Cached for the same six hours as everything else read from Drive, because
+  // a carousel composites the same three logos onto every card.
+  loadProjectAsset: function(folderPath, fileName) {
+    var wanted = String(fileName || '').trim();
+
+    if (!folderPath || !wanted) {
+      return null;
+    }
+
+    var cacheKey = 'asset:' + folderPath + '/' + wanted;
+    var folder = this._assetSubfolder(folderPath);
+
+    if (!folder) {
+      Logger.log('PROJECT_ASSETS | folder "' + folderPath + '" did not resolve');
+      return null;
+    }
+
+    try {
+      var files = folder.getFilesByName(wanted);
+
+      if (!files.hasNext()) {
+        Logger.log(
+          'PROJECT_ASSETS | "' + wanted + '" not found in "' + folderPath + '"'
+        );
+        return null;
+      }
+
+      var blob = files.next().getBlob();
+
+      // A second file with the same name means Drive cannot say which one was
+      // meant, and picking the first silently is how the wrong logo ships.
+      if (files.hasNext()) {
+        Logger.log(
+          'PROJECT_ASSETS | more than one file named "' + wanted + '" in "' +
+          folderPath + '" — used the first. Remove the duplicate.'
+        );
+      }
+
+      return blob;
+
+    } catch (e) {
+      Logger.log(
+        'PROJECT_ASSETS | could not read "' + wanted + '" from "' + folderPath +
+        '": ' + e.toString()
+      );
+      return null;
+    }
+  },
+
   listProjectAssets: function(domain) {
     if (!domain) {
       return [];

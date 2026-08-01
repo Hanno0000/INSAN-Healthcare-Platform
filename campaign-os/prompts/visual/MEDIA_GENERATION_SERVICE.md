@@ -1062,6 +1062,30 @@ Avoid compositions that feel generated rather than designed.
 
 ---
 
+# Reserved Zones
+
+Two areas of every image are not yours to fill. Real type and real logo files
+are composited into them after generation — they are not drawn by you, and they
+are not optional.
+
+**The bottom sixth of the frame.** The Arabic headline and the contact line are
+set there over a scrim. Keep the lower sixth free of faces, of anything a viewer
+must read, and of any detail whose loss would change what the image says. A
+plain surface, a wall, floor, or soft gradient is ideal.
+
+**One corner.** Three brand marks are placed in a corner at roughly a tenth of
+the frame. Choose the corner where the least is happening in your composition
+and keep it quiet.
+
+This is the one place where *"avoid unnecessary empty corners"* does not apply.
+The corner is not empty by accident; it is reserved. A composition that fills
+all four corners forces a logo onto a face.
+
+Reserve a **top** corner where you can. The bottom of the frame already carries
+the headline, and stacking marks above a band of type crowds both.
+
+---
+
 # Designing For Social Media
 
 Most viewers will first see this image on a mobile phone.

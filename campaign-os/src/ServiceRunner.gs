@@ -762,6 +762,14 @@ var ServiceRunner = {
           (usage.failedOver ? ' | FAILOVER: ' + usage.failedOver : '')
         );
 
+        // Carried on the row so the overlay can place the marks where the
+        // Designer kept the composition quiet. Written onto rowData rather than
+        // returned separately because the overlay reads the row, and a second
+        // channel for one value is a second thing to keep in step.
+        if (result.reservedCorner) {
+          rowData['Reserved Logo Corner'] = result.reservedCorner;
+        }
+
         return result.prompts;
 
       } catch (designerErr) {
@@ -800,12 +808,16 @@ var ServiceRunner = {
     }
 
     var wording = this._resolveVisibleText(rowData, index, assetCount);
+    var branding = (CONFIG.BRANDING || {}).ENABLED !== false;
 
-    if (!wording) {
+    // An asset with no headline still needs its logos and its contact numbers.
+    // Returning here on the wording alone is what would have published an
+    // unbranded post every time a row had no Text On Design.
+    if (!wording && !branding) {
       return images;
     }
 
-    if (wording.length > (cfg.LONG_HEADLINE_CHARS || 90)) {
+    if (wording && wording.length > (cfg.LONG_HEADLINE_CHARS || 90)) {
       Logger.log(
         'TEXT_OVERLAY | Row ' + rowNumber + ' | asset ' + (index + 1) +
         ' | headline is ' + wording.length + ' characters. It will be set at a ' +
@@ -823,7 +835,8 @@ var ServiceRunner = {
         );
 
         var composed = TextOverlay.apply(
-          source, wording, specs.width, specs.height
+          source, wording, specs.width, specs.height,
+          branding ? rowData : null
         );
 
         if (composed) {

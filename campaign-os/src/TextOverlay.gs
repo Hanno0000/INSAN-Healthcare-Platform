@@ -161,10 +161,18 @@ var TextOverlay = {
   // Returns a new blob with the wording set over the artwork, or null when
   // there is nothing to add. Throws only on a genuine failure, so the caller
   // can decide whether an untyped asset is still worth keeping.
-  apply: function(imageBlob, text, widthPx, heightPx) {
+  // `rowData` is optional and carries the branding: which hospital's marks go
+  // on this asset, and which page's numbers. Passing it composites the logos
+  // and the contact strip in this same Slides pass — the pass is a
+  // copy-export-trash per asset and doing it twice to add two small pictures
+  // would double the most expensive step in the visual path.
+  apply: function(imageBlob, text, widthPx, heightPx, rowData) {
     var wording = String(text || '').trim();
+    var branding = rowData || null;
 
-    if (!wording) {
+    // Artwork with no headline still needs its marks. Returning early here is
+    // what would have shipped an unbranded post.
+    if (!wording && !branding) {
       return null;
     }
 
@@ -190,7 +198,15 @@ var TextOverlay = {
       var image = slide.insertImage(imageBlob);
       image.setLeft(0).setTop(0).setWidth(pageW).setHeight(pageH);
 
-      this._setType(slide, wording, pageW, pageH, cfg);
+      if (wording) {
+        this._setType(slide, wording, pageW, pageH, cfg);
+      }
+
+      // After the type, so the marks sit above the scrim rather than under it,
+      // and so a bottom corner can be lifted clear of the band that now exists.
+      if (branding) {
+        Branding.apply(slide, branding, pageW, pageH);
+      }
 
       var pageObjectId = slide.getObjectId();
       presentation.saveAndClose();

@@ -120,6 +120,112 @@ var CONFIG = {
   //       └── ...
   //
   // `folder` below is a path relative to FOLDER_ID; "/" descends a level.
+  // ================================
+  // BRANDING OVERLAY
+  //
+  // Logos and contact details are composited onto finished artwork, in the same
+  // Slides pass that sets the Arabic headline. Not a separate worker: that pass
+  // is a copy-export-trash per asset and it is the most expensive step in the
+  // visual path, so doing this in a second one would double it for no gain.
+  //
+  // WHICH LOGOS — decided by the row's `Hospital Brand`, per the brand
+  // architecture. A hospital carries three marks: the platform it belongs to,
+  // the company that manages it, and its own.
+  //
+  // THE META TEXT RULE — Meta retired the automatic rejection at 20% text in
+  // 2020; it is now guidance that affects delivery rather than a hard block.
+  // The constraint is kept anyway because every post here is intended for paid
+  // promotion. Band height is a conservative proxy for text area: the bands
+  // include their scrim, so the glyphs themselves are always well under it.
+  // ================================
+
+  BRANDING: {
+    ENABLED: true,
+
+    // Drive: My Drive / Insan / business / Media / Brand Identity / Png
+    // Resolved from PROJECT_ASSETS.FOLDER_ID, so only one id is configured.
+    LOGO_FOLDER: 'Brand Identity/Png',
+
+    // The `* Transparent.png` set only. Every one is verified RGBA.
+    // The `* White.png` files have NO alpha channel — placing one composites a
+    // solid white rectangle over the artwork. Do not use them here; the light
+    // and dark variants come from TINT below.
+    LOGOS: {
+      INSAN:   'Color.png',
+      FUTURE:  'Future Transparent.png',
+      DELTA:   'Delta Transparent.png',
+      WEDGE:   'Wedge Transparent.png',
+      LVENIR:  'lvenir Transparent.png'
+    },
+
+    // Hospital Brand → the marks that appear, in order. INSAN first: the
+    // platform governs, and the hierarchy should read the same way every time.
+    BRAND_SETS: {
+      'INSAN':  ['INSAN'],
+      'Future': ['INSAN', 'WEDGE', 'FUTURE'],
+      'Delta':  ['INSAN', 'LVENIR', 'DELTA']
+    },
+
+    // Two numbers per page, reachable on both WhatsApp and phone.
+    // Supplied by the operator 2026-07-31.
+    //
+    // ⚠️ 01500668657 is listed for BOTH Insan and Delta. That may be deliberate
+    // — one line answering for two pages — or a slip. It is left exactly as
+    // given rather than deduplicated, because guessing which page loses a
+    // number is not a decision code should make. The check in tests reports it
+    // rather than failing on it.
+    CONTACT: {
+      'INSAN':  { phones: ['01500668657', '01100755556'], label: 'للتواصل' },
+      'Future': { phones: ['01151001177', '01122224352'], label: 'للتواصل' },
+      'Delta':  { phones: ['01217778869', '01500668657'], label: 'للتواصل' }
+    },
+
+    // Optional. Missing icons degrade to the label alone rather than failing —
+    // a post without a small glyph is fine, a post that never shipped is not.
+    ICONS: {
+      WHATSAPP: 'icon-whatsapp.png',
+      PHONE:    'icon-phone.png'
+    },
+
+    PLACEMENT: {
+      // Which corner the logos sit in. `auto` uses the corner MediaDesigner
+      // reserved when it wrote the image prompt — it is the only thing that
+      // knows what was asked for in each corner before the image existed.
+      CORNER: 'auto',
+      FALLBACK_CORNER: 'top-left',
+
+      // Longest side of a single logo, as a fraction of the image's longest
+      // side. Small: three marks in a corner is an endorsement line, not a
+      // headline.
+      LOGO_SCALE: 0.11,
+      GAP_PCT: 0.02,
+      MARGIN_PCT: 0.05,
+
+      // Laid out along the short axis of the corner they sit in.
+      DIRECTION: 'auto',
+
+      // Only white and black, and only when the artwork demands it — a tinted
+      // brand mark is already a compromise, and a coloured one is a different
+      // logo. `auto` follows the scrim's own lightness.
+      TINT: 'auto'
+    },
+
+    // The contact strip sits directly under the headline band, inside the same
+    // scrim, so the two together are one reserved zone rather than two.
+    CONTACT_BAND: {
+      HEIGHT_PCT: 0.03,
+      FONT_FAMILY: 'Cairo',
+      FONT_PT: 18,
+      TEXT_COLOR: '#ffffff',
+      SEPARATOR: '  •  '
+    },
+
+    // Headline band + contact band, as a fraction of image height. Checked
+    // before anything is drawn: exceeding it is a configuration error, not
+    // something to discover on a rejected ad.
+    MAX_TEXT_BAND_PCT: 0.16
+  },
+
   PROJECT_ASSETS: {
     FOLDER_ID: '1KIYMoXT-nKRxfKssmzvinuCJLRW-zdAw',
     SUPPORTED_IMAGE_TYPES: ['image/jpeg', 'image/png', 'image/webp'],
@@ -329,7 +435,13 @@ var CONFIG = {
     // Share of the frame the type may occupy. The scrim hugs this, so it is
     // also roughly how much of the artwork gets covered — keep it small enough
     // that the image is still the thing being looked at.
-    BAND_HEIGHT_PCT: 0.22,
+    //
+    // Reduced from 0.22 on 2026-07-31. Every post here is intended for paid
+    // promotion, and Meta's guidance is that images carrying more than 20% text
+    // are delivered worse. This band plus BRANDING.CONTACT_BAND must stay under
+    // BRANDING.MAX_TEXT_BAND_PCT, which TextOverlay checks before drawing.
+    // 0.22 alone was already over the line the operator set.
+    BAND_HEIGHT_PCT: 0.13,
 
     SCRIM_COLOR: '#0d1b2a',
     SCRIM_ALPHA: 0.55,         // 0 disables the scrim entirely

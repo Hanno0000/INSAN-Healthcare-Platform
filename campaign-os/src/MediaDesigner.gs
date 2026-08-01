@@ -309,6 +309,7 @@ var MediaDesigner = {
       '',
       '{',
       '  "prompts": [' + this._exampleSlots(assetCount) + '],',
+      '  "reserved_corner": "top-left",',
       '  "blocked": false,',
       '  "blocked_reason": ""',
       '}',
@@ -317,6 +318,13 @@ var MediaDesigner = {
       'self-contained prompt in English, written for an image model, following',
       'the eight production layers of your manual in order. No card numbers, no',
       'labels, no commentary.',
+      '',
+      '"reserved_corner" is where the brand marks will be composited after',
+      'generation — one of top-left, top-right, bottom-left, bottom-right. Name',
+      'the corner your composition leaves quietest, and write the prompts so it',
+      'stays that way. You are the only thing that knows what is in each corner',
+      'before the image exists; nothing downstream can move a logo off a face.',
+      'Prefer a top corner: the bottom of the frame already carries the headline.',
       '',
       '=== END OF WORKER CONTRACT ==='
     );
@@ -378,6 +386,26 @@ var MediaDesigner = {
       cleaned.push(prompt);
     }
 
-    return { prompts: cleaned, blocked: false, blockedReason: '' };
+    // Where the brand marks go. Validated against the four names rather than
+    // trusted: an unrecognised value falls back to the configured corner, which
+    // is a plain logo placement, where passing it through would be a logo
+    // positioned at a coordinate nobody defined.
+    var corners = ['top-left', 'top-right', 'bottom-left', 'bottom-right'];
+    var reserved = String(json.reserved_corner || '').trim().toLowerCase();
+
+    if (reserved && corners.indexOf(reserved) === -1) {
+      Logger.log(
+        'MEDIA_DESIGNER | reserved_corner was "' + reserved + '", which is not ' +
+        'one of ' + corners.join(', ') + '. Falling back to the configured corner.'
+      );
+      reserved = '';
+    }
+
+    return {
+      prompts: cleaned,
+      reservedCorner: reserved,
+      blocked: false,
+      blockedReason: ''
+    };
   }
 };
