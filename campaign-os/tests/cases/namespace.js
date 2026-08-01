@@ -1,0 +1,91 @@
+// The global namespace — the only interface the sources have with each other.
+//
+// Apps Script has no `import` and no modules. Every `.gs` file is evaluated
+// into one shared scope, in an order the platform chooses, before anything is
+// called. `var CONFIG = {...}` in one file and `CONFIG.SERVICES` in another are
+// joined by nothing except that shared scope.
+//
+// Two consequences, and this suite exists for both.
+//
+// The first is that regrouping the sources into different files cannot change
+// what runs, provided the set of names is unchanged. That is what makes the
+// 31-files-into-5 consolidation a text move rather than a refactor — but it is
+// a claim, and `GLOBALS.txt` is what turns it into a measurement.
+//
+// The second is that the namespace is easy to pollute by accident. An
+// assignment that lost its `var` inside a function creates a global at call
+// time; a second file declaring a name a first file already owns silently wins.
+// Neither produces an error. Pinning the list means both have to be deliberate.
+
+module.exports = {
+  name: 'namespace',
+
+  run(t, fx) {
+    const manifest = fx.repoFile('campaign-os/tests/GLOBALS.txt')
+      .split('\n')
+      .map((l) => l.trim())
+      .filter((l) => l && !l.startsWith('#'))
+      .sort();
+
+    const actual = fx.sourceGlobals;
+
+    // Guard before comparing. Both sides are lists, and two empty lists are
+    // equal — a fixture that stopped collecting would report a perfect match.
+    t.ok(manifest.length > 100,
+      `GLOBALS.txt carries the manifest — ${manifest.length} names`);
+    t.ok(actual.length > 100,
+      `the sources were loaded and observed — ${actual.length} names`);
+
+    // Named rather than counted. "expected 136, got 134" sends you looking;
+    // "Transfer, Archive" tells you a section was dropped.
+    const missing = manifest.filter((n) => actual.indexOf(n) === -1);
+    const added = actual.filter((n) => manifest.indexOf(n) === -1);
+
+    t.is(missing, [],
+      'every name the manifest records is still defined — a name that vanished ' +
+      'is a section dropped from a file, and nothing else in the suite would ' +
+      'necessarily notice');
+
+    t.is(added, [],
+      'and nothing new appeared unannounced — an unexpected global is usually ' +
+      'an assignment that lost its var. If it is deliberate, regenerate the ' +
+      'manifest in the same commit that introduces it');
+
+    // --- the names the rest of the system reaches for by string ---
+    // These are not merely present in the manifest, they are callable. The menu
+    // resolves its functions this way (see cases/menu.js) and the workers
+    // resolve their services the same way.
+    for (const name of ['CONFIG', 'Logger', 'SheetWriter', 'DriveLoader',
+                        'ResponseParser', 'AIProvider', 'ServiceRunner',
+                        'AdPolicy', 'Transfer', 'Archive', 'PostFooter',
+                        'Branding', 'Batches']) {
+      t.ok(typeof global[name] === 'object' || typeof global[name] === 'function',
+        `${name} resolves in the shared scope`);
+    }
+
+    // --- no name is owned by two files ---
+    // A duplicate `var X` does not throw. The last file loaded wins, and which
+    // file that is depends on the order the platform picks — so the failure can
+    // differ between the editor and this harness.
+    const files = fx.srcFiles();
+    const owners = {};
+
+    for (const [file, text] of Object.entries(files)) {
+      // Declarations at column 0 only. Anything indented is inside something.
+      for (const m of text.matchAll(/^(?:var|function)\s+([A-Za-z_$][\w$]*)/gm)) {
+        (owners[m[1]] = owners[m[1]] || new Set()).add(file);
+      }
+    }
+
+    t.ok(Object.keys(owners).length > 100,
+      `top-level declarations are readable — found ${Object.keys(owners).length}`);
+
+    const shared = Object.entries(owners)
+      .filter(([, set]) => set.size > 1)
+      .map(([name, set]) => `${name} in ${[...set].sort().join(' and ')}`);
+
+    t.is(shared, [],
+      'no global is declared by two files — one would silently overwrite the ' +
+      'other, and which one wins depends on load order');
+  }
+};

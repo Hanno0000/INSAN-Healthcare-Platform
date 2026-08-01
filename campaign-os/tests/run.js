@@ -73,6 +73,13 @@ global.Logger = { log: (m) => logLines.push(String(m)) };
 const sources = fs.readdirSync(SRC).filter((f) => f.endsWith('.gs')).sort();
 const globalEval = (0, eval);
 
+// Which names the sources put into the global namespace, as opposed to the ones
+// Node was already carrying. Taken as a before/after difference because Apps
+// Script has no modules: every source shares one scope, and that shared scope
+// is the only interface between them. `tests/GLOBALS.txt` pins the result — see
+// `cases/namespace.js`.
+const globalsBeforeSources = new Set(Object.getOwnPropertyNames(global));
+
 for (const file of sources) {
   try {
     globalEval(fs.readFileSync(path.join(SRC, file), 'utf8'));
@@ -81,6 +88,10 @@ for (const file of sources) {
     process.exit(1);
   }
 }
+
+const sourceGlobals = Object.getOwnPropertyNames(global)
+  .filter((n) => !globalsBeforeSources.has(n))
+  .sort();
 
 // src/Logger.gs defines its own Logger and replaces the stub above. Reinstall
 // it: the real one writes to the Execution Log sheet, and a suite that
@@ -156,6 +167,51 @@ const fixtures = {
   exists(relative) {
     return fs.existsSync(path.join(REPO, relative));
   },
+
+  // Every `.gs` under src/, as text, keyed by filename.
+  srcFiles() {
+    const out = {};
+    for (const f of sources) out[f] = fs.readFileSync(path.join(SRC, f), 'utf8');
+    return out;
+  },
+
+  // The text of one original source unit, wherever it now lives.
+  //
+  // Several checks read a source as text rather than calling into it — that a
+  // regex literal carries the Arabic boundary, that a guard sits in the cached
+  // prefix. Those are claims about a specific body of code, so they need its
+  // text and not the text of everything it was merged with: pointed at a whole
+  // merged file, a scan for a bad pattern starts reporting on neighbours.
+  //
+  // Works either way. A standalone `AdPolicy.gs` is read directly; once it is a
+  // section inside a larger file, the banners written by the merge delimit it.
+  srcSection(name) {
+    const file = name.endsWith('.gs') ? name : name + '.gs';
+    const direct = path.join(SRC, file);
+    if (fs.existsSync(direct)) return fs.readFileSync(direct, 'utf8');
+
+    const begin = `// BEGIN SOURCE FILE: ${file}`;
+    const end = `// END SOURCE FILE: ${file}`;
+
+    for (const f of sources) {
+      const text = fs.readFileSync(path.join(SRC, f), 'utf8');
+      const from = text.indexOf(begin);
+      if (from === -1) continue;
+      const to = text.indexOf(end, from);
+      if (to === -1) {
+        throw new Error(`src/${f} opens the section for ${file} and never closes it`);
+      }
+      return text.slice(from + begin.length, to);
+    }
+
+    throw new Error(
+      `no source section named ${file} — it is neither a file under src/ nor a ` +
+      `banner-delimited section inside one. If it was renamed, the checks ` +
+      `reading it have to be pointed somewhere.`
+    );
+  },
+
+  sourceGlobals,
   logLines
 };
 

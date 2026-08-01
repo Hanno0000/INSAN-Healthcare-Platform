@@ -1,7 +1,7 @@
 # Tests
 
 > **Status:** **Current** — the committed behavioural checks for the logic layer.
-> **Added:** 2026-07-31
+> **Added:** 2026-07-31 · **Updated:** 2026-08-02
 
 ```bash
 node campaign-os/tests/run.js
@@ -19,29 +19,59 @@ had been run as throwaway scripts in earlier working sessions and never committe
 nobody could re-run them, and the claim could not be checked by anyone reading the
 repository. A test result that only one person ever saw is not evidence.
 
-**219 checks now, and they are here.**
+**606 checks now, and they are here.**
 
 ---
 
 ## What it can and cannot tell you
 
-The `.gs` sources are plain JavaScript, and all 25 of them load into one Node context
-exactly as Apps Script loads them. What is missing outside the editor is Apps Script's
-own services — `SpreadsheetApp`, `DriveApp`, `UrlFetchApp`, `PropertiesService`,
-`SlidesApp`. Every one is stubbed in `run.js` to **throw on any access**.
+The `.gs` sources are plain JavaScript, and every one of them loads into one Node
+context exactly as Apps Script loads them. What is missing outside the editor is Apps
+Script's own services — `SpreadsheetApp`, `DriveApp`, `UrlFetchApp`,
+`PropertiesService`, `SlidesApp`. Every one is stubbed in `run.js` to **throw on any
+access**.
 
 So these checks cover the decisions the system makes *before* it touches anything:
 
 | Suite | Checks | What it protects |
 |---|---|---|
+| `ad-policy` | 54 | Meta's rules as a constraint on the writing. Personal attributes — the most common healthcare rejection — and the Arabic boundary that made three of four rules dead on arrival |
+| `archive` | 35 | One row per post across four tabs · deletion runs furthest-downstream first · refuses to run while a transfer formula remains |
 | `asset-domains` | 27 | Which folder of real photographs a row gets. The substring traps — `ward` inside "award", `dental` inside "accidental", `management` inside "Pain Management Center" |
-| `config-integrity` | 40 | Publishing ships in dry run · Budget is outside the ads worker's schema · managed columns are declared · no two vocabulary values differ only by case |
+| `asset-filing` | 36 | Rejection reads `Generated Assets`, not the approval-only column · `REJ` can never become a reuse candidate · published files keep their names |
+| `batches` | 21 | A batch id is the planning moment, so the same campaign planned twice is two batches |
+| `branding` | 51 | Which marks each brand gets, an unknown brand getting none, and the 16% Meta text budget |
+| `config-integrity` | 46 | Publishing ships in dry run · Budget is outside the ads worker's schema · managed columns are declared · no two vocabulary values differ only by case |
 | `entity-registry` | 24 | The registry's 24 entities parse; a malformed row is reported, never silently dropped |
 | `events-calendar` | 26 | What is coming — and that a Hijri date with no entry is **reported missing, never estimated** |
-| `knowledge-gate` | 22 | Which knowledge files may build a card. 24 ready, 2 waiting on operator facts — the claim in `KNOWLEDGE_BASE_SPEC.md` §7.8, checked |
+| `knowledge-gate` | 25 | Which knowledge files may build a card. 24 ready, 2 waiting on operator facts — the claim in `KNOWLEDGE_BASE_SPEC.md` §7.8, checked |
+| `menu-bindings` | 43 | **Every `onOpen` menu item points at a function that exists.** The binding is a string, resolved on the click and nowhere earlier |
+| `namespace` | 19 | The names the sources put into the shared scope, pinned in `GLOBALS.txt`. No global owned by two files |
 | `opening-formulas` | 29 | The five rhetorical constructions Audit B measured, and the Arabic word-boundary regression |
+| `post-footer` | 88 | Standing hashtags merged in code · the wa.me links derived from the phone number, after two of three arrived with an extra zero |
 | `response-parser` | 27 | JSON out of whatever the model wrapped it in; `Rejected` never corrected into `Approved` |
+| `transfer` | 31 | Rows joined by a key the row carries, not by position · a transfer already downstream is skipped |
 | `visual-plan` | 24 | Carousel scene counting, including the >4-card case that used to dead-end |
+
+### Two suites about the shape of the code rather than its behaviour
+
+`menu-bindings` and `namespace` exist because Apps Script has **no modules**. Every
+`.gs` file is evaluated into one shared scope, and the menu resolves its functions out
+of that scope by string:
+
+```js
+.addItem('Transfer Rows Forward', 'transferRowsForward')
+```
+
+Nothing resolves that string when the script loads, when the menu is built, or when
+the sheet is opened. It resolves **when the operator clicks the item** — so a function
+renamed, a file left out of a paste, or a section lost in a merge produces a menu that
+draws perfectly and has an item that does nothing.
+
+`GLOBALS.txt` pins the 136 names the sources contribute to that scope. It is what makes
+"the sources were regrouped into different files and nothing changed" a measurement
+rather than a claim. Regenerate it deliberately, in the commit that adds the name —
+never to make a failing check pass.
 
 **They do not prove the system runs.** No cell is written, no Drive folder read, no
 model called. A green run and a working deployment are different claims, and only a
@@ -55,8 +85,8 @@ part of the pure layer and needs a different kind of check.
 
 ## The checks are known to fail when they should
 
-A suite that cannot fail is decoration. Four deliberate regressions were introduced and
-all four were caught:
+A suite that cannot fail is decoration. Every regression below was introduced
+deliberately, run, and caught:
 
 | Regression | Caught by |
 |---|---|
@@ -64,6 +94,14 @@ all four were caught:
 | Put `Budget` back into the ads worker's output schema | `config-integrity` |
 | Turn `CONFIG.PUBLISHING.DRY_RUN` off | `config-integrity` |
 | Add a bare `ward` keyword to the inpatient domain | `asset-domains` |
+| Rename `transferRowsForward`, leaving the menu item pointing at nothing | `menu-bindings` and `namespace`, 6 checks |
+| Declare `var Transfer` in a second file | `namespace` |
+| Add a name to `GLOBALS.txt` that no source defines | `namespace` |
+| Remove a name from `GLOBALS.txt` that a source does define | `namespace` |
+
+`menu-bindings` also carries its mutation test inside the suite: the audit is run
+against a source with one deliberately broken binding and must report exactly that
+binding, then stop reporting it once the function exists.
 
 ---
 
@@ -82,7 +120,19 @@ module.exports = {
 ```
 
 `t` has `is` · `ok` · `notOk` · `includes` · `throws`.
-`fx` has `repoFile(path)` · `repoBytes(path)` · `exists(path)`, all repo-relative.
+
+`fx` has `repoFile(path)` · `repoBytes(path)` · `exists(path)`, all repo-relative, plus
+three for reading the sources themselves:
+
+| | |
+|---|---|
+| `srcFiles()` | every `.gs` under `src/`, as text, keyed by filename |
+| `srcSection(name)` | the text of one original source unit — `srcSection('AdPolicy')` — wherever it now lives. A standalone file is read directly; once it is a section inside a merged file, the `// BEGIN SOURCE FILE:` banners delimit it |
+| `sourceGlobals` | the names the sources added to the shared scope, as a sorted list |
+
+**Read a source by section, not by path.** A check asserting something about
+`AdPolicy`'s regex literals, pointed at a whole merged file, starts reporting on the
+regex literals of everything AdPolicy happens to sit beside.
 
 Two conventions worth keeping:
 

@@ -59,7 +59,11 @@ module.exports = {
     // JavaScript defines \b on [A-Za-z0-9_], so it never matches at the edge of
     // an Arabic word. START_HERE §7 records this against the portfolio critic,
     // and three of the four rules here were dead on arrival for the same reason.
-    const source = fx.repoFile('campaign-os/src/AdPolicy.gs');
+    //
+    // Read by section rather than by path. These scans are claims about this body of
+    // code — pointed at a whole merged file they would start reporting on the
+    // regex literals of everything AdPolicy happens to sit beside.
+    const source = fx.srcSection('AdPolicy');
 
     // Only regex literals, not the comment that explains the trap — which
     // contains both \b and Arabic and matched a looser check.
@@ -161,14 +165,14 @@ module.exports = {
 
     // Never throws and never blocks: a shape is evidence, not proof, and a row
     // stopped by a regex that misread a sentence costs a rewrite for nothing.
-    const runner = fx.repoFile('campaign-os/src/WorkerRunner.gs');
+    const runner = fx.srcSection('WorkerRunner');
     t.includes(runner, 'AdPolicy.report(',
       'the scan runs at the Creative Director gate');
     t.notOk(/throw[^\n]*AdPolicy/.test(runner),
       'and nothing throws on it');
 
     // --- it is in the cached prefix, and in the image path ---
-    const context = fx.repoFile('campaign-os/src/ContextBuilder.gs');
+    const context = fx.srcSection('ContextBuilder');
     const prefix = /staticPrefixFor: function\(workerName\) \{([\s\S]*?)\n  \},/
       .exec(context);
 
@@ -179,7 +183,7 @@ module.exports = {
                    prefix[1].indexOf('_buildProjectDocs'),
       'and before the creative documents it overrides');
 
-    const designer = fx.repoFile('campaign-os/src/MediaDesigner.gs');
+    const designer = fx.srcSection('MediaDesigner');
     t.includes(designer, 'AdPolicy.block()',
       'the image path carries it too — before/after pairings and distressing ' +
       'clinical imagery are IMAGE rejections, not copy ones');
