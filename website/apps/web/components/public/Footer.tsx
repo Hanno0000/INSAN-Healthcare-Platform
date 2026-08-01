@@ -93,7 +93,7 @@ export default function Footer({ navItems, settings = [] }: Props) {
               <div className="flex flex-col gap-4 font-cairo text-sm">
                 <p>
                   <strong>العنوان:</strong><br />
-                  {contactAddress}
+                  {t(contactAddress as any)}
                 </p>
                 <p>
                   <strong>هاتف:</strong><br />

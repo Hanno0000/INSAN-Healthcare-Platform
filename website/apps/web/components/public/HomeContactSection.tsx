@@ -3,6 +3,7 @@ import SectionTitle from './SectionTitle';
 import { Phone, Mail, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import { getPublicSettings } from '@/lib/public-api';
+import { t } from '@/lib/utils';
 
 export default async function HomeContactSection() {
   const settings = await getPublicSettings();
@@ -57,7 +58,7 @@ export default async function HomeContactSection() {
                 </div>
                 <div>
                   <p className="text-sm text-white/60 mb-1">المقر الرئيسي</p>
-                  <p className="text-lg font-bold">{contactAddress}</p>
+                  <p className="text-lg font-bold">{t(contactAddress as any)}</p>
                 </div>
               </div>
             </div>
