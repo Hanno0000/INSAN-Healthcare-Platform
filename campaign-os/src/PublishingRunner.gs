@@ -155,6 +155,23 @@ var PublishingRunner = {
       SheetWriter.writeAIWorkerTag(rowNumber, this.WORKER_NAME, sheetName);
       SpreadsheetApp.flush();
 
+      // The artwork is live. Move it out of `approved` into `published`, which
+      // is what makes the folders readable at a glance: approved means passed
+      // QA and never used, published means it actually ran.
+      //
+      // Only on a real post — the dry-run branch returns above, so nothing is
+      // moved for a run that published nothing. Never throws: a post that is
+      // already on a real page must not be reported as failed because a file
+      // could not be moved afterwards.
+      var filed = AssetLibrary.markPublished(rowNumber, sheetName);
+
+      if (filed.error) {
+        Logger.log(
+          'PUBLISHING | row ' + rowNumber + ' is live at ' + live.url +
+          ' but its artwork was not moved to the published folder: ' + filed.error
+        );
+      }
+
       Logger.logSuccess(this.WORKER_NAME, rowNumber,
         new Date().getTime() - startTime, 0, 0,
         'Published to ' + post.page + ' | ' + post.assets.length + ' asset(s) | ' +

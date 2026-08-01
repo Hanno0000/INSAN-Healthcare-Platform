@@ -169,6 +169,7 @@ function onOpen() {
       .createMenu('Maintenance')
       .addItem('Preflight Check', 'preflightCheck')
       .addItem('Check Project Assets', 'checkProjectAssets')
+      .addItem('Check Visual Asset Folders', 'checkVisualAssetFolders')
       .addItem('Create Managed Columns (run once)', 'createManagedColumns')
       .addItem('Sync Dropdowns from CONFIG (run once)', 'syncVocabularyFromConfig')
       .addItem('Unblock Dropdowns (run once)', 'relaxDataValidation')
@@ -2904,6 +2905,13 @@ function _applyVisualStageMapping(rowNumber, parsedValues, sheetName) {
 
   _transitionVisualStage(rowNumber, nextStage, sheetName);
 
+  // Filing follows the verdict. Which folder an asset sits in is its status, so
+  // leaving a refused image in `generated` makes that folder mean two different
+  // things at once — "not yet judged" and "already refused" — and the operator
+  // cannot tell them apart by looking.
+  //
+  // Both calls are deliberately incapable of throwing. A library that cannot
+  // move a file must not fail a row QA has just decided on.
   if (qaDecision === 'Approved') {
     var generatedAssets = qaRowData['Generated Assets'];
     if (generatedAssets) {
@@ -2911,11 +2919,29 @@ function _applyVisualStageMapping(rowNumber, parsedValues, sheetName) {
       SpreadsheetApp.flush();
 
       // File the approved artwork so it can be found again. Drive file ids
-      // survive a move, so the URL just written keeps resolving. Never throws:
-      // the library must not be able to fail a row QA has just approved.
+      // survive a move, so the URL just written keeps resolving.
       // (Improvement I4 — CONFIG.VISUAL_ASSETS.approved existed and nothing
       // ever wrote to it.)
-      AssetLibrary.promote(rowNumber, sheetName);
+      var promoted = AssetLibrary.promote(rowNumber, sheetName);
+
+      if (promoted.error) {
+        Logger.log(
+          'VISUAL_QA_WORKER | row ' + rowNumber + ' was approved but its artwork ' +
+          'was not filed: ' + promoted.error + '. The row is fine; the library is not.'
+        );
+      }
+    }
+
+  } else if (qaDecision === 'Rejected') {
+    // Read from Generated Assets: Final Asset URL is only written on approval,
+    // so on a rejection it is empty and there would be nothing to move.
+    var refused = AssetLibrary.reject(rowNumber, sheetName);
+
+    if (refused.error) {
+      Logger.log(
+        'VISUAL_QA_WORKER | row ' + rowNumber + ' was rejected but its artwork ' +
+        'was not filed: ' + refused.error + '. It is still in the generated folder.'
+      );
     }
   }
 

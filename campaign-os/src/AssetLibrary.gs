@@ -36,30 +36,57 @@ var AssetLibrary = {
     return (CONFIG.VISUAL_ASSETS || {})[which];
   },
 
-  // ---------------------------------------------------------------- promote
+  // ------------------------------------------------------------ filing
 
-  // Called when QA approves. Never throws: a library that cannot file an asset
-  // must not fail a row that has just been approved.
-  promote: function(rowNumber, sheetName) {
+  // Every asset a row produces ends up in exactly one folder, and which folder
+  // it is in *is* its status:
+  //
+  //   generated  it exists and nobody has judged it
+  //   approved   QA passed it — and it is a reuse candidate
+  //   rejected   QA failed it
+  //   published  it went live on a page
+  //
+  // Before this, only `generated` and `approved` were ever written to. A
+  // rejected image stayed in `generated` alongside artwork nobody had looked at
+  // yet, so the folder that should mean "not yet judged" quietly meant "some
+  // mixture of not yet judged and already refused".
+  //
+  // Never throws. A library that cannot file an asset must not fail a row that
+  // QA has just decided on, or a post that is already live on a real page.
+  _fileInto: function(rowNumber, sheetName, spec) {
     try {
-      var approvedFolderId = this._folderId('approved');
+      var folderId = this._folderId(spec.folder);
 
-      if (!approvedFolderId || !String(approvedFolderId).trim()) {
-        return { moved: 0, reason: 'no approved folder configured' };
+      if (!folderId || !String(folderId).trim()) {
+        return { moved: 0, reason: 'no ' + spec.folder + ' folder configured' };
       }
 
       var row = SheetSchema.getRowData(rowNumber, sheetName);
-      var urls = String(row['Final Asset URL'] || '').trim();
+      var urls = String(row[spec.column] || '').trim();
 
       if (!urls) {
-        return { moved: 0, reason: 'no Final Asset URL' };
+        return { moved: 0, reason: 'no ' + spec.column };
       }
 
       var domain = this._domainKey(row);
       var aspect = this._aspectKey(row['Content Format']);
       var contentId = String(row[CONFIG.COLUMN_NAMES.CONTENT_ID] || 'unknown').trim();
 
-      var folder = DriveApp.getFolderById(approvedFolderId);
+      var folder;
+      try {
+        folder = DriveApp.getFolderById(folderId);
+      } catch (folderErr) {
+        // The id is set but does not open. Silence here is what leaves approved
+        // artwork sitting in `generated` with nothing to say why.
+        Logger.log(
+          'ASSET_LIBRARY | the "' + spec.folder + '" folder id is set but does ' +
+          'not resolve — row ' + rowNumber + ' was not filed and its assets are ' +
+          'still where they were. Run Maintenance → Check Visual Asset Folders. ' +
+          folderErr.toString()
+        );
+        return { moved: 0, error: 'folder does not resolve', folder: spec.folder };
+      }
+
       var refs = urls.split(',');
       var moved = 0;
 
@@ -75,11 +102,17 @@ var AssetLibrary = {
 
         try {
           var file = DriveApp.getFileById(fileId);
-          var extension = (file.getName().match(/\.(png|jpg|jpeg)$/i) || ['', 'png'])[1];
 
-          file.setName([
-            this.PREFIX, domain, aspect, contentId, (i + 1)
-          ].join(this.SEPARATOR) + '.' + extension.toLowerCase());
+          // Renaming is for the folders whose contents are looked up by name.
+          // A published asset already carries its library name and keeps it —
+          // renaming it would strip the metadata reuse matches on.
+          if (spec.prefix) {
+            var extension = (file.getName().match(/\.(png|jpg|jpeg)$/i) || ['', 'png'])[1];
+
+            file.setName([
+              spec.prefix, domain, aspect, contentId, (i + 1)
+            ].join(this.SEPARATOR) + '.' + extension.toLowerCase());
+          }
 
           // Moving keeps the file id, so every URL already written to the sheet
           // still resolves. moveTo replaces all parents.
@@ -89,24 +122,107 @@ var AssetLibrary = {
         } catch (fileErr) {
           Logger.log(
             'ASSET_LIBRARY | could not file asset ' + (i + 1) + ' of row ' +
-            rowNumber + ': ' + fileErr.toString()
+            rowNumber + ' into ' + spec.folder + ': ' + fileErr.toString()
           );
         }
       }
 
       if (moved) {
         Logger.log(
-          'ASSET_LIBRARY | filed ' + moved + ' approved asset(s) from row ' +
-          rowNumber + ' | domain "' + domain + '" | ' + aspect
+          'ASSET_LIBRARY | filed ' + moved + ' asset(s) from row ' + rowNumber +
+          ' into ' + spec.folder + ' | domain "' + domain + '" | ' + aspect
         );
       }
 
-      return { moved: moved, domain: domain, aspect: aspect };
+      return { moved: moved, domain: domain, aspect: aspect, folder: spec.folder };
 
     } catch (e) {
-      Logger.log('ASSET_LIBRARY | promote failed for row ' + rowNumber + ': ' + e.toString());
-      return { moved: 0, error: e.toString() };
+      Logger.log(
+        'ASSET_LIBRARY | filing into ' + spec.folder + ' failed for row ' +
+        rowNumber + ': ' + e.toString()
+      );
+      return { moved: 0, error: e.toString(), folder: spec.folder };
     }
+  },
+
+  // QA approved. The artwork becomes library material, so it is renamed to
+  // carry what it is — the filename is the index.
+  promote: function(rowNumber, sheetName) {
+    return this._fileInto(rowNumber, sheetName, {
+      folder: 'approved',
+      column: 'Final Asset URL',
+      prefix: this.PREFIX
+    });
+  },
+
+  // QA rejected. Read from `Generated Assets`, because `Final Asset URL` is
+  // only written on approval — on a rejection it is empty, and reading it would
+  // file nothing while reporting success.
+  //
+  // Named `REJ`, which `_parseName` does not accept: a rejected image must not
+  // become a reuse candidate even if somebody later drags it into `approved`.
+  reject: function(rowNumber, sheetName) {
+    return this._fileInto(rowNumber, sheetName, {
+      folder: 'rejected',
+      column: 'Generated Assets',
+      prefix: 'REJ'
+    });
+  },
+
+  // W9 put it on a page. No rename: it keeps its library name, and `published`
+  // is searched for reuse alongside `approved` — artwork that actually ran is
+  // the most proven thing the library holds, not the least.
+  markPublished: function(rowNumber, sheetName) {
+    return this._fileInto(rowNumber, sheetName, {
+      folder: 'published',
+      column: 'Final Asset URL',
+      prefix: null
+    });
+  },
+
+  // ------------------------------------------------------------ verifying
+
+  // Opens every configured folder and reports what is actually there. Nothing
+  // else in the system checks these ids, so a folder that was renamed, moved to
+  // another Drive, or never created at all is invisible until artwork silently
+  // fails to file — and the failure is a log line nobody reads.
+  verifyFolders: function() {
+    ConfigResolver.apply();
+
+    var configured = CONFIG.VISUAL_ASSETS || {};
+    var out = [];
+
+    for (var key in configured) {
+      var id = String(configured[key] || '').trim();
+
+      if (!id) {
+        out.push({ key: key, id: '', ok: false, reason: 'not set' });
+        continue;
+      }
+
+      try {
+        var folder = DriveApp.getFolderById(id);
+        var files = folder.getFiles();
+        var count = 0;
+
+        while (files.hasNext()) {
+          files.next();
+          count++;
+        }
+
+        out.push({
+          key: key, id: id, ok: true, name: folder.getName(), files: count
+        });
+
+      } catch (e) {
+        out.push({
+          key: key, id: id, ok: false,
+          reason: 'does not open — wrong id, deleted, or not shared with this script'
+        });
+      }
+    }
+
+    return out;
   },
 
   // ------------------------------------------------------------------ reuse
@@ -115,14 +231,13 @@ var AssetLibrary = {
   // and narrow: the same visual domain and the same shape. Anything looser
   // would offer a corridor photograph for a cardiac post.
   //
+  // Searches `approved` AND `published`. Artwork moves out of `approved` when
+  // it goes live, and artwork that actually ran on a page is the most proven
+  // thing here — searching only `approved` would leave the library holding the
+  // sets that passed QA and were never used, which is exactly backwards.
+  //
   // Returns [{ name, url, id, contentId, index }], newest first.
   candidatesFor: function(rowData) {
-    var approvedFolderId = this._folderId('approved');
-
-    if (!approvedFolderId || !String(approvedFolderId).trim()) {
-      return [];
-    }
-
     var domain = this._domainKey(rowData);
     var aspect = this._aspectKey(rowData['Content Format']);
     var ownContentId = String(rowData[CONFIG.COLUMN_NAMES.CONTENT_ID] || '').trim();
@@ -134,37 +249,48 @@ var AssetLibrary = {
     }
 
     var out = [];
+    var searched = ['approved', 'published'];
 
-    try {
-      var files = DriveApp.getFolderById(approvedFolderId).getFiles();
+    for (var f = 0; f < searched.length; f++) {
+      var folderId = this._folderId(searched[f]);
 
-      while (files.hasNext()) {
-        var file = files.next();
-        var parsed = this._parseName(file.getName());
-
-        if (!parsed || parsed.domain !== domain || parsed.aspect !== aspect) {
-          continue;
-        }
-
-        // A row's own previously-approved assets are not a reuse candidate for
-        // itself; that is a regeneration, not reuse.
-        if (ownContentId && parsed.contentId === ownContentId) {
-          continue;
-        }
-
-        out.push({
-          name: file.getName(),
-          url: file.getUrl(),
-          id: file.getId(),
-          contentId: parsed.contentId,
-          index: parsed.index,
-          updated: file.getLastUpdated()
-        });
+      if (!folderId || !String(folderId).trim()) {
+        continue;
       }
 
-    } catch (e) {
-      Logger.log('ASSET_LIBRARY | could not read the approved folder: ' + e.toString());
-      return [];
+      try {
+        var files = DriveApp.getFolderById(folderId).getFiles();
+
+        while (files.hasNext()) {
+          var file = files.next();
+          var parsed = this._parseName(file.getName());
+
+          if (!parsed || parsed.domain !== domain || parsed.aspect !== aspect) {
+            continue;
+          }
+
+          // A row's own previously-approved assets are not a reuse candidate for
+          // itself; that is a regeneration, not reuse.
+          if (ownContentId && parsed.contentId === ownContentId) {
+            continue;
+          }
+
+          out.push({
+            name: file.getName(),
+            url: file.getUrl(),
+            id: file.getId(),
+            contentId: parsed.contentId,
+            index: parsed.index,
+            updated: file.getLastUpdated(),
+            wentLive: searched[f] === 'published'
+          });
+        }
+
+      } catch (e) {
+        Logger.log(
+          'ASSET_LIBRARY | could not read the ' + searched[f] + ' folder: ' + e.toString()
+        );
+      }
     }
 
     out.sort(function(a, b) { return b.updated.getTime() - a.updated.getTime(); });
@@ -184,11 +310,19 @@ var AssetLibrary = {
       var id = candidates[i].contentId;
 
       if (!sets[id]) {
-        sets[id] = { contentId: id, assets: [], newest: candidates[i].updated };
+        sets[id] = {
+          contentId: id, assets: [], newest: candidates[i].updated, wentLive: false
+        };
         order.push(sets[id]);
       }
 
       sets[id].assets.push(candidates[i]);
+
+      // Worth surfacing when the operator picks: a set that already ran on a
+      // page has been judged by more than QA.
+      if (candidates[i].wentLive) {
+        sets[id].wentLive = true;
+      }
     }
 
     for (var s = 0; s < order.length; s++) {
@@ -263,6 +397,73 @@ var AssetLibrary = {
 
 
 // ================================
+// MENU — AI Workers → Maintenance → Check Visual Asset Folders
+//
+// Five folder ids have been configured since 2026-07-25 and nothing has ever
+// verified that they open. Three of them had no code reading or writing them at
+// all, so a wrong id would have stayed invisible until artwork silently failed
+// to file — and that failure is a log line.
+// ================================
+
+function checkVisualAssetFolders() {
+  var ui = SpreadsheetApp.getUi();
+
+  try {
+    var results = AssetLibrary.verifyFolders();
+    var purpose = {
+      generated: 'where every generated image lands, before anyone judges it',
+      approved:  'QA passed it — and it is offered for reuse',
+      rejected:  'QA failed it',
+      published: 'it went live on a page — also offered for reuse',
+      archive:   'no code reads or writes this folder'
+    };
+
+    var lines = ['One folder per status. Which folder a file sits in is its status.', ''];
+    var broken = 0;
+
+    for (var i = 0; i < results.length; i++) {
+      var r = results[i];
+
+      if (r.ok) {
+        lines.push('OK      ' + r.key);
+        lines.push('        "' + r.name + '" — ' + r.files + ' file(s)');
+      } else {
+        broken++;
+        lines.push('BROKEN  ' + r.key);
+        lines.push('        ' + r.reason);
+        lines.push('        id: ' + (r.id || '(empty)'));
+      }
+
+      lines.push('        ' + purpose[r.key]);
+      lines.push('');
+    }
+
+    if (broken) {
+      lines.push('─────────────────────────────');
+      lines.push(broken + ' folder(s) do not open.');
+      lines.push('');
+      lines.push('Nothing breaks immediately: filing never fails a row, so a post');
+      lines.push('still gets approved and still gets published. What is lost is the');
+      lines.push('sorting — the artwork stays where it was, and the folders stop');
+      lines.push('telling you anything.');
+      lines.push('');
+      lines.push('Either create the folder in Drive and put its id in CONFIG.gs, or');
+      lines.push('set the matching Script Property — VISUAL_ASSETS_APPROVED,');
+      lines.push('VISUAL_ASSETS_REJECTED, VISUAL_ASSETS_PUBLISHED.');
+    } else {
+      lines.push('─────────────────────────────');
+      lines.push('All five open.');
+    }
+
+    ui.alert('Visual Asset Folders', lines.join('\n'), ui.ButtonSet.OK);
+
+  } catch (e) {
+    ui.alert('Visual Asset Folders', e.message || e.toString(), ui.ButtonSet.OK);
+  }
+}
+
+
+// ================================
 // MENU — AI Workers → Visual Team → Reuse An Approved Asset
 // ================================
 
@@ -314,7 +515,7 @@ function reuseApprovedAsset() {
     for (var i = 0; i < Math.min(sets.length, 8); i++) {
       lines.push(
         (i + 1) + ')  ' + sets[i].assets.length + ' asset(s) from ' +
-        sets[i].contentId
+        sets[i].contentId + (sets[i].wentLive ? '   [went live]' : '')
       );
       lines.push('     ' + sets[i].assets[0].url);
     }
