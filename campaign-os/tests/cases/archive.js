@@ -1,34 +1,62 @@
-// Archive — moving a finished plan out of the working sheets.
+// Archive — joining a finished plan into one sheet, then removing it.
 //
-// This is the only code in the system that deletes a row from a sheet the
-// workers read. Everything here is about the two ways that goes wrong.
+// A post's life is spread across four tabs: what was scheduled, what was
+// written, what was produced, what was advertised. Archiving joins those into
+// ONE row, with each fact stored once, and then deletes the originals.
 //
-// ONE — order. The Visual Pipeline reads the Content Pipeline through 2,244
-// direct cell references (`'Content Pipeline'!AB100`), not a lookup. Delete a
-// Content Pipeline row and every Visual Pipeline formula pointing below it
-// silently re-points one row up. It does not fail; it starts reading a
-// different post's data and nothing looks wrong. So the referencing sheet is
-// always emptied before the sheet it references.
-//
-// TWO — direction. Deleting top-down shifts every row underneath, so the second
-// index in the list is already wrong by the time it is used.
+// This is the only code in the system that removes a row from a tab a worker
+// reads, and it is safe only because Transfer.gs replaced the position-bound
+// formulas that used to join the tabs. The guard that enforces that is the most
+// important thing here.
 
 module.exports = {
   name: 'archive',
 
   run(t) {
-    const source = require('fs').readFileSync(
-      require('path').join(__dirname, '..', '..', 'src', 'Archive.gs'), 'utf8');
+    const fs = require('fs');
+    const path = require('path');
+    const srcDir = path.join(__dirname, '..', '..', 'src');
+    const source = fs.readFileSync(path.join(srcDir, 'Archive.gs'), 'utf8');
 
-    // --- deletion order ---
-    t.is(Archive.ORDER, ['VISUAL', 'PIPELINE', 'CALENDAR'],
-      'the Visual Pipeline is emptied first, before the Content Pipeline rows ' +
-      'its 2,244 formulas point at');
+    // --- the guard that makes everything else safe ---
+    t.is(typeof Archive.assertNoTransferFormulas, 'function',
+      'archiving checks for transfer formulas before it does anything');
+
+    t.ok(/getFormulas\(\)/.test(source),
+      'and checks by reading the sheet, not by trusting a config flag');
+
+    const runBody = /run: function\(batchId\) \{([\s\S]*?)\n  \}\n\};/.exec(source);
+    t.ok(runBody, 'Archive.run is readable');
+
+    const body = runBody ? runBody[1] : '';
+
+    // Present, and before the deletion. Checking only the ORDER of the two
+    // passes when the guard is absent entirely — indexOf returns -1, which is
+    // less than everything.
+    t.ok(body.indexOf('assertNoTransferFormulas') !== -1,
+      'Archive.run calls the formula guard');
+    t.ok(body.indexOf('assertNoTransferFormulas') !== -1 &&
+         body.indexOf('assertNoTransferFormulas') < body.indexOf('deleteRow'),
+      'and calls it before any deletion');
+
+    const menu = /function archiveFinishedPlan\(\)([\s\S]*)$/.exec(source);
+    t.ok(menu && menu[1].indexOf('assertNoTransferFormulas') !== -1,
+      'and the menu checks too, so the operator is told before choosing a batch');
+
+    // --- deletion order: furthest downstream first ---
+    t.is(Archive.ORDER, ['ADS', 'VISUAL', 'PIPELINE', 'CALENDAR'],
+      'rows are removed furthest-downstream first, so nothing is ever left ' +
+      'holding a key to a row that has already gone');
 
     t.ok(Archive.ORDER.indexOf('VISUAL') < Archive.ORDER.indexOf('PIPELINE'),
-      'a referencing sheet is never deleted after the sheet it references');
+      'the Visual Pipeline goes before the Content Pipeline it keys off');
     t.ok(Archive.ORDER.indexOf('PIPELINE') < Archive.ORDER.indexOf('CALENDAR'),
-      'and the calendar, which nothing references by position, goes last');
+      'and the Content Pipeline before the calendar it keys off');
+    t.ok(Archive.ORDER.indexOf('ADS') === 0,
+      'the Ads Pipeline is furthest downstream and goes first');
+    t.is(Archive.ORDER.length, 4,
+      'all four tabs a post touches are archived — the ads tab was the one ' +
+      'easiest to forget');
 
     // --- deletion direction ---
     t.ok(/sort\(function\(a, b\) \{ return b - a; \}\)/.test(source),
@@ -38,25 +66,43 @@ module.exports = {
     const bottomUp = [10, 11, 12].slice().sort((a, b) => b - a);
     t.is(bottomUp, [12, 11, 10], 'the sort really is descending');
 
-    // --- copy before delete, and count before trusting ---
-    const runBody = /run: function\(batchId\) \{([\s\S]*?)\n  \}/.exec(source);
-    t.ok(runBody, 'Archive.run is readable');
-
-    const body = runBody ? runBody[1] : '';
-    t.ok(body.indexOf('_copy') < body.indexOf('_remove'),
-      'every copy happens before any delete');
-    t.ok(/landed !== step\.count/.test(body),
-      'the copy is counted, not assumed — a short copy throws');
-    t.ok(/Nothing has been removed/.test(body),
+    // --- write before delete, and count before trusting ---
+    t.ok(body.indexOf('setValues(payload)') < body.indexOf('deleteRow'),
+      'the joined rows are written before anything is deleted');
+    t.ok(/landed !== payload\.length/.test(body),
+      'the write is counted, not assumed — a short write throws');
+    t.ok(/Nothing has \n?\s*'?\+?\s*'?been removed|been removed from the working tabs/.test(body),
       'and says plainly that nothing was deleted when it throws');
 
-    // --- values, not formulas ---
-    t.ok(/getValues\(\)/.test(source) && !/getFormulas\(\)/.test(source),
-      'archived rows carry values, not formulas — a copied formula would keep ' +
-      'pointing at the live sheet and change meaning when anything moved');
+    // --- one sheet, one row per post, each fact once ---
+    t.is(Archive.SHEET_NAME, 'Archive',
+      'everything lands in one sheet, not one mirror per tab');
+    t.is(Archive.STAMP, 'Archived At', 'and every archived row records when');
+
+    t.is(typeof Archive.columns, 'function',
+      'the archive builds its own column order');
+
+    // The dedup is a guard clause, not just a variable that happens to be
+    // named `seen`. Matching the name alone still passes when the guard is
+    // removed, because `seen[label] = true` is left behind.
+    t.ok(/if \(seen\[label\]\) \{\s*\n\s*continue;/.test(source),
+      'a column already contributed by an earlier tab is skipped — Calendar ID ' +
+      'and Campaign Name appear once in the joined row, not four times');
+
+    t.ok(/prefix: 'Ad '/.test(source),
+      'where two tabs genuinely mean different things by the same name, the ' +
+      'later one is prefixed rather than dropped');
+
+    t.ok(/hideSheet\(\)/.test(source),
+      'the archive is hidden — it is storage, not a place to work');
+
+    // --- the joins are on identity, never position ---
+    t.ok(/Calendar ID/.test(source) && /Content ID/.test(source),
+      'the four tabs are joined on Calendar ID and Content ID');
+    t.notOk(/startRow \+ i/.test(source),
+      'nothing in the archive assumes two tabs are aligned by row offset');
 
     // --- what counts as finished ---
-    // Archiving work in progress removes it from under the workers mid-way.
     const finished = (planned, inVisual, published) =>
       planned > 0 && inVisual === planned && published === planned;
 
@@ -68,25 +114,20 @@ module.exports = {
 
     t.ok(/unstamped/.test(source),
       'rows planned before Batch ID existed are never offered — there is no ' +
-      'recorded boundary to trust, and archiving them would mean archiving ' +
-      '"everything before some point nobody wrote down"');
+      'recorded boundary, so archiving them would mean archiving "everything ' +
+      'before some point nobody wrote down"');
 
-    // --- the archive sheets ---
-    t.is(Archive.SUFFIX, ' Archive', 'the mirror name is the sheet plus a suffix');
-    t.is(Archive.STAMP, 'Archived At', 'and every archived row records when');
+    // --- confirmation ---
+    t.ok(/getResponseText\(\)\)\.trim\(\) !== batchId/.test(source),
+      'the operator types the batch id — a yes/no on the only destructive ' +
+      'operation in the system is too cheap');
 
-    t.ok(/hideSheet\(\)/.test(source),
-      'archive sheets are hidden — they are storage, not a place to work');
+    t.ok(/preview: function/.test(source) &&
+         /var preview = this\.preview\(batchId\)/.test(source),
+      'the confirmation and the action read the same preview, so they cannot ' +
+      'disagree about what is about to happen');
 
-    // No worker may open an archive sheet. A second copy of the same rows that
-    // something reads is a second source of truth, and the whole point of
-    // hiding these is that they are storage nothing acts on.
-    //
-    // Reading Archive.candidates/progress/preview from the menu is the intended
-    // API and not what this is looking for — those compute, they do not open.
-    const fs = require('fs');
-    const path = require('path');
-    const srcDir = path.join(__dirname, '..', '..', 'src');
+    // --- nothing else touches the archive sheet ---
     const openers = [];
 
     for (const file of fs.readdirSync(srcDir).filter((f) => f.endsWith('.gs'))) {
@@ -94,31 +135,17 @@ module.exports = {
 
       const text = fs.readFileSync(path.join(srcDir, file), 'utf8');
 
-      // Opening one by name, or reaching for the machinery that moves rows.
       if (/getSheetByName\([^)]*Archive/i.test(text) ||
-          /Archive\.(SUFFIX|_mirror|_copy|_remove)/.test(text)) {
+          /Archive\.(SHEET_NAME|_mirror|columns|collect)/.test(text)) {
         openers.push(file);
       }
     }
 
-    t.is(openers, [], 'no other file opens an archive sheet or moves rows into one');
+    t.is(openers, [],
+      'no other file opens the archive sheet — a second copy of the same rows ' +
+      'that something reads is a second source of truth');
 
-    // The one file that may is the one that owns the concept.
-    t.ok(/getSheetByName\(mirrorName\)/.test(source),
-      'Archive.gs is where an archive sheet is opened');
-
-    // --- confirmation ---
-    t.ok(/getResponseText\(\)\)\.trim\(\) !== batchId/.test(source),
-      'the operator types the batch id to confirm — a yes/no on the only ' +
-      'destructive operation in the system is too cheap');
-
-    t.ok(/preview: function/.test(source),
-      'there is a preview that computes the numbers without acting on them');
-    t.ok(/var preview = this\.preview\(batchId\)/.test(source),
-      'and the run uses that same preview, so the confirmation and the action ' +
-      'cannot disagree');
-
-    // --- the offer never breaks the plan it follows ---
+    // --- the offer after planning never breaks the plan it follows ---
     const runner = fs.readFileSync(path.join(srcDir, 'WorkerRunner.gs'), 'utf8');
     const offer = /function _offerToArchive\(ui\) \{([\s\S]*?)\n\}/.exec(runner);
 

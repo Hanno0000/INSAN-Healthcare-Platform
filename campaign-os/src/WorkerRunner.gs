@@ -141,6 +141,7 @@ function onOpen() {
       .addItem('Check Knowledge File', 'checkKnowledgeFile')
       .addSeparator()
       .addItem('Plan a Cycle', 'runCampaignPlanner')
+      .addItem('Transfer Rows Forward', 'transferRowsForward')
       .addItem('What Is Coming', 'showUpcomingEvents')
       .addItem('Review Plan Before Production', 'runPortfolioCritic'))
     .addSubMenu(SpreadsheetApp.getUi()
