@@ -3347,14 +3347,49 @@ function getSystemStatus() {
     imageModel: CONFIG.MEDIA_MODELS.IMAGE,
     videoModel: CONFIG.MEDIA_MODELS.VIDEO,
     apiKey: false,
+    providers: [],
+    missingProviders: [],
     drive: false,
     cache: false,
     workerCount: Object.keys(CONFIG.WORKERS).length
   };
 
+  // Every provider some worker is actually configured to use — not just Gemini.
+  //
+  // This dot used to read one key and label the result "API". The Creative
+  // Director runs on Claude and does NOT fall back when its key is missing: it
+  // fails on every row, by name. So the panel showed a green light at precisely
+  // the moment the operator was deciding whether the system was ready to run,
+  // and the most expensive worker in the chain could not make a single call.
+  //
+  // The question the light answers now is the one worth asking: can the workers
+  // this deployment actually has make their calls?
   try {
-    var apiKey = PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY');
-    status.apiKey = !!apiKey;
+    var needed = {};
+
+    for (var name in CONFIG.WORKERS) {
+      if (!CONFIG.WORKERS.hasOwnProperty(name)) continue;
+      needed[CONFIG.WORKERS[name].provider || 'gemini'] = true;
+    }
+
+    var all = AIProvider.getAvailableProviders();
+
+    for (var i = 0; i < all.length; i++) {
+      var provider = all[i];
+      var configured = AIProvider.isConfigured(provider);
+
+      status.providers.push({
+        name: provider,
+        configured: configured,
+        // A provider no worker uses is worth showing but must not fail the
+        // check — Claude with no Claude worker is a spare, not a fault.
+        required: !!needed[provider]
+      });
+
+      if (needed[provider] && !configured) status.missingProviders.push(provider);
+    }
+
+    status.apiKey = status.providers.length > 0 && status.missingProviders.length === 0;
   } catch (e) {}
 
   try {
@@ -3587,6 +3622,133 @@ function executeWorker(workerName, startRow, endRow) {
       error: e.toString(),
       duration: formatDuration(endTime - startTime)
     };
+  }
+}
+
+
+// The end of the chain, for the sidebar.
+//
+// Publishing and paid ads are not entries in CONFIG.WORKERS — they are their own
+// runners, with their own result shapes — so `executeWorker` cannot reach them.
+// Until this existed the sidebar covered W3 to W8 and stopped: the operator ran
+// the middle of the chain here and its last two steps from the menu.
+//
+// The return shape is deliberately the one `executeWorker` returns, so the
+// existing success handler renders it without a second code path.
+function executeDelivery(kind, startRow, endRow) {
+  var startTime = new Date().getTime();
+
+  try {
+    var result;
+    var label;
+
+    if (kind === 'publishing') {
+      result = PublishingRunner.run(startRow, endRow);
+
+      // `published` counts posts that went out; in dry run it counts the ones
+      // that would have. Skipped rows are not failures — a row refused for
+      // being unapproved is the guard doing its job — so they are reported
+      // separately rather than folded into either total.
+      label = 'Publishing' + (result.dryRun ? ' (DRY RUN)' : '');
+
+      return _deliveryResult(label, result, result.published, startRow, endRow, startTime, {
+        dryRun: !!result.dryRun,
+        skippedCount: result.skipped
+      });
+    }
+
+    if (kind === 'ads') {
+      result = AdsRunner.run(startRow, endRow);
+      label = 'Paid Ads';
+
+      return _deliveryResult(label, result, result.drafted, startRow, endRow, startTime, {
+        skippedCount: result.skipped
+      });
+    }
+
+    return { success: false, worker: 'Delivery', error: 'Unknown delivery step: ' + kind };
+
+  } catch (e) {
+    var failedAt = new Date().getTime();
+    Logger.logFailure(String(kind).toUpperCase(), startRow + '-' + endRow,
+      failedAt - startTime, e.toString());
+
+    return {
+      success: false,
+      worker: kind === 'ads' ? 'Paid Ads' : 'Publishing',
+      error: e.message || e.toString(),
+      duration: formatDuration(failedAt - startTime)
+    };
+  }
+}
+
+
+function _deliveryResult(label, result, successCount, startRow, endRow, startTime, extra) {
+  var endTime = new Date().getTime();
+
+  var out = {
+    success: result.failed === 0 && !result.interrupted,
+    worker: label,
+    startRow: startRow,
+    endRow: endRow,
+    totalRows: (result.published || result.drafted || 0) + (result.skipped || 0) +
+               (result.failed || 0),
+    successCount: successCount || 0,
+    failedCount: result.failed || 0,
+    interrupted: !!result.interrupted,
+    stopped: !!result.stopped,
+    nextRow: result.nextRow,
+    duration: formatDuration(endTime - startTime)
+  };
+
+  for (var k in extra) {
+    if (extra.hasOwnProperty(k)) out[k] = extra[k];
+  }
+
+  return out;
+}
+
+
+// Whether publishing would post for real, so the sidebar can say so on the
+// button rather than in a dialog after the click. The menu path only tells the
+// operator once they have already reached for it.
+function getPublishingMode() {
+  try {
+    return { dryRun: !!(CONFIG.PUBLISHING || {}).DRY_RUN };
+  } catch (e) {
+    // Unknown is not the same as safe. A panel that cannot read the flag must
+    // not draw the reassuring label.
+    return { dryRun: false, unknown: true };
+  }
+}
+
+
+// Move rows to the next tab. Not a row range: it transfers everything that is
+// ready and skips whatever is already downstream, so running it twice is a
+// no-op. The counts are what the operator needs back.
+function executeTransfer() {
+  try {
+    var toPipeline = Transfer.calendarToPipeline();
+    var toVisual = Transfer.pipelineToVisual();
+
+    return {
+      success: true,
+      toPipeline: {
+        written: toPipeline.written,
+        skipped: toPipeline.skipped,
+        noCard: toPipeline.noCard || {}
+      },
+      toVisual: {
+        written: toVisual.written,
+        skipped: toVisual.skipped,
+        notApproved: toVisual.notApproved || 0
+      },
+      unknownColumns: (toPipeline.unknownColumns || [])
+        .concat(toVisual.unknownColumns || [])
+    };
+
+  } catch (e) {
+    return { success: false, error: e.message || e.toString() };
   }
 }
 

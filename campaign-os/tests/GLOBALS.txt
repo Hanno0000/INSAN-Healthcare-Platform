@@ -63,6 +63,7 @@ _clearRevisionCount
 _collectPlanningBrief
 _composeFinalPostCopy
 _contentIdFloor
+_deliveryResult
 _generateContentId
 _getRevisionCount
 _highestContentIdInSheet
@@ -85,11 +86,13 @@ checkVisualAssetFolders
 clearCheckpoint
 continueActiveJob
 createManagedColumns
+executeDelivery
 executePipeline
 executeRefreshCache
 executeResume
 executeService
 executeStop
+executeTransfer
 executeWorker
 formatDuration
 getCheckpoint
@@ -97,6 +100,7 @@ getCheckpoints
 getContentRowStatus
 getDashboardData
 getLastExecution
+getPublishingMode
 getRecentLogEntries
 getRecentLogs
 getSystemStatus

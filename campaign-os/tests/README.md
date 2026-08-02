@@ -19,7 +19,7 @@ had been run as throwaway scripts in earlier working sessions and never committe
 nobody could re-run them, and the claim could not be checked by anyone reading the
 repository. A test result that only one person ever saw is not evidence.
 
-**612 checks now, and they are here.**
+**686 checks now, and they are here.**
 
 ---
 
@@ -42,6 +42,7 @@ So these checks cover the decisions the system makes *before* it touches anythin
 | `batches` | 21 | A batch id is the planning moment, so the same campaign planned twice is two batches |
 | `branding` | 51 | Which marks each brand gets, an unknown brand getting none, and the 16% Meta text budget |
 | `config-integrity` | 46 | Publishing ships in dry run · Budget is outside the ads worker's schema · managed columns are declared · no two vocabulary values differ only by case |
+| `control-center` | 74 | Every server function the sidebar calls exists · the health light reports on the providers the workers actually need · each card drives its own row inputs · publishing states dry-run or live on the button |
 | `entity-registry` | 24 | The registry's 24 entities parse; a malformed row is reported, never silently dropped |
 | `events-calendar` | 26 | What is coming — and that a Hijri date with no entry is **reported missing, never estimated** |
 | `knowledge-gate` | 25 | Which knowledge files may build a card. 24 ready, 2 waiting on operator facts — the claim in `KNOWLEDGE_BASE_SPEC.md` §7.8, checked |
@@ -68,7 +69,7 @@ the sheet is opened. It resolves **when the operator clicks the item** — so a 
 renamed, a file left out of a paste, or a section lost in a merge produces a menu that
 draws perfectly and has an item that does nothing.
 
-`GLOBALS.txt` pins the 136 names the sources contribute to that scope. It is what makes
+`GLOBALS.txt` pins the 140 names the sources contribute to that scope. It is what makes
 "the sources were regrouped into different files and nothing changed" a measurement
 rather than a claim. Regenerate it deliberately, in the commit that adds the name —
 never to make a failing check pass.
@@ -98,10 +99,21 @@ deliberately, run, and caught:
 | Declare `var Transfer` in a second file | `namespace` |
 | Add a name to `GLOBALS.txt` that no source defines | `namespace` |
 | Remove a name from `GLOBALS.txt` that a source does define | `namespace` |
+| Point the Delivery card at the Media Team's row inputs | `control-center` |
+| Make a missing `DRY_RUN` flag read as dry run | `control-center`, 2 checks |
+| Report nothing as a missing provider, as the old health check did | `control-center`, 7 checks |
+| Drop `successCount` from a delivery result | `control-center`, 2 checks |
 
 `menu-bindings` also carries its mutation test inside the suite: the audit is run
 against a source with one deliberately broken binding and must report exactly that
-binding, then stop reporting it once the function exists.
+binding, then stop reporting it once the function exists. `control-center` does the
+same for the sidebar's `google.script.run` calls.
+
+**One of these found a weak assertion here rather than a bug in the code.** The
+delivery-result check first scanned the source from `function _deliveryResult` to the
+end of the section — which included `executeService` and `executePipeline`, so it
+found every field name in a neighbour's code and passed with the field deleted. It
+calls the function now. A check nobody has watched fail is not evidence.
 
 ---
 

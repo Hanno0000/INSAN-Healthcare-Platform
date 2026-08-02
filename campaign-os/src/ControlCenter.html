@@ -662,6 +662,55 @@
     </div>
   </div>
 
+  <!-- Delivery — the end of the chain. Publishing is the only irreversible
+       action in the system, so its live/dry-run state is on the button itself
+       and not only in the dialog that follows the click. -->
+  <div class="card">
+    <div class="card-header color-red" onclick="toggle('delivery')">
+      <span><span class="icon">&#9654;</span>Delivery</span>
+      <span class="arrow" id="arrow-delivery">&#9660;</span>
+    </div>
+    <div class="card-body" id="section-delivery">
+      <div class="mode-toggle">
+        <button class="active" onclick="setMode('delivery','count',this)">Row Count</button>
+        <button onclick="setMode('delivery','range',this)">Row Range</button>
+      </div>
+      <div id="delivery-count">
+        <div class="input-group">
+          <div class="input-field">
+            <label>Start Row</label>
+            <input type="number" id="d-start" min="2" value="2">
+          </div>
+          <div class="input-field">
+            <label>Number of Rows</label>
+            <input type="number" id="d-count" min="1" value="1">
+          </div>
+        </div>
+      </div>
+      <div id="delivery-range" style="display:none">
+        <div class="input-group">
+          <div class="input-field">
+            <label>Start Row</label>
+            <input type="number" id="d-rs" min="2" value="2">
+          </div>
+          <div class="input-field">
+            <label>End Row</label>
+            <input type="number" id="d-re" min="2" value="10">
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="btn-publish" onclick="confirmAndRun('publish')">
+        <span class="btn-icon">&#9650;</span><span id="publish-label">Publish Approved Rows</span>
+      </button>
+      <button class="btn btn-primary" onclick="confirmAndRun('ads')">
+        <span class="btn-icon">&#9788;</span>Draft Paid Ads
+      </button>
+
+      <div id="publish-mode-note" class="empty-state" style="padding:8px 0 0;font-size:11px"></div>
+    </div>
+  </div>
+
   <div class="card">
     <div class="card-header color-orange" onclick="toggle('ops')">
       <span><span class="icon">&#9881;</span>Operations</span>
@@ -673,6 +722,9 @@
       </button>
       <button class="btn btn-outline" onclick="doResume()">
         <span class="btn-icon">&#9654;</span>Resume Last Run
+      </button>
+      <button class="btn btn-outline" onclick="doTransfer()">
+        <span class="btn-icon">&#8594;</span>Transfer Rows Forward
       </button>
       <button class="btn btn-outline" onclick="doRefresh()">
         <span class="btn-icon">&#8635;</span>Refresh Cache
@@ -720,8 +772,7 @@
   </div>
 
   <script>
-    var contentMode = 'count';
-    var visualMode = 'count';
+    // Per-card row-selection mode now lives in SECTIONS, below.
     var isRunning = false;
     var isRefreshing = false;
     var stopRequested = false;
@@ -739,9 +790,19 @@
       arrow.classList.toggle('collapsed');
     }
 
+    // One entry per card. Adding a card without adding it here used to mean the
+    // new card silently drove another card's inputs — `section === 'content' ?
+    // 'c' : 'v'` sent everything that was not content to the visual fields, so
+    // Delivery would have published whatever row range the Media Team card
+    // happened to be showing.
+    var SECTIONS = {
+      content:  { prefix: 'c', mode: 'count' },
+      visual:   { prefix: 'v', mode: 'count' },
+      delivery: { prefix: 'd', mode: 'count' }
+    };
+
     function setMode(section, mode, btn) {
-      if (section === 'content') contentMode = mode;
-      else visualMode = mode;
+      SECTIONS[section].mode = mode;
 
       document.getElementById(section + '-count').style.display = mode === 'count' ? 'block' : 'none';
       document.getElementById(section + '-range').style.display = mode === 'range' ? 'block' : 'none';
@@ -752,8 +813,9 @@
     }
 
     function getRows(section) {
-      var mode = section === 'content' ? contentMode : visualMode;
-      var prefix = section === 'content' ? 'c' : 'v';
+      var config = SECTIONS[section];
+      var mode = config.mode;
+      var prefix = config.prefix;
 
       if (mode === 'count') {
         var start = parseInt(document.getElementById(prefix + '-start').value, 10) || 2;
@@ -872,8 +934,14 @@
           { type: 'service', key: 'MEDIA_GENERATION', name: 'Media Generation' },
           { type: 'worker', key: 'VISUAL_QA_WORKER', name: 'Visual QA' }
         ]
-      }
+      },
+      'publish': { name: 'Publish Approved Rows', delivery: 'publishing', section: 'delivery' },
+      'ads': { name: 'Draft Paid Ads', delivery: 'ads', section: 'delivery' }
     };
+
+    // Whether publishing would post for real. Read from the server, never
+    // assumed: an unknown flag must not draw the reassuring label.
+    var publishDryRun = null;
 
     function confirmAndRun(op) {
       if (isRunning) return;
@@ -904,6 +972,24 @@
       document.getElementById('confirm-refresh').checked = refreshBeforeRun;
 
       document.getElementById('confirm-btn').className = 'btn btn-primary';
+
+      // Publishing again, in the dialog. The button already carries the state,
+      // and this repeats it at the last point where the answer is still no.
+      if (op === 'publish') {
+        var live = publishDryRun !== true;
+
+        document.getElementById('confirm-detail').innerHTML +=
+          '<div class="row"><span class="label">Mode</span>' +
+          '<span class="value" style="font-weight:700;color:' +
+          (live ? 'var(--red)' : 'inherit') + '">' +
+          (publishDryRun === true ? 'DRY RUN — nothing will be posted'
+            : publishDryRun === false ? 'LIVE — posts to real Facebook pages, cannot be undone'
+            : 'UNKNOWN — could not read the flag. Treat as live.') +
+          '</span></div>';
+
+        if (live) document.getElementById('confirm-btn').className = 'btn btn-stop';
+      }
+
       pendingAction = { op: op, info: info, rows: rows };
       document.getElementById('confirm-overlay').classList.add('active');
     }
@@ -966,6 +1052,8 @@
         runPipelineAction(action.info.steps, action.rows);
       } else if (action.info.service) {
         runServiceAction(action.info.service, action.info.name, action.rows);
+      } else if (action.info.delivery) {
+        runDeliveryAction(action.info.delivery, action.info.name, action.rows);
       } else {
         runWorkerAction(action.info.worker, action.rows);
       }
@@ -1118,6 +1206,55 @@
         .executeService(serviceKey, rows.start, rows.end);
     }
 
+    function runDeliveryAction(kind, label, rows) {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          enableAll();
+          loadDashboard(true);
+
+          if (result.stopped) {
+            showStopped(result.worker || label, result.successCount, result.nextRow);
+            return;
+          }
+
+          if (!result.success) {
+            showError(result.worker || label, result.error || 'Delivery failed',
+              'The Execution Log carries the reason for every row.');
+            return;
+          }
+
+          // Skipped is reported separately and never folded into either total.
+          // A row refused for not being approved, or for already having an ad,
+          // is the guard working — counting it as a failure would train the
+          // operator to ignore the number that matters.
+          var detail = result.successCount +
+            (kind === 'publishing' ? ' published' : ' drafted');
+
+          if (result.skippedCount) {
+            detail += ', ' + result.skippedCount + ' skipped';
+          }
+
+          if (result.dryRun) {
+            showInfo('Publishing — DRY RUN',
+              '<strong>Nothing was posted.</strong> ' + detail +
+              ' — every row was resolved in full: page, token, copy and assets.' +
+              '<div style="margin-top:8px;font-size:11px;color:var(--text-secondary)">' +
+              'Turn DRY_RUN off in CONFIG.PUBLISHING when you are ready to post ' +
+              'for real, and do the first live run on one row.</div>');
+            return;
+          }
+
+          showSuccess(result.worker + ' — ' + detail,
+            result.totalRows, result.duration);
+        })
+        .withFailureHandler(function(err) {
+          enableAll();
+          loadDashboard(true);
+          showError('Delivery Error', err.message, 'Check the Apps Script log for details.');
+        })
+        .executeDelivery(kind, rows.start, rows.end);
+    }
+
     function runPipelineAction(steps, rows) {
       google.script.run
         .withSuccessHandler(function(result) {
@@ -1209,6 +1346,23 @@
           html += '<div class="health-item"><span class="health-dot ' + (sys.cache ? 'dot-ok' : 'dot-warn') + '"></span>Cache</div>';
           html += '</div>';
 
+          // One row per provider, named. A single API light cannot say WHICH key
+          // is missing, and the two are not interchangeable: the Creative
+          // Director runs on Claude and does not fall back to Gemini.
+          var provs = sys.providers || [];
+          for (var p = 0; p < provs.length; p++) {
+            var prov = provs[p];
+            var label = prov.name.charAt(0).toUpperCase() + prov.name.slice(1);
+            var state = prov.configured
+              ? (prov.required ? 'Key set' : 'Key set (no worker uses it)')
+              : (prov.required ? 'KEY MISSING &#8212; its workers fail on every row'
+                               : 'No key (unused)');
+            var colour = prov.configured ? '#1a7f37' : (prov.required ? '#b42318' : '#667085');
+
+            html += '<div class="status-row"><span>' + label + '</span>' +
+                    '<span style="font-weight:600;color:' + colour + '">' + state + '</span></div>';
+          }
+
           html += '<div class="status-row"><span>Text Model</span><span style="font-weight:600">' + sys.model + '</span></div>';
           html += '<div class="status-row"><span>Image Model</span><span style="font-weight:600">' + sys.imageModel + '</span></div>';
           html += '<div class="status-row"><span>Video Model</span><span style="font-weight:600">' + sys.videoModel + '</span></div>';
@@ -1232,9 +1386,20 @@
       var overall = (sys.apiKey && sys.drive) ? 'ok' : 'error';
       var failedTotal = c.failed + v.failed;
 
+      // Name the missing key rather than showing a bare red API dot. "API" sends
+      // the operator to check the one key they know about; "Claude key missing"
+      // is the actual fix, and the two keys are not interchangeable.
+      var missing = sys.missingProviders || [];
+      var apiLabel = 'API';
+      if (missing.length) {
+        apiLabel = missing.map(function (m) {
+          return m.charAt(0).toUpperCase() + m.slice(1);
+        }).join(' + ') + ' key missing';
+      }
+
       var html = '<div class="card" style="margin-bottom:0">';
       html += '<div class="health-bar" style="padding:10px 16px">';
-      html += '<div class="health-item"><span class="health-dot dot-' + (sys.apiKey ? 'ok' : 'error') + '"></span>API</div>';
+      html += '<div class="health-item"><span class="health-dot dot-' + (sys.apiKey ? 'ok' : 'error') + '"></span>' + apiLabel + '</div>';
       html += '<div class="health-item"><span class="health-dot dot-' + (sys.drive ? 'ok' : 'error') + '"></span>Drive</div>';
       html += '<div class="health-item"><span class="health-dot dot-' + (failedTotal > 0 ? 'warn' : 'ok') + '"></span>' + (failedTotal > 0 ? failedTotal + ' Failed' : 'Healthy') + '</div>';
       html += '</div></div>';
@@ -1335,9 +1500,121 @@
       }, AUTO_REFRESH_MS);
     }
 
+    // Not a row range: it moves everything that is ready and skips whatever is
+    // already downstream, so running it twice is a no-op and there is nothing
+    // to confirm.
+    function doTransfer() {
+      if (isRunning) return;
+      disableAll();
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          enableAll();
+          loadDashboard(true);
+
+          if (!result.success) {
+            showError('Transfer Failed', result.error, 'Check the Execution Log for details.');
+            return;
+          }
+
+          var html =
+            '<div class="row"><span class="label">Calendar &#8594; Content Pipeline</span>' +
+            '<span class="value">' + result.toPipeline.written + ' new' +
+            (result.toPipeline.skipped ? ', ' + result.toPipeline.skipped + ' already there' : '') +
+            '</span></div>' +
+            '<div class="row"><span class="label">Content &#8594; Visual Pipeline</span>' +
+            '<span class="value">' + result.toVisual.written + ' new' +
+            (result.toVisual.skipped ? ', ' + result.toVisual.skipped + ' already there' : '') +
+            (result.toVisual.notApproved ? ', ' + result.toVisual.notApproved +
+              ' waiting on the Creative Director' : '') +
+            '</span></div>';
+
+          // Named, not counted. A row transferred with no strategy behind it
+          // will be refused by every worker downstream, and the fix is to build
+          // that campaign's card — which needs the campaign's name.
+          var noCard = Object.keys(result.toPipeline.noCard || {});
+
+          if (noCard.length) {
+            html += '<div style="margin-top:10px;font-size:11px;color:var(--red)">' +
+              '<strong>Transferred with no strategy</strong> — these campaigns ' +
+              'have no card:<br>';
+            for (var i = 0; i < noCard.length; i++) {
+              html += '&nbsp;&nbsp;' + noCard[i] +
+                ' (' + result.toPipeline.noCard[noCard[i]] + ' rows)<br>';
+            }
+            html += 'The workers will refuse these rows rather than invent a ' +
+              'strategy. Build the cards and run this again — the rows already ' +
+              'transferred are not duplicated.</div>';
+          }
+
+          if (result.unknownColumns && result.unknownColumns.length) {
+            html += '<div style="margin-top:10px;font-size:11px;color:var(--red)">' +
+              'No column exists for: ' + result.unknownColumns.join(', ') +
+              '<br>Run Maintenance &#8594; Create Managed Columns.</div>';
+          }
+
+          showInfo('Transfer Rows Forward', html);
+        })
+        .withFailureHandler(function(err) {
+          enableAll();
+          showError('Transfer Error', err.message, 'Check the Apps Script log for details.');
+        })
+        .executeTransfer();
+    }
+
+    // Read once at open. The flag lives in CONFIG and only changes when someone
+    // edits and re-pastes the file, so polling it would be a round trip per
+    // interval for a value that cannot move while the panel is up.
+    function loadPublishingMode() {
+      google.script.run
+        .withSuccessHandler(function(mode) {
+          publishDryRun = mode && mode.unknown ? null : !!(mode && mode.dryRun);
+          paintPublishButton();
+        })
+        .withFailureHandler(function() {
+          publishDryRun = null;
+          paintPublishButton();
+        })
+        .getPublishingMode();
+    }
+
+    // The state goes on the button, not only in the dialog after the click.
+    // Publishing is the one action here that cannot be undone from the sheet,
+    // and an operator who believes they are testing and is not is the failure
+    // this label exists to prevent.
+    function paintPublishButton() {
+      var btn = document.getElementById('btn-publish');
+      var label = document.getElementById('publish-label');
+      var note = document.getElementById('publish-mode-note');
+      if (!btn || !label || !note) return;
+
+      if (publishDryRun === true) {
+        label.textContent = 'Publish — DRY RUN';
+        btn.className = 'btn btn-outline';
+        note.innerHTML = 'Dry run: rows are resolved in full and nothing is posted.';
+        return;
+      }
+
+      if (publishDryRun === false) {
+        label.textContent = 'Publish — LIVE';
+        btn.className = 'btn btn-stop';
+        note.innerHTML = '<strong style="color:var(--red)">LIVE.</strong> ' +
+          'Approved rows will be posted to real Facebook pages. This cannot be ' +
+          'undone from the sheet.';
+        return;
+      }
+
+      // Unknown is not the same as safe.
+      label.textContent = 'Publish — mode unknown';
+      btn.className = 'btn btn-stop';
+      note.innerHTML = 'Could not read CONFIG.PUBLISHING.DRY_RUN. Treat this as ' +
+        'live until you have checked it.';
+    }
+
     // ==================== INIT ====================
 
     loadDashboard();
+    loadPublishingMode();
     startAutoRefresh();
   </script>
 

@@ -20,7 +20,7 @@
 >
 > Everything is in git, on `main`. What has *not* happened is a production run:
 > **the code has never been pasted into the Apps Script editor, and not one worker
-> built since 2026-07-29 has made a single live API call.** **612 automated checks**
+> built since 2026-07-29 has made a single live API call.** **686 automated checks**
 > pass against the real files — `node campaign-os/tests/run.js` — and none of them
 > proves the system runs.
 >
@@ -279,7 +279,7 @@ been pasted into the Apps Script editor.**
 ⚠️ **Corrected 2026-07-31.** This section previously claimed "roughly 140 automated
 checks pass". They had been run as throwaway scripts in earlier sessions and never
 committed, so nobody could re-run them and the claim could not be checked. There is
-now a committed harness — **612 checks**, `node campaign-os/tests/run.js`, no
+now a committed harness — **686 checks**, `node campaign-os/tests/run.js`, no
 dependencies and no network. It covers the logic layer only: every Apps Script
 service is stubbed to throw, so nothing here writes a cell, reads Drive or calls a
 model. See `campaign-os/tests/README.md`.
@@ -397,6 +397,48 @@ points at a function that exists.
 
 **Delivery is separate on purpose.** Publishing is the only irreversible operation
 in the system, and it should be easy to find and hard to change by accident.
+
+### 6.1b The Control Center sidebar
+
+**Written 2026-07-27, and it stopped there.** Everything built afterwards went into
+the `onOpen` menu only, so the sidebar covered W3 to W8 — the middle of the chain —
+and 18 of the menu's 31 items had no equivalent in it.
+
+Three things were fixed on 2026-08-02. **None of them has been seen in a browser:
+the sidebar has never been opened.**
+
+- **The health light was checking the wrong thing.** It read `GEMINI_API_KEY` and
+  labelled the result *API*. The Creative Director runs on Claude and does **not**
+  fall back — without `ANTHROPIC_API_KEY` it fails on every row, by name. So the
+  panel showed green at exactly the moment the operator was deciding whether the
+  system was ready, and the most expensive worker in the chain could not make a
+  call. It now checks every provider some worker is configured to use, **names the
+  missing one**, and shows a provider that no worker uses without failing on it.
+- **Delivery is reachable.** A new card runs W9 and W10 over a row range.
+  `PublishingRunner` and `AdsRunner` are not entries in `CONFIG.WORKERS`, so
+  `executeWorker` could never have reached them.
+- **Transfer Rows Forward** is in Operations. It takes no row range: it moves what is
+  ready, skips what is already downstream, and names any campaign transferred with
+  no card behind it.
+
+**Publishing states its mode on the button** — `Publish — DRY RUN`, `Publish — LIVE`
+in red, or `Publish — mode unknown` if the flag cannot be read. The menu only tells
+the operator inside the dialog that follows the click. On the one action in this
+system that cannot be undone from the sheet, the state belongs where it is read
+before the click, and an unreadable flag is treated as live.
+
+**Still only in the menu, deliberately:** the one-time setup (Create Managed Columns,
+Sync Dropdowns, Unblock Dropdowns), the diagnostics (Preflight, Deployment
+Identifiers, Check Entity Registry, Check Project Assets, Check Visual Asset
+Folders), and **Archive A Finished Plan** — the only destructive operation here,
+which asks the operator to type a batch id. Among a panel of run buttons that is a
+wrong click waiting to happen.
+
+**Not built:** a Planning card for W1, W2, the Portfolio Critic and What Is Coming.
+Those take a knowledge filename, a written brief and a batch — not a row range — so
+each needs its own input design rather than a button. They work from the menu. This
+is the largest remaining piece of the sidebar and it is worth doing **after** someone
+has actually opened the panel once.
 
 ### 6.2 The knowledge base
 
