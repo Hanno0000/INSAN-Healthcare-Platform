@@ -903,7 +903,8 @@ var AdsRunner = {
   _buildPrompt: function(card, editorial, visual, liveUrl) {
     var config = this._config();
     var folderId = PropertiesService.getScriptProperties()
-      .getProperty('ADS_PROMPTS_FOLDER_ID') || CONFIG.PROMPTS_FOLDER_ID;
+      .getProperty('ADS_PROMPTS_FOLDER_ID') ||
+      CONFIG.ADS_PROMPTS_FOLDER_ID || CONFIG.PROMPTS_FOLDER_ID;
 
     var manual = DriveLoader.loadMarkdown(config.promptFile, folderId);
 

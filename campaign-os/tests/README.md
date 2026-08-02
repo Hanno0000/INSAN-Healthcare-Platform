@@ -19,7 +19,7 @@ had been run as throwaway scripts in earlier working sessions and never committe
 nobody could re-run them, and the claim could not be checked by anyone reading the
 repository. A test result that only one person ever saw is not evidence.
 
-**724 checks now, and they are here.**
+**792 checks now, and they are here.**
 
 ---
 
@@ -40,11 +40,13 @@ So these checks cover the decisions the system makes *before* it touches anythin
 | `asset-domains` | 27 | Which folder of real photographs a row gets. The substring traps — `ward` inside "award", `dental` inside "accidental", `management` inside "Pain Management Center" |
 | `asset-filing` | 36 | Rejection reads `Generated Assets`, not the approval-only column · `REJ` can never become a reuse candidate · published files keep their names |
 | `batches` | 21 | A batch id is the planning moment, so the same campaign planned twice is two batches |
+| `brand-routing` | 30 | Hospital Brand is written when a row is planned. Nothing used to write it, and Branding gives an unrecognised brand **no marks** — so every post came out with no logos and one line in the log |
 | `branding` | 51 | Which marks each brand gets, an unknown brand getting none, and the 16% Meta text budget |
 | `config-integrity` | 46 | Publishing ships in dry run · Budget is outside the ads worker's schema · managed columns are declared · no two vocabulary values differ only by case |
 | `control-center` | 112 | Every server function the sidebar calls exists · the health light reports on the providers the workers actually need · each card drives its own row inputs · publishing states dry-run or live on the button |
 | `entity-registry` | 24 | The registry's 24 entities parse; a malformed row is reported, never silently dropped |
 | `events-calendar` | 26 | What is coming — and that a Hijri date with no entry is **reported missing, never estimated** |
+| `identifiers` | 38 | The fourteen Google ids: shaped like ids, no two pointing at the same folder, every one overridable from Script Properties, and the six confirmed on 2026-08-02 pinned |
 | `knowledge-gate` | 25 | Which knowledge files may build a card. 24 ready, 2 waiting on operator facts — the claim in `KNOWLEDGE_BASE_SPEC.md` §7.8, checked |
 | `menu-bindings` | 43 | **Every `onOpen` menu item points at a function that exists.** The binding is a string, resolved on the click and nowhere earlier |
 | `namespace` | 24 | The names the sources put into the shared scope, pinned in `GLOBALS.txt`. No global owned by two files |
@@ -107,6 +109,9 @@ deliberately, run, and caught:
 | Stop enforcing the daily post ceiling on the server | `control-center`, 2 checks |
 | Stop appending `.md` to a typed knowledge filename | `control-center` |
 | Point an `onclick` at a function the sidebar script does not declare | `control-center` |
+| Stop writing Hospital Brand when a row is planned | `brand-routing`, 2 checks |
+| Point two visual-asset folders at the same Drive id | `identifiers`, 2 checks |
+| Add an identifier without wiring it into ConfigResolver | `identifiers`, 2 checks |
 
 `menu-bindings` also carries its mutation test inside the suite: the audit is run
 against a source with one deliberately broken binding and must report exactly that

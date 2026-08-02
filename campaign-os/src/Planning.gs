@@ -72,11 +72,14 @@ var CardBuilder = {
     // Idempotent; see ConfigResolver (Audit A, F17).
     ConfigResolver.apply();
 
-    var rootId = this._property('KNOWLEDGE_FOLDER_ID');
+    // Script Property first, CONFIG.gs second — the same rule as every other
+    // identifier since F17. Both empty is a real misconfiguration and says so.
+    var rootId = this._property('KNOWLEDGE_FOLDER_ID') || CONFIG.KNOWLEDGE_FOLDER_ID;
 
     if (!rootId) {
       throw new Error(
-        'KNOWLEDGE_FOLDER_ID is not set in Script Properties. Point it at the ' +
+        'No knowledge folder is configured. Set KNOWLEDGE_FOLDER_ID in Script ' +
+        'Properties, or CONFIG.KNOWLEDGE_FOLDER_ID, pointing at the ' +
         'business/knowledge folder in Drive.'
       );
     }
@@ -116,7 +119,7 @@ var CardBuilder = {
   listKnowledgeFiles: function() {
     ConfigResolver.apply();
 
-    var rootId = this._property('KNOWLEDGE_FOLDER_ID');
+    var rootId = this._property('KNOWLEDGE_FOLDER_ID') || CONFIG.KNOWLEDGE_FOLDER_ID;
     if (!rootId) return [];
 
     var root;
@@ -425,7 +428,7 @@ var CardBuilder = {
   _buildPrompt: function(knowledge, frontMatter) {
     var config = this._config();
     var folderId = this._property('PLANNING_PROMPTS_FOLDER_ID') ||
-      CONFIG.PROMPTS_FOLDER_ID;
+      CONFIG.PLANNING_PROMPTS_FOLDER_ID || CONFIG.PROMPTS_FOLDER_ID;
 
     var manual = DriveLoader.loadMarkdown(config.promptFile, folderId);
 
@@ -1015,7 +1018,8 @@ var PlannerRunner = {
   _buildPrompt: function(brief, check, existing) {
     var config = this._config();
     var folderId = PropertiesService.getScriptProperties()
-      .getProperty('PLANNING_PROMPTS_FOLDER_ID') || CONFIG.PROMPTS_FOLDER_ID;
+      .getProperty('PLANNING_PROMPTS_FOLDER_ID') ||
+      CONFIG.PLANNING_PROMPTS_FOLDER_ID || CONFIG.PROMPTS_FOLDER_ID;
 
     var manual = DriveLoader.loadMarkdown(config.promptFile, folderId);
 
@@ -1164,6 +1168,34 @@ var PlannerRunner = {
 
   // --------------------------------------------------------------- writing
 
+  // Which brand's marks a post on this page carries, by default.
+  //
+  // Returns '' for a page with no brand set rather than guessing one. Branding
+  // already refuses to place marks it cannot justify, and a wrong logo on a real
+  // hospital's post is worse than no logo.
+  brandFor: function(page) {
+    var name = String(page == null ? '' : page).trim();
+    if (!name) return '';
+
+    var sets = ((CONFIG.BRANDING || {}).BRAND_SETS) || {};
+
+    if (sets.hasOwnProperty(name)) return name;
+
+    // Case-insensitive, because the page vocabulary and the brand sets are
+    // maintained in two places and 'delta' should not cost a post its logos.
+    for (var key in sets) {
+      if (sets.hasOwnProperty(key) && key.toLowerCase() === name.toLowerCase()) {
+        return key;
+      }
+    }
+
+    Logger.log('PLANNER | page "' + name + '" has no brand set — Hospital Brand ' +
+      'left blank, and the artwork for these rows will carry no marks until it ' +
+      'is filled in.');
+
+    return '';
+  },
+
   write: function(plan, brief) {
     var sheetName = (this._config().CALENDAR_SHEET_NAME) || 'Content Calendar';
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
@@ -1198,6 +1230,21 @@ var PlannerRunner = {
         '-' + String(entry.page || '').substring(0, 3).toUpperCase(), sheetName);
       SheetWriter.writeCell(row, 'Page', entry.page, sheetName);
       SheetWriter.writeCell(row, 'Campaign Name', entry.campaign, sheetName);
+
+      // Hospital Brand, defaulted from the page.
+      //
+      // Nothing used to write this column, and Transfer carries it all the way
+      // to the Visual Pipeline, where `Branding.marksFor` reads it to decide
+      // which logos go on the artwork. An unrecognised brand gets NO marks
+      // rather than the wrong ones — which is correct, and means a blank here
+      // produced unbranded artwork on every post, reported as one log line.
+      //
+      // The page is the right default because CONFIG.BRANDING.BRAND_SETS is
+      // keyed by exactly the page names. It is a default, not a rule: a post
+      // that runs on the INSAN page about Future is a real case, and the
+      // operator changes the cell.
+      SheetWriter.writeCell(row, 'Hospital Brand',
+        this.brandFor(entry.page), sheetName);
 
       if (entry.group) {
         SheetWriter.writeCell(row, 'Campaign Group', entry.group, sheetName);

@@ -20,7 +20,7 @@
 >
 > Everything is in git, on `main`. What has *not* happened is a production run:
 > **the code has never been pasted into the Apps Script editor, and not one worker
-> built since 2026-07-29 has made a single live API call.** **724 automated checks**
+> built since 2026-07-29 has made a single live API call.** **792 automated checks**
 > pass against the real files — `node campaign-os/tests/run.js` — and none of them
 > proves the system runs.
 >
@@ -279,7 +279,7 @@ been pasted into the Apps Script editor.**
 ⚠️ **Corrected 2026-07-31.** This section previously claimed "roughly 140 automated
 checks pass". They had been run as throwaway scripts in earlier sessions and never
 committed, so nobody could re-run them and the claim could not be checked. There is
-now a committed harness — **724 checks**, `node campaign-os/tests/run.js`, no
+now a committed harness — **792 checks**, `node campaign-os/tests/run.js`, no
 dependencies and no network. It covers the logic layer only: every Apps Script
 service is stubbed to throw, so nothing here writes a cell, reads Drive or calls a
 model. See `campaign-os/tests/README.md`.
@@ -523,10 +523,20 @@ In this order. Steps 1–3 are one-time.
 1. **Copy the six files in `src/` into the Apps Script editor** — five `.gs` and
    `ControlCenter.html`, which must keep that exact name. Nothing takes effect until
    this happens. The list is §6.1a; the trap is §7.
-2. **Script Properties:** add `ANTHROPIC_API_KEY` (or the Creative Director fails on
-   every row) and `KNOWLEDGE_FOLDER_ID` (the Drive folder holding
-   `business/knowledge`; subfolders are searched). Optionally
-   `PLANNING_PROMPTS_FOLDER_ID` and `ADS_PROMPTS_FOLDER_ID`.
+2. **Script Properties: two keys, and nothing else.**
+   `GEMINI_API_KEY` and `ANTHROPIC_API_KEY`. Without the second one the Creative
+   Director fails on **every row**, by name — it does not fall back to Gemini.
+
+   **All fourteen Google identifiers now have working defaults in `CONFIG.gs`**,
+   confirmed against Drive on 2026-08-02, including `KNOWLEDGE_FOLDER_ID`, which
+   until that day had no fallback at all. Set a Script Property only to point a
+   deployment somewhere else; every one of the fourteen is overridable, and
+   `tests/cases/identifiers.js` fails if one is added that is not.
+
+   Three of the five visual-asset folder ids were **stale** between 2026-07-25
+   and 2026-08-02 and nothing noticed, because only `generated` had ever been
+   written to. A wrong id fails at the moment a file is filed — after the
+   artwork has been paid for.
 
    **For W9 only, and only when you reach it:** `FB_PAGE_ID_<PAGE>` and
    `FB_PAGE_TOKEN_<PAGE>` for each of INSAN, FUTURE and DELTA. Nothing else in

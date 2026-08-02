@@ -44,6 +44,18 @@ var CONFIG = {
   PROMPTS_FOLDER_ID: '1GbZxU9ndwrZLOqtz7kBBfH2nDlG1CWj-',
   VISUAL_PROMPTS_FOLDER_ID: '18TQFFAZoMfqLAE8TRzpOKTs6L001o9Zt',
 
+  // Confirmed against Drive by the operator, 2026-08-02.
+  //
+  // These three used to be readable ONLY from Script Properties, which made
+  // them the last pieces of setup with no working default — and
+  // KNOWLEDGE_FOLDER_ID had no fallback at all, so W1 could not find a single
+  // file until someone remembered to set it. They now follow the same rule as
+  // the eleven above: the Script Property wins where it is set, this value is
+  // used where it is not.
+  KNOWLEDGE_FOLDER_ID: '1fwd_BX_rGfc2954FG52fZKzCW_Q6yizS',
+  PLANNING_PROMPTS_FOLDER_ID: '1wIpi1lCRYPs0tTmanIrCADlxVb6L92x4',
+  ADS_PROMPTS_FOLDER_ID: '1YTwCq10ijTWale06kPG9p7SwGAD2LY6j',
+
   AI_PROVIDER: 'gemini',
 
   // PRODUCTION MODEL
@@ -1370,11 +1382,15 @@ var CONFIG = {
   // VISUAL ASSET FOLDER CONFIG
   // ================================
 
+  // Confirmed against Drive by the operator on 2026-08-02. Three of the five
+  // had moved since they were written on 2026-07-25 — approved, rejected and
+  // published. Only `generated` had ever been written to, so nothing noticed:
+  // a stale id here fails at the moment a file is filed, not before.
   VISUAL_ASSETS: {
     generated: '10wQyR4Xl1heAlfM6D_3DoQnbI1hhgPpK',
-    approved: '1U4ICxBI-nloZ-ZyWbP4DT8i915o8Khbp',
-    rejected: '1FXVqKNhXAyxSkSEXKCfGoynnMR_kYKIZ',
-    published: '1h9QbGSYarSuBALgE9ZyEqPQKm0T6ywt7',
+    approved: '16DcH4XW5uYsA7zgpn0MWMygHeDCGvgnu',
+    rejected: '1jUJ76XU0Y2WlmGM6fntf5No4XnAeL9uK',
+    published: '1tebmGSwrKFYkAFtON5_LSSP_e4xrq6Rd',
     archive: '1fLQK_x8hj7fQuADO2DQhjNTjgQczxJnO'
   },
 
@@ -1538,6 +1554,10 @@ var ConfigResolver = {
     'DOCS_FOLDER_ID':            'DOCS_FOLDER_ID',
     'PROMPTS_FOLDER_ID':         'PROMPTS_FOLDER_ID',
     'VISUAL_PROMPTS_FOLDER_ID':  'VISUAL_PROMPTS_FOLDER_ID',
+    'KNOWLEDGE_FOLDER_ID':       'KNOWLEDGE_FOLDER_ID',
+    'PLANNING_PROMPTS_FOLDER_ID':'PLANNING_PROMPTS_FOLDER_ID',
+    'ADS_PROMPTS_FOLDER_ID':     'ADS_PROMPTS_FOLDER_ID',
+
     'PROJECT_ASSETS_FOLDER_ID':  'PROJECT_ASSETS.FOLDER_ID',
     'VISUAL_ASSETS_GENERATED':   'VISUAL_ASSETS.generated',
     'VISUAL_ASSETS_APPROVED':    'VISUAL_ASSETS.approved',
@@ -3185,7 +3205,7 @@ var DriveLoader = {
     // prompts were unreachable from here too.
     var planningFolder =
       PropertiesService.getScriptProperties().getProperty('PLANNING_PROMPTS_FOLDER_ID') ||
-      CONFIG.PROMPTS_FOLDER_ID;
+      CONFIG.PLANNING_PROMPTS_FOLDER_ID || CONFIG.PROMPTS_FOLDER_ID;
 
     var planning = [CONFIG.CARD_BUILDER, CONFIG.CAMPAIGN_PLANNER, CONFIG.PORTFOLIO_CRITIC];
 
