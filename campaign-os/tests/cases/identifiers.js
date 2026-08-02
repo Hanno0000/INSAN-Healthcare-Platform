@@ -79,6 +79,7 @@ module.exports = {
     // changing one is an edit to this file, made on purpose, rather than a
     // difference nobody sees until a file is filed into the wrong folder.
     const confirmed = {
+      'DOCS_FOLDER_ID':             '1jV62YARsYyAED7hIg6HVpe6Swj8wtaVH',
       'KNOWLEDGE_FOLDER_ID':        '1fwd_BX_rGfc2954FG52fZKzCW_Q6yizS',
       'PLANNING_PROMPTS_FOLDER_ID': '1wIpi1lCRYPs0tTmanIrCADlxVb6L92x4',
       'ADS_PROMPTS_FOLDER_ID':      '1YTwCq10ijTWale06kPG9p7SwGAD2LY6j',

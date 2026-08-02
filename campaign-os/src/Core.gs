@@ -40,7 +40,7 @@ var CONFIG_IMPLEMENTED_FORMATS = ['Static', 'Carousel', 'Story', 'Infographic'];
 var CONFIG = {
 
   SHEET_NAME: 'Content Pipeline',
-  DOCS_FOLDER_ID: '1tI0lW6Faai_d0vXz5fGJ4e7nNpl_yS5V',
+  DOCS_FOLDER_ID: '1jV62YARsYyAED7hIg6HVpe6Swj8wtaVH',
   PROMPTS_FOLDER_ID: '1GbZxU9ndwrZLOqtz7kBBfH2nDlG1CWj-',
   VISUAL_PROMPTS_FOLDER_ID: '18TQFFAZoMfqLAE8TRzpOKTs6L001o9Zt',
 
