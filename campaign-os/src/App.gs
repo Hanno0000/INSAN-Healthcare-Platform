@@ -812,13 +812,9 @@ function _askForKnowledgeFile(title) {
     return null;
   }
 
-  var name = String(response.getResponseText()).trim();
-
-  if (!name) {
-    return null;
-  }
-
-  return /\.md$/i.test(name) ? name : name + '.md';
+  // Same rule as the sidebar's, and the same code, so the two cannot come to
+  // disagree about what counts as a filename. The filename is the join key.
+  return _normaliseKnowledgeName(response.getResponseText());
 }
 
 
@@ -3622,6 +3618,318 @@ function executeWorker(workerName, startRow, endRow) {
       error: e.toString(),
       duration: formatDuration(endTime - startTime)
     };
+  }
+}
+
+
+// ================================
+// PLANNING, FOR THE SIDEBAR
+//
+// The start of the chain. These take a filename, a written brief and a batch —
+// not a row range — which is why they were the last part of the menu to reach
+// the panel and why each needs its own input rather than a button.
+//
+// Every one of them returns data. The menu versions build their own text and
+// hand it to ui.alert; formatting inside a function the panel also calls would
+// mean the panel rendering a block of plain text with newlines in it.
+// ================================
+
+// One round trip for everything the card needs to draw itself. Four separate
+// calls on open would be four sheet reads before the operator has clicked
+// anything.
+function getPlanningContext() {
+  var context = {
+    knowledgeFiles: [],
+    pages: [],
+    maxPostsPerDay: 3,
+    batches: [],
+    campaigns: { ready: [], thin: [], inactive: [] },
+    problems: []
+  };
+
+  try {
+    context.pages = (CONFIG.CONTROLLED_VOCABULARY || {})['Publishing Page'] || [];
+    context.maxPostsPerDay = (CONFIG.CAMPAIGN_PLANNER || {}).MAX_POSTS_PER_DAY || 3;
+  } catch (e) {
+    context.problems.push('Could not read CONFIG: ' + e.toString());
+  }
+
+  // Each source is tried on its own. A knowledge folder that does not resolve
+  // must not also empty the batch picker — one broken Script Property should
+  // disable one control, not the card.
+  try {
+    context.knowledgeFiles = CardBuilder.listKnowledgeFiles();
+    if (!context.knowledgeFiles.length) {
+      context.problems.push(
+        'No knowledge files found. Check KNOWLEDGE_FOLDER_ID in Script Properties.');
+    }
+  } catch (e) {
+    context.problems.push('Knowledge folder: ' + (e.message || e.toString()));
+  }
+
+  try {
+    var batches = Batches.all();
+    for (var i = 0; i < batches.length; i++) {
+      context.batches.push({
+        id: batches[i].id,
+        label: Batches.describe(batches[i]),
+        start: batches[i].start,
+        end: batches[i].end
+      });
+    }
+  } catch (e) {
+    context.problems.push('Batches: ' + (e.message || e.toString()));
+  }
+
+  try {
+    var cards = PlannerRunner.readCards();
+    var names = [];
+
+    for (var key in cards) {
+      if (cards.hasOwnProperty(key)) names.push(cards[key].name);
+    }
+
+    if (names.length) {
+      var check = PlannerRunner.checkCampaigns(names, cards);
+      context.campaigns = {
+        ready: check.ready.map(function(c) { return c.name; }),
+        thin: check.thin,
+        inactive: check.inactive
+      };
+    }
+  } catch (e) {
+    context.problems.push('Campaign Cards: ' + (e.message || e.toString()));
+  }
+
+  return context;
+}
+
+
+// Reads a knowledge file and reports whether a card can be built from it,
+// without spending an inference.
+function executeCheckKnowledgeFile(fileName) {
+  try {
+    var name = _normaliseKnowledgeName(fileName);
+    if (!name) return { success: false, error: 'No file name given.' };
+
+    var file = CardBuilder.findKnowledgeFile(name);
+    var check = CardBuilder.validate(file.content, name);
+    var campaignName = CardBuilder.campaignNameFor(check.frontMatter);
+
+    // Whether a card under this name would be joined to anything. A file can
+    // pass every structural check and still produce a card no scheduled row
+    // looks up, and that failure is invisible in the card itself.
+    var usage = null;
+    try {
+      usage = CardBuilder.calendarUsage(campaignName);
+    } catch (e) {}
+
+    return {
+      success: true,
+      fileName: name,
+      folder: file.folder,
+      ready: !!check.ok,
+      entity: check.frontMatter.entity_name_en,
+      campaignName: campaignName,
+      level: check.frontMatter.service_level,
+      problems: check.problems || [],
+      gaps: (check.gaps || []).map(function(g) {
+        return { line: g.line, section: g.section, note: g.note || '' };
+      }),
+      slots: usage ? usage.slots : null,
+      nearNames: usage ? usage.near : []
+    };
+
+  } catch (e) {
+    return { success: false, error: e.message || e.toString() };
+  }
+}
+
+
+function executeCardBuilder(fileName) {
+  try {
+    var name = _normaliseKnowledgeName(fileName);
+    if (!name) return { success: false, error: 'No file name given.' };
+
+    var result = CardBuilder.build(name);
+
+    return {
+      success: true,
+      fileName: result.fileName,
+      row: result.row,
+      existed: !!result.existed,
+      written: result.written || [],
+      preserved: result.preserved || [],
+      insufficient: result.insufficient || []
+    };
+
+  } catch (e) {
+    return { success: false, error: e.message || e.toString() };
+  }
+}
+
+
+// One rule for both entry points. The menu prompt calls this too: the filename
+// is the join key, and a menu that accepted "HOSPITAL_DELTA" while the panel
+// required "HOSPITAL_DELTA.md" would be two different systems.
+function _normaliseKnowledgeName(fileName) {
+  var name = String(fileName == null ? '' : fileName).trim();
+  if (!name) return null;
+  return /\.md$/i.test(name) ? name : name + '.md';
+}
+
+
+// The brief comes from the panel as one object rather than four prompts. The
+// ceiling is checked here and not only in the form: a browser can be made to
+// send anything, and PROJECT_DECISIONS §4 is a decision about the business.
+function executeCampaignPlanner(brief) {
+  try {
+    var days = parseInt(brief && brief.days, 10);
+    var postsPerDay = parseInt(brief && brief.postsPerDay, 10);
+    var pages = (brief && brief.pages) || [];
+    var objective = String((brief && brief.objective) || '').trim();
+
+    if (!days || days < 1) return { success: false, error: 'Days must be at least 1.' };
+    if (!postsPerDay || postsPerDay < 1) {
+      return { success: false, error: 'Posts per page per day must be at least 1.' };
+    }
+    if (!pages.length) return { success: false, error: 'No pages given.' };
+
+    var known = (CONFIG.CONTROLLED_VOCABULARY || {})['Publishing Page'] || [];
+    var unknown = pages.filter(function(p) { return known.indexOf(p) === -1; });
+
+    // Refused by name rather than dropped. A page the vocabulary does not know
+    // would be planned into rows nothing downstream can publish.
+    if (unknown.length) {
+      return { success: false, error: 'Not a known publishing page: ' + unknown.join(', ') };
+    }
+
+    var ceiling = (CONFIG.CAMPAIGN_PLANNER || {}).MAX_POSTS_PER_DAY || 3;
+    var dailyTotal = postsPerDay * pages.length;
+
+    if (dailyTotal > ceiling && !(brief && brief.overrideCeiling)) {
+      return {
+        success: false,
+        overCeiling: true,
+        dailyTotal: dailyTotal,
+        ceiling: ceiling,
+        error: postsPerDay + ' per page across ' + pages.length + ' pages is ' +
+          dailyTotal + ' posts a day. PROJECT_DECISIONS §4 caps the ecosystem ' +
+          'at ' + ceiling + ' a day, averaging 1.5–2, on the principle of ' +
+          'consistency over volume.'
+      };
+    }
+
+    var cards = PlannerRunner.readCards();
+    var names = [];
+
+    for (var key in cards) {
+      if (cards.hasOwnProperty(key)) names.push(cards[key].name);
+    }
+
+    if (!names.length) {
+      return {
+        success: false,
+        error: 'Campaign Cards is empty. Build at least one card before planning.'
+      };
+    }
+
+    var check = PlannerRunner.checkCampaigns(names, cards);
+
+    var start = new Date();
+    start.setDate(start.getDate() + 1);
+
+    var result = PlannerRunner.plan({
+      days: days,
+      pages: pages,
+      postsPerDay: postsPerDay,
+      objective: objective,
+      emphasis: '',
+      campaigns: check.ready.map(function(c) { return c.name; }),
+      startDate: start,
+      startText: Utilities.formatDate(start, Session.getScriptTimeZone(), 'yyyy-MM-dd')
+    });
+
+    return {
+      success: true,
+      written: result.written,
+      startRow: result.startRow,
+      batchId: result.batchId,
+      startText: Utilities.formatDate(start, Session.getScriptTimeZone(), 'yyyy-MM-dd'),
+      missing: (result.check && result.check.missing) || [],
+      rejected: result.rejected || [],
+      notes: result.notes || ''
+    };
+
+  } catch (e) {
+    return { success: false, error: e.message || e.toString() };
+  }
+}
+
+
+// Scoped by batch, not by row number. The critic measures repetition across the
+// rows it is given, so a range covering two plans reports their difference as a
+// fault — which is why the panel offers the batch list first.
+function executePortfolioCritic(startRow, endRow) {
+  try {
+    var result = PortfolioCritic.review(startRow, endRow);
+    var m = result.measured;
+    var review = result.review;
+
+    return {
+      success: true,
+      verdict: review.verdict || '',
+      strongest: review.strongest || '',
+      measured: {
+        total: m.total,
+        written: m.written,
+        formulaicShare: m.formulaicShare,
+        duplicates: m.duplicates.length,
+        clashes: m.clashes.length
+      },
+      findings: (review.findings || []).map(function(f) {
+        return {
+          severity: String(f.severity || '').toUpperCase(),
+          what: f.what,
+          where: f.where || '',
+          fix: f.fix || ''
+        };
+      })
+    };
+
+  } catch (e) {
+    return { success: false, error: e.message || e.toString() };
+  }
+}
+
+
+// What falls inside — or just before — the window being planned. Never
+// estimates a Hijri date: a year with no entry is reported missing.
+function getUpcomingEvents(horizon) {
+  try {
+    var days = parseInt(horizon, 10) || 90;
+    var result = EventsCalendar.upcoming(days);
+
+    return {
+      success: true,
+      horizon: days,
+      events: result.events.map(function(e) {
+        return {
+          name: e.name,
+          state: e.state,
+          startText: e.startText,
+          endText: e.endText,
+          daysUntilStart: e.daysUntilStart,
+          weight: e.weight
+        };
+      }),
+      missing: result.missing.map(function(m) {
+        return { name: m.name, year: m.year };
+      })
+    };
+
+  } catch (e) {
+    return { success: false, error: e.message || e.toString() };
   }
 }
 

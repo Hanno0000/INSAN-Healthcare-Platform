@@ -104,6 +104,68 @@ var CardBuilder = {
     return found;
   },
 
+  // Every `.md` under the knowledge root, so a caller can offer a list instead
+  // of asking the operator to type a filename exactly.
+  //
+  // The filename is the join key: `findKnowledgeFile` matches on it exactly, and
+  // a typo is reported as "not found" — which reads like a missing file rather
+  // than a mistyped one. A list removes the class of error entirely.
+  //
+  // Reads names only. The content of ~26 files is several hundred KB and none of
+  // it is needed to draw a list.
+  listKnowledgeFiles: function() {
+    ConfigResolver.apply();
+
+    var rootId = this._property('KNOWLEDGE_FOLDER_ID');
+    if (!rootId) return [];
+
+    var root;
+    try {
+      root = DriveApp.getFolderById(rootId);
+    } catch (e) {
+      Logger.log('CARD_BUILDER | knowledge folder does not resolve: ' + e.toString());
+      return [];
+    }
+
+    var found = [];
+    this._collectNames(root, found, 0);
+
+    // A file reachable by two paths is one file to the operator.
+    var seen = {};
+    var unique = [];
+
+    for (var i = 0; i < found.length; i++) {
+      if (seen[found[i].name]) continue;
+      seen[found[i].name] = true;
+      unique.push(found[i]);
+    }
+
+    unique.sort(function(a, b) { return a.name < b.name ? -1 : a.name > b.name ? 1 : 0; });
+
+    return unique;
+  },
+
+  _collectNames: function(folder, out, depth) {
+    // Same bound as the search below, for the same reason.
+    if (depth > 3) return;
+
+    var files = folder.getFiles();
+
+    while (files.hasNext()) {
+      var file = files.next();
+      var name = file.getName();
+      if (/\.md$/i.test(name)) {
+        out.push({ name: name, folder: folder.getName() });
+      }
+    }
+
+    var subfolders = folder.getFolders();
+
+    while (subfolders.hasNext()) {
+      this._collectNames(subfolders.next(), out, depth + 1);
+    }
+  },
+
   _searchFolder: function(folder, fileName, depth) {
     // The knowledge tree is two levels deep by design. A bound stops a stray
     // shortcut turning a lookup into a full-Drive walk.

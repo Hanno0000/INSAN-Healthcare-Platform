@@ -20,7 +20,7 @@
 >
 > Everything is in git, on `main`. What has *not* happened is a production run:
 > **the code has never been pasted into the Apps Script editor, and not one worker
-> built since 2026-07-29 has made a single live API call.** **686 automated checks**
+> built since 2026-07-29 has made a single live API call.** **724 automated checks**
 > pass against the real files — `node campaign-os/tests/run.js` — and none of them
 > proves the system runs.
 >
@@ -279,7 +279,7 @@ been pasted into the Apps Script editor.**
 ⚠️ **Corrected 2026-07-31.** This section previously claimed "roughly 140 automated
 checks pass". They had been run as throwaway scripts in earlier sessions and never
 committed, so nobody could re-run them and the claim could not be checked. There is
-now a committed harness — **686 checks**, `node campaign-os/tests/run.js`, no
+now a committed harness — **724 checks**, `node campaign-os/tests/run.js`, no
 dependencies and no network. It covers the logic layer only: every Apps Script
 service is stubbed to throw, so nothing here writes a cell, reads Drive or calls a
 model. See `campaign-os/tests/README.md`.
@@ -434,11 +434,30 @@ Folders), and **Archive A Finished Plan** — the only destructive operation her
 which asks the operator to type a batch id. Among a panel of run buttons that is a
 wrong click waiting to happen.
 
-**Not built:** a Planning card for W1, W2, the Portfolio Critic and What Is Coming.
-Those take a knowledge filename, a written brief and a batch — not a row range — so
-each needs its own input design rather than a button. They work from the menu. This
-is the largest remaining piece of the sidebar and it is worth doing **after** someone
-has actually opened the panel once.
+**A Planning card was added the same day.** W1, W2, the Portfolio Critic, Check
+Knowledge File and What Is Coming. These take a knowledge filename, a written brief
+and a batch rather than a row range, so each got its own control:
+
+- **The knowledge file is a list, not a typed name.** `CardBuilder.listKnowledgeFiles`
+  is new — the menu asks the operator to type the filename *exactly as it appears in
+  Drive*, and a typo comes back as "not found", which reads like a missing file
+  rather than a mistyped one. A list removes the whole class of error.
+- **What can be scheduled is stated before the form is filled**, not after it is
+  submitted: how many campaigns are ready, which cards carry almost no strategy, and
+  which are excluded for not being Active.
+- **The daily ceiling is shown while the numbers are being typed.** PROJECT_DECISIONS
+  §4 caps the ecosystem at 3 posts a day. Going over is still allowed and still
+  confirmed — the panel says so before the click rather than refusing after it.
+- **The critic takes a batch from a list**, because it measures repetition across the
+  rows it is given and a range covering two plans reports their difference as a fault.
+
+Every refusal is enforced **on the server as well as in the form** — an unknown
+publishing page, a plan over the ceiling without confirmation, an empty filename. A
+browser can be made to send anything, and the cap is a decision about the business.
+
+**Still only in the menu, and that is the whole list now:** the one-time setup, the
+diagnostics, Archive, and Resume/Stop/Refresh which the panel already has its own
+controls for.
 
 ### 6.2 The knowledge base
 

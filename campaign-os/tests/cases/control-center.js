@@ -32,12 +32,15 @@ module.exports = {
     //     .withFailureHandler(...)
     //     .executeStop();
     //
-    // so a link is a line beginning with `.name(`. The handler bodies are
-    // indented inside their own arguments and do not start a line that way.
+    // The server call is always the last link: a line that begins with `.name(`
+    // AND closes the statement on the same line. Matching every line-initial
+    // `.name(` instead picked up the `.replace()` chain inside esc(), which is
+    // formatted the same way and is not a server call.
+    //
     // Read from the source rather than from a hand-kept list, so a call added
     // tomorrow is covered without anyone remembering to add it here.
     const serverCalls = (text) => [...new Set(
-      [...text.matchAll(/^[ \t]*\.([a-zA-Z_$][\w$]*)\(/gm)]
+      [...text.matchAll(/^[ \t]*\.([a-zA-Z_$][\w$]*)\([^()]*\);[ \t]*$/gm)]
         .map((m) => m[1])
         .filter((n) => n !== 'withSuccessHandler' && n !== 'withFailureHandler')
     )].sort();
@@ -269,5 +272,135 @@ module.exports = {
       'and neither did one that ran out of time — the rows past nextRow were ' +
       'never attempted, and reporting success would say they were');
     t.is(interrupted.nextRow, 9, 'the row to resume from is carried back');
+
+    // --- the panel's own script holds together ---
+    //
+    // None of this proves the sidebar works — it has never been opened. It
+    // proves the cheap failures are absent: the ones that make a button do
+    // nothing, throw on the first click, or render an element that is not there.
+    const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
+    t.is(scripts.length, 1, 'the panel has one script block');
+
+    const js = scripts.join('\n');
+
+    // A syntax error anywhere in it kills every handler in the panel, and the
+    // sheet gives no indication beyond a sidebar where nothing responds.
+    let parsed = true;
+    try { new Function(js); } catch (e) { parsed = false; }
+    t.ok(parsed, 'the sidebar script parses');
+
+    const scriptFns = new Set(
+      [...js.matchAll(/function\s+([A-Za-z_$][\w$]*)\s*\(/g)].map((m) => m[1]));
+
+    const handlers = [...new Set(
+      [...html.matchAll(/on(?:click|change|input)="([A-Za-z_$][\w$]*)\(/g)]
+        .map((m) => m[1]))];
+
+    t.ok(handlers.length >= 12,
+      `the inline handlers are readable — found ${handlers.length}`);
+    t.is(handlers.filter((h) => !scriptFns.has(h)), [],
+      'every onclick calls a function the script declares — a missing one is a ' +
+      'button that throws on the first click and looks like a dead control');
+
+    // Mutation: the scan must notice a handler that goes nowhere.
+    t.is([...new Set([...(html + '\n<button onclick="noSuchHandler_probe()">x</button>')
+      .matchAll(/on(?:click|change|input)="([A-Za-z_$][\w$]*)\(/g)]
+      .map((m) => m[1]))].filter((h) => !scriptFns.has(h)),
+      ['noSuchHandler_probe'],
+      'and reports one that does not exist — proving the check can fail');
+
+    const ids = new Set([...html.matchAll(/id="([A-Za-z0-9_-]+)"/g)].map((m) => m[1]));
+    const looked = [...new Set(
+      [...js.matchAll(/getElementById\('([A-Za-z0-9_-]+)'\)/g)].map((m) => m[1]))];
+
+    t.ok(looked.length >= 20, `element lookups are readable — found ${looked.length}`);
+    t.is(looked.filter((i) => !ids.has(i)), [],
+      'every getElementById target exists — either in the markup or in the ' +
+      'markup the script builds');
+
+    for (const cls of [...new Set(
+      [...js.matchAll(/querySelectorAll\('\.([A-Za-z0-9_-]+)'\)/g)].map((m) => m[1]))]) {
+      t.includes(html, cls, `.${cls} is queried and exists`);
+    }
+
+    // --- planning is reachable, and refuses before it spends ---
+    for (const fn of ['getPlanningContext', 'executeCheckKnowledgeFile',
+                      'executeCardBuilder', 'executeCampaignPlanner',
+                      'executePortfolioCritic', 'getUpcomingEvents']) {
+      t.is(typeof global[fn], 'function', `${fn} is reachable from the sidebar`);
+    }
+
+    t.is(_normaliseKnowledgeName('HOSPITAL_DELTA'), 'HOSPITAL_DELTA.md',
+      'a filename typed without .md still resolves');
+    t.is(_normaliseKnowledgeName('  HOSPITAL_DELTA.md  '), 'HOSPITAL_DELTA.md',
+      'and one with stray spaces');
+    t.is(_normaliseKnowledgeName(''), null, 'an empty name is refused, not searched for');
+    t.is(executeCheckKnowledgeFile('').success, false, 'and refused by the caller');
+    t.is(executeCardBuilder(null).success, false, 'including the build path');
+
+    // The brief is validated before anything is read or written. All of these
+    // return before PlannerRunner is reached, which is why they can be checked
+    // with every Apps Script service stubbed to throw.
+    const planner = (brief) => executeCampaignPlanner(brief);
+    const pages = (CONFIG.CONTROLLED_VOCABULARY || {})['Publishing Page'] || [];
+
+    t.ok(pages.length >= 2, `the publishing pages are known — ${pages.join(', ')}`);
+
+    t.is(planner({ days: 0, pages: pages, postsPerDay: 1 }).success, false,
+      'zero days is refused');
+    t.is(planner({ days: 7, pages: [], postsPerDay: 1 }).success, false,
+      'no pages is refused');
+    t.is(planner({ days: 7, pages: pages, postsPerDay: 0 }).success, false,
+      'zero posts a day is refused');
+
+    // Named, not dropped. A page the vocabulary does not know would be planned
+    // into rows nothing downstream can publish.
+    const unknownPage = planner({ days: 1, pages: ['Nowhere Hospital'], postsPerDay: 1 });
+    t.is(unknownPage.success, false, 'an unknown publishing page is refused');
+    t.includes(unknownPage.error, 'Nowhere Hospital', 'and named in the refusal');
+
+    // The ceiling is enforced on the server, not only in the form. A browser
+    // can be made to send anything, and PROJECT_DECISIONS §4 is a decision
+    // about the business rather than a form validation.
+    const ceiling = (CONFIG.CAMPAIGN_PLANNER || {}).MAX_POSTS_PER_DAY || 3;
+    const over = planner({ days: 7, pages: pages, postsPerDay: ceiling + 1 });
+
+    t.is(over.success, false, 'a plan above the daily ceiling is refused');
+    t.ok(over.overCeiling, 'and says why, so the panel can offer to confirm');
+    t.is(over.ceiling, ceiling, 'reporting the ceiling it applied');
+
+    // With the operator's confirmation it proceeds past the ceiling — and then
+    // fails on the sheet, which is stubbed to throw here. That is the correct
+    // place to stop: it means the ceiling was not what refused it.
+    const overridden = planner({
+      days: 7, pages: pages, postsPerDay: ceiling + 1, overrideCeiling: true
+    });
+    t.notOk(overridden.overCeiling,
+      'and with the override it is no longer the ceiling that refuses');
+
+    // --- nothing here throws at the caller ---
+    // google.script.run reports a thrown server function as a failure handler
+    // with a stack trace in it. Every one of these returns a refusal instead.
+    for (const call of [() => getPlanningContext(),
+                        () => getUpcomingEvents(90),
+                        () => executePortfolioCritic(2, 5),
+                        () => executeTransfer(),
+                        () => executeDelivery('publishing', 2, 3)]) {
+      let threw = false;
+      try { call(); } catch (e) { threw = true; }
+      t.notOk(threw,
+        'the call returns a result rather than throwing — a thrown server ' +
+        'function reaches the operator as a stack trace');
+    }
+
+    // getPlanningContext reads four separate things and must not let one
+    // failure empty the others. Every source throws here, so all four are
+    // reported.
+    const context = getPlanningContext();
+    t.ok(context.problems.length > 0,
+      'a source it could not read is reported by name rather than returned as ' +
+      'an empty list — an empty batch picker and a broken one look identical');
+    t.ok(Array.isArray(context.knowledgeFiles) && Array.isArray(context.batches),
+      'and the shape the panel expects survives the failure');
   }
 };

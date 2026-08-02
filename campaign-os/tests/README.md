@@ -19,7 +19,7 @@ had been run as throwaway scripts in earlier working sessions and never committe
 nobody could re-run them, and the claim could not be checked by anyone reading the
 repository. A test result that only one person ever saw is not evidence.
 
-**686 checks now, and they are here.**
+**724 checks now, and they are here.**
 
 ---
 
@@ -42,7 +42,7 @@ So these checks cover the decisions the system makes *before* it touches anythin
 | `batches` | 21 | A batch id is the planning moment, so the same campaign planned twice is two batches |
 | `branding` | 51 | Which marks each brand gets, an unknown brand getting none, and the 16% Meta text budget |
 | `config-integrity` | 46 | Publishing ships in dry run · Budget is outside the ads worker's schema · managed columns are declared · no two vocabulary values differ only by case |
-| `control-center` | 74 | Every server function the sidebar calls exists · the health light reports on the providers the workers actually need · each card drives its own row inputs · publishing states dry-run or live on the button |
+| `control-center` | 112 | Every server function the sidebar calls exists · the health light reports on the providers the workers actually need · each card drives its own row inputs · publishing states dry-run or live on the button |
 | `entity-registry` | 24 | The registry's 24 entities parse; a malformed row is reported, never silently dropped |
 | `events-calendar` | 26 | What is coming — and that a Hijri date with no entry is **reported missing, never estimated** |
 | `knowledge-gate` | 25 | Which knowledge files may build a card. 24 ready, 2 waiting on operator facts — the claim in `KNOWLEDGE_BASE_SPEC.md` §7.8, checked |
@@ -69,7 +69,7 @@ the sheet is opened. It resolves **when the operator clicks the item** — so a 
 renamed, a file left out of a paste, or a section lost in a merge produces a menu that
 draws perfectly and has an item that does nothing.
 
-`GLOBALS.txt` pins the 140 names the sources contribute to that scope. It is what makes
+`GLOBALS.txt` pins the 147 names the sources contribute to that scope. It is what makes
 "the sources were regrouped into different files and nothing changed" a measurement
 rather than a claim. Regenerate it deliberately, in the commit that adds the name —
 never to make a failing check pass.
@@ -103,6 +103,10 @@ deliberately, run, and caught:
 | Make a missing `DRY_RUN` flag read as dry run | `control-center`, 2 checks |
 | Report nothing as a missing provider, as the old health check did | `control-center`, 7 checks |
 | Drop `successCount` from a delivery result | `control-center`, 2 checks |
+| Accept a publishing page the vocabulary does not know | `control-center` |
+| Stop enforcing the daily post ceiling on the server | `control-center`, 2 checks |
+| Stop appending `.md` to a typed knowledge filename | `control-center` |
+| Point an `onclick` at a function the sidebar script does not declare | `control-center` |
 
 `menu-bindings` also carries its mutation test inside the suite: the audit is run
 against a source with one deliberately broken binding and must report exactly that

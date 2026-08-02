@@ -291,6 +291,55 @@
       box-shadow: 0 0 0 3px rgba(26,115,232,0.12);
     }
 
+    /* Planning takes a file, a brief and a batch rather than a row range, so it
+       is the first card to need a select and a set of checkboxes. Same box as
+       the inputs above, so the two kinds of card read as one panel. */
+    .input-group select {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      outline: none;
+      background: white;
+    }
+
+    .input-group select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(26,115,232,0.12);
+    }
+
+    .check-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 4px 0;
+    }
+
+    .check-row label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: 0;
+      margin: 0;
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+
+    .note {
+      font-size: 11px;
+      line-height: 1.5;
+      color: var(--text-secondary);
+      padding: 4px 0;
+    }
+
+    .note-warn { color: var(--red); }
+
     .divider {
       height: 1px;
       background: var(--border);
@@ -570,6 +619,72 @@
   <div id="health-panel"></div>
   <div id="dashboard"></div>
 
+  <!-- Planning — the start of the chain. Not a row range: a knowledge file, a
+       written brief, a batch. Each control is disabled until the panel knows
+       what it would be choosing from, rather than offering an empty list. -->
+  <div class="card">
+    <div class="card-header color-green" onclick="toggle('planning')">
+      <span><span class="icon">&#9654;</span>Planning</span>
+      <span class="arrow" id="arrow-planning">&#9660;</span>
+    </div>
+    <div class="card-body hidden" id="section-planning">
+
+      <div class="input-group">
+        <label>Knowledge file</label>
+        <select id="pl-knowledge"><option value="">Loading...</option></select>
+      </div>
+
+      <button class="btn btn-outline" onclick="doCheckKnowledge()">
+        <span class="btn-icon">&#9432;</span>Check Knowledge File
+      </button>
+      <button class="btn btn-primary" onclick="doCardBuilder()">
+        <span class="btn-icon">&#9998;</span>Build Campaign Card
+      </button>
+
+      <div class="divider"></div>
+
+      <div id="pl-campaign-summary" class="note"></div>
+
+      <div class="input-group">
+        <label>Days</label>
+        <input type="number" id="pl-days" min="1" value="7">
+      </div>
+      <div class="input-group">
+        <label>Posts per page per day</label>
+        <input type="number" id="pl-per-day" min="1" value="1">
+      </div>
+      <div class="input-group">
+        <label>Pages</label>
+        <div class="check-row" id="pl-pages"><span class="note">Loading...</span></div>
+      </div>
+      <div class="input-group">
+        <label>What is this cycle for?</label>
+        <input type="text" id="pl-objective"
+               placeholder="build trust for Delta, and bookings for the clinics">
+      </div>
+
+      <div id="pl-ceiling-note" class="note"></div>
+
+      <button class="btn btn-primary" onclick="doCampaignPlanner()">
+        <span class="btn-icon">&#9635;</span>Plan a Cycle
+      </button>
+
+      <div class="divider"></div>
+
+      <div class="input-group">
+        <label>Plan to review</label>
+        <select id="pl-batch"><option value="">Loading...</option></select>
+      </div>
+
+      <button class="btn btn-primary" onclick="doPortfolioCritic()">
+        <span class="btn-icon">&#9733;</span>Review Plan Before Production
+      </button>
+      <button class="btn btn-outline" onclick="doUpcomingEvents()">
+        <span class="btn-icon">&#9200;</span>What Is Coming
+      </button>
+    </div>
+  </div>
+
   <div class="card">
     <div class="card-header color-blue" onclick="toggle('content')">
       <span><span class="icon">&#9654;</span>Content Team</span>
@@ -677,26 +792,22 @@
       </div>
       <div id="delivery-count">
         <div class="input-group">
-          <div class="input-field">
-            <label>Start Row</label>
-            <input type="number" id="d-start" min="2" value="2">
-          </div>
-          <div class="input-field">
-            <label>Number of Rows</label>
-            <input type="number" id="d-count" min="1" value="1">
-          </div>
+          <label>Start Row</label>
+          <input type="number" id="d-start" min="2" value="2">
+        </div>
+        <div class="input-group">
+          <label>Number of Rows</label>
+          <input type="number" id="d-count" min="1" value="1">
         </div>
       </div>
       <div id="delivery-range" style="display:none">
         <div class="input-group">
-          <div class="input-field">
-            <label>Start Row</label>
-            <input type="number" id="d-rs" min="2" value="2">
-          </div>
-          <div class="input-field">
-            <label>End Row</label>
-            <input type="number" id="d-re" min="2" value="10">
-          </div>
+          <label>Start Row</label>
+          <input type="number" id="d-rs" min="2" value="2">
+        </div>
+        <div class="input-group">
+          <label>End Row</label>
+          <input type="number" id="d-re" min="2" value="10">
         </div>
       </div>
 
@@ -707,7 +818,7 @@
         <span class="btn-icon">&#9788;</span>Draft Paid Ads
       </button>
 
-      <div id="publish-mode-note" class="empty-state" style="padding:8px 0 0;font-size:11px"></div>
+      <div id="publish-mode-note" class="note"></div>
     </div>
   </div>
 
@@ -1010,7 +1121,15 @@
       refreshBeforeRun = document.getElementById('confirm-refresh').checked;
 
       disableAll(true);
-      showProgress(action.info.name, action.rows.start, action.rows.end);
+
+      // Planning writes a calendar it is inventing, so there is no range of
+      // existing rows to count through.
+      if (action.planner) {
+        showWorking(action.info.name,
+          'Writing ' + action.rows.count + ' calendar rows...');
+      } else {
+        showProgress(action.info.name, action.rows.start, action.rows.end);
+      }
 
       if (!refreshBeforeRun) {
         startAction(action);
@@ -1048,7 +1167,9 @@
     }
 
     function startAction(action) {
-      if (action.info.pipeline) {
+      if (action.planner) {
+        runPlannerAction(action.planner);
+      } else if (action.info.pipeline) {
         runPipelineAction(action.info.steps, action.rows);
       } else if (action.info.service) {
         runServiceAction(action.info.service, action.info.name, action.rows);
@@ -1060,6 +1181,22 @@
     }
 
     // ==================== PROGRESS ====================
+
+    // For an operation that is one call rather than a walk over rows. The row
+    // counter below would read "0 / 1" and invite the operator to wonder which
+    // row a card build was on.
+    function showWorking(title, detail) {
+      document.getElementById('result-area').innerHTML =
+        '<div class="card" style="border-left:3px solid var(--blue)">' +
+          '<div class="progress-container active">' +
+            '<div class="progress-header">' +
+              '<span class="progress-worker pulse">' + title + '</span>' +
+              '<span class="progress-status" id="p-status">' +
+                (detail || 'Working...') + '</span>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    }
 
     function showProgress(workerName, start, end) {
       var area = document.getElementById('result-area');
@@ -1093,6 +1230,11 @@
       var tot = document.getElementById('p-total');
       var pct = document.getElementById('p-pct');
       var st = document.getElementById('p-status');
+
+      // The status line first, and on its own. showWorking() has one and no row
+      // counter — without this, the cache-refresh step would leave a planning
+      // run saying "Writing 21 calendar rows" while it was doing something else.
+      if (st) st.textContent = status || 'Running...';
 
       if (!bar) return;
 
@@ -1500,6 +1642,518 @@
       }, AUTO_REFRESH_MS);
     }
 
+    // ==================== PLANNING ====================
+
+    // What the card needs to draw itself, fetched once. Held so the handlers can
+    // read the ceiling and the batch ranges without a second round trip.
+    var planningContext = null;
+
+    function loadPlanningContext() {
+      google.script.run
+        .withSuccessHandler(function(context) {
+          planningContext = context;
+          paintPlanningCard();
+        })
+        .withFailureHandler(function(err) {
+          planningContext = null;
+          paintPlanningCard(err.message ||
+            'The planning card could not read the sheet.');
+        })
+        .getPlanningContext();
+    }
+
+    function paintPlanningCard(loadError) {
+      var knowledge = document.getElementById('pl-knowledge');
+      var batch = document.getElementById('pl-batch');
+      var pages = document.getElementById('pl-pages');
+      var summary = document.getElementById('pl-campaign-summary');
+      if (!knowledge || !batch || !pages || !summary) return;
+
+      if (loadError || !planningContext) {
+        // A select that failed to load must not look like a select with nothing
+        // in it — one is a fault to fix, the other is a fact about the sheet.
+        knowledge.innerHTML = '<option value="">could not load</option>';
+        batch.innerHTML = '<option value="">could not load</option>';
+        pages.innerHTML = '<span class="note note-warn">' +
+          (loadError || 'Not loaded.') + '</span>';
+        summary.className = 'note note-warn';
+        summary.textContent = loadError || 'The planning card could not load.';
+        return;
+      }
+
+      var ctx = planningContext;
+
+      // --- knowledge files ---
+      var files = ctx.knowledgeFiles || [];
+      if (files.length) {
+        var opts = '<option value="">Choose a file...</option>';
+        for (var i = 0; i < files.length; i++) {
+          opts += '<option value="' + esc(files[i].name) + '">' +
+            esc(files[i].name) + '  (' + esc(files[i].folder) + ')</option>';
+        }
+        knowledge.innerHTML = opts;
+      } else {
+        knowledge.innerHTML = '<option value="">no knowledge files found</option>';
+      }
+
+      // --- pages ---
+      // From CONFIG.CONTROLLED_VOCABULARY, the same list the dropdowns are
+      // synced from. A second hardcoded list here would drift exactly the way
+      // four vocabularies drifted from the sheet.
+      var pageNames = ctx.pages || [];
+      if (pageNames.length) {
+        var boxes = '';
+        for (var p = 0; p < pageNames.length; p++) {
+          boxes += '<label><input type="checkbox" class="js-page" value="' +
+            esc(pageNames[p]) + '">' + esc(pageNames[p]) + '</label>';
+        }
+        pages.innerHTML = boxes;
+      } else {
+        pages.innerHTML = '<span class="note note-warn">' +
+          'No publishing pages in CONFIG.CONTROLLED_VOCABULARY.</span>';
+      }
+
+      // --- batches ---
+      var batches = ctx.batches || [];
+      if (batches.length) {
+        var bopts = '<option value="">Choose a plan...</option>';
+        for (var b = 0; b < batches.length; b++) {
+          bopts += '<option value="' + b + '">' + esc(batches[b].label) + '</option>';
+        }
+        batch.innerHTML = bopts;
+      } else {
+        batch.innerHTML = '<option value="">no batches stamped yet</option>';
+      }
+
+      // --- what can actually be scheduled ---
+      // Stated before the operator fills the form, not after they submit it.
+      // Planning against campaigns that cannot be used is the failure W2 exists
+      // to stop, and it is cheapest to stop here.
+      var c = ctx.campaigns || { ready: [], thin: [], inactive: [] };
+      var text = c.ready.length + ' campaign(s) ready to schedule.';
+      var warn = false;
+
+      if (c.thin.length) {
+        text += ' ' + c.thin.length + ' card(s) carry almost no strategy — ' +
+          'scheduling them produces posts written from nothing: ' +
+          c.thin.join(', ') + '.';
+        warn = true;
+      }
+      if (c.inactive.length) {
+        text += ' Not Active, so excluded: ' + c.inactive.join(', ') + '.';
+      }
+      if (!c.ready.length) {
+        text = 'No campaign is ready to schedule. Build a card first.';
+        warn = true;
+      }
+
+      summary.className = warn ? 'note note-warn' : 'note';
+      summary.textContent = text;
+
+      paintCeilingNote();
+    }
+
+    // The ceiling, shown while the numbers are being typed rather than after
+    // the run is refused.
+    function paintCeilingNote() {
+      var note = document.getElementById('pl-ceiling-note');
+      if (!note || !planningContext) return;
+
+      var perDay = parseInt(document.getElementById('pl-per-day').value, 10) || 0;
+      var chosen = selectedPages().length;
+      var ceiling = planningContext.maxPostsPerDay || 3;
+      var total = perDay * chosen;
+
+      if (!total) {
+        note.className = 'note';
+        note.textContent = 'PROJECT_DECISIONS §4 caps the ecosystem at ' + ceiling +
+          ' posts a day, averaging 1.5–2. Consistency over volume.';
+        return;
+      }
+
+      note.className = total > ceiling ? 'note note-warn' : 'note';
+      note.textContent = total + ' posts a day across ' + chosen + ' page(s). ' +
+        (total > ceiling
+          ? 'Above the agreed ceiling of ' + ceiling + ' — you will be asked to confirm.'
+          : 'Within the agreed ceiling of ' + ceiling + '.');
+    }
+
+    function selectedPages() {
+      var boxes = document.querySelectorAll('.js-page');
+      var out = [];
+      for (var i = 0; i < boxes.length; i++) {
+        if (boxes[i].checked) out.push(boxes[i].value);
+      }
+      return out;
+    }
+
+    // Everything the panel puts into markup goes through this. A campaign name
+    // or a knowledge filename is operator data, and one apostrophe in the wrong
+    // place would otherwise break the select it is being written into.
+    function esc(value) {
+      return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    function chosenKnowledgeFile() {
+      var select = document.getElementById('pl-knowledge');
+      var name = select ? select.value : '';
+
+      if (!name) {
+        showInfo('Knowledge File', 'Choose a knowledge file first.');
+        return null;
+      }
+
+      return name;
+    }
+
+    function doCheckKnowledge() {
+      var name = chosenKnowledgeFile();
+      if (!name || isRunning) return;
+
+      disableAll();
+
+      google.script.run
+        .withSuccessHandler(function(r) {
+          enableAll();
+
+          if (!r.success) {
+            showError('Knowledge File', r.error, 'Check the name and the folder id.');
+            return;
+          }
+
+          var html = '<div class="row"><span class="label">File</span>' +
+            '<span class="value">' + esc(r.fileName) + ' (' + esc(r.folder) + ')</span></div>';
+
+          if (r.ready) {
+            html += '<div class="row"><span class="label">Entity</span><span class="value">' +
+              esc(r.entity) + '</span></div>' +
+              '<div class="row"><span class="label">Campaign</span><span class="value">' +
+              esc(r.campaignName) + '</span></div>' +
+              '<div class="row"><span class="label">Level</span><span class="value">' +
+              esc(r.level) + '</span></div>';
+          } else {
+            html += '<div class="note note-warn" style="margin-top:8px"><strong>Not ready — ' +
+              (r.problems.length + r.gaps.length) + ' item(s) outstanding:</strong><br>';
+            for (var i = 0; i < r.problems.length; i++) {
+              html += '&bull; ' + esc(r.problems[i]) + '<br>';
+            }
+            for (var g = 0; g < r.gaps.length; g++) {
+              html += '&bull; line ' + r.gaps[g].line + ' — "' + esc(r.gaps[g].section) +
+                '" needs you' + (r.gaps[g].note ? ': ' + esc(r.gaps[g].note) : '') + '<br>';
+            }
+            html += '</div>';
+          }
+
+          // A file can pass every structural check and still build a card no
+          // scheduled row looks up. That failure is invisible in the card.
+          if (r.slots === 0) {
+            html += '<div class="note note-warn" style="margin-top:8px">' +
+              'No calendar row is named "' + esc(r.campaignName) + '" — a card ' +
+              'built now would be joined to nothing.' +
+              (r.nearNames && r.nearNames.length
+                ? '<br>Close names in the calendar: ' + esc(r.nearNames.join(', ')) +
+                  '<br>Set campaign_name in the front matter to the one you mean.'
+                : '') +
+              '</div>';
+          } else if (r.slots) {
+            html += '<div class="note" style="margin-top:8px">Serves ' + r.slots +
+              ' scheduled slot(s) as "' + esc(r.campaignName) + '".</div>';
+          }
+
+          showInfo('Knowledge File', html);
+        })
+        .withFailureHandler(function(err) {
+          enableAll();
+          showError('Knowledge File', err.message, 'Try again.');
+        })
+        .executeCheckKnowledgeFile(name);
+    }
+
+    function doCardBuilder() {
+      var name = chosenKnowledgeFile();
+      if (!name || isRunning) return;
+
+      disableAll();
+      showWorking('Campaign Card Builder', 'Reading the knowledge file...');
+
+      google.script.run
+        .withSuccessHandler(function(r) {
+          enableAll();
+          loadDashboard(true);
+
+          if (!r.success) {
+            showError('Campaign Card', r.error,
+              'Run Check Knowledge File first — it costs no inference.');
+            return;
+          }
+
+          var html = '<div class="row"><span class="label">Card</span><span class="value">' +
+            (r.existed ? 'rebuilt' : 'created') + ' on row ' + r.row + '</span></div>' +
+            '<div class="row"><span class="label">Fields written</span><span class="value">' +
+            r.written.length + ' from ' + esc(r.fileName) + '</span></div>';
+
+          if (r.preserved.length) {
+            html += '<div class="note" style="margin-top:8px">Kept your planning ' +
+              'decisions, unchanged: ' + esc(r.preserved.join(', ')) + '</div>';
+          }
+
+          if (r.insufficient.length) {
+            html += '<div class="note note-warn" style="margin-top:8px">' +
+              '<strong>Left blank — the knowledge file does not support them:</strong><br>' +
+              esc(r.insufficient.join(', ')) +
+              '<br>Add the material to the knowledge file and rebuild. Filling ' +
+              'these in the card by hand loses the fix on the next rebuild.</div>';
+          }
+
+          showInfo('Campaign Card', html);
+
+          // The card that was just built changes what can be scheduled.
+          loadPlanningContext();
+        })
+        .withFailureHandler(function(err) {
+          enableAll();
+          showError('Campaign Card', err.message, 'Check the Execution Log for details.');
+        })
+        .executeCardBuilder(name);
+    }
+
+    function doCampaignPlanner() {
+      if (isRunning) return;
+
+      var days = parseInt(document.getElementById('pl-days').value, 10);
+      var perDay = parseInt(document.getElementById('pl-per-day').value, 10);
+      var pages = selectedPages();
+      var objective = document.getElementById('pl-objective').value.trim();
+
+      if (!days || days < 1) { showInfo('Campaign Planner', 'How many days?'); return; }
+      if (!perDay || perDay < 1) { showInfo('Campaign Planner', 'How many posts per page per day?'); return; }
+      if (!pages.length) { showInfo('Campaign Planner', 'Choose at least one page.'); return; }
+
+      var ceiling = (planningContext && planningContext.maxPostsPerDay) || 3;
+      var dailyTotal = perDay * pages.length;
+      var rows = days * pages.length * perDay;
+
+      var warning = dailyTotal > ceiling
+        ? '<div class="note note-warn" style="margin-top:8px">' + dailyTotal +
+          ' posts a day is above the agreed ceiling of ' + ceiling +
+          '. PROJECT_DECISIONS §4 caps the ecosystem there, averaging 1.5–2, on ' +
+          'the principle of consistency over volume.</div>'
+        : '';
+
+      document.getElementById('confirm-title').textContent = 'Confirm Plan a Cycle';
+      document.getElementById('confirm-desc').textContent =
+        'Rows are appended to Content Calendar.';
+      document.getElementById('confirm-detail').innerHTML =
+        '<div class="row"><span class="label">Shape</span><span class="value">' +
+        days + ' days &times; ' + pages.length + ' page(s) &times; ' + perDay +
+        ' = ' + rows + ' rows</span></div>' +
+        '<div class="row"><span class="label">Pages</span><span class="value">' +
+        esc(pages.join(', ')) + '</span></div>' +
+        '<div class="row"><span class="label">Objective</span><span class="value">' +
+        (objective ? esc(objective) : 'not stated') + '</span></div>' +
+        warning;
+
+      document.getElementById('confirm-refresh').checked = refreshBeforeRun;
+      document.getElementById('confirm-btn').className =
+        dailyTotal > ceiling ? 'btn btn-stop' : 'btn btn-primary';
+
+      // The ceiling was shown and accepted here, so the server is told not to
+      // refuse it again. It still checks: a browser can be made to send
+      // anything, and the cap is a decision about the business.
+      pendingAction = {
+        op: 'plan',
+        planner: {
+          days: days, postsPerDay: perDay, pages: pages,
+          objective: objective, overrideCeiling: dailyTotal > ceiling
+        },
+        info: { name: 'Plan a Cycle' },
+        rows: { start: 0, end: 0, count: rows }
+      };
+
+      document.getElementById('confirm-overlay').classList.add('active');
+    }
+
+    function runPlannerAction(brief) {
+      google.script.run
+        .withSuccessHandler(function(r) {
+          enableAll();
+          loadDashboard(true);
+
+          if (!r.success) {
+            showError('Campaign Planner', r.error,
+              r.overCeiling ? 'Lower the posts per day, or fewer pages.'
+                            : 'Check the Execution Log for details.');
+            return;
+          }
+
+          var html = '<div class="row"><span class="label">Written</span><span class="value">' +
+            r.written + ' calendar rows, from row ' + r.startRow + '</span></div>' +
+            '<div class="row"><span class="label">Starting</span><span class="value">' +
+            esc(r.startText) + '</span></div>' +
+            '<div class="row"><span class="label">Batch</span><span class="value">' +
+            esc(r.batchId) + '</span></div>' +
+            '<div class="note" style="margin-top:8px">The critic and the archiver ' +
+            'identify this plan by its batch id, not by row number.</div>';
+
+          if (r.missing.length) {
+            html += '<div class="note note-warn" style="margin-top:8px">' +
+              'Refused — no card: ' + esc(r.missing.join(', ')) + '</div>';
+          }
+
+          if (r.rejected.length) {
+            html += '<div class="note note-warn" style="margin-top:8px">' +
+              'Dropped — the planner named a campaign that is not eligible: ' +
+              esc(r.rejected.join(', ')) + '</div>';
+          }
+
+          if (r.notes) {
+            html += '<div class="note" style="margin-top:8px">' + esc(r.notes) + '</div>';
+          }
+
+          html += '<div class="note" style="margin-top:8px">Next: <strong>Transfer ' +
+            'Rows Forward</strong>, then <strong>Review Plan Before Production</strong> ' +
+            'before spending anything on it.</div>';
+
+          showInfo('Campaign Planner', html);
+
+          // A new plan is a new batch, so the picker below it is now stale.
+          loadPlanningContext();
+        })
+        .withFailureHandler(function(err) {
+          enableAll();
+          loadDashboard(true);
+          showError('Campaign Planner', err.message, 'Check the Execution Log for details.');
+        })
+        .executeCampaignPlanner(brief);
+    }
+
+    function doPortfolioCritic() {
+      if (isRunning) return;
+
+      var select = document.getElementById('pl-batch');
+      var index = select ? parseInt(select.value, 10) : NaN;
+      var batches = (planningContext && planningContext.batches) || [];
+
+      if (isNaN(index) || !batches[index]) {
+        showInfo('Plan Review',
+          'Choose a plan first. The critic measures repetition across the rows ' +
+          'it is given, so a range covering two plans reports their difference ' +
+          'as a fault.');
+        return;
+      }
+
+      var chosen = batches[index];
+      disableAll();
+      showWorking('Portfolio Critic', 'Reading rows ' + chosen.start + ' to ' + chosen.end + '...');
+
+      google.script.run
+        .withSuccessHandler(function(r) {
+          enableAll();
+
+          if (!r.success) {
+            showError('Plan Review', r.error, 'Check the Execution Log for details.');
+            return;
+          }
+
+          var m = r.measured;
+          var html = '<div class="note" style="margin-bottom:8px">' + esc(r.verdict) + '</div>' +
+            '<div class="row"><span class="label">Rows measured</span><span class="value">' +
+            m.total + ' (' + m.written + ' with copy)</span></div>' +
+            '<div class="row"><span class="label">Formulaic openings</span><span class="value">' +
+            m.formulaicShare + '%</span></div>' +
+            '<div class="row"><span class="label">Near-identical openings</span><span class="value">' +
+            m.duplicates + '</span></div>' +
+            '<div class="row"><span class="label">Same campaign twice in a day</span><span class="value">' +
+            m.clashes + '</span></div>';
+
+          if (r.findings.length) {
+            for (var i = 0; i < r.findings.length; i++) {
+              var f = r.findings[i];
+              html += '<div class="note' +
+                (f.severity === 'HIGH' || f.severity === 'CRITICAL' ? ' note-warn' : '') +
+                '" style="margin-top:8px"><strong>[' + esc(f.severity) + '] ' +
+                esc(f.what) + '</strong>' +
+                (f.where ? '<br>where: ' + esc(f.where) : '') +
+                (f.fix ? '<br>fix: ' + esc(f.fix) : '') + '</div>';
+            }
+          } else {
+            html += '<div class="note" style="margin-top:8px">' +
+              'No portfolio-level problems found.</div>';
+          }
+
+          if (r.strongest) {
+            html += '<div class="note" style="margin-top:8px">' +
+              '<strong>If you change one thing:</strong> ' + esc(r.strongest) + '</div>';
+          }
+
+          showInfo('Plan Review', html);
+        })
+        .withFailureHandler(function(err) {
+          enableAll();
+          showError('Plan Review', err.message, 'Check the Execution Log for details.');
+        })
+        .executePortfolioCritic(chosen.start, chosen.end);
+    }
+
+    function doUpcomingEvents() {
+      if (isRunning) return;
+      disableAll();
+
+      google.script.run
+        .withSuccessHandler(function(r) {
+          enableAll();
+
+          if (!r.success) {
+            showError('What Is Coming', r.error, 'Check CONFIG.EVENTS_CALENDAR.');
+            return;
+          }
+
+          var html = '';
+
+          if (!r.events.length) {
+            html += '<div class="note">Nothing recorded in the next ' +
+              r.horizon + ' days.</div>';
+          }
+
+          for (var i = 0; i < r.events.length; i++) {
+            var e = r.events[i];
+            html += '<div class="row"><span class="label">' +
+              (e.state === 'in-window' ? '&bull; ' : '&rarr; ') + esc(e.name) +
+              (e.weight === 'critical' || e.weight === 'high'
+                ? ' [' + esc(e.weight) + ']' : '') +
+              '</span><span class="value">' + esc(e.startText) +
+              (e.endText !== e.startText ? ' – ' + esc(e.endText) : '') +
+              (e.daysUntilStart > 0 ? ' (in ' + e.daysUntilStart + ' days)' : '') +
+              '</span></div>';
+          }
+
+          // Never estimated. A Ramadan date one day out would misplan a month
+          // of medication-timing content.
+          if (r.missing.length) {
+            html += '<div class="note note-warn" style="margin-top:8px">' +
+              '<strong>Dates you have not entered yet:</strong><br>';
+            for (var m = 0; m < r.missing.length; m++) {
+              html += '&nbsp;&nbsp;' + esc(r.missing[m].name) + ' — ' +
+                esc(r.missing[m].year) + '<br>';
+            }
+            html += 'These follow the Hijri calendar and are confirmed by ' +
+              'announcement, so the system will not estimate them. Add them to ' +
+              'CONFIG.EVENTS_CALENDAR.MOVEABLE as YYYY-MM-DD.<br><br>' +
+              'Ramadan needs the most notice: medication-timing content has to ' +
+              'be written and clinically reviewed before the month starts.</div>';
+          }
+
+          showInfo('What Is Coming', html);
+        })
+        .withFailureHandler(function(err) {
+          enableAll();
+          showError('What Is Coming', err.message, 'Try again.');
+        })
+        .getUpcomingEvents(90);
+    }
+
     // Not a row range: it moves everything that is ready and skips whatever is
     // already downstream, so running it twice is a no-op and there is nothing
     // to confirm.
@@ -1615,7 +2269,13 @@
 
     loadDashboard();
     loadPublishingMode();
+    loadPlanningContext();
     startAutoRefresh();
+
+    // The ceiling note tracks what is being typed. Bound here rather than with
+    // inline onchange so the markup stays readable.
+    document.getElementById('pl-per-day').addEventListener('input', paintCeilingNote);
+    document.getElementById('pl-pages').addEventListener('change', paintCeilingNote);
   </script>
 
 </body>
