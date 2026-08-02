@@ -19,7 +19,7 @@ had been run as throwaway scripts in earlier working sessions and never committe
 nobody could re-run them, and the claim could not be checked by anyone reading the
 repository. A test result that only one person ever saw is not evidence.
 
-**606 checks now, and they are here.**
+**612 checks now, and they are here.**
 
 ---
 
@@ -36,7 +36,7 @@ So these checks cover the decisions the system makes *before* it touches anythin
 | Suite | Checks | What it protects |
 |---|---|---|
 | `ad-policy` | 54 | Meta's rules as a constraint on the writing. Personal attributes — the most common healthcare rejection — and the Arabic boundary that made three of four rules dead on arrival |
-| `archive` | 35 | One row per post across four tabs · deletion runs furthest-downstream first · refuses to run while a transfer formula remains |
+| `archive` | 36 | One row per post across four tabs · deletion runs furthest-downstream first · refuses to run while a transfer formula remains |
 | `asset-domains` | 27 | Which folder of real photographs a row gets. The substring traps — `ward` inside "award", `dental` inside "accidental", `management` inside "Pain Management Center" |
 | `asset-filing` | 36 | Rejection reads `Generated Assets`, not the approval-only column · `REJ` can never become a reuse candidate · published files keep their names |
 | `batches` | 21 | A batch id is the planning moment, so the same campaign planned twice is two batches |
@@ -46,7 +46,7 @@ So these checks cover the decisions the system makes *before* it touches anythin
 | `events-calendar` | 26 | What is coming — and that a Hijri date with no entry is **reported missing, never estimated** |
 | `knowledge-gate` | 25 | Which knowledge files may build a card. 24 ready, 2 waiting on operator facts — the claim in `KNOWLEDGE_BASE_SPEC.md` §7.8, checked |
 | `menu-bindings` | 43 | **Every `onOpen` menu item points at a function that exists.** The binding is a string, resolved on the click and nowhere earlier |
-| `namespace` | 19 | The names the sources put into the shared scope, pinned in `GLOBALS.txt`. No global owned by two files |
+| `namespace` | 24 | The names the sources put into the shared scope, pinned in `GLOBALS.txt`. No global owned by two files |
 | `opening-formulas` | 29 | The five rhetorical constructions Audit B measured, and the Arabic word-boundary regression |
 | `post-footer` | 88 | Standing hashtags merged in code · the wa.me links derived from the phone number, after two of three arrived with an extra zero |
 | `response-parser` | 27 | JSON out of whatever the model wrapped it in; `Rejected` never corrected into `Approved` |
@@ -122,17 +122,25 @@ module.exports = {
 `t` has `is` · `ok` · `notOk` · `includes` · `throws`.
 
 `fx` has `repoFile(path)` · `repoBytes(path)` · `exists(path)`, all repo-relative, plus
-three for reading the sources themselves:
+four for reading the sources themselves:
 
 | | |
 |---|---|
-| `srcFiles()` | every `.gs` under `src/`, as text, keyed by filename |
-| `srcSection(name)` | the text of one original source unit — `srcSection('AdPolicy')` — wherever it now lives. A standalone file is read directly; once it is a section inside a merged file, the `// BEGIN SOURCE FILE:` banners delimit it |
+| `srcSection(name)` | the text of one original source unit — `srcSection('AdPolicy')` — wherever it now lives |
+| `srcSections()` | all 31 of them, keyed by their original filename |
+| `srcFiles()` | the five `.gs` files as they sit on disk, keyed by filename |
 | `sourceGlobals` | the names the sources added to the shared scope, as a sorted list |
 
-**Read a source by section, not by path.** A check asserting something about
-`AdPolicy`'s regex literals, pointed at a whole merged file, starts reporting on the
-regex literals of everything AdPolicy happens to sit beside.
+**Read a source by section, not by path.** The 31 sources were merged into five files
+on 2026-08-02 and each is now delimited by `// BEGIN SOURCE FILE:` banners.
+`srcSection` reads either shape, so a check keeps meaning what it meant.
+
+Two ways this matters, both of which the merge actually hit:
+
+- A check on `AdPolicy`'s regex literals, pointed at the whole of `AI.gs`, starts
+  reporting on the regex literals of its ten neighbours.
+- `archive` checks that **no source other than Archive** opens the archive sheet.
+  By filename, after the merge, that excused all nine sources sharing `Planning.gs`.
 
 Two conventions worth keeping:
 

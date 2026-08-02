@@ -175,40 +175,60 @@ const fixtures = {
     return out;
   },
 
-  // The text of one original source unit, wherever it now lives.
+  // The sources as the units they were written as, keyed by their original
+  // filename — whether each is still its own file or a banner-delimited section
+  // inside a merged one.
   //
-  // Several checks read a source as text rather than calling into it — that a
+  // Several checks read a source as text rather than calling into it: that a
   // regex literal carries the Arabic boundary, that a guard sits in the cached
-  // prefix. Those are claims about a specific body of code, so they need its
-  // text and not the text of everything it was merged with: pointed at a whole
-  // merged file, a scan for a bad pattern starts reporting on neighbours.
-  //
-  // Works either way. A standalone `AdPolicy.gs` is read directly; once it is a
-  // section inside a larger file, the banners written by the merge delimit it.
-  srcSection(name) {
-    const file = name.endsWith('.gs') ? name : name + '.gs';
-    const direct = path.join(SRC, file);
-    if (fs.existsSync(direct)) return fs.readFileSync(direct, 'utf8');
-
-    const begin = `// BEGIN SOURCE FILE: ${file}`;
-    const end = `// END SOURCE FILE: ${file}`;
+  // prefix, that no file other than Archive opens the archive sheet. Those are
+  // claims about a specific body of code. Pointed at a whole merged file, a
+  // scan for a bad pattern starts reporting on its neighbours — and a check
+  // that excludes "the file that is allowed to do this" stops excluding it.
+  srcSections() {
+    const out = {};
 
     for (const f of sources) {
       const text = fs.readFileSync(path.join(SRC, f), 'utf8');
-      const from = text.indexOf(begin);
-      if (from === -1) continue;
-      const to = text.indexOf(end, from);
-      if (to === -1) {
-        throw new Error(`src/${f} opens the section for ${file} and never closes it`);
+      const marks = [...text.matchAll(/^\/\/ BEGIN SOURCE FILE: (.+\.gs)$/gm)];
+
+      if (!marks.length) {
+        out[f] = text;
+        continue;
       }
-      return text.slice(from + begin.length, to);
+
+      for (const mark of marks) {
+        const name = mark[1];
+        const from = mark.index + mark[0].length;
+        const to = text.indexOf(`// END SOURCE FILE: ${name}`, from);
+        if (to === -1) {
+          throw new Error(`src/${f} opens the section for ${name} and never closes it`);
+        }
+        if (out[name]) {
+          throw new Error(`${name} appears as a section in two places — the ` +
+                          `second is src/${f}`);
+        }
+        out[name] = text.slice(from, to);
+      }
     }
 
-    throw new Error(
-      `no source section named ${file} — it is neither a file under src/ nor a ` +
-      `banner-delimited section inside one. If it was renamed, the checks ` +
-      `reading it have to be pointed somewhere.`
-    );
+    return out;
+  },
+
+  // One of them, by name, with or without the `.gs`.
+  srcSection(name) {
+    const file = name.endsWith('.gs') ? name : name + '.gs';
+    const found = fixtures.srcSections()[file];
+
+    if (found === undefined) {
+      throw new Error(
+        `no source section named ${file} — it is neither a file under src/ nor ` +
+        `a banner-delimited section inside one. If it was renamed, the checks ` +
+        `reading it have to be pointed somewhere.`
+      );
+    }
+
+    return found;
   },
 
   sourceGlobals,

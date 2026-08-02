@@ -12,7 +12,7 @@
 module.exports = {
   name: 'batches',
 
-  run(t) {
+  run(t, fx) {
     // --- the id ---
     // Stamped from the planning moment, not the campaign. A campaign name would
     // collide the second time the same campaign is planned, and telling those
@@ -90,8 +90,7 @@ module.exports = {
     // Resolved through Calendar ID, which the operator's own transfer formula
     // already carries across. Matching on row position would assume the two
     // sheets stay aligned, and a row deleted by hand in one shifts only that one.
-    const source = require('fs').readFileSync(
-      require('path').join(__dirname, '..', '..', 'src', 'Batches.gs'), 'utf8');
+    const source = fx.srcSection('Batches');
 
     t.includes(source, "data['Calendar ID']",
       'rowsIn joins on Calendar ID, not on row position');

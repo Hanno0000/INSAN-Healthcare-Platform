@@ -19,7 +19,7 @@
 module.exports = {
   name: 'asset filing',
 
-  run(t) {
+  run(t, fx) {
     const V = CONFIG.VISUAL_ASSETS;
 
     // --- the five folders ---
@@ -113,8 +113,7 @@ module.exports = {
       'and does NOT rename it — renaming would strip the metadata reuse matches on');
 
     // --- reuse searches both approved and published ---
-    const source = require('fs').readFileSync(
-      require('path').join(__dirname, '..', '..', 'src', 'AssetLibrary.gs'), 'utf8');
+    const source = fx.srcSection('AssetLibrary');
 
     const searchLine = /var searched = \[([^\]]+)\]/.exec(source);
     t.ok(searchLine, 'candidatesFor declares which folders it searches');

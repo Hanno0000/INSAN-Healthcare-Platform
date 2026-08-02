@@ -1,3 +1,32 @@
+// ===========================================================================
+// Core.gs
+//
+// Configuration, logging, and the sheet and Drive layers everything else is
+// built on.
+//
+// Merged from 7 source files on 2026-08-02. Apps Script has no
+// modules: every .gs is evaluated into one shared scope before anything is
+// called, so which file a definition sits in has never affected what runs.
+// They were split for reading and merged because the operator pastes each
+// file into the editor by hand.
+//
+// The BEGIN/END banners below are load-bearing for the tests, which read a
+// section by name — see tests/run.js, fixtures.srcSection.
+//
+// Contents:
+//   CONFIG.gs
+//   ConfigResolver.gs
+//   Logger.gs
+//   SheetSchema.gs
+//   SheetWriter.gs
+//   DriveLoader.gs
+//   ResponseParser.gs
+// ===========================================================================
+
+
+// ---------------------------------------------------------------------------
+// BEGIN SOURCE FILE: CONFIG.gs
+// ---------------------------------------------------------------------------
 // ================================
 // PRODUCTION CONFIGURATION
 // This section is frozen.
@@ -1472,3 +1501,1990 @@ var CONFIG = {
     ]
   }
 };
+
+// ---------------------------------------------------------------------------
+// END SOURCE FILE: CONFIG.gs
+// ---------------------------------------------------------------------------
+
+
+// ---------------------------------------------------------------------------
+// BEGIN SOURCE FILE: ConfigResolver.gs
+// ---------------------------------------------------------------------------
+// ================================
+// CONFIG RESOLVER  (Audit A, finding F17)
+//
+// Eleven Google identifiers were hardcoded in CONFIG.gs — folder IDs, asset
+// folders, overlay templates — plus the publishing page list. The architecture
+// is portable; the configuration was not. A second brand meant editing a source
+// file, which makes it a code fork rather than a deployment.
+//
+// This reads each one from Script Properties and falls back to the value in
+// CONFIG.gs when the property is absent. So nothing changes until a property is
+// set, and the current deployment keeps working untouched — which is the only
+// safe way to migrate identifiers in a system that has never had a clean
+// production run.
+//
+// It is called at the start of every entry point rather than at global scope:
+// Apps Script evaluates files in the order they were pasted, and this file
+// resolving before CONFIG.gs would throw on every execution.
+// ================================
+
+var ConfigResolver = {
+
+  _applied: false,
+
+  // Property name → where it lands in CONFIG. Dots descend into nested objects.
+  MAP: {
+    'DOCS_FOLDER_ID':            'DOCS_FOLDER_ID',
+    'PROMPTS_FOLDER_ID':         'PROMPTS_FOLDER_ID',
+    'VISUAL_PROMPTS_FOLDER_ID':  'VISUAL_PROMPTS_FOLDER_ID',
+    'PROJECT_ASSETS_FOLDER_ID':  'PROJECT_ASSETS.FOLDER_ID',
+    'VISUAL_ASSETS_GENERATED':   'VISUAL_ASSETS.generated',
+    'VISUAL_ASSETS_APPROVED':    'VISUAL_ASSETS.approved',
+    'VISUAL_ASSETS_REJECTED':    'VISUAL_ASSETS.rejected',
+    'VISUAL_ASSETS_PUBLISHED':   'VISUAL_ASSETS.published',
+    'VISUAL_ASSETS_ARCHIVE':     'VISUAL_ASSETS.archive',
+    'OVERLAY_TEMPLATE_1_1':      'TEXT_OVERLAY.TEMPLATES.1:1',
+    'OVERLAY_TEMPLATE_9_16':     'TEXT_OVERLAY.TEMPLATES.9:16'
+  },
+
+  // The page list is not an identifier but it is brand-specific in the same
+  // way, and it gates publishing. Comma-separated in the property.
+  PAGES_PROPERTY: 'PUBLISHING_PAGES',
+
+  // Idempotent, and cheap: one getProperties() call for everything rather than
+  // eleven getProperty() calls. Safe to invoke at the top of any entry point.
+  apply: function(force) {
+    if (this._applied && !force) {
+      return { applied: 0, skipped: 0, cached: true };
+    }
+
+    var properties;
+
+    try {
+      properties = PropertiesService.getScriptProperties().getProperties() || {};
+    } catch (e) {
+      // Never let configuration resolution break a run. The hardcoded values
+      // are a working configuration; failing here would take the system down
+      // to fix something that is not currently broken.
+      Logger.log('CONFIG_RESOLVER | could not read Script Properties: ' + e.toString());
+      this._applied = true;
+      return { applied: 0, skipped: 0, error: e.toString() };
+    }
+
+    var applied = [];
+    var skipped = 0;
+
+    for (var property in this.MAP) {
+      var value = properties[property];
+
+      if (!value || !String(value).trim()) {
+        skipped++;
+        continue;
+      }
+
+      if (this._set(this.MAP[property], String(value).trim())) {
+        applied.push(property);
+      }
+    }
+
+    var pages = properties[this.PAGES_PROPERTY];
+
+    if (pages && String(pages).trim()) {
+      var list = String(pages).split(',')
+        .map(function(p) { return p.trim(); })
+        .filter(function(p) { return p; });
+
+      if (list.length) {
+        CONFIG.CONTROLLED_VOCABULARY['Publishing Page'] = list;
+        applied.push(this.PAGES_PROPERTY);
+      }
+    } else {
+      skipped++;
+    }
+
+    this._applied = true;
+
+    if (applied.length) {
+      Logger.log(
+        'CONFIG_RESOLVER | ' + applied.length + ' identifier(s) from Script ' +
+        'Properties: ' + applied.join(', ') + ' | ' + skipped + ' using the ' +
+        'value in CONFIG.gs'
+      );
+    }
+
+    return { applied: applied.length, skipped: skipped, names: applied };
+  },
+
+  // Walks a dotted path and writes the leaf. Returns false rather than
+  // creating structure: a property naming a path that does not exist is a
+  // typo, and silently inventing the branch would hide it.
+  _set: function(path, value) {
+    var parts = path.split('.');
+    var node = CONFIG;
+
+    for (var i = 0; i < parts.length - 1; i++) {
+      if (!node[parts[i]] || typeof node[parts[i]] !== 'object') {
+        Logger.log('CONFIG_RESOLVER | no such path in CONFIG: ' + path);
+        return false;
+      }
+      node = node[parts[i]];
+    }
+
+    node[parts[parts.length - 1]] = value;
+    return true;
+  },
+
+  // What a second deployment would need to set. Used by the menu so the list
+  // is generated from the map rather than maintained twice.
+  report: function() {
+    var properties = {};
+
+    try {
+      properties = PropertiesService.getScriptProperties().getProperties() || {};
+    } catch (e) {
+      properties = {};
+    }
+
+    var rows = [];
+
+    for (var property in this.MAP) {
+      rows.push({
+        property: property,
+        target: this.MAP[property],
+        set: !!(properties[property] && String(properties[property]).trim())
+      });
+    }
+
+    rows.push({
+      property: this.PAGES_PROPERTY,
+      target: "CONTROLLED_VOCABULARY['Publishing Page']",
+      set: !!(properties[this.PAGES_PROPERTY] && String(properties[this.PAGES_PROPERTY]).trim())
+    });
+
+    return rows;
+  }
+};
+
+
+// ================================
+// MENU — AI Workers → Maintenance → Deployment Identifiers
+// ================================
+
+function showDeploymentIdentifiers() {
+  var ui = SpreadsheetApp.getUi();
+  var rows = ConfigResolver.report();
+  var set = 0;
+
+  var lines = [
+    'Every Google identifier this deployment uses.',
+    '',
+    'Set means the value comes from Script Properties. Unset means it comes',
+    'from CONFIG.gs, which works — it just makes a second deployment a code',
+    'edit rather than a configuration step. (Audit A, finding F17.)',
+    ''
+  ];
+
+  for (var i = 0; i < rows.length; i++) {
+    lines.push((rows[i].set ? '[set]   ' : '[  ]    ') + rows[i].property);
+    if (rows[i].set) {
+      set++;
+    }
+  }
+
+  lines.push(
+    '',
+    set + ' of ' + rows.length + ' set.',
+    '',
+    'Values are never shown here — a page token or a folder ID does not belong',
+    'in a dialog anyone can screenshot.'
+  );
+
+  ui.alert('Deployment Identifiers', lines.join('\n'), ui.ButtonSet.OK);
+}
+
+// ---------------------------------------------------------------------------
+// END SOURCE FILE: ConfigResolver.gs
+// ---------------------------------------------------------------------------
+
+
+// ---------------------------------------------------------------------------
+// BEGIN SOURCE FILE: Logger.gs
+// ---------------------------------------------------------------------------
+var Logger = {
+
+  log: function(message) {
+    console.log(message);
+  },
+
+  _getLogSheet: function() {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName(CONFIG.LOG_SHEET_NAME);
+
+    if (!sheet) {
+      sheet = ss.insertSheet(CONFIG.LOG_SHEET_NAME);
+      sheet.appendRow([
+        'Timestamp', 'Worker', 'Row', 'Status',
+        'Runtime (ms)', 'Input Tokens', 'Output Tokens',
+        'Error Message', 'Details'
+      ]);
+      var headerRange = sheet.getRange(1, 1, 1, 9);
+      headerRange.setFontWeight('bold');
+      headerRange.setBackground('#1a73e8');
+      headerRange.setFontColor('#ffffff');
+      sheet.setFrozenRows(1);
+      sheet.setColumnWidth(1, 180);
+      sheet.setColumnWidth(2, 220);
+      sheet.setColumnWidth(3, 70);
+      sheet.setColumnWidth(4, 100);
+      sheet.setColumnWidth(5, 110);
+      sheet.setColumnWidth(6, 110);
+      sheet.setColumnWidth(7, 110);
+      sheet.setColumnWidth(8, 300);
+      sheet.setColumnWidth(9, 400);
+    }
+
+    return sheet;
+  },
+
+  logExecution: function(data) {
+    try {
+      var sheet = this._getLogSheet();
+      var timestamp = new Date();
+      var worker = data.worker || '';
+      var row = data.row || '';
+      var status = data.status || 'UNKNOWN';
+      var runtime = data.runtime || 0;
+      var inputTokens = data.inputTokens || '';
+      var outputTokens = data.outputTokens || '';
+      var error = data.error || '';
+      var details = data.details || '';
+
+      sheet.appendRow([
+        timestamp, worker, row, status,
+        runtime, inputTokens, outputTokens,
+        error, details
+      ]);
+
+      var lastRow = sheet.getLastRow();
+      var statusCell = sheet.getRange(lastRow, 4);
+
+      if (status === 'SUCCESS') {
+        statusCell.setBackground('#0d652d');
+        statusCell.setFontColor('#ffffff');
+      } else if (status === 'PARTIAL') {
+        statusCell.setBackground('#e37400');
+        statusCell.setFontColor('#ffffff');
+      } else {
+        statusCell.setBackground('#c5221f');
+        statusCell.setFontColor('#ffffff');
+      }
+
+    } catch (e) {
+      Logger.log('Logger itself failed: ' + e.toString());
+    }
+  },
+
+  logSuccess: function(worker, row, runtime, inputTokens, outputTokens, details) {
+    this.logExecution({
+      worker: worker,
+      row: row,
+      status: 'SUCCESS',
+      runtime: runtime,
+      inputTokens: inputTokens,
+      outputTokens: outputTokens,
+      details: details
+    });
+  },
+
+  logFailure: function(worker, row, runtime, error, details) {
+    this.logExecution({
+      worker: worker,
+      row: row,
+      status: 'FAILURE',
+      runtime: runtime,
+      error: error,
+      details: details
+    });
+  },
+
+  logPartial: function(worker, row, runtime, details) {
+    this.logExecution({
+      worker: worker,
+      row: row,
+      status: 'PARTIAL',
+      runtime: runtime,
+      details: details
+    });
+  },
+
+  // A worker produced a value the sheet's data validation refused. The value is
+  // written anyway; this records it so the controlled vocabulary can be widened
+  // later from real production evidence instead of guesswork.
+  logValidationBypass: function(row, columnName, value, action) {
+    this.logExecution({
+      worker: 'DATA_VALIDATION',
+      row: row,
+      status: 'PARTIAL',
+      details: 'Value rejected by sheet validation and written anyway | Column: ' +
+        columnName + ' | Value: "' + String(value).substring(0, 200) + '" | ' +
+        'Recovery: ' + action
+    });
+  },
+
+  // A controlled field came back with a value outside CONTROLLED_VOCABULARY.
+  // Logged rather than blocked, so the run continues and the vocabulary gap is
+  // visible afterwards.
+  logVocabularyDeviation: function(worker, row, columnName, value, vocabulary) {
+    this.logExecution({
+      worker: worker,
+      row: row,
+      status: 'PARTIAL',
+      details: 'Out-of-vocabulary value accepted | Column: ' + columnName +
+        ' | Produced: "' + String(value).substring(0, 120) + '"' +
+        ' | Allowed: ' + (vocabulary || []).join(' / ')
+    });
+  },
+
+  // Collects every out-of-vocabulary value seen so far, grouped by column, so a
+  // production run can be turned into concrete SYSTEM_CONSTANTS updates.
+  getVocabularyDeviations: function() {
+    var sheet = this._getLogSheet();
+    var lastRow = sheet.getLastRow();
+
+    if (lastRow < 2) {
+      return {};
+    }
+
+    var rows = sheet.getRange(2, 1, lastRow - 1, 9).getValues();
+    var grouped = {};
+
+    for (var i = 0; i < rows.length; i++) {
+      var details = String(rows[i][8] || '');
+
+      if (details.indexOf('Out-of-vocabulary value accepted') === -1 &&
+          details.indexOf('rejected by sheet validation') === -1) {
+        continue;
+      }
+
+      var colMatch = details.match(/Column:\s*([^|]+)/);
+      var valMatch = details.match(/(?:Produced|Value):\s*"([^"]*)"/);
+
+      if (!colMatch || !valMatch) {
+        continue;
+      }
+
+      var column = colMatch[1].trim();
+      var value = valMatch[1].trim();
+
+      if (!grouped[column]) {
+        grouped[column] = {};
+      }
+
+      grouped[column][value] = (grouped[column][value] || 0) + 1;
+    }
+
+    return grouped;
+  },
+
+  getExecutionLog: function(limit) {
+    var sheet = this._getLogSheet();
+    var lastRow = sheet.getLastRow();
+
+    if (lastRow <= 1) return [];
+
+    var numRows = Math.min(limit || 20, lastRow - 1);
+    var startRow = lastRow - numRows + 1;
+    var data = sheet.getRange(startRow, 1, numRows, 9).getValues();
+
+    var entries = [];
+    for (var i = data.length - 1; i >= 0; i--) {
+      entries.push({
+        timestamp: data[i][0],
+        worker: data[i][1],
+        row: data[i][2],
+        status: data[i][3],
+        runtime: data[i][4],
+        inputTokens: data[i][5],
+        outputTokens: data[i][6],
+        error: data[i][7],
+        details: data[i][8]
+      });
+    }
+
+    return entries;
+  },
+
+  clearLog: function() {
+    var sheet = this._getLogSheet();
+    var lastRow = sheet.getLastRow();
+
+    if (lastRow > 1) {
+      sheet.deleteRows(2, lastRow - 1);
+    }
+  }
+};
+
+// ---------------------------------------------------------------------------
+// END SOURCE FILE: Logger.gs
+// ---------------------------------------------------------------------------
+
+
+// ---------------------------------------------------------------------------
+// BEGIN SOURCE FILE: SheetSchema.gs
+// ---------------------------------------------------------------------------
+var SheetSchema = {
+
+  _getSheet: function(sheetName) {
+    var targetSheet = sheetName || CONFIG.SHEET_NAME;
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName(targetSheet);
+
+    if (!sheet) {
+      sheet = ss.getSheets()[0];
+    }
+
+    return sheet;
+  },
+
+  _getVisualSheet: function() {
+    return this._getSheet(CONFIG.VISUAL_PIPELINE.SHEET_NAME);
+  },
+
+  _getColumnMap: function(sheetName) {
+    var targetSheet = sheetName || CONFIG.SHEET_NAME;
+    var cacheKey = 'colMap_' + targetSheet;
+    var cached = CacheService.getScriptCache().get(cacheKey);
+
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
+    var sheet = this._getSheet(targetSheet);
+    var headerRow = sheet.getRange(CONFIG.HEADER_ROW, 1, 1, sheet.getLastColumn()).getValues()[0];
+
+    var map = {};
+    for (var i = 0; i < headerRow.length; i++) {
+      var name = String(headerRow[i]).trim();
+      if (name !== '') {
+        map[name] = i + 1;
+      }
+    }
+
+    CacheService.getScriptCache().put(cacheKey, JSON.stringify(map), CONFIG.CACHE_DURATION);
+    return map;
+  },
+
+  _getVisualColumnMap: function() {
+    return this._getColumnMap(CONFIG.VISUAL_PIPELINE.SHEET_NAME);
+  },
+
+  invalidateColumnMap: function(sheetName) {
+    var targetSheet = sheetName || CONFIG.SHEET_NAME;
+    var cacheKey = 'colMap_' + targetSheet;
+    CacheService.getScriptCache().remove(cacheKey);
+  },
+
+  getColumnIndex: function(columnName, sheetName) {
+    var map = this._getColumnMap(sheetName);
+    return map[columnName] || -1;
+  },
+
+  getColumnNames: function(sheetName) {
+    var map = this._getColumnMap(sheetName);
+    var names = [];
+    var indices = [];
+
+    for (var name in map) {
+      names.push(name);
+      indices.push(map[name]);
+    }
+
+    var sorted = names.sort(function(a, b) {
+      return map[a] - map[b];
+    });
+
+    return sorted;
+  },
+
+  getRowData: function(rowNumber, sheetName) {
+    var sheet = this._getSheet(sheetName);
+    var lastCol = sheet.getLastColumn();
+
+    if (lastCol <= 0) return {};
+
+    var values = sheet.getRange(rowNumber, 1, 1, lastCol).getValues()[0];
+    var map = this._getColumnMap(sheetName);
+    var rowData = {};
+
+    var columnName;
+    for (columnName in map) {
+      var colIndex = map[columnName];
+      rowData[columnName] = values[colIndex - 1] || '';
+    }
+
+    return rowData;
+  },
+
+  getVisualRowData: function(rowNumber) {
+    return this.getRowData(rowNumber, CONFIG.VISUAL_PIPELINE.SHEET_NAME);
+  },
+
+  getColumnsByName: function(rowNumber, columnNames, sheetName) {
+    var allData = this.getRowData(rowNumber, sheetName);
+    var result = {};
+
+    for (var i = 0; i < columnNames.length; i++) {
+      var name = columnNames[i];
+      if (allData.hasOwnProperty(name)) {
+        result[name] = allData[name];
+      }
+    }
+
+    return result;
+  },
+
+  getHeaders: function(sheetName) {
+    var sheet = this._getSheet(sheetName);
+    var lastCol = sheet.getLastColumn();
+
+    if (lastCol <= 0) return [];
+
+    return sheet.getRange(CONFIG.HEADER_ROW, 1, 1, lastCol).getValues()[0];
+  },
+
+  getLastRow: function(sheetName) {
+    var sheet = this._getSheet(sheetName);
+    return sheet.getLastRow();
+  },
+
+  getVisualLastRow: function() {
+    return this.getLastRow(CONFIG.VISUAL_PIPELINE.SHEET_NAME);
+  },
+
+  validateColumnExists: function(columnName, sheetName) {
+    var index = this.getColumnIndex(columnName, sheetName);
+    return index !== -1;
+  },
+
+  validateColumnsExist: function(columnNames, sheetName) {
+    var missing = [];
+
+    for (var i = 0; i < columnNames.length; i++) {
+      if (!this.validateColumnExists(columnNames[i], sheetName)) {
+        missing.push(columnNames[i]);
+      }
+    }
+
+    return {
+      valid: missing.length === 0,
+      missing: missing
+    };
+  }
+};
+
+// ---------------------------------------------------------------------------
+// END SOURCE FILE: SheetSchema.gs
+// ---------------------------------------------------------------------------
+
+
+// ---------------------------------------------------------------------------
+// BEGIN SOURCE FILE: SheetWriter.gs
+// ---------------------------------------------------------------------------
+var SheetWriter = {
+
+  _getSheet: function(sheetName) {
+    var targetSheet = sheetName || CONFIG.SHEET_NAME;
+    return SpreadsheetApp.getActiveSpreadsheet()
+      .getSheetByName(targetSheet);
+  },
+
+  _getVisualSheet: function() {
+    return this._getSheet(CONFIG.VISUAL_PIPELINE.SHEET_NAME);
+  },
+
+  // Sheets coerces some written values ("4.0" -> 4, collapsed whitespace,
+  // trimmed newlines). Those are successful writes, not failures.
+  _valuesMatch: function(expected, actual) {
+    if (expected instanceof Date && actual instanceof Date) {
+      return expected.getTime() === actual.getTime();
+    }
+
+    var e = String(expected).trim();
+    var a = String(actual).trim();
+
+    if (e === a) {
+      return true;
+    }
+
+    var eNum = parseFloat(e);
+    var aNum = parseFloat(a);
+    if (!isNaN(eNum) && !isNaN(aNum) && eNum === aNum) {
+      return true;
+    }
+
+    return e.replace(/\s+/g, ' ') === a.replace(/\s+/g, ' ');
+  },
+
+  // Keeps the dropdown, but stops it rejecting input. This is preferred over
+  // clearDataValidations(), which destroys the dropdown permanently and quietly
+  // degrades the sheet one cell at a time.
+  _relaxValidation: function(range) {
+    try {
+      var rule = range.getDataValidation();
+
+      if (!rule) {
+        return false;
+      }
+
+      range.setDataValidation(rule.copy().setAllowInvalid(true).build());
+      return true;
+
+    } catch (e) {
+      return false;
+    }
+  },
+
+  _safeClearValidation: function(range) {
+    try {
+      range.clearDataValidations();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  },
+
+  // A worker must never halt because a value is missing from the controlled
+  // vocabulary. Deviations are written through and recorded, so the vocabulary
+  // can be corrected later from real production evidence.
+  _writeCellSafe: function(range, value, rowNumber, colName, colIndex) {
+    var attempt = function() {
+      range.setValue(value);
+      SpreadsheetApp.flush();
+    };
+
+    try {
+      attempt();
+
+    } catch (e) {
+      // Error text is locale-dependent, so never branch on its wording.
+      // Any write failure is treated as potentially validation-related.
+      var recovered = false;
+
+      if (this._relaxValidation(range)) {
+        try {
+          attempt();
+          recovered = true;
+          Logger.logValidationBypass(
+            rowNumber, colName, value, 'relaxed to warn-only (dropdown kept)'
+          );
+        } catch (relaxErr) {
+          recovered = false;
+        }
+      }
+
+      if (!recovered && this._safeClearValidation(range)) {
+        try {
+          attempt();
+          recovered = true;
+          Logger.logValidationBypass(
+            rowNumber, colName, value, 'validation cleared on this cell'
+          );
+        } catch (clearErr) {
+          recovered = false;
+        }
+      }
+
+      if (!recovered) {
+        Logger.log(
+          'WRITE_FAILED | Row: ' + rowNumber + ' | Column: ' + colName +
+          ' (col ' + colIndex + ') | ' + e.toString()
+        );
+        return false;
+      }
+    }
+
+    var actualRaw = range.getValue();
+    var match = this._valuesMatch(value, actualRaw);
+
+    Logger.log(
+      'VERIFY_WRITE | Row: ' + rowNumber +
+      ' | Column: ' + colName +
+      ' | Expected: [' + String(value).substring(0, 100) + ']' +
+      ' | Actual: [' + String(actualRaw).substring(0, 100) + ']' +
+      ' | Match: ' + match
+    );
+
+    if (!match) {
+      // Report it, do not throw. A mismatched cell is a data issue to review
+      // later; it is not a reason to abort the run.
+      Logger.log(
+        'WRITE_VERIFICATION_MISMATCH | Row: ' + rowNumber +
+        ' | Column: ' + colName +
+        ' | Expected: [' + String(value).substring(0, 200) + ']' +
+        ' | Actual: [' + String(actualRaw).substring(0, 200) + ']'
+      );
+      return false;
+    }
+
+    Logger.log('WRITE_SUCCESS | Row: ' + rowNumber + ' | Column: ' + colName);
+    return true;
+  },
+
+  writeToRow: function(rowNumber, columnValues, workerName) {
+    var workerConfig = CONFIG.WORKERS[workerName];
+
+    if (!workerConfig) {
+      throw new Error('Unknown worker for writing: ' + workerName);
+    }
+
+    var sheetName = workerConfig.sheetName || CONFIG.SHEET_NAME;
+
+    Logger.log('WRITER_INCOMING_PAYLOAD | Row: ' + rowNumber + ' | Worker: ' + workerName + ' | Sheet: ' + sheetName + ' | Keys: ' + Object.keys(columnValues).join(', '));
+
+    var allowedColumns = {};
+    for (var i = 0; i < workerConfig.writeColumns.length; i++) {
+      allowedColumns[workerConfig.writeColumns[i]] = true;
+    }
+
+    var sheet = this._getSheet(sheetName);
+    var columnMap = SheetSchema._getColumnMap(sheetName);
+
+    var written = [];
+    var skipped = [];
+
+    for (var colName in columnValues) {
+      if (!allowedColumns[colName]) {
+        Logger.log('WRITER_SKIPPED_NOT_ALLOWED | Column: ' + colName);
+        skipped.push(colName);
+        continue;
+      }
+
+      var colIndex = columnMap[colName];
+
+      if (!colIndex) {
+        Logger.log('WRITER_SKIPPED_NO_COLUMN | Column: ' + colName + ' | NOT FOUND in header map');
+        skipped.push(colName + ' (column not found in sheet)');
+        continue;
+      }
+
+      var value = columnValues[colName];
+
+      if (value === undefined || value === null) {
+        value = '';
+      }
+
+      Logger.log(
+        'WRITE_ATTEMPT | Row: ' + rowNumber +
+        ' | Column: ' + colName +
+        ' | ColIndex: ' + colIndex +
+        ' | ValueLength: ' + String(value).length +
+        ' | Value: ' + String(value).substring(0, 100)
+      );
+
+      var range = sheet.getRange(rowNumber, colIndex);
+      var writeOk = this._writeCellSafe(range, String(value), rowNumber, colName, colIndex);
+      if (writeOk) {
+        written.push(colName);
+      } else {
+        Logger.log('WRITE_FAILED_SILENTLY | Row: ' + rowNumber + ' | Column: ' + colName);
+        skipped.push(colName + ' (write failed)');
+      }
+    }
+
+    Logger.log('WRITER_SUMMARY | Row: ' + rowNumber + ' | Written: ' + written.join(', ') + ' | Skipped: ' + skipped.join(', '));
+
+    return {
+      written: written,
+      skipped: skipped,
+      rowNumber: rowNumber
+    };
+  },
+
+  writeAIWorkerTag: function(rowNumber, workerName, sheetName) {
+    var targetSheet = sheetName || CONFIG.SHEET_NAME;
+    var colIndex = SheetSchema.getColumnIndex(CONFIG.COLUMN_NAMES.AI_WORKER, targetSheet);
+
+    if (colIndex === -1) return;
+
+    var sheet = this._getSheet(targetSheet);
+    var cell = sheet.getRange(rowNumber, colIndex);
+    var current = cell.getValue();
+    var tag = workerName.replace('_WORKER', '');
+
+    if (current && String(current).trim() !== '') {
+      tag = String(current).trim() + ' + ' + tag;
+    }
+
+    this._writeCellSafe(cell, tag, rowNumber, 'AI Worker', colIndex);
+  },
+
+  writeTimestamp: function(rowNumber, columnName, sheetName) {
+    var targetSheet = sheetName || CONFIG.SHEET_NAME;
+    var colIndex = SheetSchema.getColumnIndex(columnName, targetSheet);
+
+    if (colIndex === -1) return;
+
+    var sheet = this._getSheet(targetSheet);
+    var cell = sheet.getRange(rowNumber, colIndex);
+
+    if (!cell.getValue()) {
+      this._writeCellSafe(cell, new Date(), rowNumber, columnName, colIndex);
+    }
+  },
+
+  clearWorkerOutput: function(rowNumber, workerName) {
+    var workerConfig = CONFIG.WORKERS[workerName];
+
+    if (!workerConfig) return;
+
+    var sheetName = workerConfig.sheetName || CONFIG.SHEET_NAME;
+    var sheet = this._getSheet(sheetName);
+    var columnMap = SheetSchema._getColumnMap(sheetName);
+
+    for (var i = 0; i < workerConfig.writeColumns.length; i++) {
+      var colName = workerConfig.writeColumns[i];
+      var colIndex = columnMap[colName];
+
+      if (colIndex) {
+        this._writeCellSafe(
+          sheet.getRange(rowNumber, colIndex), '',
+          rowNumber, colName, colIndex
+        );
+      }
+    }
+  },
+
+  // Resolves the columns a stage owns, for both workers and services.
+  _stageWriteColumns: function(stageName) {
+    if (CONFIG.WORKERS[stageName]) {
+      return {
+        columns: CONFIG.WORKERS[stageName].writeColumns || [],
+        sheet: CONFIG.WORKERS[stageName].sheetName || CONFIG.SHEET_NAME
+      };
+    }
+
+    if (CONFIG.SERVICES[stageName]) {
+      return {
+        columns: CONFIG.SERVICES[stageName].writeColumns || [],
+        sheet: CONFIG.SERVICES[stageName].sheetName || CONFIG.SHEET_NAME
+      };
+    }
+
+    return null;
+  },
+
+  // Wipes everything produced after `stageName` in the same pipeline.
+  //
+  // A worker overwrites its own columns on every run — the parser emits every
+  // output field, blank when the model omitted one. What it never touched was
+  // the output of *later* stages, which is derived from inputs this run just
+  // replaced. Re-planning a row therefore left the previous run's generated
+  // images and its "Approved" QA verdict sitting beside a brand-new brief:
+  // a row that reads as approved and publishable, whose assets came from a
+  // brief that no longer exists.
+  //
+  // Clearing is the honest state. A blank QA verdict says "not yet judged",
+  // which is true; a stale one asserts something false about work that has
+  // since been redone.
+  clearDownstreamOutput: function(rowNumber, stageName) {
+    var pipelines = CONFIG.STAGE_ORDER || {};
+    var cleared = [];
+
+    for (var key in pipelines) {
+      var stages = pipelines[key];
+      var position = stages.indexOf(stageName);
+
+      if (position === -1) {
+        continue;
+      }
+
+      // Some columns have more than one writer by design: the Creative
+      // Director refines the same 18 strategy fields the Content Strategy
+      // Worker proposes, so those names appear in *both* stages' writeColumns.
+      //
+      // Appearing in a later stage's writeColumns does not make a column that
+      // stage's output. It belongs to the earliest stage that writes it, and
+      // that stage has already run. Treating it as downstream deletes work
+      // this very execution just produced — which is exactly what happened:
+      // the Content Creation Worker wiped every strategy field on each row it
+      // touched, because all 18 sit in the Creative Director's writeColumns.
+      //
+      // So protect every column written at or before this stage, not just the
+      // caller's own. What remains is genuinely downstream: derived from
+      // inputs this run replaced, and safe to clear.
+      var protectedCols = {};
+      for (var p = 0; p <= position; p++) {
+        var upstream = this._stageWriteColumns(stages[p]);
+
+        if (!upstream) {
+          continue;
+        }
+
+        for (var u = 0; u < upstream.columns.length; u++) {
+          protectedCols[upstream.columns[u]] = true;
+        }
+      }
+
+      for (var i = position + 1; i < stages.length; i++) {
+        var target = this._stageWriteColumns(stages[i]);
+
+        if (!target || !target.columns.length) {
+          continue;
+        }
+
+        var sheet = this._getSheet(target.sheet);
+        var columnMap = SheetSchema._getColumnMap(target.sheet);
+
+        if (!sheet) {
+          continue;
+        }
+
+        for (var c = 0; c < target.columns.length; c++) {
+          var colName = target.columns[c];
+
+          if (protectedCols[colName]) {
+            continue;
+          }
+
+          var colIndex = columnMap[colName];
+
+          if (!colIndex) {
+            continue;
+          }
+
+          var cell = sheet.getRange(rowNumber, colIndex);
+
+          // Only touch cells that actually hold something — avoids pointless
+          // writes and keeps the log readable.
+          if (String(cell.getValue() || '').trim() === '') {
+            continue;
+          }
+
+          this._writeCellSafe(cell, '', rowNumber, colName, colIndex);
+          cleared.push(colName);
+        }
+      }
+    }
+
+    if (cleared.length) {
+      Logger.log(
+        'STALE_CLEARED | Row: ' + rowNumber + ' | Re-ran: ' + stageName +
+        ' | Cleared downstream: ' + cleared.join(', ')
+      );
+    }
+
+    return cleared;
+  },
+
+  batchWrite: function(rowsData, workerName) {
+    var results = [];
+
+    for (var i = 0; i < rowsData.length; i++) {
+      var result = this.writeToRow(
+        rowsData[i].rowNumber,
+        rowsData[i].values,
+        workerName
+      );
+      results.push(result);
+    }
+
+    return results;
+  },
+
+  writeCell: function(rowNumber, columnName, value, sheetName) {
+    var resolvedSheet = sheetName || CONFIG.SHEET_NAME;
+    var sheet = this._getSheet(resolvedSheet);
+    var columnMap = SheetSchema._getColumnMap(resolvedSheet);
+    var col = columnMap[columnName];
+
+    if (!col) {
+      Logger.log('WRITE_CELL_SKIPPED | Column not found: ' + columnName +
+        ' in sheet "' + resolvedSheet + '"');
+      return false;
+    }
+
+    return this._writeCellSafe(
+      sheet.getRange(rowNumber, col), value, rowNumber, columnName, col
+    );
+  },
+
+  // Writes the machine state. Deliberately not "Workflow Status" — that column
+  // is the operator's editorial workflow and shares only one value with this
+  // state machine, so every write here used to be rejected by its dropdown.
+  // (Audit A, finding F4.)
+  writePipelineState: function(rowNumber, state, sheetName) {
+    var resolvedSheet = sheetName || CONFIG.SHEET_NAME;
+    return this.writeCell(
+      rowNumber, CONFIG.COLUMN_NAMES.PIPELINE_STATE, state, resolvedSheet
+    );
+  },
+
+  // One-time repair: converts every "reject input" dropdown on a sheet into a
+  // "show warning" dropdown. The list still appears for human editors and the
+  // cell is still flagged when it holds an unexpected value — but a worker can
+  // no longer be blocked from writing.
+  //
+  // This is the root-cause fix. _writeCellSafe is the per-cell safety net for
+  // anything added to the sheet afterwards.
+  relaxSheetValidation: function(sheetName) {
+    var resolvedSheet = sheetName || CONFIG.SHEET_NAME;
+    var sheet = this._getSheet(resolvedSheet);
+
+    if (!sheet) {
+      return { sheet: resolvedSheet, error: 'Sheet not found' };
+    }
+
+    var lastRow = Math.max(sheet.getLastRow(), CONFIG.DATA_START_ROW);
+    var lastCol = sheet.getLastColumn();
+
+    if (lastRow < 1 || lastCol < 1) {
+      return { sheet: resolvedSheet, relaxed: 0, scanned: 0 };
+    }
+
+    var range = sheet.getRange(1, 1, lastRow, lastCol);
+    var rules = range.getDataValidations();
+    var relaxed = 0;
+    var scanned = 0;
+    var changed = false;
+
+    for (var r = 0; r < rules.length; r++) {
+      for (var c = 0; c < rules[r].length; c++) {
+        var rule = rules[r][c];
+
+        if (!rule) {
+          continue;
+        }
+
+        scanned++;
+
+        if (rule.getAllowInvalid()) {
+          continue;
+        }
+
+        rules[r][c] = rule.copy().setAllowInvalid(true).build();
+        relaxed++;
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      range.setDataValidations(rules);
+      SpreadsheetApp.flush();
+    }
+
+    Logger.log(
+      'VALIDATION_RELAXED | Sheet: ' + resolvedSheet +
+      ' | Rules scanned: ' + scanned + ' | Converted to warn-only: ' + relaxed
+    );
+
+    return { sheet: resolvedSheet, relaxed: relaxed, scanned: scanned };
+  },
+
+  relaxAllPipelineValidation: function() {
+    return [
+      this.relaxSheetValidation(CONFIG.SHEET_NAME),
+      this.relaxSheetValidation(CONFIG.VISUAL_PIPELINE.SHEET_NAME)
+    ];
+  },
+
+  // Rebuilds one sheet's dropdowns from CONFIG.CONTROLLED_VOCABULARY, making
+  // this file the single vocabulary source. Four fields disagreed between code
+  // and sheet — the worker produced exactly what the code asked for and the
+  // dropdown refused it, 19 times. (Audit A, finding F4.)
+  //
+  // Every rule is written allowInvalid, so a value outside the list is flagged
+  // for review rather than blocking a worker mid-run. Columns absent from the
+  // sheet are reported, never created — a missing dropdown column is a schema
+  // question, and guessing where it belongs is how a positional VLOOKUP breaks.
+  syncSheetValidation: function(sheetName) {
+    var sheet = this._getSheet(sheetName);
+
+    if (!sheet) {
+      return { sheet: sheetName, error: 'Sheet not found' };
+    }
+
+    var columnMap = SheetSchema._getColumnMap(sheetName);
+    var lastRow = Math.max(sheet.getLastRow(), CONFIG.DATA_START_ROW);
+    var applied = [];
+    var absent = [];
+
+    for (var columnName in CONFIG.CONTROLLED_VOCABULARY) {
+      var col = columnMap[columnName];
+
+      if (!col) {
+        absent.push(columnName);
+        continue;
+      }
+
+      var values = CONFIG.CONTROLLED_VOCABULARY[columnName];
+
+      var rule = SpreadsheetApp.newDataValidation()
+        .requireValueInList(values, true)
+        .setAllowInvalid(true)
+        .setHelpText(
+          columnName + ' — allowed values come from CONFIG.gs. ' +
+          'Anything else is recorded in the Execution Log for review.'
+        )
+        .build();
+
+      sheet
+        .getRange(CONFIG.DATA_START_ROW, col, lastRow - CONFIG.DATA_START_ROW + 1, 1)
+        .setDataValidation(rule);
+
+      applied.push(columnName);
+    }
+
+    SpreadsheetApp.flush();
+
+    Logger.log(
+      'VOCABULARY_SYNCED | Sheet: ' + sheetName +
+      ' | Columns written: ' + applied.length +
+      ' | Not present on this sheet: ' + absent.length
+    );
+
+    return { sheet: sheetName, applied: applied, absent: absent };
+  },
+
+  syncAllValidationFromConfig: function() {
+    return [
+      this.syncSheetValidation(CONFIG.SHEET_NAME),
+      this.syncSheetValidation(CONFIG.VISUAL_PIPELINE.SHEET_NAME),
+      this.syncSheetValidation(CONFIG.CAMPAIGN_CARDS_SHEET_NAME)
+    ];
+  },
+
+  // Creates the columns code writes but cannot invent. writeCell skips a
+  // missing column with nothing but a log line, so a renamed or freshly copied
+  // sheet loses those writes silently — which is exactly how the machine state
+  // ended up in the operator's Workflow Status column.
+  //
+  // Appends only. Never inserts: Campaign Cards O:Z is addressed positionally
+  // by the Content Pipeline VLOOKUP, and an insert before column Z moves every
+  // strategy field out from under it.
+  ensureManagedColumns: function() {
+    var results = [];
+    var managed = CONFIG.MANAGED_COLUMNS || [];
+
+    for (var i = 0; i < managed.length; i++) {
+      var spec = managed[i];
+      var sheet = this._getSheet(spec.sheet);
+
+      if (!sheet) {
+        results.push({
+          sheet: spec.sheet, column: spec.column, status: 'sheet not found'
+        });
+        continue;
+      }
+
+      if (SheetSchema._getColumnMap(spec.sheet)[spec.column]) {
+        results.push({
+          sheet: spec.sheet, column: spec.column, status: 'already present'
+        });
+        continue;
+      }
+
+      var newCol = sheet.getLastColumn() + 1;
+      sheet.getRange(CONFIG.HEADER_ROW, newCol).setValue(spec.column);
+
+      // The column map is cached for six hours. Without this, every write to
+      // the new column for the rest of the day resolves against a map that
+      // predates it and is skipped.
+      SheetSchema.invalidateColumnMap(spec.sheet);
+
+      results.push({
+        sheet: spec.sheet,
+        column: spec.column,
+        status: 'created in column ' + newCol
+      });
+
+      Logger.log(
+        'MANAGED_COLUMN_CREATED | Sheet: ' + spec.sheet +
+        ' | Column: ' + spec.column + ' | Position: ' + newCol
+      );
+    }
+
+    return results;
+  }
+};
+
+// ---------------------------------------------------------------------------
+// END SOURCE FILE: SheetWriter.gs
+// ---------------------------------------------------------------------------
+
+
+// ---------------------------------------------------------------------------
+// BEGIN SOURCE FILE: DriveLoader.gs
+// ---------------------------------------------------------------------------
+var DriveLoader = {
+
+  _loadFile: function(fileName, folderId) {
+    var cacheKey = 'drive_' + folderId + '_' + fileName;
+    var cached = CacheService.getScriptCache().get(cacheKey);
+
+    if (cached) {
+      return cached;
+    }
+
+    try {
+      var folder = DriveApp.getFolderById(folderId);
+      var files = folder.getFilesByName(fileName);
+
+      if (!files.hasNext()) {
+        Logger.log('File not found in Drive: ' + fileName);
+        return null;
+      }
+
+      var file = files.next();
+      var content = file.getBlob().getDataAsString('UTF-8');
+
+      // Caching is an optimisation, and it must not be able to lose a file that
+      // was read successfully. CacheService refuses a value over 100KB by
+      // throwing; CREATIVE_DIRECTOR_WORKER.md is already 77KB and these files
+      // only grow. Inside the outer catch, that throw returned null — and the
+      // caller reports null as "prompt file not found, check the folder ID",
+      // sending the operator to look for a file that is sitting right there.
+      try {
+        CacheService.getScriptCache().put(cacheKey, content, CONFIG.CACHE_DURATION);
+      } catch (cacheErr) {
+        Logger.log(
+          'DriveLoader | ' + fileName + ' (' + content.length + ' chars) was ' +
+          'read but not cached: ' + cacheErr.toString() +
+          ' It will be re-read from Drive on every call.'
+        );
+      }
+
+      return content;
+
+    } catch (e) {
+      Logger.log('DriveLoader error for ' + fileName + ': ' + e.toString());
+      return null;
+    }
+  },
+
+  loadMarkdown: function(fileName, folderId) {
+    return this._loadFile(fileName, folderId || CONFIG.DOCS_FOLDER_ID);
+  },
+
+  // Services are resolved as well as workers. Media Generation lives under
+  // CONFIG.SERVICES, and because this function only ever looked at
+  // CONFIG.WORKERS its 1,990-line training manual was never loaded by anything
+  // — the file sat in Drive being edited while the image prompt was built by
+  // string concatenation in code.
+  loadPrompt: function(workerName) {
+    var config = CONFIG.WORKERS[workerName] ||
+      (CONFIG.SERVICES && CONFIG.SERVICES[workerName]);
+
+    if (!config) {
+      Logger.log('Unknown worker or service: ' + workerName);
+      return null;
+    }
+
+    if (!config.promptFile) {
+      Logger.log('No promptFile configured for: ' + workerName);
+      return null;
+    }
+
+    var isVisual = config.sheetName === CONFIG.VISUAL_PIPELINE.SHEET_NAME;
+    var folderId = isVisual
+      ? CONFIG.VISUAL_PROMPTS_FOLDER_ID
+      : CONFIG.PROMPTS_FOLDER_ID;
+
+    return this._loadFile(config.promptFile, folderId);
+  },
+
+  loadProjectDocs: function(workerName) {
+    var workerConfig = CONFIG.WORKERS[workerName];
+
+    if (!workerConfig) {
+      Logger.log('Unknown worker for doc loading: ' + workerName);
+      return null;
+    }
+
+    var docNames = workerConfig.docs;
+    var sections = [];
+
+    for (var i = 0; i < docNames.length; i++) {
+      var content = this.loadMarkdown(docNames[i], CONFIG.DOCS_FOLDER_ID);
+
+      if (content) {
+        sections.push(
+          '=== PROJECT DOCUMENT: ' + docNames[i] + ' ===\n' +
+          content
+        );
+      } else {
+        sections.push(
+          '=== PROJECT DOCUMENT: ' + docNames[i] + ' ===\n' +
+          '[FILE NOT FOUND - SKIP]'
+        );
+      }
+    }
+
+    return sections.join('\n\n');
+  },
+
+  loadAllDocs: function() {
+    var cacheKey = 'allDocs';
+    var cached = CacheService.getScriptCache().get(cacheKey);
+
+    if (cached) {
+      return cached;
+    }
+
+    try {
+      var folder = DriveApp.getFolderById(CONFIG.DOCS_FOLDER_ID);
+      var files = folder.getFilesByType(MimeType.PLAIN_TEXT);
+      var contents = {};
+
+      while (files.hasNext()) {
+        var file = files.next();
+        var name = file.getName();
+
+        if (name.endsWith('.md')) {
+          contents[name] = file.getBlob().getDataAsString('UTF-8');
+        }
+      }
+
+      var result = JSON.stringify(contents);
+      CacheService.getScriptCache().put(cacheKey, result, CONFIG.CACHE_DURATION);
+      return contents;
+
+    } catch (e) {
+      Logger.log('loadAllDocs error: ' + e.toString());
+      return {};
+    }
+  },
+
+  // Accepts a Drive file URL or a bare file ID and returns the image as
+  // inline data for multimodal AI requests. Returns null on any failure so a
+  // single unreadable asset never aborts the whole worker run.
+  loadImageAsInlineData: function(fileRef) {
+    var ref = String(fileRef || '').trim();
+
+    if (!ref) {
+      return null;
+    }
+
+    var idMatch = ref.match(/[-\w]{25,}/);
+    var fileId = idMatch ? idMatch[0] : ref;
+
+    try {
+      var blob = DriveApp.getFileById(fileId).getBlob();
+      var mimeType = blob.getContentType() || '';
+
+      if (mimeType.indexOf('image/') !== 0) {
+        Logger.log('Skipping non-image Drive file: ' + fileId + ' (' + mimeType + ')');
+        return null;
+      }
+
+      return {
+        base64: Utilities.base64Encode(blob.getBytes()),
+        mimeType: mimeType
+      };
+
+    } catch (e) {
+      Logger.log('loadImageAsInlineData failed for ' + fileId + ': ' + e.toString());
+      return null;
+    }
+  },
+
+  // ================================
+  // PROJECT ASSETS
+  // Real photographs of the actual facilities. Everything below degrades to an
+  // empty result rather than throwing: a missing folder, an unshared folder or
+  // an empty subfolder simply means this row is generated without reference.
+  // ================================
+
+  // Arabic text in the sheet carries definite articles and inconsistent letter
+  // forms, so a literal search for "عناية مركزة" never matches the way people
+  // actually write it — "العناية المركزة". Normalising both sides first is what
+  // makes keyword matching usable on real content.
+  _normalizeArabic: function(text) {
+    return String(text || '')
+      .toLowerCase()
+      .replace(/[أإآٱ]/g, 'ا')  // أ إ آ -> ا
+      .replace(/ة/g, 'ه')                       // ة -> ه
+      .replace(/[ى]/g, 'ي')                     // ى -> ي
+      .replace(/[ً-ْـ]/g, '')    // diacritics and tatweel
+      // Definite article. \b is ASCII-only in JS, so an explicit boundary is
+      // required — without it "العناية" never matches the keyword "عناية".
+      .replace(/(^|\s)ال/g, '$1')
+      .replace(/\s+/g, ' ')
+      .trim();
+  },
+
+  // Picks the domain whose keywords appear in the row's creative fields. No
+  // model call — the same row always resolves to the same domain.
+  resolveAssetDomain: function(rowData) {
+    var domains = (CONFIG.PROJECT_ASSETS && CONFIG.PROJECT_ASSETS.DOMAINS) || [];
+
+    if (!domains.length) {
+      return null;
+    }
+
+    var haystack = this._normalizeArabic([
+      rowData['Campaign Name'],
+      rowData['Visual Concept'],
+      rowData['Visual Focus'],
+      rowData['Visual Elements'],
+      rowData['Content Type']
+    ].join(' '));
+
+    if (!haystack) {
+      return null;
+    }
+
+    for (var i = 0; i < domains.length; i++) {
+      var domain = domains[i];
+      for (var k = 0; k < domain.keywords.length; k++) {
+        if (haystack.indexOf(this._normalizeArabic(domain.keywords[k])) !== -1) {
+          return domain;
+        }
+      }
+    }
+
+    return null;
+  },
+
+  // Resolves a "/"-separated path beneath the project assets root.
+  //
+  // Domains are grouped in Drive — clinical departments live under Services/,
+  // brand material sits at the top — so a domain's folder is a path, not a
+  // direct child. Walking the segments keeps the Drive layout free to be
+  // organised for humans rather than flattened for the code.
+  _assetSubfolder: function(folderPath) {
+    var rootId = CONFIG.PROJECT_ASSETS && CONFIG.PROJECT_ASSETS.FOLDER_ID;
+
+    if (!rootId || !String(rootId).trim() || !folderPath) {
+      return null;
+    }
+
+    var segments = String(folderPath).split('/');
+    var current;
+
+    try {
+      current = DriveApp.getFolderById(rootId);
+    } catch (e) {
+      Logger.log('PROJECT_ASSETS | cannot open root folder: ' + e.toString());
+      return null;
+    }
+
+    for (var i = 0; i < segments.length; i++) {
+      var name = segments[i].trim();
+
+      if (!name) {
+        continue;
+      }
+
+      try {
+        var matches = current.getFoldersByName(name);
+
+        if (!matches.hasNext()) {
+          // Expected whenever a domain folder has not been created yet.
+          // Callers treat an absent folder as "no reference images".
+          return null;
+        }
+
+        current = matches.next();
+
+      } catch (e) {
+        Logger.log(
+          'PROJECT_ASSETS | cannot descend into "' + name + '" of "' +
+          folderPath + '": ' + e.toString()
+        );
+        return null;
+      }
+    }
+
+    return current;
+  },
+
+  // Names only — cheap enough to call while building worker context.
+  // One named file from a project-assets subfolder, as a blob.
+  //
+  // Separate from loadProjectAssets, which takes a whole folder as visual
+  // reference for the image model. A logo is not reference material: exactly
+  // one file is wanted, by name, and the wrong one is not a degraded result but
+  // a different company's mark on a real hospital's post.
+  //
+  // Cached for the same six hours as everything else read from Drive, because
+  // a carousel composites the same three logos onto every card.
+  loadProjectAsset: function(folderPath, fileName) {
+    var wanted = String(fileName || '').trim();
+
+    if (!folderPath || !wanted) {
+      return null;
+    }
+
+    var cacheKey = 'asset:' + folderPath + '/' + wanted;
+    var folder = this._assetSubfolder(folderPath);
+
+    if (!folder) {
+      Logger.log('PROJECT_ASSETS | folder "' + folderPath + '" did not resolve');
+      return null;
+    }
+
+    try {
+      var files = folder.getFilesByName(wanted);
+
+      if (!files.hasNext()) {
+        Logger.log(
+          'PROJECT_ASSETS | "' + wanted + '" not found in "' + folderPath + '"'
+        );
+        return null;
+      }
+
+      var blob = files.next().getBlob();
+
+      // A second file with the same name means Drive cannot say which one was
+      // meant, and picking the first silently is how the wrong logo ships.
+      if (files.hasNext()) {
+        Logger.log(
+          'PROJECT_ASSETS | more than one file named "' + wanted + '" in "' +
+          folderPath + '" — used the first. Remove the duplicate.'
+        );
+      }
+
+      return blob;
+
+    } catch (e) {
+      Logger.log(
+        'PROJECT_ASSETS | could not read "' + wanted + '" from "' + folderPath +
+        '": ' + e.toString()
+      );
+      return null;
+    }
+  },
+
+  listProjectAssets: function(domain) {
+    if (!domain) {
+      return [];
+    }
+
+    var folder = this._assetSubfolder(domain.folder);
+
+    if (!folder) {
+      return [];
+    }
+
+    var types = CONFIG.PROJECT_ASSETS.SUPPORTED_IMAGE_TYPES;
+    var names = [];
+
+    try {
+      var files = folder.getFiles();
+      while (files.hasNext()) {
+        var file = files.next();
+        if (types.indexOf(file.getMimeType()) !== -1) {
+          names.push(file.getName());
+        }
+      }
+    } catch (e) {
+      Logger.log('PROJECT_ASSETS | cannot list "' + domain.folder + '": ' + e.toString());
+      return [];
+    }
+
+    return names;
+  },
+
+  // Actual bytes, for handing to the image model as visual reference.
+  loadProjectAssets: function(domain, maxImages) {
+    if (!domain) {
+      return [];
+    }
+
+    var folder = this._assetSubfolder(domain.folder);
+
+    if (!folder) {
+      return [];
+    }
+
+    var limit = maxImages || CONFIG.PROJECT_ASSETS.MAX_REFERENCE_IMAGES || 3;
+    var types = CONFIG.PROJECT_ASSETS.SUPPORTED_IMAGE_TYPES;
+    var images = [];
+
+    try {
+      var files = folder.getFiles();
+      while (files.hasNext() && images.length < limit) {
+        var file = files.next();
+
+        if (types.indexOf(file.getMimeType()) === -1) {
+          continue;
+        }
+
+        images.push({
+          base64: Utilities.base64Encode(file.getBlob().getBytes()),
+          mimeType: file.getMimeType(),
+          name: file.getName()
+        });
+      }
+    } catch (e) {
+      Logger.log('PROJECT_ASSETS | cannot read "' + domain.folder + '": ' + e.toString());
+      return [];
+    }
+
+    if (images.length) {
+      Logger.log(
+        'PROJECT_ASSETS | domain "' + domain.key + '" supplied ' +
+        images.length + ' reference image(s)'
+      );
+    }
+
+    return images;
+  },
+
+  // Splits a comma-separated Generated Assets cell into inline image payloads.
+  loadImagesFromCell: function(cellValue, maxImages) {
+    var value = String(cellValue || '').trim();
+
+    if (!value) {
+      return [];
+    }
+
+    var refs = value.split(',');
+    var limit = maxImages || 4;
+    var images = [];
+
+    for (var i = 0; i < refs.length && images.length < limit; i++) {
+      var ref = refs[i].trim();
+      if (!ref) {
+        continue;
+      }
+
+      var image = this.loadImageAsInlineData(ref);
+      if (image) {
+        images.push(image);
+      }
+    }
+
+    return images;
+  },
+
+  invalidateCache: function(fileName, folderId) {
+    var targetFolder = folderId || CONFIG.DOCS_FOLDER_ID;
+    var cacheKey = 'drive_' + targetFolder + '_' + fileName;
+    CacheService.getScriptCache().remove(cacheKey);
+  },
+
+  invalidateAllCache: function() {
+    var cache = CacheService.getScriptCache();
+
+    cache.removeAll([
+      'allDocs',
+      'drive_' + CONFIG.DOCS_FOLDER_ID,
+      'drive_' + CONFIG.PROMPTS_FOLDER_ID,
+      'drive_' + CONFIG.VISUAL_PROMPTS_FOLDER_ID
+    ]);
+
+    // Services as well as workers. Media Generation lives under CONFIG.SERVICES,
+    // so Refresh Cache walked straight past MEDIA_GENERATION_SERVICE.md — the
+    // second largest prompt in the system. Editing it in Drive and refreshing
+    // did nothing for six hours, and looked exactly like an edit that had
+    // taken effect.
+    // The planning workers are not in either registry — they read their manual
+    // from PLANNING_PROMPTS_FOLDER_ID, which is a Script Property — so their
+    // prompts were unreachable from here too.
+    var planningFolder =
+      PropertiesService.getScriptProperties().getProperty('PLANNING_PROMPTS_FOLDER_ID') ||
+      CONFIG.PROMPTS_FOLDER_ID;
+
+    var planning = [CONFIG.CARD_BUILDER, CONFIG.CAMPAIGN_PLANNER, CONFIG.PORTFOLIO_CRITIC];
+
+    for (var q = 0; q < planning.length; q++) {
+      var promptFile = planning[q] && planning[q].promptFile;
+      if (promptFile) {
+        cache.remove('drive_' + planningFolder + '_' + promptFile);
+      }
+    }
+
+    // Brand documents the planning workers name inline rather than through a
+    // docs array — CardBuilder loads the first two, PlannerRunner the last two.
+    // If a call site there starts reading a different document, add it here.
+    var planningDocs = [
+      'MASTER_BRAND_ARCHITECTURE.md', 'AI_CREATIVE_CONSTITUTION.md',
+      'PROJECT_DECISIONS.md', 'PROJECT_STRUCTURE.md'
+    ];
+
+    for (var b = 0; b < planningDocs.length; b++) {
+      cache.remove('drive_' + CONFIG.DOCS_FOLDER_ID + '_' + planningDocs[b]);
+    }
+
+    var registries = [CONFIG.WORKERS || {}, CONFIG.SERVICES || {}];
+
+    for (var r = 0; r < registries.length; r++) {
+      var registry = registries[r];
+
+      for (var name in registry) {
+        var entry = registry[name] || {};
+        var docNames = entry.docs || [];
+
+        for (var i = 0; i < docNames.length; i++) {
+          cache.remove('drive_' + CONFIG.DOCS_FOLDER_ID + '_' + docNames[i]);
+        }
+
+        // A service keeps its own docs under its worker block — the Media
+        // Designer's live in .designer.docs — and those are loaded from the
+        // same folder, so they go stale the same way.
+        var nested = (entry.designer && entry.designer.docs) || [];
+        for (var n = 0; n < nested.length; n++) {
+          cache.remove('drive_' + CONFIG.DOCS_FOLDER_ID + '_' + nested[n]);
+        }
+
+        if (!entry.promptFile) {
+          continue;
+        }
+
+        var isVisual = entry.sheetName === CONFIG.VISUAL_PIPELINE.SHEET_NAME;
+        var promptFolder = isVisual
+          ? CONFIG.VISUAL_PROMPTS_FOLDER_ID
+          : CONFIG.PROMPTS_FOLDER_ID;
+
+        cache.remove('drive_' + promptFolder + '_' + entry.promptFile);
+      }
+    }
+  }
+};
+
+// ---------------------------------------------------------------------------
+// END SOURCE FILE: DriveLoader.gs
+// ---------------------------------------------------------------------------
+
+
+// ---------------------------------------------------------------------------
+// BEGIN SOURCE FILE: ResponseParser.gs
+// ---------------------------------------------------------------------------
+var ResponseParser = {
+
+  parse: function(responseText, workerName) {
+    var workerConfig = CONFIG.WORKERS[workerName];
+
+    if (!workerConfig) {
+      throw new Error('Unknown worker for parsing: ' + workerName);
+    }
+
+    Logger.log('PARSER_RAW_RESPONSE | First 500 chars: ' + responseText.substring(0, 500));
+
+    var cleaned = this._cleanResponseText(responseText);
+    var json = this._extractJSON(cleaned);
+
+    if (!json) {
+      Logger.log('PARSER_JSON_FAILED | Could not extract JSON');
+      throw new Error(
+        'Failed to extract JSON from AI response. ' +
+        'Response starts with: ' + cleaned.substring(0, 200)
+      );
+    }
+
+    Logger.log('PARSER_EXTRACTED_JSON | Keys: ' + Object.keys(json).join(', '));
+
+    var validated = this._validateFields(json, workerConfig, workerName);
+
+    Logger.log('PARSER_VALIDATED_VALUES | Values: ' + JSON.stringify(validated.values).substring(0, 500));
+    Logger.log('PARSER_WARNINGS | Warnings: ' + validated.warnings.join('; '));
+
+    return {
+      values: validated.values,
+      warnings: validated.warnings,
+      deviations: validated.deviations || [],
+      isPartial: validated.warnings.length > 0
+    };
+  },
+
+  _cleanResponseText: function(text) {
+    var cleaned = text.trim();
+
+    if (cleaned.startsWith('```json')) {
+      cleaned = cleaned.substring(7);
+    } else if (cleaned.startsWith('```')) {
+      cleaned = cleaned.substring(3);
+    }
+
+    if (cleaned.endsWith('```')) {
+      cleaned = cleaned.substring(0, cleaned.length - 3);
+    }
+
+    var firstBrace = cleaned.indexOf('{');
+    var lastBrace = cleaned.lastIndexOf('}');
+
+    if (firstBrace !== -1 && lastBrace > firstBrace) {
+      cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+    }
+
+    return cleaned.trim();
+  },
+
+  _extractJSON: function(text) {
+    try {
+      return JSON.parse(text);
+    } catch (e) {
+    }
+
+    var firstBrace = text.indexOf('{');
+    var lastBrace = text.lastIndexOf('}');
+
+    if (firstBrace !== -1 && lastBrace > firstBrace) {
+      var candidate = text.substring(firstBrace, lastBrace + 1);
+
+      try {
+        return JSON.parse(candidate);
+      } catch (e) {
+      }
+    }
+
+    return null;
+  },
+
+  _validateFields: function(json, workerConfig, workerName) {
+    var outputFields = workerConfig.outputFields;
+    var values = {};
+    var warnings = [];
+    var deviations = [];
+
+    for (var fieldName in outputFields) {
+      var fieldType = outputFields[fieldName];
+
+      if (!json.hasOwnProperty(fieldName)) {
+        warnings.push('Missing field: ' + fieldName);
+        values[fieldName] = '';
+        continue;
+      }
+
+      var rawValue = String(json[fieldName]).trim();
+
+      if (rawValue === '' || rawValue === 'null' || rawValue === 'undefined') {
+        warnings.push('Empty field: ' + fieldName);
+        values[fieldName] = '';
+        continue;
+      }
+
+      if (fieldType === 'controlled') {
+        var corrected = this._validateControlledField(fieldName, rawValue);
+
+        if (corrected.wasCorrected) {
+          warnings.push(
+            'Corrected "' + fieldName + '": "' +
+            rawValue + '" -> "' + corrected.value + '"'
+          );
+        } else if (corrected.isOutOfVocabulary) {
+          // Accepted as-is. The vocabulary is treated as guidance, not as a gate:
+          // a value nobody anticipated is production evidence, not a reason to stop.
+          warnings.push(
+            'Out-of-vocabulary "' + fieldName + '": "' + corrected.value + '" (accepted)'
+          );
+          deviations.push({
+            field: fieldName,
+            value: corrected.value,
+            vocabulary: CONFIG.CONTROLLED_VOCABULARY[fieldName] || []
+          });
+        }
+
+        values[fieldName] = corrected.value;
+      } else {
+        values[fieldName] = rawValue;
+      }
+    }
+
+    return {
+      values: values,
+      warnings: warnings,
+      deviations: deviations,
+      worker: workerName
+    };
+  },
+
+  _validateControlledField: function(fieldName, value) {
+    var vocabulary = CONFIG.CONTROLLED_VOCABULARY[fieldName];
+
+    if (!vocabulary) {
+      return { value: value, wasCorrected: false };
+    }
+
+    if (vocabulary.indexOf(value) !== -1) {
+      return { value: value, wasCorrected: false };
+    }
+
+    var normalizedInput = value.toLowerCase().trim();
+
+    for (var i = 0; i < vocabulary.length; i++) {
+      if (vocabulary[i].toLowerCase() === normalizedInput) {
+        return { value: vocabulary[i], wasCorrected: true };
+      }
+    }
+
+    var bestMatch = this._findBestMatch(normalizedInput, vocabulary);
+
+    if (bestMatch) {
+      return { value: bestMatch, wasCorrected: true };
+    }
+
+    // No match and no near-match. Keep the worker's value and flag it.
+    return { value: value, wasCorrected: false, isOutOfVocabulary: true };
+  },
+
+  _findBestMatch: function(input, options) {
+    var bestScore = 0;
+    var bestMatch = null;
+
+    for (var i = 0; i < options.length; i++) {
+      var option = options[i].toLowerCase();
+      var score = 0;
+
+      if (option.indexOf(input) !== -1 || input.indexOf(option) !== -1) {
+        score = 0.8;
+      } else {
+        score = this._similarity(input, option);
+      }
+
+      if (score > bestScore && score > 0.6) {
+        bestScore = score;
+        bestMatch = options[i];
+      }
+    }
+
+    return bestMatch;
+  },
+
+  _similarity: function(a, b) {
+    var longer = a.length > b.length ? a : b;
+    var shorter = a.length > b.length ? b : a;
+
+    if (longer.length === 0) return 1.0;
+
+    var longerLength = longer.length;
+    var distance = this._editDistance(longer, shorter);
+
+    return (longerLength - distance) / longerLength;
+  },
+
+  _editDistance: function(a, b) {
+    var matrix = [];
+
+    for (var i = 0; i <= b.length; i++) {
+      matrix[i] = [i];
+    }
+
+    for (var j = 0; j <= a.length; j++) {
+      matrix[0][j] = j;
+    }
+
+    for (var i = 1; i <= b.length; i++) {
+      for (var j = 1; j <= a.length; j++) {
+        if (b.charAt(i - 1) === a.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1];
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j - 1] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j] + 1
+          );
+        }
+      }
+    }
+
+    return matrix[b.length][a.length];
+  }
+};
+
+// ---------------------------------------------------------------------------
+// END SOURCE FILE: ResponseParser.gs
+// ---------------------------------------------------------------------------
+

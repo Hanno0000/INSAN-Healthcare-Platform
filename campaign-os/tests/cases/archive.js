@@ -12,11 +12,8 @@
 module.exports = {
   name: 'archive',
 
-  run(t) {
-    const fs = require('fs');
-    const path = require('path');
-    const srcDir = path.join(__dirname, '..', '..', 'src');
-    const source = fs.readFileSync(path.join(srcDir, 'Archive.gs'), 'utf8');
+  run(t, fx) {
+    const source = fx.srcSection('Archive');
 
     // --- the guard that makes everything else safe ---
     t.is(typeof Archive.assertNoTransferFormulas, 'function',
@@ -128,25 +125,31 @@ module.exports = {
       'disagree about what is about to happen');
 
     // --- nothing else touches the archive sheet ---
+    // By section rather than by file: Archive shares a file with eight other
+    // sources now, and a check that excused only its own filename would excuse
+    // all nine.
     const openers = [];
+    const sections = fx.srcSections();
 
-    for (const file of fs.readdirSync(srcDir).filter((f) => f.endsWith('.gs'))) {
-      if (file === 'Archive.gs') continue;
-
-      const text = fs.readFileSync(path.join(srcDir, file), 'utf8');
+    for (const [name, text] of Object.entries(sections)) {
+      if (name === 'Archive.gs') continue;
 
       if (/getSheetByName\([^)]*Archive/i.test(text) ||
           /Archive\.(SHEET_NAME|_mirror|columns|collect)/.test(text)) {
-        openers.push(file);
+        openers.push(name);
       }
     }
+
+    t.ok(Object.keys(sections).length > 25,
+      `every source is readable as a section — found ${Object.keys(sections).length}, ` +
+      `and a scan over none of them would report no openers`);
 
     t.is(openers, [],
       'no other file opens the archive sheet — a second copy of the same rows ' +
       'that something reads is a second source of truth');
 
     // --- the offer after planning never breaks the plan it follows ---
-    const runner = fs.readFileSync(path.join(srcDir, 'WorkerRunner.gs'), 'utf8');
+    const runner = fx.srcSection('WorkerRunner');
     const offer = /function _offerToArchive\(ui\) \{([\s\S]*?)\n\}/.exec(runner);
 
     t.ok(offer, 'the planner offers archiving after a cycle lands');

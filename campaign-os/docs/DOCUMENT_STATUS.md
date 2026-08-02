@@ -1,7 +1,7 @@
 # Document Status
 
-> **Version:** 1.0
-> **Date:** 2026-07-31
+> **Version:** 1.1
+> **Date:** 2026-08-02
 > **Status:** Current — this file is maintained
 > **Closes:** Audit A findings F15 (documents claim unbuilt features) and F16 (six
 > documents stuck at Sprint 1 status)
@@ -38,6 +38,13 @@ to rebuild something that exists or rely on something that does not.
 | **Baseline** | A measurement of a past state, deliberately left unedited so later work can be compared against it. |
 | **Historical** | A record of finished work. Accurate about its moment, not about now. |
 | **Superseded** | Replaced by a named document. Kept for the reasoning, not the content. |
+
+**A note on `.gs` names, 2026-08-02.** Documents throughout this folder name sources
+individually — `PublishingRunner.gs`, `MediaDesigner.gs`, `CONFIG.gs`. Those are still
+the right names for those bodies of code, but they are no longer separate files: the
+31 sources were merged into five, each preserved as a banner-delimited section inside
+one of them. `START_HERE.md` §6.1a maps every name to the file it now lives in.
+**Nothing was renamed and nothing changed** — no document below is wrong because of it.
 | **Proposal** | Describes something not built. Says so on the same line as its version. |
 
 A document describing unbuilt behaviour must say so **on the same line as its

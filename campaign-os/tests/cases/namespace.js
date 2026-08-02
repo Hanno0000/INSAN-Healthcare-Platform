@@ -87,5 +87,41 @@ module.exports = {
     t.is(shared, [],
       'no global is declared by two files — one would silently overwrite the ' +
       'other, and which one wins depends on load order');
+
+    // --- what the operator actually pastes ---
+    // There is no deployment step here. Every file under src/ is copied into the
+    // Apps Script editor by hand, and copied again after every change, so the
+    // number of them is a running cost rather than a matter of taste.
+    const gs = Object.keys(files).sort();
+
+    t.is(gs, ['AI.gs', 'App.gs', 'Core.gs', 'Delivery.gs', 'Planning.gs'],
+      'five .gs files, which is what the operator pastes');
+
+    // The sections inside them are the units this repository is written and
+    // reviewed in, and the units the checks above read.
+    const sections = Object.keys(fx.srcSections()).sort();
+    t.is(sections.length, 31,
+      `all 31 original sources are still present as sections — found ${sections.length}`);
+
+    // ControlCenter.html is looked up BY NAME at runtime:
+    //
+    //   HtmlService.createHtmlOutputFromFile('ControlCenter')
+    //
+    // It is not a `.gs` and cannot be merged into one. Absorbed or renamed, the
+    // sidebar fails when the operator opens it and at no point before.
+    t.ok(fx.exists('campaign-os/src/ControlCenter.html'),
+      'ControlCenter.html is still a file of its own, because HtmlService ' +
+      'resolves it by name at the moment the sidebar is opened');
+
+    t.includes(fx.srcSection('ControlCenter'),
+      "createHtmlOutputFromFile('ControlCenter')",
+      'and that is still how the sidebar is built — the name in the call and ' +
+      'the filename have to agree');
+
+    // Every section is claimed by exactly one file. `srcSections` throws on a
+    // duplicate, so reaching here at all is the check; this states the count so
+    // the reason is visible when it does throw.
+    t.ok(sections.length === new Set(sections).size,
+      'no source section is claimed by two files');
   }
 };

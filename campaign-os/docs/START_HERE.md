@@ -4,7 +4,7 @@
 > this repository, read this file completely before opening anything else or writing any
 > code.
 >
-> **Updated:** 2026-07-31
+> **Updated:** 2026-08-02
 > **Status:** **Current** — the entry point. §6 is the authority on where the work
 > stands. Every other document declares its own status; the index is
 > `campaign-os/docs/DOCUMENT_STATUS.md`.
@@ -20,7 +20,7 @@
 >
 > Everything is in git, on `main`. What has *not* happened is a production run:
 > **the code has never been pasted into the Apps Script editor, and not one worker
-> built since 2026-07-29 has made a single live API call.** **219 automated checks**
+> built since 2026-07-29 has made a single live API call.** **612 automated checks**
 > pass against the real files — `node campaign-os/tests/run.js` — and none of them
 > proves the system runs.
 >
@@ -249,7 +249,7 @@ verified until §6.0 items 1–4 are done, and the order matters where it is num
 | # | What | Why it is yours | Detail |
 |---|---|---|---|
 | 1 | **Rotate the leaked credentials** | `.env.production` is tracked in git on a **public** repo and carries the Supabase production `DATABASE_URL` and both JWT signing secrets. Committed 2026-07-29 in `40e6a02`. Deleting the file does not undo it — the history is public. | Rotate first, then `git rm --cached .env.production` |
-| 2 | **Paste `src/*.gs` into the Apps Script editor** | Nothing in this repository takes effect until this happens | §6.1, file list at the end |
+| 2 | **Paste the five `.gs` files into the Apps Script editor** | Nothing in this repository takes effect until this happens | §6.1a — five files and one `.html`, not 31 |
 | 3 | **Set the Script Properties** | Keys and folder IDs. `ANTHROPIC_API_KEY` and `KNOWLEDGE_FOLDER_ID` are required; the rest fall back to `CONFIG.gs` | §6.3 |
 | 4 | **Upload to Drive**: `prompts/planning/`, `prompts/ads/`, the knowledge folders, and `ENTITY_REGISTRY.md` | The workers load their manuals from Drive at runtime | §6.3 |
 | 5 | **Create Managed Columns → Sync Dropdowns → Preflight Check** | One-time schema setup. Preflight must report no problems | §6.3 |
@@ -279,7 +279,7 @@ been pasted into the Apps Script editor.**
 ⚠️ **Corrected 2026-07-31.** This section previously claimed "roughly 140 automated
 checks pass". They had been run as throwaway scripts in earlier sessions and never
 committed, so nobody could re-run them and the claim could not be checked. There is
-now a committed harness — **219 checks**, `node campaign-os/tests/run.js`, no
+now a committed harness — **612 checks**, `node campaign-os/tests/run.js`, no
 dependencies and no network. It covers the logic layer only: every Apps Script
 service is stubbed to throw, so nothing here writes a cell, reads Drive or calls a
 model. See `campaign-os/tests/README.md`.
@@ -350,14 +350,53 @@ would put an approved image behind copy nobody checked it against.
 
 **The entity registry (I7)** is `business/brand/ENTITY_REGISTRY.md` — see §6.5.
 
-⚠️ **Files changed and to be pasted into the Apps Script editor:**
-`AIProvider.gs` · `CardBuilder.gs` · `CONFIG.gs` · `DriveLoader.gs` ·
-`MediaDesigner.gs` · `PlannerRunner.gs` · `PortfolioCritic.gs` ·
-`ServiceRunner.gs` · `WorkerRunner.gs`, plus six new files —
-**`PublishingRunner.gs`** · **`AdsRunner.gs`** · **`EventsCalendar.gs`** ·
-**`ConfigResolver.gs`** · **`AssetLibrary.gs`** · **`EntityRegistry.gs`**.
-`ENTITY_REGISTRY.md` also has to be uploaded to the docs folder in Drive.
-Still nothing verified in production.
+⚠️ **Superseded 2026-08-02.** This section used to list the individual `.gs` files
+changed in each pass, so the operator knew which to re-paste. There are now five
+files and every pass touches one of them — **§6.1a is the list**. `ENTITY_REGISTRY.md`
+still has to be uploaded to the docs folder in Drive. Still nothing verified in
+production.
+
+### 6.1a The files to paste
+
+**Six files. Five `.gs` and one `.html`.**
+
+| File | Lines | What is in it |
+|---|---|---|
+| `Core.gs` | 3,490 | CONFIG · ConfigResolver · Logger · SheetSchema · SheetWriter · DriveLoader · ResponseParser |
+| `AI.gs` | 4,699 | AIProvider · ImageProvider · ContextBuilder · AdPolicy · MediaDesigner · TextOverlay · Branding · AssetIntegrity · AssetLibrary · VisualPlan · ServiceRunner |
+| `Planning.gs` | 3,937 | CardBuilder · PlannerRunner · PortfolioCritic · EventsCalendar · EntityRegistry · Batches · Transfer · Archive · PostFooter |
+| `Delivery.gs` | 1,040 | PublishingRunner · AdsRunner |
+| `App.gs` | 3,859 | WorkerRunner (`onOpen` and every menu function) · ControlCenter |
+| `ControlCenter.html` | 1,346 | **Not a `.gs` and cannot be merged into one.** `HtmlService.createHtmlOutputFromFile('ControlCenter')` resolves it by name when the sidebar is opened |
+
+It was 31 `.gs` files until 2026-08-02. They were merged because the operator pastes
+every file by hand and does it again after every change; 31 was an unreasonable
+amount of manual work for a repository with no deployment step.
+
+**Nothing about the code changed.** Apps Script has no modules — every `.gs` is
+evaluated into one shared scope before anything is called, so which file a
+definition sits in has never affected what runs. Each of the 31 originals is still
+present, byte for byte, as a banner-delimited section:
+
+```
+// BEGIN SOURCE FILE: Transfer.gs
+...
+// END SOURCE FILE: Transfer.gs
+```
+
+Those banners are load-bearing. The tests read a source **by section** — a check
+about `AdPolicy`'s regex literals, pointed at the whole of `AI.gs`, would start
+reporting on its ten neighbours. Keep them if you regroup anything.
+
+The evidence that the merge changed nothing: every section was re-extracted and
+compared against the committed original (31 of 31 identical, the only difference
+being a final newline added to the two files that shipped without one); the
+namespace the sources contribute is pinned at 136 names in `tests/GLOBALS.txt` and
+is unchanged; and 612 checks pass, including 43 that confirm every menu item still
+points at a function that exists.
+
+**Delivery is separate on purpose.** Publishing is the only irreversible operation
+in the system, and it should be easy to find and hard to change by accident.
 
 ### 6.2 The knowledge base
 
@@ -420,8 +459,9 @@ Knowledge File**.
 
 In this order. Steps 1–3 are one-time.
 
-1. **Copy `src/*.gs` into the Apps Script editor.** Nothing takes effect until this
-   happens — see §7.
+1. **Copy the six files in `src/` into the Apps Script editor** — five `.gs` and
+   `ControlCenter.html`, which must keep that exact name. Nothing takes effect until
+   this happens. The list is §6.1a; the trap is §7.
 2. **Script Properties:** add `ANTHROPIC_API_KEY` (or the Creative Director fails on
    every row) and `KNOWLEDGE_FOLDER_ID` (the Drive folder holding
    `business/knowledge`; subfolders are searched). Optionally
@@ -531,7 +571,8 @@ In this order. Steps 1–3 are one-time.
 | **The repo is inside Google Drive** | Drive locks files under `.git/` and git commands fail with `Permission denied` on objects | Retry; verify state after. Moving the repo to a local path is the real fix. |
 | **`git push origin main` from another branch** | Pushes the local `main` ref, not your work. Exits successfully. This already happened once and lost seven commits' worth of apparent progress. | Use `git push origin HEAD`, then confirm with `git status -sb` showing neither ahead nor behind. |
 | **Apps Script stops at ~360s** | A three-worker content team over five rows does not fit in one invocation | Expected, not a failure. The system reserves 45s and checkpoints at 315s. |
-| **Code is copied by hand** | Editing `src/*.gs` changes nothing until it is pasted into the Apps Script editor | After any code change, tell the operator which files to copy. |
+| **Code is copied by hand** | Editing `src/*.gs` changes nothing until it is pasted into the Apps Script editor | After any code change, tell the operator which of the five files to copy. §6.1a maps each of the 31 original sources to the file it now lives in. |
+| **A menu item can point at nothing** | `onOpen` binds by string — `.addItem('Transfer Rows Forward', 'transferRowsForward')`. Apps Script resolves that name **when the operator clicks it**, not at load. A renamed function, or a file left out of a paste, gives a menu that draws perfectly with an item that does nothing | `node campaign-os/tests/run.js menu` — 43 checks, one per binding. Run it after touching anything the menu reaches. |
 | **Prompts are cached six hours** | Editing a prompt in Drive changes nothing until the cache clears | Run `Refresh Cache` from the sheet's AI Workers menu. |
 | **`gh` CLI is not installed** | Cannot open pull requests from the terminal | Give the operator a prefilled GitHub compare URL. |
 | **Sheet dropdowns fight the code** | Workers write valid values that the sheet rejects — 19 failures so far | **Fixed in code, needs one run:** Maintenance → Sync Dropdowns from CONFIG. |

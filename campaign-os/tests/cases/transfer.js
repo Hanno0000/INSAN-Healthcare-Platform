@@ -20,11 +20,8 @@
 module.exports = {
   name: 'transfer',
 
-  run(t) {
-    const fs = require('fs');
-    const path = require('path');
-    const source = fs.readFileSync(
-      path.join(__dirname, '..', '..', 'src', 'Transfer.gs'), 'utf8');
+  run(t, fx) {
+    const source = fx.srcSection('Transfer');
 
     // --- the two hops ---
     t.is(typeof Transfer.calendarToPipeline, 'function',
