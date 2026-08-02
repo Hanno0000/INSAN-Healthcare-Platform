@@ -20,7 +20,7 @@
 >
 > Everything is in git, on `main`. What has *not* happened is a production run:
 > **the code has never been pasted into the Apps Script editor, and not one worker
-> built since 2026-07-29 has made a single live API call.** **792 automated checks**
+> built since 2026-07-29 has made a single live API call.** **809 automated checks**
 > pass against the real files — `node campaign-os/tests/run.js` — and none of them
 > proves the system runs.
 >
@@ -279,7 +279,7 @@ been pasted into the Apps Script editor.**
 ⚠️ **Corrected 2026-07-31.** This section previously claimed "roughly 140 automated
 checks pass". They had been run as throwaway scripts in earlier sessions and never
 committed, so nobody could re-run them and the claim could not be checked. There is
-now a committed harness — **792 checks**, `node campaign-os/tests/run.js`, no
+now a committed harness — **809 checks**, `node campaign-os/tests/run.js`, no
 dependencies and no network. It covers the logic layer only: every Apps Script
 service is stubbed to throw, so nothing here writes a cell, reads Drive or calls a
 model. See `campaign-os/tests/README.md`.
@@ -542,8 +542,18 @@ In this order. Steps 1–3 are one-time.
    `FB_PAGE_TOKEN_<PAGE>` for each of INSAN, FUTURE and DELTA. Nothing else in
    the system needs them, and W9 refuses by name when one is missing rather than
    falling back to another page.
-3. **Upload the new prompt folders** `prompts/planning/` and `prompts/ads/`, and the
-   new knowledge folders, to Drive.
+3. **Nothing to upload — the repository folder is synced to Drive.** Confirmed
+   2026-08-02: `prompts/`, `business/knowledge/` and `business/brand/` are Drive
+   folders already, and their ids are in `CONFIG.gs`.
+
+   ⚠️ **One thing this makes fragile.** `DriveLoader` looks a document up **by
+   filename in one folder** and does not recurse, so every document a worker
+   loads has to sit *directly* in `business/brand`. Four of them belong
+   elsewhere in the repo — `PROJECT_STRUCTURE.md`, `PROJECT_DECISIONS.md`,
+   `INSAN_VISUAL_LANGUAGE_SPEC.md`, `SYSTEM_CONSTANTS.md` — and were copied in.
+   **`tests/cases/drive-documents.js` fails if a copy drifts from its original,
+   if a worker document goes missing from the folder, or if a fifth copy
+   appears unlisted.** The real fix is one folder or a recursive loader.
 4. **AI Workers → Maintenance → Create Managed Columns**, then **Sync Dropdowns from
    CONFIG**, then **Preflight Check** — which must report no schema problems.
 

@@ -19,7 +19,7 @@ had been run as throwaway scripts in earlier working sessions and never committe
 nobody could re-run them, and the claim could not be checked by anyone reading the
 repository. A test result that only one person ever saw is not evidence.
 
-**792 checks now, and they are here.**
+**809 checks now, and they are here.**
 
 ---
 
@@ -44,6 +44,7 @@ So these checks cover the decisions the system makes *before* it touches anythin
 | `branding` | 51 | Which marks each brand gets, an unknown brand getting none, and the 16% Meta text budget |
 | `config-integrity` | 46 | Publishing ships in dry run · Budget is outside the ads worker's schema · managed columns are declared · no two vocabulary values differ only by case |
 | `control-center` | 112 | Every server function the sidebar calls exists · the health light reports on the providers the workers actually need · each card drives its own row inputs · publishing states dry-run or live on the button |
+| `drive-documents` | 16 | Every document a worker loads sits directly in `business/brand` — DriveLoader looks up by filename in one folder and does not recurse. The four documents that exist in two places are checked for drift |
 | `entity-registry` | 24 | The registry's 24 entities parse; a malformed row is reported, never silently dropped |
 | `events-calendar` | 26 | What is coming — and that a Hijri date with no entry is **reported missing, never estimated** |
 | `identifiers` | 38 | The fourteen Google ids: shaped like ids, no two pointing at the same folder, every one overridable from Script Properties, and the six confirmed on 2026-08-02 pinned |
@@ -112,6 +113,8 @@ deliberately, run, and caught:
 | Stop writing Hospital Brand when a row is planned | `brand-routing`, 2 checks |
 | Point two visual-asset folders at the same Drive id | `identifiers`, 2 checks |
 | Add an identifier without wiring it into ConfigResolver | `identifiers`, 2 checks |
+| Edit one copy of a duplicated worker document and not the other | `drive-documents` |
+| Remove a worker document from the folder DriveLoader reads | `drive-documents`, 2 checks |
 
 `menu-bindings` also carries its mutation test inside the suite: the audit is run
 against a source with one deliberately broken binding and must report exactly that
