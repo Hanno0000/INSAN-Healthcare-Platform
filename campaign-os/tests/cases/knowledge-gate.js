@@ -78,10 +78,23 @@ module.exports = {
       else ready.push(name);
     }
 
+    // Files known to be deliberately incomplete — waiting on facts only the
+    // operator has, marked rather than invented. Adding a new one here is
+    // adding a name to this list, not a defect in the file: the whole point of
+    // the gate is that it can be blocked on purpose.
+    const KNOWN_BLOCKED = [
+      'HOSPITAL_DELTA.md',
+      'MEDICAL_SERVICE_EMERGENCY.md',
+      // Captured by voice 2026-08-04. Two genuine gaps: the operator declined
+      // Can Promise outright, and comprehensive check-up program pricing was
+      // still being sent when the recording ended.
+      'MEDICAL_SERVICE_INTERNAL_MEDICINE_CARDIOLOGY.md'
+    ];
+
     t.is(broken, [], 'no knowledge file has a structural problem');
     t.is(ready.length, 24, '24 knowledge files build a card');
-    t.is(blocked.sort(), ['HOSPITAL_DELTA.md', 'MEDICAL_SERVICE_EMERGENCY.md'],
-      'exactly two are waiting on operator facts');
+    t.is(blocked.sort(), [...KNOWN_BLOCKED].sort(),
+      `exactly ${KNOWN_BLOCKED.length} are waiting on operator facts`);
 
     // --- the trap the spec §4.2 records ---
     // The gap detector scans for the marker string anywhere in the file, so a
@@ -92,7 +105,7 @@ module.exports = {
     for (const rel of listKnowledgeFiles()) {
       const content = fx.repoFile(rel);
       const name = rel.split('/').pop();
-      if (name === 'MEDICAL_SERVICE_EMERGENCY.md' || name === 'HOSPITAL_DELTA.md') continue;
+      if (KNOWN_BLOCKED.indexOf(name) !== -1) continue;
       if (content.indexOf(marker) !== -1) mentions.push(name);
     }
 
