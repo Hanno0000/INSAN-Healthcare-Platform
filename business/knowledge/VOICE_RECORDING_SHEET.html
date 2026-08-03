@@ -1,0 +1,593 @@
+<!--
+  Voice recording sheet — the operator-facing companion to Template.md.
+
+  Template.md is the file's structure, written for whoever fills it in by typing.
+  This is the same content turned into something you can read while TALKING: 32
+  questions in Egyptian Arabic, grouped into seven short recordings, each one
+  labelled with the section it fills.
+
+  It exists because the template is 280 lines of headings and the operator has to
+  hold all of it in their head to answer any part of it. Reading a question and
+  answering it out loud is a different task from filling a form, and needs a
+  different artefact.
+
+  Two things are load-bearing here and should not drift:
+
+  - The questions marked REQUIRED are exactly CONFIG.CARD_BUILDER.REQUIRED_SECTIONS
+    in campaign-os/src/Core.gs — the 17 sections the Campaign Card Builder refuses
+    to build without. If that list changes, change this too.
+  - CLIP 4 covers what the RECEPTIONIST needs and Template.md does not ask for:
+    conditions treated, clinics and schedule, patient preparation, urgency triage,
+    booking, FAQ. See receptionist/docs/NEEDS_OPERATOR.md. A knowledge file now
+    feeds three consumers, not one.
+
+  Shape, so you know what it is without opening it: one card of typed facts, then
+  seven recordings — what the service is, the patient, the medical facts, daily
+  operations, the messaging, the red lines, offers and the goal. 32 questions, 17
+  of them required.
+
+  Open it in a browser. It prints, and it reads on a phone.
+-->
+<title>ورقة تسجيل ملف المعرفة — INSAN</title>
+
+<style>
+  :root {
+    color-scheme: light dark;
+
+    --ground:      #FAFBFB;
+    --panel:       #FFFFFF;
+    --ink:         #14212A;
+    --ink-soft:    #43585F;
+    --muted:       #6B818A;
+    --rule:        #DBE4E6;
+    --rule-soft:   #EAF0F1;
+    --accent:      #0E6F6C;
+    --accent-soft: #E4F1F0;
+    --required:    #9C4A16;
+    --required-bg: #FBEDE3;
+    --shadow:      0 1px 2px rgba(20, 33, 42, .05), 0 8px 24px -16px rgba(20, 33, 42, .18);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground:      #0C1315;
+      --panel:       #121C1F;
+      --ink:         #E7EFF0;
+      --ink-soft:    #A9BDC2;
+      --muted:       #7C959C;
+      --rule:        #24343800;
+      --rule:        #233337;
+      --rule-soft:   #1A2629;
+      --accent:      #4FBDB4;
+      --accent-soft: #14312F;
+      --required:    #E0925C;
+      --required-bg: #2E1E12;
+      --shadow:      0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #0C1315; --panel: #121C1F; --ink: #E7EFF0; --ink-soft: #A9BDC2;
+    --muted: #7C959C; --rule: #233337; --rule-soft: #1A2629;
+    --accent: #4FBDB4; --accent-soft: #14312F;
+    --required: #E0925C; --required-bg: #2E1E12;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+  }
+
+  :root[data-theme="light"] {
+    --ground: #FAFBFB; --panel: #FFFFFF; --ink: #14212A; --ink-soft: #43585F;
+    --muted: #6B818A; --rule: #DBE4E6; --rule-soft: #EAF0F1;
+    --accent: #0E6F6C; --accent-soft: #E4F1F0;
+    --required: #9C4A16; --required-bg: #FBEDE3;
+    --shadow: 0 1px 2px rgba(20,33,42,.05), 0 8px 24px -16px rgba(20,33,42,.18);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "Segoe UI", "Noto Sans Arabic", "Dubai", Tahoma, system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    direction: rtl;
+    text-align: right;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 940px; margin: 0 auto; padding: 40px 22px 96px; }
+
+  /* ---------- masthead ---------- */
+
+  .masthead { padding-bottom: 26px; border-bottom: 2px solid var(--ink); margin-bottom: 34px; }
+
+  .eyebrow {
+    font-size: 12px; font-weight: 700; letter-spacing: .14em;
+    color: var(--accent); text-transform: uppercase;
+    font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    direction: ltr; text-align: right;
+  }
+
+  h1 {
+    font-size: clamp(30px, 5vw, 42px); line-height: 1.2; font-weight: 700;
+    margin: 12px 0 10px; text-wrap: balance; letter-spacing: -.01em;
+  }
+
+  .standfirst { font-size: 18px; color: var(--ink-soft); max-width: 60ch; margin: 0; }
+
+  /* ---------- how-to strip ---------- */
+
+  .howto {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 1px; background: var(--rule); border: 1px solid var(--rule);
+    border-radius: 10px; overflow: hidden; margin-bottom: 40px;
+  }
+  .howto div { background: var(--panel); padding: 16px 18px; }
+  .howto b {
+    display: block; font-size: 12px; letter-spacing: .1em; color: var(--accent);
+    font-family: ui-monospace, Consolas, monospace; margin-bottom: 6px; direction: ltr; text-align: right;
+  }
+  .howto p { margin: 0; font-size: 14.5px; color: var(--ink-soft); line-height: 1.55; }
+
+  /* ---------- blocks ---------- */
+
+  .block { margin-bottom: 46px; }
+
+  .block-head {
+    display: flex; align-items: baseline; gap: 14px;
+    padding-bottom: 12px; border-bottom: 1px solid var(--rule); margin-bottom: 4px;
+  }
+
+  .tape {
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: 12px; font-weight: 700; letter-spacing: .08em;
+    color: var(--panel); background: var(--accent);
+    padding: 5px 9px; border-radius: 5px; white-space: nowrap;
+    direction: ltr;
+  }
+
+  .block-head h2 { font-size: 23px; font-weight: 700; margin: 0; letter-spacing: -.01em; }
+
+  .block-note { font-size: 14.5px; color: var(--muted); margin: 0 0 18px; }
+
+  /* ---------- prompts ---------- */
+
+  ol.prompts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+
+  li.prompt {
+    background: var(--panel);
+    border: 1px solid var(--rule-soft);
+    border-radius: 9px;
+    padding: 16px 18px;
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 4px 14px;
+    align-items: start;
+  }
+
+  li.prompt.req { border-inline-start: 3px solid var(--required); }
+
+  .n {
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: 14px; font-weight: 700; color: var(--muted);
+    padding-top: 3px; font-variant-numeric: tabular-nums; direction: ltr; text-align: center;
+  }
+
+  .q { font-size: 17.5px; font-weight: 600; line-height: 1.5; margin: 0; }
+
+  .hint { grid-column: 2; font-size: 15px; color: var(--ink-soft); margin: 4px 0 0; max-width: 62ch; }
+  .hint em { color: var(--accent); font-style: normal; font-weight: 600; }
+
+  .feeds {
+    grid-column: 2; margin-top: 9px;
+    display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  }
+
+  .sec {
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: 11.5px; color: var(--ink-soft);
+    background: var(--accent-soft); border-radius: 4px; padding: 3px 7px;
+    direction: ltr;
+  }
+
+  .must {
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: 11px; font-weight: 700; letter-spacing: .06em;
+    color: var(--required); background: var(--required-bg);
+    border-radius: 4px; padding: 3px 7px; direction: ltr;
+  }
+
+  /* ---------- facts card ---------- */
+
+  .facts {
+    background: var(--panel); border: 1px solid var(--rule);
+    border-radius: 11px; padding: 22px 24px; box-shadow: var(--shadow);
+  }
+  .facts ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 13px; }
+  .facts li { display: grid; grid-template-columns: minmax(130px, auto) 1fr; gap: 14px; align-items: baseline; }
+  .facts .k { font-weight: 600; }
+  .facts .v { font-size: 14.5px; color: var(--muted); }
+  .facts code {
+    font-family: ui-monospace, Consolas, monospace; font-size: 13px;
+    background: var(--accent-soft); padding: 2px 6px; border-radius: 4px; direction: ltr; display: inline-block;
+  }
+
+  /* ---------- closing ---------- */
+
+  .close {
+    margin-top: 52px; padding: 24px 26px;
+    border: 1px solid var(--rule); border-radius: 11px; background: var(--panel);
+  }
+  .close h3 { margin: 0 0 12px; font-size: 19px; }
+  .close ul { margin: 0; padding-inline-start: 20px; color: var(--ink-soft); display: grid; gap: 8px; }
+  .close strong { color: var(--ink); }
+
+  @media (max-width: 560px) {
+    body { font-size: 16px; }
+    li.prompt { grid-template-columns: 24px 1fr; padding: 14px; }
+    .facts li { grid-template-columns: 1fr; gap: 2px; }
+  }
+
+  @media print {
+    body { background: #fff; font-size: 12pt; }
+    .block { break-inside: avoid; }
+    li.prompt { break-inside: avoid; border-color: #ccc; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow">INSAN · KNOWLEDGE BASE</div>
+    <h1>ورقة التسجيل الصوتي لملف المعرفة</h1>
+    <p class="standfirst">
+      سبع تسجيلات قصيرة تملا ملف معرفة كامل. اقرا السؤال، اتكلم عادي، عدّي للي بعده.
+      مش لازم تتكلم بلغة مكتوبة — الكلام الطبيعي أحسن.
+    </p>
+  </header>
+
+  <section class="howto">
+    <div>
+      <b>ONE FILE</b>
+      <p>الورقة دي لخدمة واحدة. لو بتعمل ملفين، سجّل الاتنين منفصلين.</p>
+    </div>
+    <div>
+      <b>SEVEN CLIPS</b>
+      <p>سجّل كل كتلة لوحدها وابعتها. أسهل عليك، وأنضف في الـ transcription.</p>
+    </div>
+    <div>
+      <b>ORANGE = REQUIRED</b>
+      <p>السؤال اللي عليه خط برتقالي، من غيره بنّاء الكروت بيرفض الملف.</p>
+    </div>
+    <div>
+      <b>SAY "SKIP"</b>
+      <p>مش عارف إجابة؟ قول «مش عارف» بصوت عالي. هتتكتب <code>NEEDS-OPERATOR</code> وتفضل باينة.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="block-head">
+      <span class="tape">FACTS</span>
+      <h2>البطاقة — اكتبها، متسجّلهاش</h2>
+    </div>
+    <p class="block-note">ثمن حقائق قصيرة. ابعتهالي مكتوبة مع أول تسجيل.</p>
+
+    <div class="facts">
+      <ul>
+        <li><span class="k">الاسم بالعربي</span><span class="v">زي ما بتتقال للمريض</span></li>
+        <li><span class="k">الاسم بالإنجليزي</span><span class="v">زي ما هيتكتب على الموقع</span></li>
+        <li><span class="k">المستوى</span><span class="v"><code>DEPARTMENT</code> · <code>CENTER</code> · <code>CLINIC</code> · <code>PROGRAM</code> · <code>HOSPITAL</code></span></li>
+        <li><span class="k">في أنهي مستشفى</span><span class="v">Future · Delta · الاتنين</span></li>
+        <li><span class="k">تابعة لمين</span><span class="v">المركز أو المستشفى الأم، أو «مستقلة»</span></li>
+        <li><span class="k">اسم الحملة</span><span class="v">الاسم اللي هيتجدول بيه. <strong>لازم يطابق الكاليندر حرف بحرف</strong></span></li>
+        <li><span class="k">شغّالة؟</span><span class="v">Active · Paused</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="block-head">
+      <span class="tape">CLIP 1</span>
+      <h2>إيه هي الخدمة دي</h2>
+    </div>
+    <p class="block-note">اتكلم كأنك بتشرح لحد ماسمعش عنها في حياته.</p>
+
+    <ol class="prompts">
+      <li class="prompt req">
+        <span class="n">1</span>
+        <p class="q">إيه هي الخدمة دي بالظبط؟</p>
+        <p class="hint">اشرحها لواحد عادي مش دكتور. إيه اللي بيحصل فيها.</p>
+        <div class="feeds"><span class="must">REQUIRED</span><span class="sec">Definition</span></div>
+      </li>
+
+      <li class="prompt req">
+        <span class="n">2</span>
+        <p class="q">إيه اللي جواها وإيه اللي بره؟</p>
+        <p class="hint">لو حد سألك «الحالة دي بتتعالج عندكم؟» — إزاي تعرف تقول آه ولا لأ.</p>
+        <div class="feeds"><span class="must">REQUIRED</span><span class="sec">Definition</span><span class="sec">Service Boundaries</span></div>
+      </li>
+
+      <li class="prompt req">
+        <span class="n">3</span>
+        <p class="q">ليه الخدمة دي موجودة أصلًا؟</p>
+        <p class="hint"><em>مش</em> «عشان نقدم رعاية ممتازة». إيه الفجوة الحقيقية اللي كانت موجودة قبلها.</p>
+        <div class="feeds"><span class="must">REQUIRED</span><span class="sec">Why This Service Exists</span></div>
+      </li>
+
+      <li class="prompt">
+        <span class="n">4</span>
+        <p class="q">إيه اللي بتعمله كل يوم، وإيه اللي رايحة عليه؟</p>
+        <p class="hint">الشغل اليومي، وفين نفسك توصل بيها بعد سنتين.</p>
+        <div class="feeds"><span class="sec">Mission</span><span class="sec">Vision</span></div>
+      </li>
+
+      <li class="prompt">
+        <span class="n">5</span>
+        <p class="q">إيه اللي الخدمة دي <strong>مابتعملهوش</strong>؟</p>
+        <p class="hint">مهم جدًا. من غيره الـ workers بتلمّح لقدرات مش موجودة، والاستقبال بيوعد بحاجة مش عندنا.</p>
+        <div class="feeds"><span class="sec">Service Boundaries</span></div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="block">
+    <div class="block-head">
+      <span class="tape">CLIP 2</span>
+      <h2>المريض</h2>
+    </div>
+    <p class="block-note">أهم كتلة، وأكتر واحدة الناس بتعدّي عليها بسرعة. خد وقتك فيها.</p>
+
+    <ol class="prompts">
+      <li class="prompt req">
+        <span class="n">6</span>
+        <p class="q">المريض وأهله عايشين إيه بالظبط؟</p>
+        <p class="hint">بكلامهم هم، مش بكلام طبي. إيه اللي بيقولوه في الانتظار.</p>
+        <div class="feeds"><span class="must">REQUIRED</span><span class="sec">Human Problem</span></div>
+      </li>
+
+      <li class="prompt req">
+        <span class="n">7</span>
+        <p class="q">إيه الحاجة الحقيقية اللي محدش بيقولها؟</p>
+        <p class="hint"><em>الاختبار:</em> المريض يقراها ويقول «هما عرفوا منين؟». لو بس مسوّق هيهزّ راسه، دي مش الحاجة.</p>
+        <div class="feeds"><span class="must">REQUIRED</span><span class="sec">Human Insight</span></div>
+      </li>
+
+      <li class="prompt req">
+        <span class="n">8</span>
+        <p class="q">المريض بيشتري إيه فعلًا؟</p>
+        <p class="hint">عمره ما بيشتري الإجراء الطبي. بيشتري يقين، أو وقت، أو إنه مايحاربش، أو إن حد يصدّقه.</p>
+        <div class="feeds"><span class="must">REQUIRED</span><span class="sec">Invisible Product</span></div>
+      </li>
+
+      <li class="prompt req">
+        <span class="n">9</span>
+        <p class="q">إيه اللي بيتغير جواه، من قبل لبعد؟</p>
+        <p class="hint">مثال: «أنا تحت رحمة اللي في الوردية» ← «فيه نظام، والموضوع مش حظ».</p>
+        <div class="feeds"><span class="must">REQUIRED</span><span class="sec">Psychological Transformation</span></div>
+      </li>
+
+      <li class="prompt req">
+        <span class="n">10</span>
+        <p class="q">مين المريض؟ ومين اللي بيقرر؟</p>
+        <p class="hint">مش دايمًا نفس الشخص. مين بيقرر، مين بيأثر، مين بيدفع، ومين بيدوّر على المعلومة.</p>
+        <div class="feeds"><span class="must">REQUIRED</span><span class="sec">Audience</span><span class="sec">Audience Decision</span></div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="block">
+    <div class="block-head">
+      <span class="tape">CLIP 3</span>
+      <h2>الحقائق الطبية</h2>
+    </div>
+    <p class="block-note">دي اللي بتمنع الكلام يطلع فاضي. كل ما تكون محدد أكتر، كل ما المحتوى يطلع أقوى. اتوسّع.</p>
+
+    <ol class="prompts">
+      <li class="prompt req">
+        <span class="n">11</span>
+        <p class="q">إيه الإمكانيات اللي عندكم بالتحديد؟</p>
+        <p class="hint">أجهزة بأسمائها، بروتوكولات، عدد الأطباء والتمريض، أوقات الاستجابة، ساعات التشغيل. <em>أرقام لو عندك أرقام.</em></p>
+        <div class="feeds"><span class="must">REQUIRED</span><span class="sec">Core Features</span></div>
+      </li>
+
+      <li class="prompt req">
+        <span class="n">12</span>
+        <p class="q">إيه اللي مختلف هنا عن نفس الخدمة في مكان تاني؟</p>
+        <p class="hint">حاجة المنافس مايقدرش يقولها. ولو إنسان بتضيف معيار معين، قوله.</p>
+        <div class="feeds"><span class="must">REQUIRED</span><span class="sec">Differentiators</span></div>
+      </li>
+
+      <li class="prompt">
+        <span class="n">13</span>
+        <p class="q">الحالات والأعراض اللي بتتعالج هنا؟</p>
+        <p class="hint">عدّدها. <em>ده اللي الاستقبال بيرد بيه على «الحالة دي عندكم؟»</em> — ومن غيره بيرفض يجاوب.</p>
+        <div class="feeds"><span class="sec">Conditions Treated</span></div>
+      </li>
+
+      <li class="prompt">
+        <span class="n">14</span>
+        <p class="q">رحلة المريض من أول اتصال لآخر متابعة؟</p>
+        <p class="hint">خطوة خطوة، زي ما هو عايشها هو — مش زي ما هي في النظام.</p>
+        <div class="feeds"><span class="sec">Service Journey</span></div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="block">
+    <div class="block-head">
+      <span class="tape">CLIP 4</span>
+      <h2>التشغيل اليومي</h2>
+    </div>
+    <p class="block-note">الكتلة دي للاستقبال والموقع. مش مطلوبة لبنّاء الكروت — بس من غيرها الاستقبال بيرفض يرد.</p>
+
+    <ol class="prompts">
+      <li class="prompt">
+        <span class="n">15</span>
+        <p class="q">العيادات والمواعيد؟</p>
+        <p class="hint">أنهي عيادة، أنهي يوم، أنهي ساعات، ومين الدكتور. ولو فيه طوارئ ٢٤ ساعة قوله.</p>
+        <div class="feeds"><span class="sec">Clinics &amp; Schedule</span></div>
+      </li>
+
+      <li class="prompt">
+        <span class="n">16</span>
+        <p class="q">المريض يجهّز إيه قبل ما ييجي؟</p>
+        <p class="hint">صايم؟ تحاليل قديمة؟ أشعة؟ مرافق؟ حاجة يلبسها أو مايلبسهاش؟</p>
+        <div class="feeds"><span class="sec">Patient Preparation</span></div>
+      </li>
+
+      <li class="prompt">
+        <span class="n">17</span>
+        <p class="q">إيه المستعجل وإيه اللي يستنى؟</p>
+        <p class="hint">أنهي عرض يخلّي المريض ييجي حالًا، وأنهي واحد ياخد ميعاد عادي. <em>ده أخطر سؤال في الورقة.</em></p>
+        <div class="feeds"><span class="sec">Urgency Triage</span></div>
+      </li>
+
+      <li class="prompt">
+        <span class="n">18</span>
+        <p class="q">الحجز بيتم إزاي؟</p>
+        <p class="hint">تليفون، واتساب، حضور. وإيه اللي بيتقال عن الأسعار — أو إن الأسعار مابتتقالش.</p>
+        <div class="feeds"><span class="sec">How To Book</span></div>
+      </li>
+
+      <li class="prompt">
+        <span class="n">19</span>
+        <p class="q">إيه الأسئلة اللي بتتسأل كل يوم؟</p>
+        <p class="hint">أكتر ٥–١٠ أسئلة بتتكرر على التليفون، وإجاباتها. بتروح للموقع وللاستقبال مع بعض.</p>
+        <div class="feeds"><span class="sec">FAQ</span></div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="block">
+    <div class="block-head">
+      <span class="tape">CLIP 5</span>
+      <h2>الرسايل والكلام</h2>
+    </div>
+    <p class="block-note">الكتلة دي بتتحول لاستراتيجية الحملة مباشرة.</p>
+
+    <ol class="prompts">
+      <li class="prompt req">
+        <span class="n">20</span>
+        <p class="q">لمين الخدمة دي، وضد إيه، وعلى أي أساس؟</p>
+        <p class="hint"><em>الاختبار:</em> ينفع منافس يقول نفس الجملة؟ لو ينفع، يبقى دي مش تموضع.</p>
+        <div class="feeds"><span class="must">REQUIRED</span><span class="sec">Positioning</span></div>
+      </li>
+
+      <li class="prompt req">
+        <span class="n">21</span>
+        <p class="q">إيه الحاجة اللي دايمًا صح، لكل مريض، كل مرة؟</p>
+        <p class="hint">وعد واحد تقدر تدافع عنه. لو مش متأكد إنه صح ١٠٠٪، مايتكتبش.</p>
+        <div class="feeds"><span class="must">REQUIRED</span><span class="sec">Core Promise</span></div>
+      </li>
+
+      <li class="prompt req">
+        <span class="n">22</span>
+        <p class="q">إحنا بنبيع إيه فعلًا؟</p>
+        <p class="hint">عمرها ما الإجراء. النتيجة، أو اليقين، أو النظام اللي وراها.</p>
+        <div class="feeds"><span class="must">REQUIRED</span><span class="sec">What We Are Really Selling</span></div>
+      </li>
+
+      <li class="prompt req">
+        <span class="n">23</span>
+        <p class="q">إيه اللي بيمنع الناس إنها تتحرك؟</p>
+        <p class="hint">خوف، فلوس، عدم ثقة، إنكار، أو إن الموضوع متعب. <em>كن صريح — الإجابة المهذبة مالهاش لازمة هنا.</em></p>
+        <div class="feeds"><span class="must">REQUIRED</span><span class="sec">Psychological Barriers</span></div>
+      </li>
+
+      <li class="prompt req">
+        <span class="n">24</span>
+        <p class="q">إيه القصص اللي الخدمة دي تقدر تحكيها؟</p>
+        <p class="hint">قصص تكفي شهور من غير تكرار، مش موضوع واحد.</p>
+        <div class="feeds"><span class="must">REQUIRED</span><span class="sec">Narrative Themes</span></div>
+      </li>
+
+      <li class="prompt req">
+        <span class="n">25</span>
+        <p class="q">٤ لـ ٦ محاور محتوى؟</p>
+        <p class="hint">المناطق اللي المحتوى بيدور فيها. مثال: «الاستعداد» · «الفريق» · «التقنية» · «العيلة».</p>
+        <div class="feeds"><span class="must">REQUIRED</span><span class="sec">Content Pillars</span></div>
+      </li>
+
+      <li class="prompt">
+        <span class="n">26</span>
+        <p class="q">لحظات محددة ينفع تتصوّر؟</p>
+        <p class="hint"><em>لحظة</em> مش موضوع. «التابلت اللي عليه بيانات المريض قبل ما باب الإسعاف يفتح» دي لحظة. «الجاهزية» ده موضوع.</p>
+        <div class="feeds"><span class="sec">Storytelling Opportunities</span></div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="block">
+    <div class="block-head">
+      <span class="tape">CLIP 6</span>
+      <h2>الخطوط الحمرا</h2>
+    </div>
+    <p class="block-note">الكتلة دي بتمنع النظام يقول حاجة تتحاسب عليها. لازم يراجعها حد مسؤول طبيًا.</p>
+
+    <ol class="prompts">
+      <li class="prompt req">
+        <span class="n">27</span>
+        <p class="q">إيه اللي عمرنا ما نقوله؟</p>
+        <p class="hint">طبيًا، قانونيًا، أخلاقيًا. أي وعد بشفاء أو نتيجة مضمونة يتحط هنا.</p>
+        <div class="feeds"><span class="must">REQUIRED</span><span class="sec">Never Promise</span></div>
+      </li>
+
+      <li class="prompt">
+        <span class="n">28</span>
+        <p class="q">وإيه اللي نقدر نقوله، وبأي دليل؟</p>
+        <p class="hint">لكل جملة آمنة، إيه اللي بيسندها — اعتماد، رقم، بروتوكول.</p>
+        <div class="feeds"><span class="sec">Can Promise</span></div>
+      </li>
+
+      <li class="prompt req">
+        <span class="n">29</span>
+        <p class="q">الخدمة دي بتحمل معيار إنسان إزاي؟</p>
+        <p class="hint">وعلى أنهي منصة ثقة: قيادة · شفافية · حوكمة · ابتكار · أمان · استمرارية · خبرة.</p>
+        <div class="feeds"><span class="must">REQUIRED</span><span class="sec">Relationship With INSAN</span></div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="block">
+    <div class="block-head">
+      <span class="tape">CLIP 7</span>
+      <h2>العروض والهدف</h2>
+    </div>
+    <p class="block-note">أقصر كتلة. دقيقة واحدة.</p>
+
+    <ol class="prompts">
+      <li class="prompt">
+        <span class="n">30</span>
+        <p class="q">فيه عروض دلوقتي؟</p>
+        <p class="hint">لو مفيش، <strong>قول «مفيش عروض» بصوت عالي</strong>. قسم فاضي وقسم ناقص معناهم حاجتين مختلفتين تمامًا للـ worker.</p>
+        <div class="feeds"><span class="sec">Current Offers</span><span class="sec">Offer Rules</span></div>
+      </li>
+
+      <li class="prompt">
+        <span class="n">31</span>
+        <p class="q">إحنا عايزين الناس تعمل إيه؟</p>
+        <p class="hint">بالترتيب: تحجز؟ تتصل؟ تسأل؟ تيجي تتطمن؟</p>
+        <div class="feeds"><span class="sec">Call To Action</span></div>
+      </li>
+
+      <li class="prompt">
+        <span class="n">32</span>
+        <p class="q">مقياس واحد بس للنجاح؟</p>
+        <p class="hint">واحد. لو قلت تلاتة، يبقى مفيش مقياس.</p>
+        <div class="feeds"><span class="sec">Primary KPI</span></div>
+      </li>
+    </ol>
+  </section>
+
+  <div class="close">
+    <h3>لما تخلص</h3>
+    <ul>
+      <li>ابعتلي الـ <strong>transcription</strong> ومعاه البطاقة، وأنا أبني الملف وأشغّل عليه <strong>Check Knowledge File</strong> قبل ما يتصرف عليه أي inference.</li>
+      <li>أي حتة قلت فيها «مش عارف» هتتكتب <code>NEEDS-OPERATOR</code>، وبنّاء الكروت <strong>هيرفض يعدّيها</strong> — عمداً. الفجوة تفضل باينة بدل ما تتلبّس كلام حلو.</li>
+      <li><strong>معيار الانتهاء:</strong> هل worker قرا الملف ده لوحده يقدر يكتب شهر محتوى من غير ما يخترع حقيقة واحدة؟</li>
+      <li>الملف المرجعي هو <code>MEDICAL_SERVICE_ICU.md</code> — لو حبيت تشوف مستوى العمق المطلوب.</li>
+    </ul>
+  </div>
+
+</div>

@@ -26,6 +26,7 @@ INSAN, cannot infer, and will not ask. If a fact is not in the file, it does not
 business/knowledge/
 ├── KNOWLEDGE_BASE_SPEC.md      ← this file
 ├── Template.md                 ← the skeleton every file follows
+├── VOICE_RECORDING_SHEET.html  ← the same content as 32 spoken questions
 │
 ├── departments/                Hospital-wide clinical operations
 │      MEDICAL_SERVICE_ICU.md
@@ -163,6 +164,19 @@ a section genuinely needs the operator. This caught `CORPORATE_GROWTH.md` on
 ## 5. Document sections
 
 Follow `Template.md`. Sections are grouped in six blocks:
+
+> **Filling one by voice.** `VOICE_RECORDING_SHEET.html` is the same content as 32
+> questions in Egyptian Arabic, grouped into seven short recordings. The template is
+> 280 lines of headings and holding all of it in your head to answer any part of it
+> is the reason files do not get written; answering a question out loud is a
+> different task and needs a different artefact. Record a block, send the
+> transcription, and the file gets assembled from it.
+>
+> It also asks for what **the receptionist** needs and this template does not:
+> conditions treated, clinics and schedule, patient preparation, urgency triage,
+> booking and FAQ. A knowledge file feeds three consumers now — campaigns, the
+> receptionist and the website — and only the campaign half was ever specified
+> here.
 
 | Block | Purpose | Feeds |
 |---|---|---|
