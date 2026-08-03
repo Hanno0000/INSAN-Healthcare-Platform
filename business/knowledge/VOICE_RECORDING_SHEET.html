@@ -1,3 +1,4 @@
+<!doctype html>
 <!--
   Voice recording sheet — the operator-facing companion to Template.md.
 
@@ -11,7 +12,17 @@
   answering it out loud is a different task from filling a form, and needs a
   different artefact.
 
-  Two things are load-bearing here and should not drift:
+  Shape: one card of typed facts, then seven recordings — what the service is, the
+  patient, the medical facts, daily operations, the messaging, the red lines,
+  offers and the goal. 32 questions, 17 of them required.
+
+  STANDALONE ON PURPOSE. Doctype, <meta charset="utf-8">, lang and dir are all
+  here, and every style is inline, so this opens from a phone, an email
+  attachment or a USB stick with nothing else present. The charset line is the one
+  that actually matters: without it a browser guesses the encoding and the Arabic
+  arrives as mojibake.
+
+  Two things are load-bearing and should not drift:
 
   - The questions marked REQUIRED are exactly CONFIG.CARD_BUILDER.REQUIRED_SECTIONS
     in campaign-os/src/Core.gs — the 17 sections the Campaign Card Builder refuses
@@ -21,15 +32,24 @@
     booking, FAQ. See receptionist/docs/NEEDS_OPERATOR.md. A knowledge file now
     feeds three consumers, not one.
 
-  Shape, so you know what it is without opening it: one card of typed facts, then
-  seven recordings — what the service is, the patient, the medical facts, daily
-  operations, the messaging, the red lines, offers and the goal. 32 questions, 17
-  of them required.
+  The PDF beside this file is generated from it, and is gitignored because it is
+  regenerable and binary:
 
-  Open it in a browser. It prints, and it reads on a phone.
+    chrome --headless=new --no-pdf-header-footer --print-to-pdf=VOICE_RECORDING_SHEET.pdf VOICE_RECORDING_SHEET.html
+
+  Render it through a browser, never a PDF library: Arabic needs letter shaping
+  and bidi, and a library that does neither produces text that looks like Arabic
+  to a machine and like nonsense to a reader.
 -->
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
 <title>ورقة تسجيل ملف المعرفة — INSAN</title>
-
+<style>
+  html { -webkit-text-size-adjust: 100%; }
+</style>
 <style>
   :root {
     color-scheme: light dark;
@@ -234,9 +254,54 @@
     .block { break-inside: avoid; }
     li.prompt { break-inside: avoid; border-color: #ccc; }
   }
+
+  /* Printing and Save-as-PDF. Colour is information here — the orange rule marks
+     the questions the card builder refuses to build without — so it is kept
+     rather than dropped to greyscale. */
+  @media print {
+    :root {
+      --ground: #fff; --panel: #fff;
+      --ink: #111; --ink-soft: #333; --muted: #555;
+      --rule: #bbb; --rule-soft: #ddd;
+      --accent: #0B5E5B; --accent-soft: #EAF3F2;
+      --required: #8A3E10; --required-bg: #FAEDE4;
+      --shadow: none;
+    }
+    body { background: #fff; font-size: 11.5pt; }
+    .wrap { padding: 0; max-width: none; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .block { break-inside: avoid; page-break-inside: avoid; }
+    li.prompt { break-inside: avoid; page-break-inside: avoid; }
+    .howto { break-inside: avoid; }
+    .no-print { display: none !important; }
+  }
+
+  @page { margin: 14mm 12mm; }
+
+  /* Screen-only helper for whoever wants their own PDF from a phone or laptop. */
+  .toolbar {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--ground);
+    border-bottom: 1px solid var(--rule);
+    padding: 10px 22px;
+    display: flex; justify-content: flex-end; gap: 10px;
+    margin-bottom: -1px;
+  }
+  .toolbar button {
+    font: inherit; font-size: 14px; font-weight: 600;
+    color: var(--panel); background: var(--accent);
+    border: 0; border-radius: 7px; padding: 8px 16px; cursor: pointer;
+  }
+  .toolbar button:hover { filter: brightness(1.08); }
+  .toolbar button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
 </style>
 
-<div class="wrap">
+<div class="toolbar no-print">
+    <button type="button" onclick="window.print()">اطبع أو احفظ PDF</button>
+  </div>
+
+  <div class="wrap">
 
   <header class="masthead">
     <div class="eyebrow">INSAN · KNOWLEDGE BASE</div>
@@ -591,3 +656,5 @@
   </div>
 
 </div>
+</body>
+</html>
