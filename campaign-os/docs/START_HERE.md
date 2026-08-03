@@ -4,7 +4,7 @@
 > this repository, read this file completely before opening anything else or writing any
 > code.
 >
-> **Updated:** 2026-08-02
+> **Updated:** 2026-08-03
 > **Status:** **Current** — the entry point. §6 is the authority on where the work
 > stands. Every other document declares its own status; the index is
 > `campaign-os/docs/DOCUMENT_STATUS.md`.
@@ -20,7 +20,7 @@
 >
 > Everything is in git, on `main`. What has *not* happened is a production run:
 > **the code has never been pasted into the Apps Script editor, and not one worker
-> built since 2026-07-29 has made a single live API call.** **809 automated checks**
+> built since 2026-07-29 has made a single live API call.** **829 automated checks**
 > pass against the real files — `node campaign-os/tests/run.js` — and none of them
 > proves the system runs.
 >
@@ -279,7 +279,7 @@ been pasted into the Apps Script editor.**
 ⚠️ **Corrected 2026-07-31.** This section previously claimed "roughly 140 automated
 checks pass". They had been run as throwaway scripts in earlier sessions and never
 committed, so nobody could re-run them and the claim could not be checked. There is
-now a committed harness — **809 checks**, `node campaign-os/tests/run.js`, no
+now a committed harness — **829 checks**, `node campaign-os/tests/run.js`, no
 dependencies and no network. It covers the logic layer only: every Apps Script
 service is stubbed to throw, so nothing here writes a cell, reads Drive or calls a
 model. See `campaign-os/tests/README.md`.
@@ -597,6 +597,31 @@ In this order. Steps 1–3 are one-time.
 5. **Measure caching.** Read the `Cached:` figure in the Execution Log. If Gemini's
    implicit caching is working, the caching project is finished; if it is zero across
    rows, explicit caching is worth building (`PROMPT_CACHING_PLAN.md` step 4).
+
+   **What is built, as of 2026-08-03 — do not rebuild it.** Audit A found ~9.7M of
+   10.8M input tokens per plan byte-identical across rows and none of it cached,
+   because a timestamp on the third line of every prompt held the cacheable prefix
+   to two lines. Every mechanism — Gemini implicit, Gemini explicit, Anthropic
+   `cache_control` — matches a prefix **from byte zero**, so one changing line near
+   the top costs the whole prefix.
+
+   | | |
+   |---|---|
+   | The timestamp | removed |
+   | Prompt shape | one static prefix, then the row's own material — `ContextBuilder.staticPrefixFor` is the single definition of the boundary |
+   | Anthropic | opt-in, so the request is split into two blocks and the first is marked `cache_control: ephemeral`. Concatenation means the model reads identical bytes |
+   | Gemini | implicit caching needs no marker, only that the prefix comes first — which it does |
+   | Measurement | `cachedContentTokenCount` is read per call and logged as `Cached:`, per provider convention. The prefix's fingerprint is logged every call, so a prompt edited in Drive is visible as a changed hash |
+
+   **20 checks** in `tests/cases/prompt-caching.js` hold the property the saving
+   depends on: the prefix is byte-identical across rows, the prompt begins with it,
+   nothing from the row leaks into it, and splitting on the breakpoint reproduces
+   the prompt exactly. Mutation-tested by putting the timestamp back and by
+   reversing the order — both fail loudly.
+
+   **What is NOT proven is the only thing that matters commercially: that a
+   provider actually served a cache.** No run has happened. That figure is what
+   this item is asking you to read.
 6. **Verify W9 on one row, in dry run first.** The code landed 2026-07-30 with
    `CONFIG.PUBLISHING.DRY_RUN = true`: it resolves the page, the token, the copy
    and every asset for real and posts nothing. Run it that way, read what it says
@@ -626,15 +651,51 @@ In this order. Steps 1–3 are one-time.
   writes down the four divergences by name. What it cannot do is decide them:
   whether the website's Ophthalmology and Dermatology centers exist is a
   brand-owner question, and the code deliberately does not guess.
-- **Redundant tabs** (G8, G9). **The decision and the migration order are written** —
-  `roadmap/TAB_CONSOLIDATION.md`. Nothing is executed, because every step is a change
-  to the live sheet. Two things worth knowing before you touch it: `Campaign Overview`
-  duplicates the cards' identity block exactly and is the clearest deletion in the
-  workbook; and the `Content Calendar` carries **26 columns** of campaign strategy
-  copied onto every row, which the Content Pipeline already looks up — that is how
-  the two drift. Also found while measuring it: **W2's contract requires it to
-  respect Master Campaign Library page eligibility, and `PlannerRunner.gs` never
-  reads that tab.**
+- ~~**Redundant tabs** (G8, G9).~~ **Executed 2026-08-02**, on a clean copy named
+  `Campaign_Playbook V3`. `Campaign Overview` is deleted — it held nothing but a
+  formula mirroring Campaign Cards. `Content Calendar` is down from 34 columns to
+  **8**: the 26 columns of campaign strategy were a VLOOKUP into Campaign Cards,
+  read by no code, and duplicating them per row is how the two tabs drifted. The
+  strategy reaches the workers by a different route — Content Pipeline pulls it
+  from Campaign Cards directly.
+
+  **Every transfer formula is gone**, verified against the exported workbook:
+  the two array formulas in Content Pipeline `B2`/`G2`, the 2,244 cell references
+  filling Visual Pipeline `A2:R133`, and a third nobody had recorded — an
+  ARRAYFORMULA in `Content Calendar I2` that was generating those 26 columns.
+  `Ads Pipeline` now exists with its 17 columns. Zero formulas remain anywhere in
+  the workbook.
+
+- **W2 does not read `Master Campaign Library`**, though its contract says it must
+  respect page eligibility. **Deliberately still open, and here is the contract
+  for closing it.**
+
+  Measured 2026-08-02: the tab's 41 rows carry only `Primary` and `Secondary`
+  across all three page columns. **No campaign is marked ineligible anywhere**, so
+  a filter written against this data would exclude nothing — the table expresses
+  *priority*, not eligibility. The data is being rewritten from the knowledge base
+  once that is filled, so the reader waits for it. Four things the new table needs
+  before code can use it:
+
+  1. **Name the page columns exactly as the page vocabulary does** — `INSAN`,
+     `Future`, `Delta`. They currently read `Future Hospital` and `Delta Hospital`,
+     which would force a translation table inside the code: a second vocabulary,
+     drifting from the first. That is the disease that cost 19 rejected writes.
+  2. **There must be a value that means *not eligible*.** Blank is the obvious one.
+     Without it there is nothing to enforce.
+  3. **`Primary` and `Secondary` are a weighting, decided 2026-08-03** — a Primary
+     campaign takes a larger share of that page's posts, not merely a human note.
+     The planner will read them that way.
+  4. **`Campaign Name` is the join key** and must match `campaign_name` in the
+     knowledge file and `Campaign Name` on the card, **character for character**.
+     This is the trap in §7 that leaves a card correct in every field and joined
+     to nothing.
+
+  **Build the reader after W2 has run once without it.** Adding an unproven filter
+  to an unproven worker means the first run tests two unknowns and neither result
+  means anything — the same rule as `VISUAL_PLAN.ENABLED` in §6.4. Without the
+  filter W2 may schedule a campaign on a page it should not, which is visible in
+  the plan and correctable; that is a very different cost from silent.
 - ~~**Eleven hardcoded Google IDs** in `CONFIG.gs` (F17).~~ **Closed 2026-07-31.**
   All eleven, plus the publishing page list, now read from Script Properties and
   fall back to the value in `CONFIG.gs` when a property is absent — so nothing

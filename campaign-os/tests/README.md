@@ -1,7 +1,7 @@
 # Tests
 
 > **Status:** **Current** — the committed behavioural checks for the logic layer.
-> **Added:** 2026-07-31 · **Updated:** 2026-08-02
+> **Added:** 2026-07-31 · **Updated:** 2026-08-03
 
 ```bash
 node campaign-os/tests/run.js
@@ -19,7 +19,7 @@ had been run as throwaway scripts in earlier working sessions and never committe
 nobody could re-run them, and the claim could not be checked by anyone reading the
 repository. A test result that only one person ever saw is not evidence.
 
-**809 checks now, and they are here.**
+**829 checks now, and they are here.**
 
 ---
 
@@ -53,6 +53,7 @@ So these checks cover the decisions the system makes *before* it touches anythin
 | `namespace` | 24 | The names the sources put into the shared scope, pinned in `GLOBALS.txt`. No global owned by two files |
 | `opening-formulas` | 29 | The five rhetorical constructions Audit B measured, and the Arabic word-boundary regression |
 | `post-footer` | 88 | Standing hashtags merged in code · the wa.me links derived from the phone number, after two of three arrived with an extra zero |
+| `prompt-caching` | 20 | The property the ~90% saving rests on: the static prefix is byte-identical across rows, the prompt begins with it, nothing from the row leaks in, and the Anthropic split reassembles exactly |
 | `response-parser` | 27 | JSON out of whatever the model wrapped it in; `Rejected` never corrected into `Approved` |
 | `transfer` | 31 | Rows joined by a key the row carries, not by position · a transfer already downstream is skipped |
 | `visual-plan` | 24 | Carousel scene counting, including the >4-card case that used to dead-end |
@@ -115,6 +116,8 @@ deliberately, run, and caught:
 | Add an identifier without wiring it into ConfigResolver | `identifiers`, 2 checks |
 | Edit one copy of a duplicated worker document and not the other | `drive-documents` |
 | Remove a worker document from the folder DriveLoader reads | `drive-documents`, 2 checks |
+| Put a timestamp back in the prompt header — the original F5 bug | `prompt-caching`, 3 checks |
+| Assemble the prompt with the row data before the static prefix | `prompt-caching`, 4 checks |
 
 `menu-bindings` also carries its mutation test inside the suite: the audit is run
 against a source with one deliberately broken binding and must report exactly that
