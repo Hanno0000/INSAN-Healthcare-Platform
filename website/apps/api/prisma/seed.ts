@@ -1,5 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
+import * as fs from 'fs';
+import * as path from 'path';
 import seedData from './seed-data.json';
 
 const prisma = new PrismaClient();
@@ -348,61 +350,163 @@ async function seedHospitals() {
 
 // ========================= MEDICAL CENTERS =========================
 
-async function seedMedicalCenters(hospitals: Record<string, any>) {
-  console.log('  → Seeding medical centers...');
-  const centerDefs = seedData.medicalCenters;
-  
-  const centers: Record<string, any> = {};
+/**
+ * Parses the CENTER rows out of business/brand/ENTITY_REGISTRY.md.
+ *
+ * The registry states the rule and now the code obeys it: "an entity that is
+ * not in this file does not exist", and "the same table governs
+ * prisma/seed.ts". Reading the table directly means the seed cannot drift from
+ * the registry — the divergence stops being something to detect and becomes
+ * something that cannot happen.
+ *
+ * The table is machine-parsed by design. Keep the column order and one entity
+ * per row; a malformed row is skipped with a warning rather than silently
+ * ignored.
+ */
+function readRegistryCenters() {
+  const registryPath = path.resolve(__dirname, '../../../../business/brand/ENTITY_REGISTRY.md');
+  if (!fs.existsSync(registryPath)) {
+    throw new Error(`ENTITY_REGISTRY.md not found at ${registryPath} — refusing to seed centres from nothing.`);
+  }
 
-  for (const c of centerDefs) {
-    const { hospitalSlugs, clinics, bookingQuestions, ...centerData } = c;
+  /** Registry names hospitals as "Future" / "Delta"; the database uses slugs. */
+  const HOSPITAL_SLUG: Record<string, string> = {
+    Future: 'future-hospital',
+    Delta: 'delta-hospital',
+  };
+
+  const rows: Array<{
+    id: string;
+    nameEn: string;
+    nameAr: string;
+    hospitalSlugs: string[];
+  }> = [];
+
+  for (const line of fs.readFileSync(registryPath, 'utf8').split('\n')) {
+    if (!/^\|\s*CEN-\d+/.test(line)) continue;
+    const cells = line.split('|').map((c) => c.trim());
+    // Leading and trailing empties from the outer pipes.
+    const [, id, nameEn, nameAr, level, , hospitals] = cells;
+    if (level !== 'CENTER') continue;
+
+    const slugs = hospitals
+      .split(',')
+      .map((h) => HOSPITAL_SLUG[h.trim()])
+      .filter(Boolean);
+
+    if (!id || !nameAr || slugs.length === 0) {
+      console.warn(`    ! malformed registry row skipped: ${line.slice(0, 60)}`);
+      continue;
+    }
+    rows.push({ id, nameEn, nameAr, hospitalSlugs: slugs });
+  }
+
+  return rows;
+}
+
+/** "Urology & Laser Surgery Center" → "urology-laser-surgery-center" */
+function slugFromEnglishName(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/&/g, ' ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+async function seedMedicalCenters(hospitals: Record<string, any>) {
+  console.log('  → Seeding medical centers from ENTITY_REGISTRY.md...');
+
+  const registry = readRegistryCenters();
+
+  // seed-data.json supplies CONTENT (clinics, booking questions, imagery); the
+  // registry supplies IDENTITY (which centres exist, and at which hospitals).
+  // Content is matched on registryId so a renamed centre keeps its content.
+  const contentByRegistryId: Record<string, any> = {};
+  for (const c of seedData.medicalCenters as any[]) {
+    if (c.registryId) contentByRegistryId[c.registryId] = c;
+  }
+
+  const centers: Record<string, any> = {};
+  let created = 0;
+
+  for (const entry of registry) {
+    const content = contentByRegistryId[entry.id] ?? {};
+    const slug = content.slug ?? slugFromEnglishName(entry.nameEn);
+    const { clinics, bookingQuestions } = content;
+
+    // The registry's Arabic name wins. A near-match name — "مركز القلب
+    // والأوعية الدموية" against the registry's "مركز القلب والباطنة وإحالة
+    // الرعايات الحرجة" — is worse than an obviously wrong one, because it looks
+    // joined and is not.
+    const name = { ar: entry.nameAr, en: entry.nameEn };
+
+    const primaryHospital = hospitals[entry.hospitalSlugs[0]];
 
     const center = await prisma.medicalCenter.upsert({
-      where: { slug: c.slug },
-      create: { 
-        ...centerData, 
-        status: 'PUBLISHED' as any, 
-        description: { ar: '...', en: '...' }, 
-        clinics: clinics?.length ? { create: clinics.map((c: any) => ({ ...c, hospitalId: hospitals[hospitalSlugs[0]]?.id })) } : undefined, 
-        bookingQuestions: bookingQuestions?.length ? { create: bookingQuestions } : undefined 
-      },
-      update: { 
-        name: centerData.name, 
+      where: { slug },
+      create: {
+        slug,
+        name,
+        isFeatured: content.isFeatured ?? false,
         status: 'PUBLISHED' as any,
-        clinics: clinics?.length ? { deleteMany: {}, create: clinics.map((c: any) => ({ ...c, hospitalId: hospitals[hospitalSlugs[0]]?.id })) } : { deleteMany: {} },
-        bookingQuestions: bookingQuestions?.length ? { deleteMany: {}, create: bookingQuestions } : { deleteMany: {} }
+        description: content.description ?? { ar: '', en: '' },
+        customFields: { registryId: entry.id },
+        clinics:
+          clinics?.length && primaryHospital
+            ? { create: clinics.map((cl: any) => ({ ...cl, hospitalId: primaryHospital.id })) }
+            : undefined,
+        bookingQuestions: bookingQuestions?.length ? { create: bookingQuestions } : undefined,
+      },
+      update: {
+        name,
+        status: 'PUBLISHED' as any,
+        customFields: { registryId: entry.id },
+        clinics:
+          clinics?.length && primaryHospital
+            ? { deleteMany: {}, create: clinics.map((cl: any) => ({ ...cl, hospitalId: primaryHospital.id })) }
+            : { deleteMany: {} },
+        bookingQuestions: bookingQuestions?.length
+          ? { deleteMany: {}, create: bookingQuestions }
+          : { deleteMany: {} },
       },
     });
-    
-    centers[c.slug] = center;
 
-    // Create hospital-center junction rows
-    for (const hospitalSlug of hospitalSlugs) {
-      const hospital = hospitals[hospitalSlug];
-      if (!hospital) continue;
+    centers[slug] = center;
+    created++;
 
+    // Junction rows come from the registry's Hospitals column — this is the
+    // scope boundary the receptionist enforces. Centres 5–12 run at Delta only,
+    // and a stale link here would let the Future page offer one.
+    const wanted = entry.hospitalSlugs.map((s) => hospitals[s]?.id).filter(Boolean);
+
+    await prisma.hospitalMedicalCenter.deleteMany({
+      where: { medicalCenterId: center.id, hospitalId: { notIn: wanted } },
+    });
+
+    for (const hospitalId of wanted) {
       await prisma.hospitalMedicalCenter.upsert({
-        where: {
-          hospitalId_medicalCenterId: {
-            hospitalId: hospital.id,
-            medicalCenterId: center.id,
-          },
-        },
-        create: {
-          hospitalId: hospital.id,
-          medicalCenterId: center.id,
-        },
+        where: { hospitalId_medicalCenterId: { hospitalId, medicalCenterId: center.id } },
+        create: { hospitalId, medicalCenterId: center.id },
         update: {},
       });
     }
   }
 
-  console.log(`    ✓ ${centerDefs.length} medical centers seeded`);
+  // Anything in the database that the registry does not list. Not deleted —
+  // it may have appointments attached — but named loudly, because under the
+  // registry's own rule it does not exist.
+  const registrySlugs = Object.keys(centers);
+  const orphans = await prisma.medicalCenter.findMany({
+    where: { slug: { notIn: registrySlugs } },
+    select: { slug: true, name: true },
+  });
+  for (const o of orphans) {
+    console.warn(`    ! "${o.slug}" is in the database but NOT in ENTITY_REGISTRY.md — add it there or remove it`);
+  }
+
+  console.log(`    ✓ ${created} medical centers seeded from the registry`);
   return centers;
 }
-
-// ========================= NAVIGATION =========================
-
 async function seedNavigation() {
   console.log('  → Seeding navigation items...');
 
@@ -806,6 +910,243 @@ async function seedBrands() {
   console.log('    ✓ 3 brands seeded (INSAN, FUTURE, DELTA)');
 }
 
+// ========================= RECEPTIONIST =========================
+
+async function seedServiceAreas(hospitals: Record<string, any>) {
+  console.log('  → Seeding service areas...');
+
+  // Rows live in receptionist/data/service-areas.json, where each one carries
+  // its source document and a confidence level. Nothing is invented here: an
+  // unsourced row sends a real patient to the wrong city, and a governorate
+  // with no row yields AMBIGUOUS — the receptionist asks instead of guessing.
+  // Remaining catchments: receptionist/docs/NEEDS_OPERATOR.md §1
+  const areaPath = path.resolve(__dirname, '../../../../receptionist/data/service-areas.json');
+  if (!fs.existsSync(areaPath)) {
+    console.warn('    ! receptionist/data/service-areas.json not found — skipped');
+    return;
+  }
+  const areaDefs: Array<{
+    hospitalSlug: string;
+    governorate: string;
+    district: string;
+    priority: number;
+  }> = JSON.parse(fs.readFileSync(areaPath, 'utf8')).areas;
+
+  let seeded = 0;
+  for (const def of areaDefs) {
+    const hospital = hospitals[def.hospitalSlug];
+    if (!hospital) {
+      console.warn(`    ! hospital ${def.hospitalSlug} not found — service area skipped`);
+      continue;
+    }
+    await prisma.serviceArea.upsert({
+      where: {
+        hospitalId_governorate_district: {
+          hospitalId: hospital.id,
+          governorate: def.governorate,
+          district: def.district,
+        },
+      },
+      create: {
+        hospitalId: hospital.id,
+        governorate: def.governorate,
+        district: def.district,
+        priority: def.priority,
+      },
+      update: { priority: def.priority, isActive: true },
+    });
+    seeded++;
+  }
+
+  console.log(`    ✓ ${seeded} service area(s) seeded`);
+  console.log('    ⚠ Geography routing is incomplete — see receptionist/docs/NEEDS_OPERATOR.md §1');
+}
+
+
+async function seedBrandPersonas() {
+  console.log('  → Seeding brand personas...');
+
+  // Persona text lives in receptionist/prompts/brands/*.md — reviewed in git,
+  // loaded here. The Delta file in particular carries hard constraints lifted
+  // from HOSPITAL_DELTA.md §Never Promise, which bind the receptionist exactly
+  // as they bind a campaign. Keeping that text in a TypeScript string literal
+  // would put a brand-owner document somewhere a brand owner will never look.
+  const promptsDir = path.resolve(__dirname, '../../../../receptionist/prompts/brands');
+
+  /** Minimal front-matter reader — avoids a yaml dependency for four keys. */
+  function parsePersonaFile(raw: string) {
+    const m = /^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/.exec(raw);
+    if (!m) throw new Error('missing front matter');
+    const fm = m[1];
+    const body = m[2];
+
+    const scalar = (key: string): string => {
+      const r = new RegExp('^' + key + ':\\s*(.+)$', 'm').exec(fm);
+      return r ? r[1].trim() : '';
+    };
+
+    const bilingual = (key: string): Record<string, string> => {
+      const block = new RegExp('^' + key + ':\\r?\\n((?:[ ]{2}\\w+:.*\\r?\\n?)+)', 'm').exec(fm);
+      const out: Record<string, string> = {};
+      if (block) {
+        for (const line of block[1].split('\n')) {
+          const kv = /^[ ]{2}(\w+):\s*(.+)$/.exec(line.replace(/\r$/, ''));
+          if (kv) out[kv[1]] = kv[2].trim();
+        }
+      }
+      return out;
+    };
+
+    // The body splits at the business-rules heading: everything before it
+    // belongs to the brand owner, everything after belongs to operations.
+    const HEADING = '# قواعد العمل';
+    const split = body.indexOf(HEADING);
+    if (split < 0) throw new Error("missing '" + HEADING + "' heading");
+
+    return {
+      brandCode: scalar('brandCode'),
+      entryMode: scalar('entryMode') as 'DIRECT' | 'ROUTER',
+      displayName: bilingual('displayName'),
+      greeting: bilingual('greeting'),
+      persona: body.slice(0, split).replace(/<!--[\s\S]*?-->/g, '').trim(),
+      businessRules: body.slice(split).trim(),
+    };
+  }
+
+  const files = fs.readdirSync(promptsDir).filter((f) => f.endsWith('.md'));
+  let seeded = 0;
+
+  for (const file of files) {
+    let def: ReturnType<typeof parsePersonaFile>;
+    try {
+      def = parsePersonaFile(fs.readFileSync(path.join(promptsDir, file), 'utf8'));
+    } catch (e: any) {
+      console.warn('    ! ' + file + ': ' + e.message + ' — skipped');
+      continue;
+    }
+
+    const brand = await prisma.brand.findUnique({ where: { code: def.brandCode } });
+    if (!brand) {
+      console.warn('    ! brand ' + def.brandCode + ' not found — persona skipped');
+      continue;
+    }
+
+    await prisma.brandPersona.upsert({
+      where: { brandId: brand.id },
+      create: {
+        brandId: brand.id,
+        entryMode: def.entryMode,
+        displayName: def.displayName,
+        greeting: def.greeting,
+        persona: def.persona,
+        businessRules: def.businessRules,
+      },
+      // Re-seeding restores the reviewed baseline from git. That is the point
+      // of holding these in files: the admin can iterate live, and a seed run
+      // puts the reviewed text back.
+      update: {
+        entryMode: def.entryMode,
+        persona: def.persona,
+        businessRules: def.businessRules,
+      },
+    });
+    seeded++;
+  }
+
+  console.log('    ✓ ' + seeded + ' brand personas seeded from receptionist/prompts/brands/');
+}
+
+/**
+ * Overlays the verified hospital facts from receptionist/data/hospitals.json
+ * onto the Hospital rows.
+ *
+ * seed-data.json is placeholder content, entered to exercise the admin panel —
+ * it still records Delta in Mohandeseen, Giza, roughly 100km and one
+ * governorate away from Tanta. hospitals.json is extracted from the operator's
+ * own PDFs and is the source of truth for location, contact and hours.
+ *
+ * Confidence is respected: a fact marked `conflict` (two source documents
+ * disagree) or `provisional` is NOT written. Leaving the field empty makes the
+ * receptionist say it will check; writing a contested fact makes it state one
+ * confidently.
+ */
+async function seedHospitalFacts() {
+  console.log('  → Overlaying verified hospital facts...');
+
+  const factsPath = path.resolve(__dirname, '../../../../receptionist/data/hospitals.json');
+  if (!fs.existsSync(factsPath)) {
+    console.warn('    ! receptionist/data/hospitals.json not found — skipped');
+    return;
+  }
+
+  const file = JSON.parse(fs.readFileSync(factsPath, 'utf8'));
+  const servable = (c: string) => c === 'stated' || c === 'derived';
+
+  let applied = 0;
+  let withheld = 0;
+
+  for (const f of file.hospitals ?? []) {
+    const hospital = await prisma.hospital.findUnique({ where: { slug: f.slug } });
+    if (!hospital) {
+      console.warn(`    ! hospital ${f.slug} not found — facts skipped`);
+      continue;
+    }
+
+    const data: Record<string, unknown> = {};
+
+    if (servable(f.location?.confidence)) {
+      // Replaces the placeholder locations array entirely. A hospital with one
+      // real address should not keep a test branch alongside it — the operator
+      // confirmed there are no branches.
+      data.locations = [
+        {
+          name: { ar: 'المقر الرئيسي', en: 'Main Building' },
+          address: f.location.address,
+          governorate: f.location.governorate,
+          district: f.location.district,
+        },
+      ];
+      applied++;
+    } else {
+      withheld++;
+    }
+
+    const contact: Record<string, unknown> = {};
+    if (servable(f.contact?.confidence)) {
+      if (f.contact.phones?.length) contact.phones = f.contact.phones;
+      if (f.contact.whatsapp) contact.whatsapp = f.contact.whatsapp;
+      if (f.contact.website) contact.website = f.contact.website;
+      if (f.contact.email) contact.email = f.contact.email;
+      applied++;
+    } else {
+      // Future's numbers render as nine digits where Cairo landlines have
+      // eight — recorded as CONF-05 and withheld until the operator confirms.
+      // A wrong number turns a qualified lead into a dead end.
+      withheld++;
+    }
+
+    const hours: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(f.hours ?? {})) {
+      const v = value as { ar: string; en: string; confidence: string };
+      if (servable(v.confidence)) hours[key] = { ar: v.ar, en: v.en };
+    }
+    if (Object.keys(hours).length) contact.hours = hours;
+
+    if (Object.keys(contact).length) data.contactInfo = contact;
+
+    if (Object.keys(data).length === 0) continue;
+
+    await prisma.hospital.update({ where: { id: hospital.id }, data });
+  }
+
+  const open = (file.conflicts ?? []).filter((c: any) => c.status === 'open');
+  console.log(`    ✓ ${applied} verified fact group(s) applied, ${withheld} withheld`);
+  if (open.length) {
+    console.log(`    ⚠ ${open.length} open conflict(s) — those facts stay withheld from patients:`);
+    for (const c of open) console.log(`        ${c.id} (${c.severity}) ${c.subject}`);
+  }
+}
+
 // ========================= MAIN =========================
 
 async function main() {
@@ -832,6 +1173,9 @@ async function main() {
   await prisma.testimonial.deleteMany();
   await seedTestimonials();
   await seedFeatureFlags();
+  await seedBrandPersonas();      // after seedBrands
+  await seedServiceAreas(hospitals);
+  await seedHospitalFacts();      // after seedHospitals
 
   console.log('');
   console.log('✅ Seed complete!');

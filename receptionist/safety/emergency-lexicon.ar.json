@@ -1,0 +1,449 @@
+{
+  "$comment": [
+    "Deterministic emergency detection. Runs BEFORE any model call, on every",
+    "inbound message, on every surface.",
+    "",
+    "WHY NOT LET THE MODEL DECIDE: a model judging whether chest pain is urgent is",
+    "right almost always. 'Almost always' is an acceptable bar for choosing a tone",
+    "and an unacceptable one for choosing whether someone is told to call an",
+    "ambulance. Rules run first; the model only ever confirms.",
+    "",
+    "BIAS: deliberately toward false positives. Wrongly telling a well person to",
+    "seek urgent care costs them an inconvenience. Wrongly telling an unwell person",
+    "to book a clinic appointment costs something that cannot be refunded.",
+    "",
+    "MATCHING: normalised Arabic (alef/hamza folded, tatweel and diacritics",
+    "stripped). Egyptian colloquial first — patients do not write 'ضيق في التنفس',",
+    "they write 'مش لاقي نفسي'.",
+    "",
+    "  terms[]         — substring match.",
+    "  cooccurrence[]  — every fragment must appear somewhere in the message, in",
+    "                    any order. This is how Arabic conjugation is handled:",
+    "                    ['مش قادر','تنفس'] catches 'مش قادر أتنفس', 'مش قادرة",
+    "                    تتنفس', 'مش قادر يتنفس' and 'امي مش قادرة خالص تتنفس'",
+    "                    with one rule. A fixed term list cannot cover the",
+    "                    conjugations, and the gap is invisible until a real",
+    "                    patient hits it — this one was found by a test, not in",
+    "                    production, which is the whole point of having the test.",
+    "",
+    "⚠️ REVIEW: this file must be reviewed by the clinician named in",
+    "receptionist/docs/NEEDS_OPERATOR.md §7 before any live channel is opened.",
+    "It has not been reviewed yet."
+  ],
+  "categories": [
+    {
+      "id": "CARDIAC",
+      "severity": "critical",
+      "label": {
+        "ar": "أعراض قلبية",
+        "en": "Cardiac symptoms"
+      },
+      "terms": [
+        "وجع في صدري",
+        "الم في الصدر",
+        "الم فى الصدر",
+        "صدري بيوجعني",
+        "صدري بيألمني",
+        "ماسك في صدري",
+        "ضغطة في صدري",
+        "حاسس بضغط على صدري",
+        "وجع في القلب",
+        "قلبي بيوجعني",
+        "ذبحة",
+        "ذبحه صدرية",
+        "ازمة قلبية",
+        "ازمه قلبيه",
+        "قلبه وقف",
+        "قلبها وقف",
+        "نبضه واقف",
+        "وجع بينتشر لدراعي",
+        "وجع في ضهري وصدري"
+      ],
+      "cooccurrence": [
+        [
+          "وجع",
+          "صدر"
+        ],
+        [
+          "الم",
+          "صدر"
+        ],
+        [
+          "ضغط",
+          "صدر"
+        ],
+        [
+          "صدري",
+          "بيوجع"
+        ]
+      ]
+    },
+    {
+      "id": "RESPIRATORY",
+      "severity": "critical",
+      "label": {
+        "ar": "صعوبة تنفس",
+        "en": "Respiratory distress"
+      },
+      "terms": [
+        "نفسي واقف",
+        "نفسه واقف",
+        "مش لاقي نفسي",
+        "مش لاقى نفسي",
+        "ضيق تنفس",
+        "ضيق في التنفس",
+        "بلهث",
+        "بيلهث",
+        "زرقان",
+        "شفايفه زرقا",
+        "اختناق",
+        "بيختنق",
+        "حاجة واقفة في زوره",
+        "شرق"
+      ],
+      "cooccurrence": [
+        [
+          "مش قادر",
+          "تنفس"
+        ],
+        [
+          "مش عارف",
+          "تنفس"
+        ],
+        [
+          "صعوبه",
+          "تنفس"
+        ],
+        [
+          "تعبان",
+          "نفس"
+        ]
+      ]
+    },
+    {
+      "id": "STROKE",
+      "severity": "critical",
+      "label": {
+        "ar": "أعراض جلطة",
+        "en": "Stroke symptoms"
+      },
+      "terms": [
+        "وشه اعوج",
+        "وشها اعوج",
+        "بقه مايل",
+        "لسانه تقيل",
+        "لسانه اتقل",
+        "مش قادر يتكلم",
+        "فقد النطق",
+        "كلامه مش مفهوم",
+        "كلامه اتلخبط",
+        "نص جسمه مش بيتحرك",
+        "نص جسمي مش حاسس بيه",
+        "دراعه مش بيتحرك",
+        "شلل",
+        "مشلول",
+        "جلطة",
+        "جلطه في المخ",
+        "سكتة دماغية",
+        "فقد الاحساس في نص جسمه"
+      ],
+      "cooccurrence": [
+        [
+          "مش قادر",
+          "يتكلم"
+        ],
+        [
+          "مش قادر",
+          "اتكلم"
+        ],
+        [
+          "نص جسم",
+          "مش"
+        ]
+      ]
+    },
+    {
+      "id": "UNCONSCIOUS",
+      "severity": "critical",
+      "label": {
+        "ar": "فقدان وعي",
+        "en": "Loss of consciousness"
+      },
+      "terms": [
+        "فاقد الوعي",
+        "فاقده الوعي",
+        "مغمى عليه",
+        "مغمى عليها",
+        "اغماء",
+        "مش بيرد عليا",
+        "مش بترد عليا",
+        "مش بيفوق",
+        "وقع على الارض",
+        "طاح",
+        "غاب عن الوعي",
+        "مش واعي",
+        "دايخ جامد وواقع"
+      ],
+      "cooccurrence": [
+        [
+          "مش",
+          "بيفوق"
+        ],
+        [
+          "فاقد",
+          "وعي"
+        ],
+        [
+          "فاقده",
+          "وعي"
+        ]
+      ]
+    },
+    {
+      "id": "BLEEDING",
+      "severity": "critical",
+      "label": {
+        "ar": "نزيف",
+        "en": "Severe bleeding"
+      },
+      "terms": [
+        "نزيف",
+        "بينزف",
+        "بتنزف",
+        "دم كتير",
+        "النزيف مش واقف",
+        "الدم مش واقف",
+        "بيرمي دم",
+        "بيتقيا دم",
+        "نزيف حاد",
+        "نزيف شديد",
+        "فقد دم كتير"
+      ],
+      "cooccurrence": [
+        [
+          "نزيف",
+          "مش واقف"
+        ],
+        [
+          "دم",
+          "كتير"
+        ]
+      ]
+    },
+    {
+      "id": "SEIZURE",
+      "severity": "critical",
+      "label": {
+        "ar": "تشنجات",
+        "en": "Seizure"
+      },
+      "terms": [
+        "تشنجات",
+        "بيتشنج",
+        "بتتشنج",
+        "تشنج",
+        "صرع",
+        "نوبة صرع",
+        "جسمه بيرتعش جامد",
+        "عينيه مقلوبة"
+      ]
+    },
+    {
+      "id": "TRAUMA",
+      "severity": "critical",
+      "label": {
+        "ar": "إصابة أو حادث",
+        "en": "Trauma"
+      },
+      "terms": [
+        "حادثة",
+        "حادث",
+        "اتخبط",
+        "اتخبطت",
+        "دهس",
+        "عربية خبطته",
+        "وقع من على",
+        "كسر مفتوح",
+        "العضمة طالعة",
+        "حروق",
+        "اتحرق",
+        "اتحرقت"
+      ]
+    },
+    {
+      "id": "POISONING",
+      "severity": "critical",
+      "label": {
+        "ar": "تسمم",
+        "en": "Poisoning / overdose"
+      },
+      "terms": [
+        "تسمم",
+        "شرب مبيد",
+        "شرب سم",
+        "بلع سم",
+        "جرعة زايدة",
+        "جرعه زايده",
+        "اخد حبوب كتير",
+        "بلع حاجة سامة",
+        "تسمم غذائي شديد"
+      ]
+    },
+    {
+      "id": "OBSTETRIC",
+      "severity": "critical",
+      "label": {
+        "ar": "طوارئ ولادة",
+        "en": "Obstetric emergency"
+      },
+      "terms": [
+        "الطلق",
+        "بتولد",
+        "المياه نزلت",
+        "نزل عليا دم وانا حامل",
+        "الجنين مش بيتحرك",
+        "مغص ولادة",
+        "نزيف وانا حامل"
+      ]
+    },
+    {
+      "id": "PEDIATRIC",
+      "severity": "critical",
+      "label": {
+        "ar": "طوارئ أطفال",
+        "en": "Pediatric emergency"
+      },
+      "terms": [
+        "طفلي مش بيتنفس",
+        "ابني مش بيتنفس",
+        "بنتي مش بيتنفس",
+        "الطفل ازرق",
+        "سخونية عالية جدا مع تشنج",
+        "الرضيع مش بيرضع ومش بيفوق",
+        "بلع حاجة",
+        "الطفل بلع"
+      ],
+      "cooccurrence": [
+        [
+          "طفل",
+          "مش بيتنفس"
+        ],
+        [
+          "ابني",
+          "مش بيتنفس"
+        ],
+        [
+          "بنتي",
+          "مش بيتنفس"
+        ]
+      ]
+    }
+  ],
+  "selfHarm": {
+    "$comment": [
+      "SEPARATE from medical emergencies, and handled differently. Telling someone",
+      "in crisis to 'go to the emergency department' is the wrong response and can",
+      "make things worse. This path never books, never qualifies, never asks a",
+      "follow-up question, and always notifies a human immediately.",
+      "",
+      "⚠️ The response text is NOT written here because it must be written by a",
+      "clinician, and the crisis line number must come from the operator — an",
+      "invented hotline number is worse than none. See NEEDS_OPERATOR.md §4."
+    ],
+    "id": "SELF_HARM",
+    "severity": "critical",
+    "label": {
+      "ar": "إيذاء النفس",
+      "en": "Self-harm"
+    },
+    "terms": [
+      "هموت نفسي",
+      "عايز اموت",
+      "عايزة اموت",
+      "مش عايز اعيش",
+      "مش عايزة اعيش",
+      "هنتحر",
+      "انتحار",
+      "هاذي نفسي",
+      "هؤذي نفسي",
+      "خلاص تعبت من الدنيا",
+      "مفيش فايدة من حياتي",
+      "هخلص على نفسي"
+    ],
+    "cooccurrence": [
+      [
+        "عايز",
+        "اموت"
+      ],
+      [
+        "عايزه",
+        "اموت"
+      ],
+      [
+        "مش عايز",
+        "اعيش"
+      ],
+      [
+        "مش عايزه",
+        "اعيش"
+      ]
+    ],
+    "response": {
+      "$comment": [
+        "SEPARATE from the medical-emergency response, and never merged with it.",
+        "",
+        "What this reply must do: acknowledge, stay present, hand to a human fast.",
+        "What it must NOT do: give medical instruction, tell them to go to an",
+        "emergency department, ask qualifying questions, or try to book anything.",
+        "",
+        "⚠️ template and crisisLine are null on purpose. Both are operator/clinician",
+        "decisions — an invented crisis-line number is worse than none at all, and",
+        "the wording here needs a clinician, not a model. Until they are filled the",
+        "engine says only that a colleague is coming, and pages staff immediately."
+      ],
+      "template": null,
+      "crisisLine": null,
+      "notifyStaffImmediately": true,
+      "neverQualify": true,
+      "neverBook": true
+    }
+  },
+  "historicalMarkers": {
+    "$comment": [
+      "Phrases suggesting the patient is describing history, not a present event:",
+      "'زمان كان عندي وجع في صدري'. These DAMPEN but never CANCEL a critical match —",
+      "they lower the confidence recorded in the log, and the emergency response",
+      "still fires. A rule that can silence an emergency detector is a rule that",
+      "will eventually silence a real one."
+    ],
+    "terms": [
+      "زمان",
+      "من سنة",
+      "من سنتين",
+      "من شهر",
+      "قبل كده",
+      "كان عندي",
+      "كان عنده",
+      "اتعالجت منه",
+      "خلص وراح",
+      "بقاله فترة",
+      "تاريخ مرضي"
+    ]
+  },
+  "response": {
+    "$comment": [
+      "⚠️ PLACEHOLDER. The exact wording and the numbers are operator decisions —",
+      "NEEDS_OPERATOR.md §4. The receptionist refuses to serve an emergency reply",
+      "while template is null rather than improvising one.",
+      "",
+      "Placeholders available in template:",
+      "  {{emergencyNumber}} — the national number, or the hospital-specific one",
+      "                        when the conversation has resolved to a hospital."
+    ],
+    "template": null,
+    "emergencyNumberNational": null,
+    "emergencyNumberFuture": null,
+    "emergencyNumberDelta": null,
+    "notifyStaffImmediately": true
+  }
+}

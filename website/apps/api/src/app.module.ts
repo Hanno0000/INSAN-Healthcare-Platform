@@ -22,6 +22,7 @@ import { InvestorsModule } from './modules/investors/investors.module';
 import { AiModule } from './modules/ai/ai.module';
 import { FaqsModule } from './modules/faqs/faqs.module';
 import { UploadModule } from './modules/upload/upload.module';
+import { ReceptionistModule } from './modules/receptionist/receptionist.module';
 import { HealthController } from './health.controller';
 
 @Module({
@@ -56,6 +57,7 @@ import { HealthController } from './health.controller';
     AiModule,
     FaqsModule,
     UploadModule,
+    ReceptionistModule,
   ],
   controllers: [HealthController],
   providers: [

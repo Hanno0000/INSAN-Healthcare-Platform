@@ -1,0 +1,184 @@
+{
+  "$comment": [
+    "Geography → hospital routing for the INSAN (ROUTER) surfaces.",
+    "Loaded into the ServiceArea table by website/apps/api/prisma/seed.ts.",
+    "",
+    "SOURCES — every row traces to a repository document, none is invented:",
+    "  [ADS-01A] business/knowledge/programs/KBRNA_META_ADS_PLAN.md — Future/Cairo pins",
+    "  [ADS-02A] business/knowledge/programs/KBRNA_META_ADS_PLAN.md — Delta/Tanta pins",
+    "  [EXCL]    same file, §'استبعادات إلزامية بين الحملات'",
+    "  [OP]      operator, stated in session 2026-08-03",
+    "",
+    "CONFIDENCE:",
+    "  confirmed — the operator stated it, or a document names the district explicitly",
+    "  derived   — implied by a documented exclusion rule, not named directly",
+    "",
+    "⚠️ The ads plan is a MARKETING TARGETING document. A 25km ad radius is not the",
+    "same statement as an official catchment. These rows are the best-evidenced",
+    "starting point available, not an operator-signed service map. Every 'derived'",
+    "row needs confirmation — see docs/NEEDS_OPERATOR.md §1.",
+    "",
+    "district: \"\" means the row covers the whole governorate.",
+    "priority: lower wins when two hospitals cover the same area."
+  ],
+
+  "areas": [
+    {
+      "hospitalSlug": "future-hospital",
+      "governorate": "القاهرة",
+      "district": "مصر الجديدة",
+      "priority": 1,
+      "confidence": "confirmed",
+      "source": "OP + ADS-01A (hospital pin, radius 15km)"
+    },
+    {
+      "hospitalSlug": "future-hospital",
+      "governorate": "القاهرة",
+      "district": "مدينة نصر",
+      "priority": 1,
+      "confidence": "confirmed",
+      "source": "ADS-01A (pin, radius 8km)"
+    },
+    {
+      "hospitalSlug": "future-hospital",
+      "governorate": "القاهرة",
+      "district": "التجمع الخامس",
+      "priority": 1,
+      "confidence": "confirmed",
+      "source": "ADS-01A (pin, radius 10km)"
+    },
+    {
+      "hospitalSlug": "future-hospital",
+      "governorate": "القاهرة",
+      "district": "الرحاب",
+      "priority": 1,
+      "confidence": "confirmed",
+      "source": "ADS-01A (pin, radius 10km)"
+    },
+    {
+      "hospitalSlug": "future-hospital",
+      "governorate": "القاهرة",
+      "district": "مدينتي",
+      "priority": 1,
+      "confidence": "confirmed",
+      "source": "ADS-01A (pin, radius 10km)"
+    },
+    {
+      "hospitalSlug": "future-hospital",
+      "governorate": "القاهرة",
+      "district": "الشروق",
+      "priority": 1,
+      "confidence": "confirmed",
+      "source": "ADS-01A (pin, radius 10km)"
+    },
+    {
+      "hospitalSlug": "future-hospital",
+      "governorate": "القليوبية",
+      "district": "العبور",
+      "priority": 1,
+      "confidence": "confirmed",
+      "source": "ADS-01A (pin, radius 10km). Obour City sits in Qalyubia governorate, not Cairo — confirm the administrative label with the operator."
+    },
+
+    {
+      "hospitalSlug": "future-hospital",
+      "governorate": "القاهرة",
+      "district": "",
+      "priority": 3,
+      "confidence": "derived",
+      "source": "EXCL — Delta's campaign excludes Cairo entirely, so Cairo defaults to Future."
+    },
+    {
+      "hospitalSlug": "future-hospital",
+      "governorate": "الجيزة",
+      "district": "",
+      "priority": 3,
+      "confidence": "derived",
+      "source": "EXCL — Delta's campaign excludes Giza entirely."
+    },
+    {
+      "hospitalSlug": "future-hospital",
+      "governorate": "القليوبية",
+      "district": "",
+      "priority": 3,
+      "confidence": "derived",
+      "source": "EXCL — Delta's campaign excludes Qalyubia entirely."
+    },
+
+    {
+      "hospitalSlug": "delta-hospital",
+      "governorate": "الغربية",
+      "district": "طنطا",
+      "priority": 1,
+      "confidence": "confirmed",
+      "source": "OP + ADS-02A (hospital pin, radius 25km)"
+    },
+    {
+      "hospitalSlug": "delta-hospital",
+      "governorate": "الغربية",
+      "district": "كفر الزيات",
+      "priority": 1,
+      "confidence": "confirmed",
+      "source": "ADS-02A (named inside the 25km radius)"
+    },
+    {
+      "hospitalSlug": "delta-hospital",
+      "governorate": "الغربية",
+      "district": "زفتى",
+      "priority": 1,
+      "confidence": "confirmed",
+      "source": "ADS-02A (named inside the 25km radius)"
+    },
+    {
+      "hospitalSlug": "delta-hospital",
+      "governorate": "الغربية",
+      "district": "سمنود",
+      "priority": 1,
+      "confidence": "confirmed",
+      "source": "ADS-02A (named inside the 25km radius)"
+    },
+    {
+      "hospitalSlug": "delta-hospital",
+      "governorate": "الغربية",
+      "district": "قطور",
+      "priority": 1,
+      "confidence": "confirmed",
+      "source": "ADS-02A (named inside the 25km radius)"
+    },
+    {
+      "hospitalSlug": "delta-hospital",
+      "governorate": "الغربية",
+      "district": "بسيون",
+      "priority": 1,
+      "confidence": "confirmed",
+      "source": "ADS-02A (named inside the 25km radius)"
+    },
+    {
+      "hospitalSlug": "delta-hospital",
+      "governorate": "الغربية",
+      "district": "",
+      "priority": 2,
+      "confidence": "confirmed",
+      "source": "ADS-02A — 'محافظة الغربية بالكامل كطبقة تانية'; EXCL — Future's campaign excludes Gharbia entirely."
+    }
+  ],
+
+  "unmapped": {
+    "$comment": [
+      "Governorates with no row resolve to AMBIGUOUS. That is the intended,",
+      "safe behaviour: the receptionist names both hospitals and asks, instead",
+      "of sending someone to the wrong city.",
+      "The Delta region governorates below are the most likely additions and are",
+      "deliberately NOT seeded — no document places them in either catchment."
+    ],
+    "candidates": [
+      "المنوفية",
+      "كفر الشيخ",
+      "الدقهلية",
+      "البحيرة",
+      "الشرقية",
+      "دمياط",
+      "الإسكندرية"
+    ]
+  }
+}

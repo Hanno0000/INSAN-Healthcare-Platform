@@ -1,0 +1,246 @@
+{
+  "$comment": [
+    "Hospital facts extracted from the operator's own documents. THIS FILE — not",
+    "the website database — is the source of truth. Everything currently seeded in",
+    "the website DB is test data entered to exercise the admin panel (operator,",
+    "2026-08-03) and must not be read by the receptionist.",
+    "",
+    "SOURCES:",
+    "  [FUT-SVC]  business/knowledge/hospitals/وصف مستشفى المستقبل.pdf",
+    "  [FUT-BLD]  business/knowledge/hospitals/الوصف الإنشائي لمستشفى المستقبل التخصصي.pdf",
+    "  [DLT-SVC]  business/knowledge/hospitals/وصف مستشفي  الدلتا.pdf",
+    "  [DLT-BLD]  business/knowledge/hospitals/وصف المستشفى 2.pdf",
+    "  [ADS]      business/knowledge/programs/KBRNA_META_ADS_PLAN.md",
+    "  [REG]      business/brand/ENTITY_REGISTRY.md",
+    "",
+    "CONFIDENCE:",
+    "  stated    — the document says it plainly",
+    "  conflict  — two documents disagree; see conflicts[] and DO NOT serve to patients",
+    "  derived   — inferred, needs operator confirmation",
+    "",
+    "⚠️ The operator rates these documents ~90% accurate and somewhat dated.",
+    "Anything marked 'conflict' is withheld from the receptionist entirely — a",
+    "receptionist that states a contested fact confidently is worse than one that",
+    "says it will check."
+  ],
+
+  "hospitals": [
+    {
+      "slug": "future-hospital",
+      "brandCode": "FUTURE",
+      "name": { "ar": "مستشفى المستقبل التخصصي", "en": "Future Specialized Hospital" },
+      "managedBy": { "ar": "ويدج جروب للخدمات الطبية", "en": "Wedge Group Hospitals" },
+      "sourceRef": "FUT-SVC (letterhead)",
+
+      "location": {
+        "governorate": "القاهرة",
+        "district": "مصر الجديدة",
+        "address": {
+          "ar": "٦٧ أ نخلة المطيعي - ميدان تريومف - اتجاه صلاح سالم، مصر الجديدة",
+          "en": "67A Nakhla El-Motei'i, Triumph Square, towards Salah Salem, Heliopolis"
+        },
+        "confidence": "stated",
+        "sourceRef": "FUT-SVC (footer)"
+      },
+
+      "contact": {
+        "phones": ["٢٤١٥٦١٧٩٨", "٢٤١٥٦٧٧٣٩"],
+        "confidence": "conflict",
+        "note": "Recorded verbatim from the PDF footer. Both render as 9 digits; Cairo landlines are 8 digits plus the 02 area code, so the OCR or the source is off by a digit. NOT SERVED to patients until verified — a wrong phone number is a failed handoff.",
+        "sourceRef": "FUT-SVC (footer)"
+      },
+
+      "hours": {
+        "outpatientClinics": {
+          "ar": "من الساعة العاشرة صباحاً إلى الساعة العاشرة مساءً",
+          "en": "10:00 – 22:00",
+          "confidence": "stated",
+          "sourceRef": "FUT-SVC"
+        },
+        "emergency": { "ar": "24 ساعة", "en": "24/7", "confidence": "stated", "sourceRef": "FUT-SVC" },
+        "laboratory": { "ar": "24 ساعة", "en": "24/7", "confidence": "stated", "sourceRef": "FUT-SVC" }
+      },
+
+      "building": {
+        "description": "دور أرضي + أربعة أدوار علوية",
+        "confidence": "stated",
+        "sourceRef": "FUT-BLD",
+        "floors": {
+          "ground": ["الاستقبال الرئيسي", "الحسابات", "الصيدلية", "عدد 2 عيادة خارجية", "قسم الطوارئ", "الكافتيريا", "المغسلة", "المطبخ", "التعقيم المركزي CSSD", "الأشعة العادية X-Ray", "المسجد", "غرفة الغازات الطبية", "المخازن"],
+          "first": ["3 غرف عمليات", "غرفة إفاقة", "5 حضانات لحديثي الولادة", "2 مخزن"],
+          "second": ["وحدة رعاية مركزة", "الأشعة المقطعية CT Scan", "4 غرف إقامة"],
+          "third": ["12 سرير إقامة داخلية"],
+          "fourth": ["وحدة رعاية مركزة", "7 أسرة إقامة داخلية"]
+        }
+      },
+
+      "capacity": {
+        "outpatientClinicRooms": { "value": 2, "confidence": "stated", "sourceRef": "FUT-BLD" },
+        "operatingRooms": { "value": 3, "confidence": "stated", "sourceRef": "FUT-BLD" },
+        "incubators": { "value": 5, "confidence": "stated", "sourceRef": "FUT-BLD" },
+        "inpatientBeds": { "value": 23, "confidence": "derived", "note": "4 (2nd) + 12 (3rd) + 7 (4th)", "sourceRef": "FUT-BLD" },
+        "icuBeds": {
+          "value": null,
+          "confidence": "conflict",
+          "note": "FUT-SVC states 25 ICU beds. FUT-BLD describes two ICU units (2nd and 4th floors) with no bed count, in a building whose total inpatient capacity is ~23. 25 ICU beds is implausible against that structure. WITHHELD.",
+          "sourceRef": "FUT-SVC vs FUT-BLD"
+        }
+      },
+
+      "services": {
+        "confidence": "stated",
+        "sourceRef": "FUT-SVC",
+        "units": ["وحدة الرعاية المركزة", "الغرف الفندقية داخلي", "وحدة المبتسرين وحديثي الولادة", "وحدة رعاية الأطفال", "وحدة الغسيل الكلوي للطوارئ", "معمل التحاليل 24 ساعة", "قسم أشعة (عادية · دوبلر · إيكو · سونار · مقطعية)", "قسم الفحص الشامل", "وحدة مناظير الجهاز الهضمي والقولون والقنوات المرارية"],
+        "surgicalSpecialties": ["جراحة عامة", "جراحة أورام", "جراحة مناظير", "نساء وولادة", "عظام وإصابات ملاعب", "وجه وفكين", "مخ وأعصاب", "أنف وأذن وحنجرة", "جراحات اليد", "تجميل وإصلاح تشوهات", "أوعية دموية", "صدر", "جهاز هضمي", "مسالك", "أسنان (أطفال وكبار)"]
+      },
+
+      "medicalCenters": {
+        "confidence": "stated",
+        "sourceRef": "REG",
+        "note": "Branded Signature Centers only. Surgical capability in a specialty does NOT mean a branded center exists — see MEDICAL_SERVICES_TAXONOMY.md §2.",
+        "centerIds": ["CEN-001", "CEN-002", "CEN-003", "CEN-004"]
+      }
+    },
+
+    {
+      "slug": "delta-hospital",
+      "brandCode": "DELTA",
+      "name": { "ar": "مستشفى الدلتا الدولي", "en": "Delta International Hospital" },
+      "managedBy": { "ar": "لافينير للخدمات الطبية", "en": "L'Avenir Medical Services" },
+      "sourceRef": "DLT-BLD (letterhead)",
+
+      "location": {
+        "governorate": "الغربية",
+        "district": "طنطا",
+        "address": { "ar": "طنطا، محافظة الغربية", "en": "Tanta, Gharbia" },
+        "confidence": "stated",
+        "note": "Title of DLT-SVC reads 'وصف مستشفى الدلتا الدولى طنطا'. The 040 landline prefix is the Tanta area code, and ADS pins the hospital in Tanta. The website DB's 'Mohandeseen, Giza' entry is test data and is wrong — the operator confirms there are no branches.",
+        "sourceRef": "DLT-SVC + DLT-BLD + ADS"
+      },
+
+      "contact": {
+        "phones": ["0403315000", "0403315001", "0403315002", "0403315003", "0403321774"],
+        "whatsapp": "01100002154",
+        "website": "www.lavenir-medical.com",
+        "email": "info@lavenir-medical.com",
+        "confidence": "stated",
+        "sourceRef": "DLT-BLD (footer, all pages)"
+      },
+
+      "hours": {
+        "outpatientClinics": {
+          "ar": "من الساعة العاشرة صباحاً إلى الساعة العاشرة مساءً",
+          "en": "10:00 – 22:00",
+          "confidence": "stated",
+          "sourceRef": "DLT-SVC"
+        },
+        "emergency": { "ar": "24 ساعة", "en": "24/7", "confidence": "stated", "sourceRef": "DLT-SVC" },
+        "laboratory": { "ar": "24 ساعة", "en": "24/7", "confidence": "stated", "sourceRef": "DLT-SVC" }
+      },
+
+      "building": {
+        "confidence": "stated",
+        "sourceRef": "DLT-BLD",
+        "floors": {
+          "basement": ["الأشعة (عادية · مقطعية تحت التجهيز)", "الغازات", "غرف تغيير الملابس", "ثلاجة الموتى", "النفايات الطبية", "المخازن", "السجلات الطبية"],
+          "ground": ["غرفة الأمن", "غرفتين كشف طوارئ", "غرفة الإنعاش القلبي", "الاستقبال"],
+          "first": ["المدير الطبي", "المدير الإداري", "الصيدلية", "الحسابات", "غرفتين ملاحظة طوارئ", "9 عيادات (6 متغيرة + 3 ثابتة: الأسنان · العظام · الأنف والأذن)", "عيادة السونار والإيكو", "غرفة الحقن", "الكافتيريا", "الاستقبال"],
+          "second": ["4 غرف عمليات", "غرفة إفاقة", "غرفة تحضير المريض", "وحدة العناية المركزة (7 غرف · 19 سرير)"],
+          "third": ["قسم الداخلي — 16 غرفة (سويت · برميوم · أولى ممتاز فاخر · أولى ممتاز)"],
+          "fourth": ["16 غرفة داخلي تحت التجهيز"],
+          "sixth": ["وحدة رعاية الأطفال (11 سرير)", "12 حضانة", "غرفة رضاعة طبيعية"],
+          "seventh": ["مكتب رئيس مجلس الإدارة"],
+          "tenth": ["بنك الدم", "الصيانة", "غرف تحت التجديد"],
+          "eleventh": ["التعقيم والتطهير", "المطبخ"]
+        },
+        "note": "Floors 5, 8 and 9 are not described in the source."
+      },
+
+      "capacity": {
+        "outpatientClinicRooms": {
+          "value": 9,
+          "breakdown": { "fixed": 3, "rotating": 6, "fixedSpecialties": ["الأسنان", "العظام", "الأنف والأذن"] },
+          "confidence": "stated",
+          "sourceRef": "DLT-BLD"
+        },
+        "operatingRooms": { "value": 4, "confidence": "stated", "sourceRef": "DLT-BLD" },
+        "icuBeds": { "value": 19, "rooms": 7, "confidence": "stated", "sourceRef": "DLT-BLD" },
+        "incubators": { "value": 12, "confidence": "stated", "sourceRef": "DLT-BLD" },
+        "pediatricBeds": { "value": 11, "confidence": "stated", "sourceRef": "DLT-BLD" },
+        "inpatientRooms": { "value": 16, "underPreparation": 16, "confidence": "stated", "sourceRef": "DLT-BLD" }
+      },
+
+      "services": {
+        "confidence": "stated",
+        "sourceRef": "DLT-SVC",
+        "units": ["وحدة الرعاية المركزة", "الغرف الفندقية داخلي", "وحدة المبتسرين وحديثي الولادة", "وحدة رعاية الأطفال", "وحدة الغسيل الكلوي للطوارئ", "معمل التحاليل 24 ساعة", "قسم الفحص الشامل", "وحدة مناظير الجهاز الهضمي والقولون والقنوات المرارية", "بنك الدم"],
+        "radiology": {
+          "value": ["أشعة عادية", "دوبلر", "إيكو", "سونار"],
+          "ctScan": {
+            "confidence": "conflict",
+            "note": "DLT-SVC lists 'أشعة مقطعية' as available. DLT-BLD says 'المقطعية تحت التجهيز' — under installation. WITHHELD until confirmed: telling a patient to come for a CT that is not installed is a wasted journey.",
+            "sourceRef": "DLT-SVC vs DLT-BLD"
+          }
+        }
+      },
+
+      "medicalCenters": {
+        "confidence": "conflict",
+        "sourceRef": "REG vs DLT-BLD",
+        "centerIds": ["CEN-001", "CEN-002", "CEN-003", "CEN-004", "CEN-005", "CEN-006", "CEN-007", "CEN-008", "CEN-009", "CEN-010", "CEN-011", "CEN-012"],
+        "note": "ENTITY_REGISTRY registers all twelve Signature Centers at Delta. DLT-BLD counts NINE clinic rooms, three of them fixed to dental / orthopedics / ENT and six rotating. Twelve branded centers cannot run concurrently out of nine rooms. The twelve are a brand structure, not twelve simultaneous clinics — and HOSPITAL_DELTA.md § Never Promise already forbids any claim about which centers are 'fully running' until the operator confirms. The receptionist may state that the ecosystem has twelve centers; it may NOT tell a patient a given center is operating today. It answers from clinic schedules instead."
+      }
+    }
+  ],
+
+  "conflicts": [
+    {
+      "id": "CONF-01",
+      "severity": "high",
+      "subject": "Delta location",
+      "detail": "Website DB seeds Delta at 'فرع المهندسين، الجيزة'. All source documents place it in Tanta, Gharbia (040 landline prefix, ADS pin, PDF title). Operator confirms: no branches, no Mohandeseen.",
+      "resolution": "DB is test data. Tanta is correct. Reseed from this file.",
+      "status": "resolved"
+    },
+    {
+      "id": "CONF-02",
+      "severity": "high",
+      "subject": "Delta CT scanner",
+      "detail": "DLT-SVC lists CT as an available service; DLT-BLD marks it 'تحت التجهيز'.",
+      "resolution": "OPERATOR — is the CT operating today?",
+      "status": "open"
+    },
+    {
+      "id": "CONF-03",
+      "severity": "high",
+      "subject": "Delta — twelve centers vs nine clinic rooms",
+      "detail": "ENTITY_REGISTRY registers 12 centers at Delta; the building has 9 clinic rooms (3 fixed, 6 rotating).",
+      "resolution": "OPERATOR — which centers hold a scheduled clinic, and on which days? Until answered the receptionist answers from clinic schedules and never confirms a center is running.",
+      "status": "open"
+    },
+    {
+      "id": "CONF-04",
+      "severity": "medium",
+      "subject": "Future ICU bed count",
+      "detail": "FUT-SVC says 25 ICU beds; FUT-BLD describes two ICU units in a building with ~23 total inpatient beds.",
+      "resolution": "OPERATOR — what is the real ICU bed count?",
+      "status": "open"
+    },
+    {
+      "id": "CONF-05",
+      "severity": "medium",
+      "subject": "Future phone numbers",
+      "detail": "Footer shows two 9-digit numbers; Cairo landlines are 8 digits plus area code.",
+      "resolution": "OPERATOR — confirm the dialable numbers.",
+      "status": "open"
+    },
+    {
+      "id": "CONF-06",
+      "severity": "medium",
+      "subject": "Future outpatient capacity",
+      "detail": "FUT-SVC describes specialized outpatient clinics across many specialties; FUT-BLD lists 2 outpatient clinic rooms on the ground floor.",
+      "resolution": "OPERATOR — how many clinic rooms does Future actually run, and on what rotation?",
+      "status": "open"
+    }
+  ]
+}

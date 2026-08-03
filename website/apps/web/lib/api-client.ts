@@ -326,4 +326,11 @@ export const api = {
     list: (params?: any) => apiRequest<Paginated<any>>(`/admin/audit-logs${qs(params)}`),
     get: (id: string) => apiRequest<Single<any>>(`/admin/audit-logs/${id}`),
   },
+
+  // Receptionist conversations
+  conversations: {
+    list: (params?: any) => apiRequest<any>(`/admin/receptionist/conversations${qs(params)}`),
+    get: (id: string) => apiRequest<any>(`/admin/receptionist/conversations/${id}`),
+    stats: () => apiRequest<any>('/admin/receptionist/conversations/stats'),
+  },
 };

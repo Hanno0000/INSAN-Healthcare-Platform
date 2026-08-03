@@ -14,6 +14,9 @@ const navItems = [
   { label: 'الأطباء', href: '/admin/doctors', icon: '👨‍⚕️', module: 'doctors', action: 'view' },
   { label: 'الأخبار', href: '/admin/news', icon: '📰', module: 'news', action: 'view' },
   { label: 'المواعيد', href: '/admin/appointments', icon: '📅', module: 'appointments', action: 'view' },
+  // Guarded by `appointments` on purpose: the people who work these leads are
+  // the people who work appointments.
+  { label: 'المحادثات', href: '/admin/conversations', icon: '💬', module: 'appointments', action: 'view' },
   { label: 'رسائل التواصل', href: '/admin/contact-submissions', icon: '✉️', module: 'contact', action: 'view' },
   { label: 'آراء العملاء', href: '/admin/testimonials', icon: '⭐', module: 'testimonials', action: 'view' },
   { label: 'التنقل', href: '/admin/navigation', icon: '🔗', module: 'navigation', action: 'view' },

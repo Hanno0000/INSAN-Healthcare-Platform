@@ -1,0 +1,61 @@
+{
+  "$comment": [
+    "Abuse and spam detection. Deterministic, runs alongside the emergency check.",
+    "",
+    "The bias here is the OPPOSITE of the emergency lexicon: toward false",
+    "negatives. A frustrated patient swearing because their mother is in pain is",
+    "not an abusive user, and shutting them down is the worst possible failure of",
+    "a healthcare receptionist. Only unambiguous, targeted abuse counts.",
+    "",
+    "Per the spec: warn once, then end politely. Never escalate, never argue."
+  ],
+
+  "abuse": {
+    "$comment": [
+      "Deliberately short. Egyptian Arabic profanity is heavily context-dependent",
+      "and much of it is used as ordinary emphasis. Terms here are ones that are",
+      "targeted at a person and carry no ordinary usage.",
+      "",
+      "⚠️ Needs review by an Arabic-speaking operator before a live channel opens.",
+      "An over-broad list here silences distressed patients; that is a worse",
+      "outcome than absorbing some rudeness."
+    ],
+    "reviewed": false,
+    "terms": [
+      "يا ابن ال", "يا بنت ال", "كلب", "حمار", "غبي", "اغبي", "قليل الادب",
+      "قليلة الادب", "وسخ", "حقير", "انتم نصابين", "نصابين", "حرامية", "لصوص"
+    ],
+    "policy": {
+      "firstOffense": "WARN_ONCE",
+      "secondOffense": "END_POLITELY",
+      "neverEscalate": true,
+      "$comment": "Frustration directed at a situation ('المستشفى دي وحشة') is not abuse. Only abuse directed at a person triggers this."
+    }
+  },
+
+  "spam": {
+    "signals": [
+      { "id": "REPEAT_IDENTICAL", "description": "Same message text 4+ times in a row", "threshold": 4 },
+      { "id": "BURST", "description": "More than 12 messages inside 60 seconds", "threshold": 12, "windowSeconds": 60 },
+      { "id": "LINK_ONLY", "description": "Message is only a URL and nothing else" },
+      { "id": "NO_ARABIC_NO_ENGLISH", "description": "Message contains no Arabic and no Latin letters" }
+    ],
+    "policy": {
+      "action": "MARK_SPAM_STOP_REPLYING",
+      "$comment": "Marked, not blocked. A human reviews from the admin screen — an automated block on a healthcare page can silence a real patient with a broken keyboard."
+    }
+  },
+
+  "outOfScope": {
+    "$comment": [
+      "Not abuse, not spam — simply nothing to do with healthcare. Job seekers,",
+      "sales pitches, supplier enquiries. Answered politely and routed, not",
+      "ignored: a supplier on the Delta page is a real business contact."
+    ],
+    "categories": [
+      { "id": "JOB_SEEKER", "terms": ["وظيفة", "وظائف", "تعيينات", "سيرة ذاتية", "cv", "شغل عندكم", "فرص عمل", "تقديم"] },
+      { "id": "VENDOR", "terms": ["عرض سعر", "توريد", "شركتنا", "خدماتنا", "عرض تسويقي", "شراكة"] }
+    ],
+    "policy": { "action": "ACKNOWLEDGE_AND_ROUTE", "leadStatus": "INFORMATION_ONLY" }
+  }
+}

@@ -146,6 +146,8 @@ model Brand {
   updatedAt      DateTime             @updatedAt
   socialAccounts BrandSocialAccount[]
   newsPosts      NewsPost[]
+  conversations  ChatConversation[]
+  persona        BrandPersona?
 
   @@index([isActive])
 }
@@ -206,6 +208,8 @@ model Hospital {
   doctors          DoctorHospital[]
   medicalCenters   HospitalMedicalCenter[]
   newsPosts        NewsPost[]
+  serviceAreas     ServiceArea[]
+  conversations    ChatConversation[]
 
   @@index([status])
 }
@@ -423,6 +427,7 @@ model AppointmentRequest {
   hospital        Hospital?         @relation(fields: [hospitalId], references: [id])
   medicalCenter   MedicalCenter?    @relation(fields: [medicalCenterId], references: [id])
   review          DoctorReview?
+  conversation    ChatConversation?
 
   @@index([status])
   @@index([createdAt])
@@ -490,15 +495,48 @@ model AuditLog {
   @@index([action])
 }
 
+/// One conversation on one surface. `brandId` + `channel` identify the surface;
+/// `scopeState` + `resolvedHospitalId` carry the knowledge scope. See
+/// `Docs/RECEPTIONIST_ARCHITECTURE.md` §2.
 model ChatConversation {
   id        String        @id @default(cuid())
   visitorId String
-  locale    String
+  locale    String        @default("ar")
+
+  // ─── Surface identity ───
+  brandId    String?
+  channel    ChatChannel @default(WEB)
+  /// Messenger PSID. Null on WEB — a web visitor cannot be messaged back.
+  externalId String?
+
+  // ─── Knowledge scope (§2, §3) ───
+  scopeState         ConversationScopeState @default(UNRESOLVED)
+  resolvedHospitalId String?
+
+  // ─── Qualification ───
+  leadStatus LeadStatus @default(INFORMATION_ONLY)
+  /// Collected slots: name, phone, specialty, branch, date, time,
+  /// visitType, doctorPreference, reason.
+  slots      Json       @default("{}")
+
+  // ─── Lifecycle ───
+  lastMessageAt        DateTime?
+  handedOffAt          DateTime?
+  appointmentRequestId String?   @unique
+
   startedAt DateTime      @default(now())
   endedAt   DateTime?
   messages  ChatMessage[]
 
+  brand              Brand?              @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  resolvedHospital   Hospital?           @relation(fields: [resolvedHospitalId], references: [id], onDelete: SetNull)
+  appointmentRequest AppointmentRequest? @relation(fields: [appointmentRequestId], references: [id], onDelete: SetNull)
+
   @@index([visitorId])
+  @@index([brandId, channel])
+  @@index([channel, externalId])
+  @@index([leadStatus])
+  @@index([lastMessageAt])
 }
 
 model ChatMessage {
@@ -510,10 +548,75 @@ model ChatMessage {
   isUnanswered   Boolean          @default(false)
   isFallback     Boolean          @default(false)
   createdAt      DateTime         @default(now())
-  conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  // ─── Grounding contract (§9) ───
+  /// IDs of the records this reply's factual claims were drawn from.
+  /// Empty on a reply that asserts no facts.
+  citedRecordIds String[] @default([])
+  safetyFlag     SafetyFlag?
+
+  // ─── Observability. `cachedTokens` is the gate in §10: below a 70%
+  //     cache-read ratio, a silent invalidator is in the prefix.
+  modelUsed    String?
+  inputTokens  Int?
+  outputTokens Int?
+  cachedTokens Int?
+  latencyMs    Int?
+
+  conversation ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   @@index([conversationId])
   @@index([isUnanswered])
+  @@index([safetyFlag])
+}
+
+/// Geography → hospital routing for the INSAN (ROUTER) surfaces. §8.
+/// `district = ""` means the row covers the whole governorate.
+/// No match is NOT an error — it yields `AMBIGUOUS`, and the receptionist
+/// names the options instead of guessing.
+model ServiceArea {
+  id          String   @id @default(cuid())
+  hospitalId  String
+  governorate String
+  district    String   @default("")
+  /// Lower wins when both hospitals cover the same area.
+  priority    Int      @default(1)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  hospital Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+
+  @@unique([hospitalId, governorate, district])
+  @@index([governorate, district])
+  @@index([isActive])
+}
+
+/// Prompt layer 2 (§5): brand voice and brand business rules, kept in separate
+/// columns because they have separate owners — voice belongs to the brand
+/// owner, rules belong to operations.
+model BrandPersona {
+  id      String @id @default(cuid())
+  brandId String @unique
+
+  entryMode EntryMode @default(DIRECT)
+  /// What the receptionist calls itself, per locale.
+  displayName Json
+  greeting    Json
+  /// Voice, tone, register. Brand owner edits this.
+  persona       String
+  /// Operating rules: what it may promise, escalation triggers, working
+  /// hours language. Operations edits this.
+  businessRules String
+
+  isActive  Boolean  @default(true)
+  version   Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  brand Brand @relation(fields: [brandId], references: [id], onDelete: Cascade)
+
+  @@index([isActive])
 }
 
 model AiKnowledgeBase {
@@ -608,6 +711,50 @@ enum ChatSender {
   USER
   AI
   SYSTEM
+}
+
+enum ChatChannel {
+  WEB
+  MESSENGER
+  WHATSAPP
+  INSTAGRAM
+  VOICE
+}
+
+/// UNRESOLVED — ROUTER surface, no hospital determined yet.
+/// ECOSYSTEM  — platform-level questions; never needs a hospital.
+/// RESOLVED   — scoped to `resolvedHospitalId`; every query is filtered by it.
+/// AMBIGUOUS  — geography matched nothing or matched both; ask, never guess.
+enum ConversationScopeState {
+  UNRESOLVED
+  ECOSYSTEM
+  RESOLVED
+  AMBIGUOUS
+}
+
+/// DIRECT — a hospital page: scope is fixed at conversation creation.
+/// ROUTER — INSAN: scope is resolved lazily, on service intent.
+enum EntryMode {
+  DIRECT
+  ROUTER
+}
+
+enum LeadStatus {
+  INFORMATION_ONLY
+  INTERESTED
+  WARM_LEAD
+  READY_TO_BOOK
+  NEEDS_HUMAN
+  EMERGENCY
+  SPAM
+  ABUSIVE
+}
+
+enum SafetyFlag {
+  EMERGENCY
+  ABUSE
+  SPAM
+  GROUNDING_FAILURE
 }
 
 enum MediaType {

@@ -1,7 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Send } from 'lucide-react';
+
+/**
+ * Stable per-tab id. Only ever groups a visitor's own messages together — it is
+ * not an account and carries no claim about who they are.
+ */
+function useVisitorId(): string {
+  const ref = useRef<string>('');
+  if (!ref.current && typeof window !== 'undefined') {
+    const KEY = 'insan_visitor_id';
+    let id = window.sessionStorage.getItem(KEY);
+    if (!id) {
+      id = (window.crypto?.randomUUID?.() ?? `v${Date.now()}${Math.random().toString(36).slice(2)}`)
+        .replace(/-/g, '')
+        .slice(0, 32);
+      window.sessionStorage.setItem(KEY, id);
+    }
+    ref.current = id;
+  }
+  return ref.current;
+}
 
 export default function AIChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,39 +29,49 @@ export default function AIChatWidget() {
     { role: 'ai', text: 'مرحباً بك في منظومة إنسان الرعاية الصحية! كيف يمكنني مساعدتك اليوم؟' }
   ]);
   const [input, setInput] = useState('');
-
   const [isTyping, setIsTyping] = useState(false);
+  const [ended, setEnded] = useState(false);
+  const visitorId = useVisitorId();
+  const [path, setPath] = useState('');
+
+  // The page being read is a free scope hint: someone already on the Delta
+  // hospital page has told us which hospital they mean, so the receptionist
+  // does not have to ask.
+  useEffect(() => {
+    if (typeof window !== 'undefined') setPath(window.location.pathname);
+  }, [isOpen]);
 
   const handleSend = async () => {
-    if (!input.trim() || isTyping) return;
+    if (!input.trim() || isTyping || ended) return;
     const userText = input.trim();
-    const newMessages = [...messages, { role: 'user' as const, text: userText }];
-    setMessages(newMessages);
+    setMessages(prev => [...prev, { role: 'user' as const, text: userText }]);
     setInput('');
     setIsTyping(true);
-    
+
     try {
       const API_BASE = (typeof window !== 'undefined' && process.env.NODE_ENV === 'production')
         ? '/api/v1'
         : (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1');
-      const res = await fetch(`${API_BASE}/ai/chat`, {
+
+      // Only the new message goes over the wire. Conversation history lives
+      // server-side, keyed by visitorId — previously the client sent the whole
+      // transcript back, which let anything running in the page forge the
+      // assistant's own prior turns and then ask it to act on them.
+      const res = await fetch(`${API_BASE}/receptionist/web/message`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          // The API only accepts 'user' | 'assistant' | 'ai' — 'ai' is our
-          // internal display label, translate it to 'assistant' on the wire.
-          messages: newMessages.map(m => ({ role: m.role === 'ai' ? 'assistant' : 'user', content: m.text }))
-        })
+        body: JSON.stringify({ visitorId, text: userText, path: path || undefined, locale: 'ar' }),
       });
-      
-      if (!res.ok) throw new Error('API Error');
+
+      if (!res.ok) throw new Error(`API ${res.status}`);
       const data = await res.json();
-      
-      setMessages(prev => [...prev, { role: 'ai', text: data.text }]);
+
+      if (data.reply) setMessages(prev => [...prev, { role: 'ai', text: data.reply }]);
+      if (data.terminal) setEnded(true);
     } catch (err) {
-      setMessages(prev => [...prev, { 
-        role: 'ai', 
-        text: 'عذراً، حدث خطأ أثناء الاتصال بالمساعد الذكي. الرجاء المحاولة لاحقاً.' 
+      setMessages(prev => [...prev, {
+        role: 'ai',
+        text: 'عذراً، حدث خطأ أثناء الاتصال بالمساعد الذكي. الرجاء المحاولة لاحقاً.'
       }]);
     } finally {
       setIsTyping(false);

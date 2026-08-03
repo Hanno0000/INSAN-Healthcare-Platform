@@ -67,6 +67,10 @@ async function bootstrap() {
       process.env.NODE_ENV === 'production'
         ? ['error', 'warn', 'log']
         : ['error', 'warn', 'log', 'debug'],
+    // Required by the Messenger webhook: its HMAC signature is computed over
+    // the exact bytes Meta sent, and a re-serialised JSON object does not
+    // reproduce them. Without this the signature check can only ever fail.
+    rawBody: true,
   });
 
   app.setGlobalPrefix('api/v1', { exclude: ['health'] });

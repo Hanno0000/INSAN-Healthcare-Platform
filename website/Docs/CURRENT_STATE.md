@@ -1,10 +1,51 @@
 # INSAN Website Platform -- Current State
 
-> **Version:** 6.0
-> **Date:** 2026-07-26
-> **Status:** Phase 2 -- Sprint B Complete (Production Infrastructure)
+> **Version:** 6.1
+> **Date:** 2026-08-03
+> **Status:** Phase 2 -- Sprint B Complete (Production Infrastructure) · Healthcare AI Layer built, unrun
 > **Canonical Handoff Document** -- Primary entry point for Website Platform development only.
 > **Scope:** Website Platform only. For Campaign OS, see `campaign-os/docs/CURRENT_STATE.md`.
+
+---
+
+## ⚠️ Corrections to v6.0 (2026-08-03)
+
+Three claims in v6.0 were measured and found wrong. They are corrected inline
+below and listed here because each one sent work in the wrong direction.
+
+| v6.0 said | Actually |
+|---|---|
+| `ChatConversation` / `ChatMessage`: "Schema only — no AI chat endpoints" | `modules/ai/` was already **282 lines of working code** — provider CRUD with masked keys, priority failover, Gemini embeddings, pgvector search, and a public `POST /ai/chat`. |
+| `ChatWidget (AI chat bubble)`: NOT IMPLEMENTED | **Implemented and mounted** in `PublicLayout.tsx` since before this date. |
+| "Prisma schema with 28 models, 2 migrations applied" | The schema had **drifted ahead of the migrations**: `AiProvider`, `FaqItem`, `DoctorReview`, `ReviewStatus`, six `Hospital` page columns and two `AppointmentStatus` values existed in `schema.prisma` with no migration behind them. A fresh `migrate deploy` would not have produced the running schema. |
+
+A defect found while correcting the first row: the pgvector query in
+`ai.service.ts` read `WHERE isActive = true` unquoted. Postgres folds unquoted
+identifiers to lowercase and Prisma created the column as `"isActive"`, so the
+query threw on every call, retrieval silently returned nothing, and the
+assistant answered ungrounded while looking healthy in every log.
+
+## Healthcare AI Layer (new, 2026-08-03)
+
+A receptionist serving four surfaces — the website widget and the INSAN, Future
+and Delta Facebook pages — from one channel-agnostic engine.
+
+- **Code:** `apps/api/src/modules/receptionist/` (`core/` + `channels/`)
+- **Behaviour, voice, safety lexicons, operator data:** `receptionist/` at the repo root
+- **Design authority:** `receptionist/docs/ARCHITECTURE.md`
+- **Blocked on:** `receptionist/docs/NEEDS_OPERATOR.md`
+
+**Verified:** 136 automated checks — boundary, personas, safety gate, engine,
+and a database layer exercised against real PostgreSQL 18 via PGlite.
+
+**Not verified:** no live model call, no Messenger message, no browser session,
+and pgvector (unavailable in PGlite) — so the semantic retrieval source has
+never run. The first live run of any of it is the interesting one.
+
+`POST /ai/chat` was **removed** on 2026-08-03. It had no emergency detection, no
+scope, no grounding check and no persistence; leaving it reachable would have
+left a documented way around every safety gate in the receptionist. Provider and
+knowledge-base management in `modules/ai/` are unaffected.
 
 ---
 
@@ -15,7 +56,7 @@
 | **Project Phase** | Phase 2 -- Production Readiness (Sprint B Complete) |
 | **Documentation** | 100% complete (18 specification documents, ~4,500+ lines) |
 | **Source Code** | ~206 files across backend (NestJS) and frontend (Next.js) |
-| **Database** | Prisma schema with 28 models, 2 migrations applied, comprehensive seed data |
+| **Database** | Prisma schema with 40 tables / 14 enums, 3 migrations, comprehensive seed data |
 | **API** | 14 modules implemented with ~106 endpoints (auth, CRUD, RBAC, audit) |
 | **Frontend** | 14 public pages + 14 admin modules implemented; 2 admin placeholders |
 | **Deployment** | Docker multi-stage, nginx, CI/CD, deployment scripts implemented |
@@ -456,7 +497,7 @@ The following models exist in the Prisma schema but have no corresponding NestJS
 |-------|--------|-------|
 | `PageDraft` | Schema only | No autosave API |
 | `Media` / `MediaFolder` | Schema + seed folders | No upload/download/CRUD endpoints |
-| `ChatConversation` / `ChatMessage` | Schema only | No AI chat endpoints |
+| `ChatConversation` / `ChatMessage` | **In use** | Receptionist module; extended 2026-08-03 with brand/channel/scope/slots and grounding + token columns |
 | `AiKnowledgeBase` / `AiSettings` | Schema + seed data | No CRUD endpoints |
 | `IntegrationSetting` | Schema + seed data | Read by BrandsService, no dedicated CRUD |
 | `SlugHistory` / `Redirect` | Written by other services | No dedicated read/update API |
@@ -512,7 +553,7 @@ The following models exist in the Prisma schema but have no corresponding NestJS
 | SectionTitle | IMPLEMENTED |
 | EmptyState | IMPLEMENTED |
 | StickyActionsBar | NOT IMPLEMENTED |
-| ChatWidget (AI chat bubble) | NOT IMPLEMENTED |
+| ChatWidget (AI chat bubble) | Implemented, mounted in PublicLayout; rewired 2026-08-03 to POST /receptionist/web/message |
 | LanguageSwitcher | NOT IMPLEMENTED |
 
 ---
@@ -798,7 +839,7 @@ Seven Implementation Readiness Audits were performed on the specification docume
 | **TypeScript (API)** | Compiles | `tsc --noEmit` passes. Strict checks disabled (`strictNullChecks: false`, `noImplicitAny: false`) |
 | **TypeScript (Web)** | Compiles | `tsc --noEmit` passes. `strict: false` |
 | **Prisma Schema** | Valid | `prisma generate` produces client successfully |
-| **Prisma Migrations** | Applied | Both migrations (init + brand_social_account) applied |
+| **Prisma Migrations** | 3 migrations | init + brand_social_account + receptionist_layer. ⚠️ Schema had drifted ahead of migrations before 2026-08-03 — see Corrections. |
 | **Seed Data** | Runs successfully | All seed functions execute in order; upsert-based idempotency |
 | **API Dev Server** | Starts | `ts-node-dev` starts on port 4000; health endpoint returns 200 |
 | **Web Dev Server** | Starts | `next dev` starts on port 5000 |
@@ -830,7 +871,7 @@ Seven Implementation Readiness Audits were performed on the specification docume
 | Production deployment | No prod environment configured |
 | i18n routing | Not wired up (Arabic-only) |
 | Media upload | No API or UI implemented |
-| AI chat | No API or UI implemented |
+| AI chat | Receptionist module (see Healthcare AI Layer above). Built, never run live. |
 | Social sync | No worker implemented |
 | Performance testing | No load testing performed |
 | Accessibility audit | No WCAG verification done |

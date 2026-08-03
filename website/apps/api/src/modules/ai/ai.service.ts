@@ -144,71 +144,17 @@ export class AiService {
     return data?.embedding?.values || [];
   }
 
-  async processChat(messages: { role: string, content: string }[]) {
-    // 1. Get User's latest message
-    const lastMessage = messages[messages.length - 1].content;
-
-    // 2. Perform Vector Search (RAG)
-    let contextStr = '';
-    const vector = await this.generateEmbedding(lastMessage);
-    
-    if (vector.length > 0) {
-      // pgvector similarity search
-      const results = await this.prisma.$queryRawUnsafe<any[]>(
-        `SELECT topic, question, answer, 1 - (embedding <=> $1::vector) as similarity
-         FROM "AiKnowledgeBase"
-         WHERE isActive = true AND embedding IS NOT NULL
-         ORDER BY similarity DESC
-         LIMIT 3`,
-        `[${vector.join(',')}]`
-      );
-      
-      if (results && results.length > 0 && results[0].similarity > 0.5) {
-        contextStr = results.map(r => `Q: ${r.question?.ar}\nA: ${r.answer?.ar}`).join('\n\n');
-      }
-    }
-
-    const systemPrompt = `أنت موظف استقبال طبي محترف (Medical Concierge) ومساعد ذكي لمنصة إنسان للرعاية الصحية.
-مهمتك مساعدة المرضى باحترافية، إيجاز، ولطف باللغة العربية.
-تعليمات هامة جداً:
-1. الإيجاز: تجنب الفقرات الطويلة جداً. استخدم النقاط المنظمة (Bullet points).
-2. التوجيه (Call to Action): في نهاية ردك، قم دائماً بتوجيه المريض إلى القسم المناسب باستخدام رابط. صيغة الرابط يجب أن تكون هكذا حصراً: [النص](الرابط).
-أمثلة للروابط التي يمكنك استخدامها:
-- للحجز: [احجز موعدك الآن](/book) أو [احجز موعدك الآن](/appointments)
-- للأطباء: [ابحث عن طبيب](/doctors)
-- للمستشفيات: [تصفح المستشفيات](/hospitals)
-- للخدمات: [خدماتنا](/services)
-
-معلومات سياقية للإجابة منها:
-${contextStr || 'لا توجد معلومات مخصصة. أجب بشكل عام ورحب بالعميل.'}`;
-
-    // 3. Provider Fallback Logic
-    const providers = await this.prisma.aiProvider.findMany({
-      where: { isActive: true },
-      orderBy: { priority: 'asc' },
-    });
-
-    if (providers.length === 0) {
-      return { text: "عذراً، المساعد الذكي غير متصل حالياً بأي مزود خدمة." };
-    }
-
-    const formattedMessages = [
-      { role: 'system', content: systemPrompt },
-      ...messages
-    ];
-
-    for (const provider of providers) {
-      try {
-        const reply = await this.callProvider(provider, formattedMessages);
-        if (reply) return { text: reply };
-      } catch (err) {
-        this.logger.warn(`Provider ${provider.name} failed: ${err.message}. Trying next...`);
-        // Continue to next provider in fallback chain
-      }
-    }
-
-    throw new HttpException('All AI providers failed', HttpStatus.SERVICE_UNAVAILABLE);
-  }
+  // processChat() was removed 2026-08-03 together with POST /ai/chat.
+  // The public assistant is now the receptionist module, which runs a
+  // deterministic safety gate before any model call and a grounding check
+  // after it. See modules/receptionist/core/engine/conversation-engine.service.ts
+  //
+  // Its pgvector query also carried a live defect worth recording: it read
+  //  unquoted. Postgres folds unquoted identifiers to
+  // lowercase and Prisma created the column as "isActive", so the query threw
+  // on every call, retrieval silently returned nothing, and the assistant
+  // answered ungrounded while looking perfectly healthy in every log. The
+  // replacement in SemanticSource quotes it.
 
   private async callProvider(provider: AiProvider, messages: any[]): Promise<string> {
     const isGroq = provider.name.toLowerCase().includes('groq');

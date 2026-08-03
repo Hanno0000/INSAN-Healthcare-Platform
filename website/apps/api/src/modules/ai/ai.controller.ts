@@ -66,11 +66,18 @@ export class AiController {
   }
 
   // ==============================
-  // Public Chat Endpoint
+  // Public Chat Endpoint — REMOVED 2026-08-03
   // ==============================
-  @Post('chat')
-  @Throttle({ default: { limit: 10, ttl: 60000 } })
-  processChat(@Body() dto: ChatDto) {
-    return this.aiService.processChat(dto.messages);
-  }
+  //
+  // `POST /ai/chat` used to serve the public site widget. It is gone, and the
+  // widget now calls `POST /receptionist/web/message`.
+  //
+  // It was removed rather than fixed because of what it did NOT have: no
+  // emergency detection, no scope (it could describe either hospital's services
+  // on any page), no grounding check, and no persistence. A patient describing
+  // chest pain to it got a general chatbot answer. Leaving it reachable would
+  // have left a documented way around every safety gate in the receptionist.
+  //
+  // Provider and knowledge-base management above are unaffected — the admin
+  // dashboard still uses them.
 }
