@@ -88,7 +88,12 @@ module.exports = {
       // Captured by voice 2026-08-04. Two genuine gaps: the operator declined
       // Can Promise outright, and comprehensive check-up program pricing was
       // still being sent when the recording ended.
-      'MEDICAL_SERVICE_INTERNAL_MEDICINE_CARDIOLOGY.md'
+      'MEDICAL_SERVICE_INTERNAL_MEDICINE_CARDIOLOGY.md',
+      // Captured by voice 2026-08-04, planned as four recorded parts — only the
+      // first and last arrived. Core Features and Differentiators carry the
+      // heaviest gaps: no equipment, staffing or theatre count was ever
+      // recorded, which is the same class of gap that blocks Emergency.
+      'MEDICAL_SERVICE_GENERAL_SURGERY.md'
     ];
 
     t.is(broken, [], 'no knowledge file has a structural problem');
