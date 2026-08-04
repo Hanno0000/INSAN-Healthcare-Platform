@@ -10,13 +10,21 @@
  * scope here and stays unverified. The deterministic path is the critical one.
  *
  * ── Running it ────────────────────────────────────────────────────────────
- *   npm i --no-save @electric-sql/pglite
+ * The repository sits on Google Drive, where `npm i` intermittently fails
+ * mid-write, so install the dependency somewhere else and point back:
  *
- *   cd website/apps/api && npx prisma migrate diff \
+ *   mkdir /tmp/pgtest && cd /tmp/pgtest
+ *   npm init -y && npm i @electric-sql/pglite
+ *   cp "<repo>/receptionist/scripts/test-database.mjs" .
+ *
+ *   cd "<repo>/website/apps/api" && npx prisma migrate diff \
  *     --from-empty --to-schema-datamodel prisma/schema.prisma --script \
- *     > ../../../receptionist/scripts/full.sql
+ *     > "<repo>/receptionist/scripts/full.sql"
  *
- *   node receptionist/scripts/test-database.mjs
+ *   cd /tmp/pgtest && RECEPTIONIST_REPO="<repo>" node test-database.mjs
+ *
+ * On a filesystem npm can write to, `node receptionist/scripts/test-database.mjs`
+ * works directly after installing the dependency beside it.
  *
  * `full.sql` is generated, not committed — it must always reflect the current
  * schema, and a stale committed copy would quietly test the wrong thing.
@@ -28,7 +36,14 @@ import path from 'path';
 
 // decodeURIComponent matters: a repo path containing a space arrives as %20.
 const HERE = path.dirname(decodeURIComponent(new URL(import.meta.url).pathname).replace(/^\/([A-Za-z]:)/, '$1'));
-const REPO = path.resolve(HERE, '..', '..');
+
+// RECEPTIONIST_REPO lets this file be copied somewhere npm can actually install
+// and still read the repo. This repository lives on Google Drive, which locks
+// files mid-write — `npm i` here fails with TAR_ENTRY_ERROR often enough that
+// requiring the dependency to sit beside the script would make the harness
+// unrunnable. Copy it to a scratch directory, install there, point this at the
+// repo.
+const REPO = process.env.RECEPTIONIST_REPO ?? path.resolve(HERE, '..', '..');
 
 let pass = 0;
 const fail = [];
