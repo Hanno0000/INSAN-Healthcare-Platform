@@ -64,7 +64,13 @@ const violations = [];
 
 for (const file of walk(CORE_DIR)) {
   const rel = path.relative(REPO_ROOT, file);
-  const lines = fs.readFileSync(file, 'utf8').split('\n');
+  // Strip CR as well as splitting on LF. Without this, every line on a Windows
+  // checkout ends in `\r`, and `\r` is a line terminator that `.` does not
+  // match — so the comment-stripping regexes below silently stop matching and
+  // the check starts reporting every doc comment that names a channel. It
+  // passed on the machine that wrote the files (LF) and failed the moment git
+  // handed them back as CRLF.
+  const lines = fs.readFileSync(file, 'utf8').split(/\r?\n/);
 
   lines.forEach((line, i) => {
     // Comments are allowed to name channels — the ban is on code depending on
