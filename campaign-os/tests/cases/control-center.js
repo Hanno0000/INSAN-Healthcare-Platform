@@ -134,6 +134,67 @@ module.exports = {
       global.PropertiesService = saved;
     }
 
+    // --- the MENU's status screen answers the same question the same way ---
+    //
+    // There are two functions reporting system health: getSystemStatus for the
+    // sidebar, and systemStatus for the menu item. The sidebar's was fixed on
+    // 2026-08-02 and the menu's was missed for two days — so the operator about
+    // to do their first production run had a screen telling them the API was
+    // configured while the most expensive worker in the chain could not make a
+    // call. Two answers to one question, one of them wrong.
+    const savedForMenu = global.PropertiesService;
+
+    try {
+      global.PropertiesService = {
+        getScriptProperties: () => ({ getProperty: (k) => (k === 'GEMINI_API_KEY' ? 'g' : null) })
+      };
+
+      // systemStatus reaches CacheService before it shows anything, and the
+      // harness stubs that to throw. Cache is always present in real Apps
+      // Script, so it is stubbed here rather than guarded in production code —
+      // the text is what this check is about.
+      // It displays through Browser.msgBox, not ui.alert — and `Browser` is not
+      // in run.js's stub list at all, so it is defined here for the duration.
+      let shown = '';
+      const savedAlert = global.SpreadsheetApp;
+      const savedCache = global.CacheService;
+      const savedBrowser = global.Browser;
+
+      global.CacheService = {
+        getScriptCache: () => ({ put: () => {}, get: () => '1', remove: () => {} })
+      };
+      global.Browser = {
+        msgBox: (title, body) => { shown = String(body || title); },
+        Buttons: { OK: 'ok', YES_NO: 'yes_no' }
+      };
+      global.SpreadsheetApp = {
+        getUi: () => ({
+          alert: (title, body) => { shown = String(body || title); },
+          ButtonSet: { OK: 'OK' }
+        }),
+        getActiveSpreadsheet: () => { throw new Error('no sheet'); }
+      };
+
+      try { systemStatus(); } catch (e) { /* Drive stub throws and is caught inside */ }
+
+      global.SpreadsheetApp = savedAlert;
+      global.CacheService = savedCache;
+      global.Browser = savedBrowser;
+
+      if (shown) {
+        t.includes(shown, 'Claude',
+          'the menu status screen names Claude, not only Gemini — the Creative ' +
+          'Director runs on it and does not fall back');
+        t.ok(/KEY MISSING/.test(shown),
+          'and says plainly that the missing key stops its workers, rather than ' +
+          'reporting one configured provider and leaving the operator to assume');
+      } else {
+        t.ok(false, 'systemStatus produced no text to check');
+      }
+    } finally {
+      global.PropertiesService = savedForMenu;
+    }
+
     // --- the panel names the missing key ---
     t.includes(html, 'missingProviders',
       'the sidebar reads the named list, so the bar can say which key is ' +

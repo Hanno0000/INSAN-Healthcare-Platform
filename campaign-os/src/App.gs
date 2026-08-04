@@ -1054,8 +1054,46 @@ function systemStatus() {
 
   lines.push('Gemini Model: ' + CONFIG.GEMINI_MODEL);
 
-  var apiKey = PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY');
-  lines.push('Gemini API: ' + (apiKey ? '✅ Configured' : '❌ Not configured'));
+  // Every provider some worker is configured to use — not just Gemini.
+  //
+  // This read GEMINI_API_KEY alone and labelled the line "Gemini API", which was
+  // true and useless: the Creative Director runs on Claude and does NOT fall
+  // back, so it fails on every row without ANTHROPIC_API_KEY. An operator
+  // checking this screen before their first run saw one configured key and
+  // concluded the system was ready.
+  //
+  // The sidebar's getSystemStatus was fixed on 2026-08-02 and this was missed —
+  // two functions answering the same question, one of them still wrong. Same
+  // rule as there: a provider no worker uses is shown but never fails the check.
+  var needed = {};
+
+  for (var workerName in CONFIG.WORKERS) {
+    if (!CONFIG.WORKERS.hasOwnProperty(workerName)) continue;
+    needed[CONFIG.WORKERS[workerName].provider || 'gemini'] = true;
+  }
+
+  var providers = AIProvider.getAvailableProviders();
+  var missing = [];
+
+  for (var p = 0; p < providers.length; p++) {
+    var provider = providers[p];
+    var configured = AIProvider.isConfigured(provider);
+    var required = !!needed[provider];
+    var label = provider.charAt(0).toUpperCase() + provider.slice(1);
+
+    lines.push(label + ' API: ' +
+      (configured
+        ? (required ? '✅ Configured' : '✅ Configured (no worker uses it)')
+        : (required ? '❌ KEY MISSING — its workers fail on every row'
+                    : '— not set (unused)')));
+
+    if (required && !configured) missing.push(label);
+  }
+
+  if (missing.length) {
+    lines.push('');
+    lines.push('⚠️  Set ' + missing.join(' and ') + ' in Script Properties before running.');
+  }
 
   try {
     DriveApp.getFolderById(CONFIG.DOCS_FOLDER_ID);
