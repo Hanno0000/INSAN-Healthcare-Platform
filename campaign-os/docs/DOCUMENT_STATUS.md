@@ -69,7 +69,7 @@ checkable; twenty scattered headers are not.
 
 | Document | Status | Note |
 |---|---|---|
-| `SYSTEM_ARCHITECTURE.md` | **Current** | All ten workers, the data contract, the two-layer knowledge rule. |
+| `SYSTEM_ARCHITECTURE.md` | **Current, with caveats** | All ten workers, the data contract, the two-layer knowledge rule. ⚠️ Its diagrams still draw the Calendar→Pipeline and Cards→Pipeline joins as a live `VLOOKUP`; that formula was deleted 2026-08-02 and the join is now the explicit `Transfer Rows Forward` step, matched by column name, never position. See the caveat at the top of the file. |
 | `architecture/WORKER_CONTRACTS_V2.md` | **Current** | Per-worker I/O with build status. Supersedes `VISUAL_WORKER_CONTRACTS.md`. ⚠️ Its W2 clause about Master Campaign Library page eligibility is **not implemented** — see `roadmap/TAB_CONSOLIDATION.md`. |
 | `architecture/CREATIVE_PACKAGE_CONTRACT.md` | **Current** | The Content → Visual handoff, in detail. Sits under WORKER_CONTRACTS_V2. |
 | `architecture/INSAN_VISUAL_LANGUAGE_SPEC.md` | **Current** | Loaded at runtime by the Creative Director and the Media Designer. |

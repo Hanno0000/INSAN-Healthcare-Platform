@@ -947,8 +947,9 @@ function createManagedColumns() {
 
     lines.push('');
     lines.push('New columns are appended at the end of the sheet, never');
-    lines.push('inserted — Campaign Cards O:Z is addressed positionally by the');
-    lines.push('Content Pipeline VLOOKUP. Do not move them left of column Z.');
+    lines.push('inserted — every column here is resolved by its header text at');
+    lines.push('read time (SheetSchema._getColumnMap), not by position, so a');
+    lines.push('column may be reordered freely without breaking a write.');
 
     ui.alert('Managed Columns', lines.join('\n'), ui.ButtonSet.OK);
 
@@ -1936,8 +1937,9 @@ function _missingRequiredInputs(workerName, rowData) {
 function _refusalRemedy(workerName) {
   switch (workerName) {
     case 'CONTENT_STRATEGY_WORKER':
-      return 'These arrive by VLOOKUP from Campaign Cards — the campaign has ' +
-             'no card, or the card has no strategy. Build the card first.';
+      return 'These arrive from Campaign Cards via Transfer Rows Forward — the ' +
+             'campaign has no card, or the card has no strategy. Build the card ' +
+             'first, then run Transfer Rows Forward again.';
     case 'CONTENT_CREATION_WORKER':
       return 'Run the Strategy Worker on this row first.';
     case 'CREATIVE_DIRECTOR_WORKER':

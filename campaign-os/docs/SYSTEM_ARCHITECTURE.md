@@ -2,9 +2,20 @@
 
 > **Version:** 1.0
 > **Date:** 2026-07-29
-> **Status:** **Current** — all ten workers now exist in code; 🟡 marks the five
-> that have never run. See docs/DOCUMENT_STATUS.md.
+> **Status:** **Current, with a caveat** — all ten workers now exist in code; 🟡
+> marks the five that have never run. See docs/DOCUMENT_STATUS.md.
 > **Audience:** Any engineer or AI worker joining this project with no prior context.
+>
+> ⚠️ **Caveat added 2026-08-04.** The diagrams below (§3, §4) show the Campaign
+> Calendar and Campaign Cards reaching Content Pipeline through a live spreadsheet
+> **VLOOKUP**. That formula was deleted from the workbook on 2026-08-02 along with
+> every other transfer formula — see `START_HERE.md` §6.5. The join is now an
+> explicit step, **`AI Workers → Planning → Transfer Rows Forward`**, run by
+> `Transfer.gs`, which matches every field **by column header, never by
+> position**. The two spots that stated a hard positional requirement (§4's "must
+> stay in positions O:Z") have been corrected; the ASCII diagrams still draw an
+> arrow labelled `VLOOKUP` and should be read as "the join happens here," not as a
+> literal formula.
 
 ---
 
@@ -341,8 +352,10 @@ W2, W9 and W10.
 | Depth | Core Positioning, Human Insight, Invisible Product, Psychological Transformation, Trust Platform Type, Narrative Arc | W1 |
 | Provenance **(new)** | Knowledge Source, Card Built At | W1 |
 
-⚠️ The twelve strategy columns must stay in positions **O:Z** — the Content Pipeline
-VLOOKUP addresses them positionally.
+The twelve strategy columns may sit anywhere on the sheet: `Transfer.gs`
+(`Transfer.CARD_STRATEGY`) matches every field by header text, not position — this
+replaced an earlier spreadsheet VLOOKUP that did address them positionally. See the
+caveat at the top of this document.
 
 ### Content Calendar (one row per scheduled post)
 
@@ -356,7 +369,7 @@ looks it up from Campaign Cards. Keeping both is how the two sources drift.
 | Range | Content | Source |
 |---|---|---|
 | A:F | Scheduling and identity | formula ← Content Calendar |
-| G:R | The 12 strategy fields | VLOOKUP ← Campaign Cards O:Z |
+| G:R | The 12 strategy fields | `Transfer Rows Forward` ← Campaign Cards, by name |
 | S:AJ | Strategy + visual direction | W3, refined by W5 |
 | AK:AN | Copy, hashtags, design prompt | W4 |
 | AO:AS | Creative Director review | W5 |

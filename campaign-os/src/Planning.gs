@@ -33,16 +33,20 @@
 //
 // Turns one knowledge file into one Campaign Cards row.
 //
-// This is the worker the system was missing. The Content Calendar schedules 41
-// distinct campaigns; Campaign Cards covers 16. The VLOOKUP fails for the other
-// 25, and 89 of 132 pipeline rows (67%) reach the Content Strategy Worker with
-// all twelve strategy fields blank. The workers were not failing on those rows —
+// This is the worker the system was missing. Measured on the sheet as it stood
+// on 2026-07-29: the Content Calendar scheduled 41 distinct campaigns, Campaign
+// Cards covered 16, and 89 of 132 pipeline rows (67%) reached the Content
+// Strategy Worker with all twelve strategy fields blank — the campaigns with no
+// card resolved to nothing. The workers were not failing on those rows —
 // they were inventing, because nothing had been said.
 // (Audit A, findings F1 and F7; SYSTEM_ARCHITECTURE §9.2.)
 //
 // Knowledge flows one way:
 //
-//   knowledge file  →  W1  →  one row in Campaign Cards  →  VLOOKUP  →  pipeline
+//   knowledge file  →  W1  →  one row in Campaign Cards  →  Transfer.gs  →  pipeline
+//
+// (Transfer.gs replaced a spreadsheet VLOOKUP that did this same join
+// positionally; see Transfer.CARD_STRATEGY below.)
 //
 // The card is a derivation, never a copy. A wrong fact is fixed in the knowledge
 // file and the card rebuilt — fixing it in the card alone leaves the file wrong
@@ -528,9 +532,9 @@ var CardBuilder = {
   // "Intensive Care Unit" while the calendar schedules "ICU Center" (11 slots),
   // the Emergency file names "Emergency Department" against "Emergency Center"
   // (16), and the Delta file names the hospital against "Delta Restore Trust"
-  // (8). Filing the card under the entity name leaves the VLOOKUP returning
-  // blank on all 35 — the 67% defect again, this time arriving underneath a
-  // card that reported success.
+  // (8). Filing the card under the entity name leaves Transfer.gs unable to
+  // find it for any of the 35 — the 67% defect again, this time arriving
+  // underneath a card that reported success.
   //
   // So a file may state campaign_name when the two differ. Where it does not,
   // the entity name is the campaign name — true of every supporting campaign.
@@ -2913,8 +2917,9 @@ var Transfer = {
     'Hospital Brand': 'Hospital Brand'
   },
 
-  // Campaign Cards O:Z — the twelve strategy fields, copied per row because the
-  // Content Strategy Worker reads them off the row it is given.
+  // The twelve strategy fields on Campaign Cards, copied per row because the
+  // Content Strategy Worker reads them off the row it is given. Matched by
+  // header name on both sheets — this list is not a position.
   CARD_STRATEGY: [
     'Campaign Philosophy', 'Trust Platform', 'Core Message', 'Trust Promise',
     'Emotional Trigger', 'Psychological Barrier', 'Content Pillars',

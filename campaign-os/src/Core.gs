@@ -824,9 +824,10 @@ var CONFIG = {
   // Columns code writes that must exist for a write to land. writeCell skips a
   // missing column and only logs it, so a rename or a fresh copy of the sheet
   // loses the write silently. Checked and created by ensureManagedColumns().
-  // Appended at the end of the sheet, never inserted: the Content Pipeline
-  // VLOOKUP addresses Campaign Cards O:Z positionally, and an inserted column
-  // shifts every strategy field out from under it.
+  // Appended at the end of the sheet, never inserted — simplest possible rule
+  // for a function that only needs to find a free slot. Every column is
+  // resolved by header text at read time (SheetSchema._getColumnMap), so this
+  // is a convenience, not a requirement: nothing downstream depends on position.
   MANAGED_COLUMNS: [
     { sheet: 'Content Pipeline', column: 'Pipeline State' },
     { sheet: 'Content Pipeline', column: 'Alternative Opening' },
@@ -2616,7 +2617,7 @@ var SheetWriter = {
   // Every rule is written allowInvalid, so a value outside the list is flagged
   // for review rather than blocking a worker mid-run. Columns absent from the
   // sheet are reported, never created — a missing dropdown column is a schema
-  // question, and guessing where it belongs is how a positional VLOOKUP breaks.
+  // question for a person to answer, not one this function should guess at.
   syncSheetValidation: function(sheetName) {
     var sheet = this._getSheet(sheetName);
 
@@ -2679,9 +2680,10 @@ var SheetWriter = {
   // sheet loses those writes silently — which is exactly how the machine state
   // ended up in the operator's Workflow Status column.
   //
-  // Appends only. Never inserts: Campaign Cards O:Z is addressed positionally
-  // by the Content Pipeline VLOOKUP, and an insert before column Z moves every
-  // strategy field out from under it.
+  // Appends only, never inserts — the simplest way to add a column that does
+  // not yet exist. Every column is resolved by header text at read time, not
+  // by position, so this is a matter of simplicity, not a constraint the rest
+  // of the system relies on.
   ensureManagedColumns: function() {
     var results = [];
     var managed = CONFIG.MANAGED_COLUMNS || [];
