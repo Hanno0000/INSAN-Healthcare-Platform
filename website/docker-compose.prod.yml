@@ -27,6 +27,7 @@ services:
       - "127.0.0.1:4000:4000"
     volumes:
       - uploads_data:/app/uploads
+      - ../receptionist:/receptionist:ro
     depends_on:
       - db
     healthcheck:
