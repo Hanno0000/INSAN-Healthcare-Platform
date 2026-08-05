@@ -24,6 +24,29 @@ export class HospitalDepartmentDto {
   @ValidateNested()
   @Type(() => BilingualDto)
   name: BilingualDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => BilingualDto)
+  shortDescription?: BilingualDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => BilingualDto)
+  description?: BilingualDto;
+
+  @IsOptional()
+  @IsString()
+  image?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  doctorIds?: string[];
+
+  @IsOptional()
+  @IsObject()
+  customFields?: Record<string, any>;
 }
 
 export class CreateHospitalDto {

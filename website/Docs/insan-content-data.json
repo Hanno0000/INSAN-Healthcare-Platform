@@ -77,7 +77,7 @@
     { "slug": "icu", "name": { "ar": "وحدة العناية المركزة", "en": "Intensive Care Unit" }, "registry_id": "MED-001",
       "shortDescription": { "ar": "رعاية حرجة على مدار الساعة بأجهزة إنعاش ومتابعة متقدمة.", "en": "Round-the-clock critical care with advanced life-support and monitoring." },
       "suggestedImage": "business/Media/Services/Intensive Care Unit/icu-bay-beds-5-6-ventilator-monitors.jpeg" },
-    { "slug": "emergency", "name": { "ar": "قسم الطوارئ", "en": "Emergency Department" }, "registry_id": "MED-002",
+    { "slug": "emergency", "name": { "ar": "مركز الاستجابة السريعة (الطوارئ)", "en": "Emergency Department" }, "registry_id": "MED-002",
       "shortDescription": { "ar": "استقبال وطوارئ على مدار 24 ساعة لجميع الحالات العاجلة.", "en": "24-hour reception and emergency care for all urgent cases." },
       "suggestedImage": "business/Media/Services/Emergency Department/emergency-exam-bays-wide.jpeg" },
     { "slug": "operating-rooms", "name": { "ar": "غرف العمليات", "en": "Operating Rooms" }, "registry_id": "MED-003",

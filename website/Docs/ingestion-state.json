@@ -22,7 +22,9 @@
       "suggestedImage": "business/Media/Facility/Hospital Exterior/future-hospital-exterior-016.jpeg",
       "brandColor": "#0B1F3A",
       "contactInfo": {
-        "phone": "24156739 - 24156798",
+        "phone": "01122224352 - 01151001177",
+        "whatsapp": "01151001177",
+        "email": "info@insan-platform.com",
         "address": {
           "ar": "مستشفى المستقبل مصر الجديدة ٦٧ أ نخلة المطيعي - ميدان تريومف - اتجاه صلاح سالم",
           "en": "67 A Nakhla El Motiey - Triumph Square - Towards Salah Salem, Heliopolis"
@@ -101,7 +103,8 @@
             "en": "General Surgery & Endoscopy Center"
           }
         }
-      ]
+      ],
+      "status": "PUBLISHED"
     },
     "delta-hospital": {
       "slug": "delta-hospital",
@@ -124,6 +127,15 @@
       },
       "suggestedImage": "business/Media/Facility/Reception & Waiting/reception-lobby-counter-and-stairs.jpeg",
       "brandColor": "#0E7C86",
+      "contactInfo": {
+        "phone": "01217778869 - 01500668657",
+        "whatsapp": "01217778869",
+        "email": "info@insan-platform.com",
+        "address": {
+          "ar": "طنطا، مصر",
+          "en": "Tanta, Egypt"
+        }
+      },
       "departments": [
         {
           "slug": "icu",
@@ -253,7 +265,8 @@
             "en": "Senior Health & Screening Center"
           }
         }
-      ]
+      ],
+      "status": "PUBLISHED"
     }
   },
   "centers": {
@@ -473,6 +486,18 @@
     "default_meta_description": {
       "ar": "منظومة إنسان تربط المرضى بأفضل الكفاءات الطبية في مصر من خلال مستشفياتها المتخصصة ومراكزها الطبية، بمعيار موحّد للرعاية.",
       "en": "INSAN connects patients with leading medical expertise in Egypt through its specialized hospitals and medical centers, under one unified standard of care."
+    },
+    "contact_email": "info@insan-platform.com",
+    "contact_phone": "01500668657 - 01100755556",
+    "emergency_phone": "01500668657 - 01100755556",
+    "whatsapp_number": "01500668657",
+    "contact_address": {
+      "ar": "القاهرة، مصر",
+      "en": "Cairo, Egypt"
+    },
+    "working_hours": {
+      "ar": "السبت - الخميس: 9 صباحاً - 5 مساءً | الطوارئ: 24 ساعة",
+      "en": "Saturday - Thursday: 9:00 AM - 5:00 PM | Emergency: 24/7"
     }
   }
 }

@@ -90,12 +90,23 @@ async function processEntities(type, endpoint, items) {
         // Hydrate departments and centers for hospitals
         if (type === 'hospitals') {
             if (Array.isArray(cleaned.departments)) {
-                cleaned.departments = cleaned.departments.map(slug => {
-                    if (typeof slug === 'string') {
-                        const dep = data.departments_catalog?.find(d => d.slug === slug);
-                        return dep ? { slug: dep.slug, name: dep.name } : { slug };
-                    }
-                    return slug;
+                cleaned.departments = cleaned.departments.map(item => {
+                    let slug = typeof item === 'string' ? item : item.slug;
+                    const globalDep = data.departments_catalog?.find(d => d.slug === slug) || {};
+                    const localOverrides = typeof item === 'object' ? item : {};
+                    
+                    if (!globalDep.slug && !localOverrides.slug) return { slug };
+
+                    const resolvedImg = localOverrides.image || (globalDep.suggestedImage !== '__NEEDS_OPERATOR__' ? globalDep.suggestedImage : null);
+                    
+                    return {
+                        slug,
+                        name: localOverrides.name || globalDep.name,
+                        shortDescription: localOverrides.shortDescription || globalDep.shortDescription,
+                        description: localOverrides.description || globalDep.description,
+                        image: resolvedImg,
+                        ...localOverrides
+                    };
                 });
             }
             if (Array.isArray(cleaned.centers)) {
