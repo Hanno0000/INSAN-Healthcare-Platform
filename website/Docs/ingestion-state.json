@@ -1,0 +1,478 @@
+{
+  "hospitals": {
+    "future-hospital": {
+      "slug": "future-hospital",
+      "registry_id": "HOSP-001",
+      "name": {
+        "ar": "مستشفى المستقبل التخصصي",
+        "en": "Future Specialized Hospital"
+      },
+      "shortDescription": {
+        "ar": "مستشفى تخصصي يعمل تحت منظومة إنسان بمعيار موحّد للرعاية.",
+        "en": "A specialized hospital operating under the INSAN platform to a unified standard of care."
+      },
+      "description": {
+        "ar": "مستشفى المستقبل التخصصي هو أحد مستشفيَي منظومة إنسان، ويحمل موقع القيادة والابتكار في المنظومة. يضم أربعة مراكز طبية متخصصة إلى جانب الأقسام المستشفوية من طوارئ وعناية مركزة وعمليات وأشعة ومعمل.",
+        "en": "Future Specialized Hospital is one of INSAN's two hospitals, carrying the platform's position of leadership and innovation. It operates four specialized medical centers alongside hospital-wide departments including Emergency, Intensive Care, Operating Rooms, Radiology and Laboratory."
+      },
+      "heroTagline": {
+        "ar": "القيادة والابتكار في الرعاية الصحية",
+        "en": "Leadership and innovation in healthcare"
+      },
+      "suggestedImage": "business/Media/Facility/Hospital Exterior/future-hospital-exterior-016.jpeg",
+      "brandColor": "#0B1F3A",
+      "contactInfo": {
+        "phone": "24156739 - 24156798",
+        "address": {
+          "ar": "مستشفى المستقبل مصر الجديدة ٦٧ أ نخلة المطيعي - ميدان تريومف - اتجاه صلاح سالم",
+          "en": "67 A Nakhla El Motiey - Triumph Square - Towards Salah Salem, Heliopolis"
+        }
+      },
+      "departments": [
+        {
+          "slug": "icu",
+          "name": {
+            "ar": "وحدة العناية المركزة",
+            "en": "Intensive Care Unit"
+          }
+        },
+        {
+          "slug": "emergency",
+          "name": {
+            "ar": "قسم الطوارئ",
+            "en": "Emergency Department"
+          }
+        },
+        {
+          "slug": "operating-rooms",
+          "name": {
+            "ar": "غرف العمليات",
+            "en": "Operating Rooms"
+          }
+        },
+        {
+          "slug": "radiology",
+          "name": {
+            "ar": "الأشعة والتصوير",
+            "en": "Radiology & Imaging"
+          }
+        },
+        {
+          "slug": "laboratory",
+          "name": {
+            "ar": "المعمل",
+            "en": "Laboratory"
+          }
+        },
+        {
+          "slug": "outpatient-clinics",
+          "name": {
+            "ar": "العيادات الخارجية",
+            "en": "Outpatient Clinics"
+          }
+        }
+      ],
+      "centers": [
+        {
+          "slug": "cardiac-internal-medicine",
+          "name": {
+            "ar": "مركز القلب والباطنة وإحالة الرعايات الحرجة",
+            "en": "Cardiac & Internal Medicine Center"
+          }
+        },
+        {
+          "slug": "urology-laser",
+          "name": {
+            "ar": "مركز جراحات المسالك والليزر",
+            "en": "Urology & Laser Surgery Center"
+          }
+        },
+        {
+          "slug": "digestive-liver",
+          "name": {
+            "ar": "مركز مناظير الجهاز الهضمي والكبد",
+            "en": "Digestive & Liver Endoscopy Center"
+          }
+        },
+        {
+          "slug": "general-surgery",
+          "name": {
+            "ar": "مركز الجراحات العامة والمناظير",
+            "en": "General Surgery & Endoscopy Center"
+          }
+        }
+      ]
+    },
+    "delta-hospital": {
+      "slug": "delta-hospital",
+      "registry_id": "HOSP-002",
+      "name": {
+        "ar": "مستشفى الدلتا الدولي",
+        "en": "Delta International Hospital"
+      },
+      "shortDescription": {
+        "ar": "مستشفى يعمل تحت منظومة إنسان ويشغّل المراكز الطبية الاثني عشر كاملة.",
+        "en": "A hospital operating under the INSAN platform, running the full set of twelve medical centers."
+      },
+      "description": {
+        "ar": "مستشفى الدلتا الدولي يعمل تحت منظومة إنسان وتديره شركة L'Avenir Medical. وهو المستشفى الوحيد في المنظومة الذي يشغّل المراكز الطبية الاثني عشر كاملة، إلى جانب الأقسام المستشفوية من طوارئ وعناية مركزة وعمليات وأشعة ومعمل — ما يجعله أكمل تطبيق لنموذج المراكز في المنظومة.",
+        "en": "Delta International Hospital operates under the INSAN platform and is managed by L'Avenir Medical. It is the only site in the ecosystem that runs the full set of twelve medical centers, alongside hospital-wide departments — making it the most complete implementation of the centers model."
+      },
+      "heroTagline": {
+        "ar": "اثنا عشر مركزًا طبيًا تحت سقف واحد",
+        "en": "Twelve medical centers under one roof"
+      },
+      "suggestedImage": "business/Media/Facility/Reception & Waiting/reception-lobby-counter-and-stairs.jpeg",
+      "brandColor": "#0E7C86",
+      "departments": [
+        {
+          "slug": "icu",
+          "name": {
+            "ar": "وحدة العناية المركزة",
+            "en": "Intensive Care Unit"
+          }
+        },
+        {
+          "slug": "emergency",
+          "name": {
+            "ar": "قسم الطوارئ",
+            "en": "Emergency Department"
+          }
+        },
+        {
+          "slug": "operating-rooms",
+          "name": {
+            "ar": "غرف العمليات",
+            "en": "Operating Rooms"
+          }
+        },
+        {
+          "slug": "radiology",
+          "name": {
+            "ar": "الأشعة والتصوير",
+            "en": "Radiology & Imaging"
+          }
+        },
+        {
+          "slug": "laboratory",
+          "name": {
+            "ar": "المعمل",
+            "en": "Laboratory"
+          }
+        },
+        {
+          "slug": "outpatient-clinics",
+          "name": {
+            "ar": "العيادات الخارجية",
+            "en": "Outpatient Clinics"
+          }
+        }
+      ],
+      "centers": [
+        {
+          "slug": "cardiac-internal-medicine",
+          "name": {
+            "ar": "مركز القلب والباطنة وإحالة الرعايات الحرجة",
+            "en": "Cardiac & Internal Medicine Center"
+          }
+        },
+        {
+          "slug": "urology-laser",
+          "name": {
+            "ar": "مركز جراحات المسالك والليزر",
+            "en": "Urology & Laser Surgery Center"
+          }
+        },
+        {
+          "slug": "digestive-liver",
+          "name": {
+            "ar": "مركز مناظير الجهاز الهضمي والكبد",
+            "en": "Digestive & Liver Endoscopy Center"
+          }
+        },
+        {
+          "slug": "general-surgery",
+          "name": {
+            "ar": "مركز الجراحات العامة والمناظير",
+            "en": "General Surgery & Endoscopy Center"
+          }
+        },
+        {
+          "slug": "diabetic-foot-vascular",
+          "name": {
+            "ar": "مركز القدم السكري والأوعية الدموية",
+            "en": "Diabetic Foot & Vascular Center"
+          }
+        },
+        {
+          "slug": "pain-management",
+          "name": {
+            "ar": "مركز علاج الألم والتدخلات المحدودة",
+            "en": "Pain Management Center"
+          }
+        },
+        {
+          "slug": "womens-childrens-health",
+          "name": {
+            "ar": "مركز صحة المرأة والطفل",
+            "en": "Women's & Children's Health Center"
+          }
+        },
+        {
+          "slug": "dental",
+          "name": {
+            "ar": "مركز الأسنان للكبار والأطفال وذوي الهمم",
+            "en": "Dental Center"
+          }
+        },
+        {
+          "slug": "ent-head-neck",
+          "name": {
+            "ar": "مركز الأنف والأذن وجراحات الرقبة والرأس",
+            "en": "ENT & Head/Neck Surgery Center"
+          }
+        },
+        {
+          "slug": "orthopedic-sports",
+          "name": {
+            "ar": "مركز العظام وإصابات الملاعب",
+            "en": "Orthopedic & Sports Injury Center"
+          }
+        },
+        {
+          "slug": "chest-sleep",
+          "name": {
+            "ar": "مركز الصدر واضطرابات النوم",
+            "en": "Chest & Sleep Disorders Center"
+          }
+        },
+        {
+          "slug": "senior-health-screening",
+          "name": {
+            "ar": "مركز صحة كبار السن والفحص الشامل",
+            "en": "Senior Health & Screening Center"
+          }
+        }
+      ]
+    }
+  },
+  "centers": {
+    "cardiac-internal-medicine": {
+      "slug": "cardiac-internal-medicine",
+      "registry_id": "CEN-001",
+      "isFeatured": true,
+      "hospitalSlugs": [
+        "future-hospital",
+        "delta-hospital"
+      ],
+      "name": {
+        "ar": "مركز القلب والباطنة وإحالة الرعايات الحرجة",
+        "en": "Cardiac & Internal Medicine Center"
+      },
+      "description": {
+        "ar": "رعاية متكاملة لأمراض القلب والباطنة مع إحالة وتنسيق الرعايات الحرجة.",
+        "en": "Comprehensive cardiac and internal medicine care with critical-care referral and coordination."
+      },
+      "suggestedImage": "business/Media/Services/Intensive Care Unit/icu-isolation-room-door-sign.jpeg"
+    },
+    "urology-laser": {
+      "slug": "urology-laser",
+      "registry_id": "CEN-002",
+      "isFeatured": true,
+      "hospitalSlugs": [
+        "future-hospital",
+        "delta-hospital"
+      ],
+      "name": {
+        "ar": "مركز جراحات المسالك والليزر",
+        "en": "Urology & Laser Surgery Center"
+      },
+      "description": {
+        "ar": "تشخيص وعلاج أمراض المسالك البولية وجراحات الليزر الحديثة.",
+        "en": "Diagnosis and treatment of urological conditions and modern laser surgery."
+      },
+      "suggestedImage": "business/Media/Services/Operating Room/or-suite-entrance-sign.jpeg"
+    },
+    "digestive-liver": {
+      "slug": "digestive-liver",
+      "registry_id": "CEN-003",
+      "isFeatured": true,
+      "hospitalSlugs": [
+        "future-hospital",
+        "delta-hospital"
+      ],
+      "name": {
+        "ar": "مركز مناظير الجهاز الهضمي والكبد",
+        "en": "Digestive & Liver Endoscopy Center"
+      },
+      "description": {
+        "ar": "مناظير تشخيصية وعلاجية للجهاز الهضمي والكبد.",
+        "en": "Diagnostic and therapeutic endoscopy for the digestive system and liver."
+      },
+      "suggestedImage": "business/Media/Services/Diagnostics/"
+    },
+    "general-surgery": {
+      "slug": "general-surgery",
+      "registry_id": "CEN-004",
+      "isFeatured": true,
+      "hospitalSlugs": [
+        "future-hospital",
+        "delta-hospital"
+      ],
+      "name": {
+        "ar": "مركز الجراحات العامة والمناظير",
+        "en": "General Surgery & Endoscopy Center"
+      },
+      "description": {
+        "ar": "جراحات عامة ومناظير جراحية بأحدث التقنيات.",
+        "en": "General surgery and laparoscopic procedures using modern techniques."
+      },
+      "suggestedImage": "business/Media/Services/Operating Room/or-corridor-theatre-1-door.jpeg"
+    },
+    "diabetic-foot-vascular": {
+      "slug": "diabetic-foot-vascular",
+      "registry_id": "CEN-005",
+      "isFeatured": true,
+      "hospitalSlugs": [
+        "delta-hospital"
+      ],
+      "name": {
+        "ar": "مركز القدم السكري والأوعية الدموية",
+        "en": "Diabetic Foot & Vascular Center"
+      },
+      "description": {
+        "ar": "رعاية متخصصة للقدم السكري وأمراض الأوعية الدموية.",
+        "en": "Specialized care for diabetic foot and vascular conditions."
+      }
+    },
+    "pain-management": {
+      "slug": "pain-management",
+      "registry_id": "CEN-006",
+      "isFeatured": false,
+      "hospitalSlugs": [
+        "delta-hospital"
+      ],
+      "name": {
+        "ar": "مركز علاج الألم والتدخلات المحدودة",
+        "en": "Pain Management Center"
+      },
+      "description": {
+        "ar": "علاج الألم المزمن عبر تدخلات محدودة وغير جراحية.",
+        "en": "Management of chronic pain through minimally invasive interventions."
+      }
+    },
+    "womens-childrens-health": {
+      "slug": "womens-childrens-health",
+      "registry_id": "CEN-007",
+      "isFeatured": true,
+      "hospitalSlugs": [
+        "delta-hospital"
+      ],
+      "name": {
+        "ar": "مركز صحة المرأة والطفل",
+        "en": "Women's & Children's Health Center"
+      },
+      "description": {
+        "ar": "رعاية صحية متكاملة للمرأة والطفل من الحمل حتى متابعة الأطفال.",
+        "en": "Comprehensive health care for women and children, from pregnancy to pediatric follow-up."
+      },
+      "suggestedImage": "business/Media/Services/Neonatal Intensive Care Unit/nicu-entrance-sign.jpeg"
+    },
+    "dental": {
+      "slug": "dental",
+      "registry_id": "CEN-008",
+      "isFeatured": true,
+      "hospitalSlugs": [
+        "delta-hospital"
+      ],
+      "name": {
+        "ar": "مركز الأسنان للكبار والأطفال وذوي الهمم",
+        "en": "Dental Center"
+      },
+      "description": {
+        "ar": "طب وجراحة الأسنان للكبار والأطفال وذوي الهمم.",
+        "en": "Dental care and surgery for adults, children and people with special needs."
+      },
+      "suggestedImage": "business/Media/Services/Dental Center/dental-operatory-010.jpeg"
+    },
+    "ent-head-neck": {
+      "slug": "ent-head-neck",
+      "registry_id": "CEN-009",
+      "isFeatured": false,
+      "hospitalSlugs": [
+        "delta-hospital"
+      ],
+      "name": {
+        "ar": "مركز الأنف والأذن وجراحات الرقبة والرأس",
+        "en": "ENT & Head/Neck Surgery Center"
+      },
+      "description": {
+        "ar": "تشخيص وعلاج أمراض الأنف والأذن والحنجرة وجراحات الرأس والرقبة.",
+        "en": "Diagnosis and treatment of ear, nose and throat conditions and head/neck surgery."
+      },
+      "suggestedImage": "business/Media/Services/Outpatient Clinic/clinic-door-ent.jpeg"
+    },
+    "orthopedic-sports": {
+      "slug": "orthopedic-sports",
+      "registry_id": "CEN-010",
+      "isFeatured": true,
+      "hospitalSlugs": [
+        "delta-hospital"
+      ],
+      "name": {
+        "ar": "مركز العظام وإصابات الملاعب",
+        "en": "Orthopedic & Sports Injury Center"
+      },
+      "description": {
+        "ar": "علاج أمراض العظام والمفاصل وإصابات الملاعب والتأهيل.",
+        "en": "Treatment of orthopedic and joint conditions, sports injuries and rehabilitation."
+      }
+    },
+    "chest-sleep": {
+      "slug": "chest-sleep",
+      "registry_id": "CEN-011",
+      "isFeatured": false,
+      "hospitalSlugs": [
+        "delta-hospital"
+      ],
+      "name": {
+        "ar": "مركز الصدر واضطرابات النوم",
+        "en": "Chest & Sleep Disorders Center"
+      },
+      "description": {
+        "ar": "تشخيص وعلاج أمراض الصدر والجهاز التنفسي واضطرابات النوم.",
+        "en": "Diagnosis and treatment of chest and respiratory conditions and sleep disorders."
+      }
+    },
+    "senior-health-screening": {
+      "slug": "senior-health-screening",
+      "registry_id": "CEN-012",
+      "isFeatured": false,
+      "hospitalSlugs": [
+        "delta-hospital"
+      ],
+      "name": {
+        "ar": "مركز صحة كبار السن والفحص الشامل",
+        "en": "Senior Health & Screening Center"
+      },
+      "description": {
+        "ar": "رعاية شاملة لكبار السن وبرامج الفحص الطبي الدوري.",
+        "en": "Comprehensive senior care and periodic health screening programs."
+      }
+    }
+  },
+  "settings": {
+    "site_name": {
+      "ar": "منظومة إنسان للرعاية الصحية",
+      "en": "INSAN Healthcare Platform"
+    },
+    "site_tagline": {
+      "ar": "الرعاية الصحية المتكاملة — نظام واحد أينما ذهبت",
+      "en": "Integrated Healthcare — the same system wherever you go"
+    },
+    "default_meta_description": {
+      "ar": "منظومة إنسان تربط المرضى بأفضل الكفاءات الطبية في مصر من خلال مستشفياتها المتخصصة ومراكزها الطبية، بمعيار موحّد للرعاية.",
+      "en": "INSAN connects patients with leading medical expertise in Egypt through its specialized hospitals and medical centers, under one unified standard of care."
+    }
+  }
+}

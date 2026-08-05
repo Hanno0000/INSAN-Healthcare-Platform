@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة إدخال بيانات إنسان — Content Cockpit</title>
+<style>
+  :root{--navy:#0B1F3A;--teal:#0E7C86;--bg:#f6f8fb;--card:#fff;--border:#e2e8f0;--green:#16a34a;--red:#dc2626;--muted:#64748b}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:#1e293b;line-height:1.7}
+  header{background:linear-gradient(135deg,var(--navy),var(--teal));color:#fff;padding:26px 20px}
+  header h1{font-size:22px;margin-bottom:4px}
+  header p{opacity:.9;font-size:14px}
+  .wrap{max-width:1000px;margin:0 auto;padding:20px}
+  .tabs{display:flex;flex-wrap:wrap;gap:6px;background:#fff;padding:8px;border-radius:14px;position:sticky;top:10px;z-index:20;box-shadow:0 2px 10px rgba(0,0,0,.05);margin-bottom:18px}
+  .tabs button{border:0;background:transparent;padding:9px 15px;border-radius:9px;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer}
+  .tabs button.active{background:var(--navy);color:#fff}
+  .panel{display:none}.panel.active{display:block}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px}
+  .card h3{color:var(--navy);font-size:17px;margin-bottom:4px}
+  .card .sub{color:var(--muted);font-size:13px;margin-bottom:14px}
+  label{display:block;font-size:13px;font-weight:600;color:#334155;margin:10px 0 4px}
+  input,textarea,select{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:9px;font-size:14px;font-family:inherit;background:#fff}
+  input[dir=ltr]{direction:ltr;text-align:left}
+  textarea{resize:vertical;min-height:70px;direction:ltr;text-align:left;font-family:Consolas,monospace;font-size:12px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .hint{font-size:12px;color:var(--muted);margin-top:3px}
+  .btn{background:var(--teal);color:#fff;border:0;padding:11px 20px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer}
+  .btn:hover{background:#0a6b74}
+  .btn.navy{background:var(--navy)} .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--border)}
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px}
+  .toolbar .grow{flex:1}
+  .step{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 16px;margin:10px 0;font-size:14px}
+  .step b{color:var(--navy)}
+  pre{background:#0f172a;color:#e2e8f0;padding:16px;border-radius:12px;overflow:auto;direction:ltr;text-align:left;font-size:12.5px;max-height:340px}
+  .warn{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;border-radius:10px;padding:12px 16px;font-size:13px;margin:10px 0}
+  .ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;border-radius:10px;padding:12px 16px;font-size:13px;margin:10px 0}
+  .imgprev{width:54px;height:54px;border-radius:8px;object-fit:cover;border:1px solid var(--border);background:#f1f5f9;vertical-align:middle;margin-inline-start:8px}
+  details{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-top:12px}
+  summary{cursor:pointer;font-weight:700;font-size:13px;color:var(--navy)}
+  .flag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:3px 9px;border-radius:20px}
+  .flag.miss{background:#fef3c7;color:#92400e} .flag.ok{background:#dcfce7;color:#166534}
+  @media(max-width:640px){.row,.row3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap" style="padding:0">
+    <h1>🚀 لوحة إدخال بيانات إنسان (Content Cockpit)</h1>
+    <p>املأ الناقص مرة واحدة → ولّد كود الاستيراد → الصقه في لوحة التحكم → يترفع كل شيء تلقائياً</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="toolbar">
+    <button class="btn ghost" onclick="loadFile()">📂 فتح ملف JSON محفوظ</button>
+    <button class="btn ghost" onclick="saveFile()">💾 حفظ عملي كـ JSON</button>
+    <span class="grow"></span>
+    <button class="btn navy" onclick="go('guide')">📖 كيف أستخدمها؟</button>
+    <button class="btn" onclick="generate()">⚙️ توليد كود الاستيراد</button>
+    <input type="file" id="filepick" accept="application/json" style="display:none" onchange="filePicked(event)">
+  </div>
+
+  <div class="tabs">
+    <button class="active" data-t="guide" onclick="go('guide')">📖 الدليل</button>
+    <button data-t="settings" onclick="go('settings')">⚙️ الإعدادات والتواصل</button>
+    <button data-t="hospitals" onclick="go('hospitals')">🏥 المستشفيات</button>
+    <button data-t="doctors" onclick="go('doctors')">👨‍⚕️ الأطباء</button>
+    <button data-t="centers" onclick="go('centers')">🩺 المراكز الطبية</button>
+    <button data-t="output" onclick="go('output')">📤 كود الاستيراد</button>
+  </div>
+
+  <!-- GUIDE -->
+  <div class="panel active" id="p-guide">
+    <div class="card">
+      <h3>الفكرة في 30 ثانية</h3>
+      <p>هذه الأداة تعمل على جهازك فقط. تملأ فيها البيانات الناقصة، ثم تضغط «توليد كود الاستيراد»، فتحصل على كود جاهز. تفتح لوحة تحكم الموقع، تلصق الكود في «الكونسول»، فيرفع كل البيانات دفعة واحدة. لا حاجة لأي معرفة تقنية — فقط اتبع الخطوات.</p>
+      <div class="ok">✅ آمنة: لا ترفع شيئاً بنفسها، ولا ترسل بياناتك لأي جهة. كل ما تفعله هو تجهيز الكود لك.</div>
+      <div class="warn">⚠️ الكود يرسل فقط الحقول التي تملؤها. أي حقل تتركه فارغاً لن يُغيّر القيمة الحالية على الموقع — فلا تخف من مسح بيانات موجودة.</div>
+
+      <h3 style="margin-top:18px">الخطوات بالترتيب</h3>
+      <div class="step"><b>1)</b> تنقّل بين التبويبات (الإعدادات / المستشفيات / الأطباء / المراكز) واملأ ما تريده. ركّز على الحقول المعلّمة بـ <span class="flag miss">⚠ ناقص</span>.</div>
+      <div class="step"><b>2)</b> اضغط «💾 حفظ عملي كـ JSON» بين حين وآخر حتى لا تفقد عملك. يمكنك فتحه لاحقاً بـ «📂 فتح ملف JSON».</div>
+      <div class="step"><b>3)</b> اضغط «⚙️ توليد كود الاستيراد» ← ينقلك لتبويب «كود الاستيراد».</div>
+      <div class="step"><b>4)</b> افتح لوحة التحكم <span style="direction:ltr;display:inline-block">http://169.58.77.61/admin</span> وتأكد أنك داخلها (انتظر ثوانٍ حتى تفتح).</div>
+      <div class="step"><b>5)</b> اضغط زر <b>F12</b> على الكيبورد ← يفتح صندوق المطوّر ← اختر تبويب <b>Console</b>.</div>
+      <div class="step"><b>6)</b> إن ظهرت رسالة تحذير عن اللصق، اكتب <span style="direction:ltr;display:inline-block;font-family:monospace">allow pasting</span> واضغط Enter (خطوة أمان من المتصفح تحدث مرة واحدة).</div>
+      <div class="step"><b>7)</b> اضغط «📋 نسخ الكود» في تبويب كود الاستيراد، ثم الصقه في الـ Console واضغط Enter.</div>
+      <div class="step"><b>8)</b> ستظهر أسطر <b style="color:#16a34a">✅</b> لكل عنصر رُفع بنجاح، و<b style="color:#dc2626">❌</b> لأي فشل. انتهى!</div>
+
+      <h3 style="margin-top:18px">ما الذي تُدخله هذه الأداة؟</h3>
+      <ul style="margin-inline-start:20px;font-size:14px">
+        <li>بيانات التواصل الحقيقية (هاتف/بريد/واتساب/عنوان) وروابط السوشيال — <b>تصلح مشكلة الأرقام المتضاربة</b>.</li>
+        <li>روابط صور الأطباء والمراكز الطبية (12 مركزاً) والمستشفيات — <b>تصلح الصور الناقصة والمكسورة</b>.</li>
+        <li>الجُمل التعريفية والإحصائيات وبيانات تواصل كل مستشفى.</li>
+        <li>(متقدّم) الأقسام والمواقع وخطوات رحلة المريض عبر JSON مباشر.</li>
+      </ul>
+      <div class="warn"><b>لا تُدخل:</b> الأسئلة الشائعة (لا يوجد لها endpoint إداري بعد — تحتاج بناءً برمجياً أولاً، راجع تقرير الـ QA بند C-9).</div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="panel" id="p-settings">
+    <div class="card">
+      <h3>بيانات التواصل الرسمية</h3>
+      <p class="sub">هذه القيم <b>placeholders</b> حالياً على الموقع (+20-XXX-XXX-XXXX). املأها بالحقيقية.</p>
+      <div class="warn">⚠️ ملاحظة مهمة: الموقع حالياً لا يقرأ هذه الإعدادات في الفوتر/قسم التواصل (عيب برمجي C-2). املأها الآن، لكن لن تظهر حتى يُصلَح ربط الإعدادات بالواجهة (خطوة برمجية منفصلة في تقرير QA).</div>
+      <div class="row">
+        <div><label>البريد الإلكتروني الرسمي</label><input dir="ltr" id="s_contact_email" placeholder="info@your-domain.com"></div>
+        <div><label>الهاتف الموحّد</label><input dir="ltr" id="s_contact_phone" placeholder="+20 100 000 0000"></div>
+      </div>
+      <div class="row">
+        <div><label>هاتف الطوارئ</label><input dir="ltr" id="s_emergency_phone" placeholder="+20 100 000 0000"></div>
+        <div><label>رقم واتساب</label><input dir="ltr" id="s_whatsapp_number" placeholder="+20 100 000 0000"></div>
+      </div>
+      <div class="row">
+        <div><label>العنوان (عربي)</label><input id="s_addr_ar" placeholder="القاهرة، مصر"></div>
+        <div><label>العنوان (إنجليزي)</label><input dir="ltr" id="s_addr_en" placeholder="Cairo, Egypt"></div>
+      </div>
+      <div class="row">
+        <div><label>ساعات العمل (عربي)</label><input id="s_hours_ar" placeholder="السبت - الخميس: 9ص - 5م | الطوارئ: 24 ساعة"></div>
+        <div><label>ساعات العمل (إنجليزي)</label><input dir="ltr" id="s_hours_en" placeholder="Sat-Thu: 9am-5pm | ER: 24h"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>روابط التواصل الاجتماعي</h3>
+      <p class="sub">اتركها فارغة إن لم تكن موجودة.</p>
+      <div class="row">
+        <div><label>Facebook</label><input dir="ltr" id="s_social_facebook" placeholder="https://facebook.com/..."></div>
+        <div><label>Instagram</label><input dir="ltr" id="s_social_instagram" placeholder="https://instagram.com/..."></div>
+      </div>
+      <div class="row">
+        <div><label>X / Twitter</label><input dir="ltr" id="s_social_twitter" placeholder="https://twitter.com/..."></div>
+        <div><label>LinkedIn</label><input dir="ltr" id="s_social_linkedin" placeholder="https://linkedin.com/company/..."></div>
+      </div>
+      <div><label>YouTube</label><input dir="ltr" id="s_social_youtube" placeholder="https://youtube.com/@..."></div>
+    </div>
+  </div>
+
+  <!-- HOSPITALS -->
+  <div class="panel" id="p-hospitals"></div>
+
+  <!-- DOCTORS -->
+  <div class="panel" id="p-doctors"></div>
+
+  <!-- CENTERS -->
+  <div class="panel" id="p-centers"></div>
+
+  <!-- OUTPUT -->
+  <div class="panel" id="p-output">
+    <div class="card">
+      <h3>كود الاستيراد الجاهز</h3>
+      <p class="sub">اضغط «توليد» أولاً، ثم انسخ الكود والصقه في Console لوحة التحكم (راجع الدليل).</p>
+      <div style="display:flex;gap:10px;margin-bottom:10px">
+        <button class="btn" onclick="generate()">⚙️ توليد / تحديث الكود</button>
+        <button class="btn navy" onclick="copyCode()">📋 نسخ الكود</button>
+      </div>
+      <div id="summary" class="ok" style="display:none"></div>
+      <pre id="code">// اضغط «توليد كود الاستيراد» لإنشاء الكود هنا...</pre>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ====== الكيانات الحقيقية من الموقع (ثابتة) ======
+const HOSPITALS = [
+  {id:"cms316h9y000qhxgjm7tlqye1", slug:"delta-hospital", name:"مستشفى الدلتا الدولي"},
+  {id:"cms316h2h000phxgj7oakdpf4", slug:"future-hospital", name:"مستشفى المستقبل التخصصي"}
+];
+const DOCTORS = [
+  {id:"cms4up0st000nv7ti7ipnowyk", slug:"dr-sara", name:"د. سارة كمال", spec:"طب الأطفال"},
+  {id:"cms4up0j7000mv7tic33st4n5", slug:"dr-ahmed", name:"د. أحمد محمد", spec:"جراحة القلب"}
+];
+const CENTERS = [
+  {id:"cms316snm0012hxgj602aak15", slug:"dental-center", name:"مركز طب الأسنان"},
+  {id:"cms316rv10011hxgj2iqw1tdv", slug:"pediatrics-center", name:"مركز طب الأطفال"},
+  {id:"cms316r3b0010hxgjj151bibd", slug:"dermatology-center", name:"مركز الجلدية والتجميل"},
+  {id:"cms316qfz000zhxgj0ncwq7a0", slug:"ophthalmology-center", name:"مركز العيون"},
+  {id:"cms316ppz000yhxgjqqv325rc", slug:"senior-care-center", name:"مركز كبارنا للرعاية"},
+  {id:"cms316p0w000xhxgj3ktvhtqg", slug:"icu-center", name:"مركز العناية المركزة"},
+  {id:"cms316oae000whxgj76j35fms", slug:"emergency-center", name:"مركز الطوارئ"},
+  {id:"cms316n62000vhxgjztb0zfgu", slug:"neurology-center", name:"مركز الأعصاب والدماغ"},
+  {id:"cms316mkq000uhxgjs1ispyud", slug:"digestive-center", name:"مركز الجهاز الهضمي والكبد"},
+  {id:"cms316lze000thxgjsbp7og1m", slug:"womens-health-center", name:"مركز صحة المرأة"},
+  {id:"cms316j3r000shxgjvxkafs0w", slug:"cardiac-center", name:"مركز القلب والأوعية الدموية"},
+  {id:"cms316hhc000rhxgjmmurq2a9", slug:"orthopedic-center", name:"مركز العناية العظمية والمفاصل"}
+];
+
+// ====== بناء تبويبات المستشفيات/الأطباء/المراكز ديناميكياً ======
+function buildHospitals(){
+  const p = document.getElementById('p-hospitals');
+  p.innerHTML = HOSPITALS.map((h,i)=>`
+    <div class="card">
+      <h3>${h.name} <span class="hint">(${h.slug})</span></h3>
+      <p class="sub">املأ ما ينقص هذا المستشفى. اتركه فارغاً لتجاهله.</p>
+      <div class="row">
+        <div><label>رابط صورة الغلاف (Hero)</label><input dir="ltr" id="h_${i}_heroImage" oninput="prev(this,'h_${i}_prevHero')" placeholder="https://...jpg"><img class="imgprev" id="h_${i}_prevHero"></div>
+        <div><label>رابط الشعار (Logo)</label><input dir="ltr" id="h_${i}_logoUrl" oninput="prev(this,'h_${i}_prevLogo')" placeholder="https://...png"><img class="imgprev" id="h_${i}_prevLogo"></div>
+      </div>
+      <div class="row">
+        <div><label>الجملة التعريفية (عربي)</label><input id="h_${i}_tagline_ar" placeholder="رعاية متكاملة بمعايير عالمية"></div>
+        <div><label>الجملة التعريفية (إنجليزي)</label><input dir="ltr" id="h_${i}_tagline_en" placeholder="Integrated care..."></div>
+      </div>
+      <label>رابط خريطة جوجل (Embed) — يجب أن يبدأ بـ https://www.google.com/maps/embed</label>
+      <input dir="ltr" id="h_${i}_maps" placeholder="https://www.google.com/maps/embed?pb=...">
+      <label style="margin-top:14px">الإحصائيات الثلاثة (الرقم + اللاحقة + التسمية بالعربي)</label>
+      ${[0,1,2].map(s=>`<div class="row3" style="margin-bottom:6px">
+        <input dir="ltr" id="h_${i}_stat${s}_value" placeholder="مثال: 15">
+        <input dir="ltr" id="h_${i}_stat${s}_suffix" placeholder="مثال: +">
+        <input id="h_${i}_stat${s}_label" placeholder="مثال: سنة خبرة">
+      </div>`).join('')}
+      <div class="row" style="margin-top:10px">
+        <div><label>هاتف المستشفى</label><input dir="ltr" id="h_${i}_ci_phone" placeholder="+20..."></div>
+        <div><label>بريد المستشفى</label><input dir="ltr" id="h_${i}_ci_email" placeholder="info@..."></div>
+      </div>
+      <div class="row">
+        <div><label>عنوان المستشفى (عربي)</label><input id="h_${i}_ci_addr_ar" placeholder="العنوان بالعربي"></div>
+        <div><label>عنوان المستشفى (إنجليزي)</label><input dir="ltr" id="h_${i}_ci_addr_en" placeholder="Address"></div>
+      </div>
+      <details>
+        <summary>⚙️ متقدّم: الأقسام / المواقع / رحلة المريض (JSON مباشر)</summary>
+        <p class="hint">للمتقدمين فقط. اترك فارغاً لتجاهله. يجب أن يكون JSON صحيحاً — راجع أمثلة الأشكال في تقرير الخطة.</p>
+        <label>departments (مصفوفة أقسام)</label>
+        <textarea id="h_${i}_departments" placeholder='[{"slug":"cardiology","name":{"ar":"قسم القلب","en":"Cardiology"},"shortDescription":{"ar":"...","en":"..."},"image":"https://...","doctorIds":[]}]'></textarea>
+        <label>locations (مصفوفة مواقع)</label>
+        <textarea id="h_${i}_locations" placeholder='[{"name":{"ar":"المقر الرئيسي","en":"Main"},"mapsUrl":"https://www.google.com/maps/embed?pb=..."}]'></textarea>
+        <label>journeySteps (4 خطوات)</label>
+        <textarea id="h_${i}_journeySteps" placeholder='[{"icon":"search","title":{"ar":"...","en":"..."},"desc":{"ar":"...","en":"..."}}]'></textarea>
+      </details>
+    </div>`).join('');
+}
+function buildDoctors(){
+  const p = document.getElementById('p-doctors');
+  p.innerHTML = `<div class="warn" style="margin-bottom:14px">تنبيه: بطاقة الطبيب تعرض حالياً «10 سنوات خبرة» و«5.0 (127 تقييم)» ثابتة في الكود — هذه تُحذف برمجياً (تقرير QA بند C-3)، لا من هنا.</div>` +
+    DOCTORS.map((d,i)=>`
+    <div class="card">
+      <h3>${d.name} <span class="hint">(${d.spec})</span></h3>
+      <label>رابط الصورة الشخصية للطبيب</label>
+      <input dir="ltr" id="d_${i}_photo" oninput="prev(this,'d_${i}_prev')" placeholder="https://...jpg">
+      <img class="imgprev" id="d_${i}_prev">
+      <p class="hint">أهم عنصر ثقة في الموقع الطبي. استخدم صورة واضحة بخلفية محايدة.</p>
+    </div>`).join('');
+}
+function buildCenters(){
+  const p = document.getElementById('p-centers');
+  p.innerHTML = `<div class="card"><h3>صور المراكز الطبية (12 مركزاً)</h3><p class="sub">كلها بلا صور حالياً. ألصق رابط صورة غلاف لكل مركز. فعّل «مميّز» ليظهر في الصفحة الرئيسية.</p></div>` +
+    CENTERS.map((c,i)=>`
+    <div class="card">
+      <h3>${c.name} <span class="hint">(${c.slug})</span></h3>
+      <label>رابط صورة الغلاف</label>
+      <input dir="ltr" id="c_${i}_heroImage" oninput="prev(this,'c_${i}_prev')" placeholder="https://...jpg">
+      <img class="imgprev" id="c_${i}_prev">
+      <label style="margin-top:10px"><input type="checkbox" id="c_${i}_featured" style="width:auto;vertical-align:middle"> مميّز (يظهر في الصفحة الرئيسية)</label>
+    </div>`).join('');
+}
+function prev(inp,imgId){const im=document.getElementById(imgId);const v=inp.value.trim();if(v){im.src=v;}else{im.removeAttribute('src');}}
+
+// ====== تنقّل التبويبات ======
+function go(t){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('p-'+t).classList.add('active');
+  document.querySelector('.tabs button[data-t="'+t+'"]').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ====== أدوات مساعدة ======
+const val = id => (document.getElementById(id)?.value||'').trim();
+const bil = (ar,en) => { const a=val(ar), e=val(en); if(!a&&!e) return null; return {ar:a, en:e||a}; };
+function parseJSON(id){ const v=val(id); if(!v) return undefined; try{return JSON.parse(v);}catch(e){ alert('خطأ JSON في حقل متقدّم: '+e.message); throw e; } }
+
+// ====== جمع البيانات في كائن ======
+function collect(){
+  // settings
+  const settings = {};
+  const sset = (k,v)=>{ if(v!==null && v!=='' && v!==undefined) settings[k]=v; };
+  sset('contact_email', val('s_contact_email'));
+  sset('contact_phone', val('s_contact_phone'));
+  sset('emergency_phone', val('s_emergency_phone'));
+  sset('whatsapp_number', val('s_whatsapp_number'));
+  sset('contact_address', bil('s_addr_ar','s_addr_en'));
+  sset('working_hours', bil('s_hours_ar','s_hours_en'));
+  ['facebook','instagram','twitter','linkedin','youtube'].forEach(n=>sset('social_'+n, val('s_social_'+n)));
+
+  // hospitals
+  const hospitals = HOSPITALS.map((h,i)=>{
+    const body={};
+    const hero=val(`h_${i}_heroImage`); if(hero) body.heroImage=hero;
+    const logo=val(`h_${i}_logoUrl`); if(logo) body.logoUrl=logo;
+    const tag=bil(`h_${i}_tagline_ar`,`h_${i}_tagline_en`); if(tag) body.heroTagline=tag;
+    const maps=val(`h_${i}_maps`); if(maps) body.googleMapsUrl=maps;
+    const stats=[0,1,2].map(s=>({value:val(`h_${i}_stat${s}_value`),suffix:val(`h_${i}_stat${s}_suffix`),label:{ar:val(`h_${i}_stat${s}_label`),en:val(`h_${i}_stat${s}_label`)}})).filter(s=>s.value);
+    if(stats.length) body.heroStats=stats;
+    const ci={}; const cp=val(`h_${i}_ci_phone`),ce=val(`h_${i}_ci_email`),ca=bil(`h_${i}_ci_addr_ar`,`h_${i}_ci_addr_en`);
+    if(cp)ci.phone=cp; if(ce)ci.email=ce; if(ca)ci.address=ca;
+    if(Object.keys(ci).length) body.contactInfo=ci;
+    const dep=parseJSON(`h_${i}_departments`); if(dep) body.departments=dep;
+    const loc=parseJSON(`h_${i}_locations`); if(loc) body.locations=loc;
+    const jr=parseJSON(`h_${i}_journeySteps`); if(jr) body.journeySteps=jr;
+    return {id:h.id, name:h.name, body};
+  }).filter(x=>Object.keys(x.body).length);
+
+  // doctors
+  const doctors = DOCTORS.map((d,i)=>{
+    const body={}; const ph=val(`d_${i}_photo`); if(ph) body.photo=ph;
+    return {id:d.id, name:d.name, body};
+  }).filter(x=>Object.keys(x.body).length);
+
+  // centers
+  const centers = CENTERS.map((c,i)=>{
+    const body={}; const hi=val(`c_${i}_heroImage`); if(hi) body.heroImage=hi;
+    const f=document.getElementById(`c_${i}_featured`); if(f&&f.checked) body.isFeatured=true;
+    return {id:c.id, name:c.name, body};
+  }).filter(x=>Object.keys(x.body).length);
+
+  return {settings, hospitals, doctors, centers};
+}
+
+// ====== توليد كود الكونسول ======
+function generate(){
+  let data; try{ data=collect(); }catch(e){ return; }
+  const total = Object.keys(data.settings).length + data.hospitals.length + data.doctors.length + data.centers.length;
+  const script =
+`/* ===== كود استيراد بيانات إنسان — الصقه في Console لوحة التحكم ===== */
+(async () => {
+  const API = '/api/v1';
+  const DATA = ${JSON.stringify(data, null, 2)};
+  const j = await (await fetch(API+'/auth/refresh',{method:'POST',credentials:'include'})).json().catch(()=>({}));
+  const token = j?.data?.accessToken;
+  if(!token){ console.error('%c❌ فشل: لست داخل لوحة التحكم. افتح /admin أولاً وانتظر حتى تفتح، ثم أعد اللصق.','color:#dc2626;font-size:14px'); return; }
+  const H = {'Authorization':'Bearer '+token, 'Content-Type':'application/json'};
+  let ok=0, fail=0;
+  const patch = async (url, body, label) => {
+    try{
+      const r = await fetch(API+url, {method:'PATCH', headers:H, body:JSON.stringify(body)});
+      if(r.ok){ ok++; console.log('%c✅ '+label, 'color:#16a34a'); }
+      else { fail++; const t=await r.text(); console.log('%c❌ '+label+' ('+r.status+') '+t.slice(0,120), 'color:#dc2626'); }
+    }catch(e){ fail++; console.log('%c❌ '+label+' :: '+e.message, 'color:#dc2626'); }
+  };
+  console.log('%c⏳ بدء الاستيراد...', 'color:#0E7C86;font-size:14px;font-weight:bold');
+  // 1) الإعدادات
+  for(const [key,value] of Object.entries(DATA.settings)){
+    await patch('/admin/settings/'+key, {value}, 'إعداد: '+key);
+  }
+  // 2) المستشفيات
+  for(const h of DATA.hospitals){ await patch('/admin/hospitals/'+h.id, h.body, 'مستشفى: '+h.name); }
+  // 3) الأطباء
+  for(const d of DATA.doctors){ await patch('/admin/doctors/'+d.id, d.body, 'طبيب: '+d.name); }
+  // 4) المراكز الطبية
+  for(const c of DATA.centers){ await patch('/admin/medical-centers/'+c.id, c.body, 'مركز: '+c.name); }
+  console.log('%c🎉 انتهى — نجح: '+ok+' | فشل: '+fail, 'color:#0B1F3A;font-size:15px;font-weight:bold;background:#dcfce7;padding:4px 8px;border-radius:6px');
+  console.log('%c💡 افتح الموقع وانتظر دقيقة (تحديث تلقائي ISR) لرؤية التغييرات.', 'color:#64748b');
+})();`;
+
+  document.getElementById('code').textContent = script;
+  const s = document.getElementById('summary');
+  s.style.display='block';
+  s.innerHTML = `✅ جاهز! سيرفع هذا الكود: <b>${Object.keys(data.settings).length}</b> إعداد، <b>${data.hospitals.length}</b> مستشفى، <b>${data.doctors.length}</b> طبيب، <b>${data.centers.length}</b> مركز طبي. <br>إجمالي العناصر: <b>${total}</b>. الآن انسخه والصقه في Console لوحة التحكم.`;
+  go('output');
+}
+function copyCode(){
+  const code = document.getElementById('code').textContent;
+  navigator.clipboard.writeText(code).then(()=>{
+    const s=document.getElementById('summary'); const old=s.innerHTML;
+    s.innerHTML='📋 تم النسخ! الصقه الآن في Console لوحة التحكم.';
+    setTimeout(()=>s.innerHTML=old,2500);
+  });
+}
+
+// ====== حفظ/فتح ملف JSON ======
+function collectRaw(){
+  // جمع كل قيم الحقول الخام للحفظ/الاستعادة
+  const o={};
+  document.querySelectorAll('input,textarea').forEach(el=>{
+    if(!el.id) return;
+    o[el.id] = el.type==='checkbox' ? el.checked : el.value;
+  });
+  return o;
+}
+function saveFile(){
+  const blob = new Blob([JSON.stringify(collectRaw(),null,2)], {type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='insan-content-'+new Date().toISOString().slice(0,10)+'.json'; a.click();
+}
+function loadFile(){ document.getElementById('filepick').click(); }
+function filePicked(ev){
+  const f=ev.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{
+    const o=JSON.parse(r.result);
+    for(const [id,v] of Object.entries(o)){
+      const el=document.getElementById(id); if(!el) continue;
+      if(el.type==='checkbox') el.checked=!!v; else { el.value=v; el.dispatchEvent(new Event('input')); }
+    }
+    alert('✅ تم تحميل الملف بنجاح');
+  }catch(e){ alert('❌ ملف غير صالح: '+e.message); } };
+  r.readAsText(f);
+}
+
+// init
+buildHospitals(); buildDoctors(); buildCenters();
+</script>
+</body>
+</html>

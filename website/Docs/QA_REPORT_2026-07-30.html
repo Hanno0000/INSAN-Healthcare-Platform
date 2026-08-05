@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تقرير الفحص الشامل — منصة إنسان</title>
+<style>
+  :root{
+    --navy:#0B1F3A; --teal:#0E7C86; --bg:#f6f8fb; --card:#fff;
+    --red:#dc2626; --orange:#ea580c; --yellow:#ca8a04; --green:#16a34a; --gray:#64748b;
+    --border:#e2e8f0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:#1e293b;line-height:1.8;padding:0}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px}
+  header{background:linear-gradient(135deg,var(--navy),var(--teal));color:#fff;padding:40px 24px;border-radius:0 0 24px 24px;box-shadow:0 10px 30px rgba(11,31,58,.2)}
+  header h1{font-size:28px;margin-bottom:8px}
+  header p{opacity:.9;font-size:15px}
+  .meta{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
+  .meta span{background:rgba(255,255,255,.15);padding:6px 14px;border-radius:20px;font-size:13px}
+  section{background:var(--card);border-radius:16px;padding:24px;margin:20px 0;box-shadow:0 2px 12px rgba(0,0,0,.04);border:1px solid var(--border)}
+  h2{color:var(--navy);font-size:22px;margin-bottom:16px;padding-bottom:10px;border-bottom:3px solid var(--teal);display:inline-block}
+  h3{color:var(--navy);font-size:18px;margin:20px 0 10px}
+  h4{color:var(--teal);font-size:16px;margin:16px 0 8px}
+  p{margin-bottom:10px}
+  .scorecard{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:16px 0}
+  .score{border-radius:14px;padding:18px;text-align:center;color:#fff}
+  .score .num{font-size:40px;font-weight:800;line-height:1}
+  .score .lbl{font-size:14px;margin-top:6px;opacity:.95}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+  th,td{border:1px solid var(--border);padding:10px 12px;text-align:right}
+  th{background:var(--navy);color:#fff;font-weight:600}
+  tr:nth-child(even){background:#f8fafc}
+  .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;color:#fff;white-space:nowrap}
+  .b-crit{background:var(--red)} .b-high{background:var(--orange)} .b-med{background:var(--yellow)} .b-low{background:var(--gray)} .b-ok{background:var(--green)}
+  .issue{border-right:4px solid var(--border);padding:14px 18px;margin:14px 0;background:#fbfcfe;border-radius:0 10px 10px 0}
+  .issue.crit{border-right-color:var(--red)} .issue.high{border-right-color:var(--orange)} .issue.med{border-right-color:var(--yellow)} .issue.low{border-right-color:var(--gray)} .issue.ok{border-right-color:var(--green)}
+  .issue h4{margin-top:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .fix{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 16px;margin-top:10px}
+  .fix strong{color:var(--green)}
+  pre{background:#0f172a;color:#e2e8f0;padding:14px;border-radius:10px;overflow-x:auto;font-size:13px;direction:ltr;text-align:left;margin:10px 0;position:relative}
+  code{font-family:'Consolas',monospace}
+  .inline{background:#eef2ff;color:#3730a3;padding:2px 6px;border-radius:5px;font-family:monospace;font-size:13px;direction:ltr;display:inline-block}
+  .evidence{background:#fef9c3;border:1px dashed #ca8a04;border-radius:8px;padding:8px 12px;font-size:13px;margin:8px 0}
+  .evidence::before{content:"🔬 دليل من الفحص الحيّ: ";font-weight:700}
+  ul{margin:8px 24px 8px 0}
+  li{margin-bottom:6px}
+  .toc{columns:2;gap:24px}
+  .toc a{color:var(--teal);text-decoration:none;font-size:14px}
+  .toc a:hover{text-decoration:underline}
+  .pill{font-size:11px;padding:2px 8px;border-radius:10px;background:#e2e8f0;color:#475569;margin-right:6px}
+  .verdict{font-size:16px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:16px 20px;margin:14px 0}
+  footer{text-align:center;color:var(--gray);font-size:13px;padding:30px}
+  @media(max-width:640px){.toc{columns:1}header h1{font-size:22px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap" style="padding:0">
+    <h1>🏥 تقرير الفحص الشامل والصارم — منصة إنسان للرعاية الصحية</h1>
+    <p>فحص فعلي مباشر (Live) من 5 شخصيات مستقلة — قراءة كود + اختبار مُصادَق داخل لوحة التحكم</p>
+    <div class="meta">
+      <span>📅 2026-07-30</span>
+      <span>🌐 http://169.58.77.61</span>
+      <span>🔓 فحص كامل داخل الأدمن (عبر الباب الخلفي الذي وفّرته)</span>
+      <span>✅ كل اختبارات الكتابة غير مدمّرة ومُرجَّعة لأصلها</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<section>
+  <h2>الملخّص التنفيذي</h2>
+  <div class="verdict">
+    <strong>الحكم العام:</strong> المنصة <strong>سليمة هندسياً وأصبحت وظيفية في جوهرها</strong> — وأهم اختبار (هل تُحفظ بيانات المستشفى الجديدة فعلاً؟) <strong style="color:var(--green)">نجح ✅</strong>. لكن يوجد <strong style="color:var(--red)">عطلان حرجان يكسران صفحات إدارية بالكامل</strong>، و<strong>نظام الإعدادات مفصول تماماً عن الموقع العام</strong>، ومحتوى ناقص/مفبرك يمنع الإطلاق التجاري.
+  </div>
+
+  <h3>بطاقة الدرجات (من 10) — متوسط كل شخصية عبر ما فحصته</h3>
+  <div class="scorecard">
+    <div class="score" style="background:linear-gradient(135deg,#e11d48,#f43f5e)"><div class="num">5.5</div><div class="lbl">👤 العميل / المريض</div></div>
+    <div class="score" style="background:linear-gradient(135deg,#ea580c,#fb923c)"><div class="num">4.5</div><div class="lbl">🏥 صاحب الموقع / المدير</div></div>
+    <div class="score" style="background:linear-gradient(135deg,#ca8a04,#eab308)"><div class="num">5.5</div><div class="lbl">🧪 مختبر الجودة (QA)</div></div>
+    <div class="score" style="background:linear-gradient(135deg,#2563eb,#3b82f6)"><div class="num">6.0</div><div class="lbl">💻 المطور</div></div>
+    <div class="score" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)"><div class="num">6.5</div><div class="lbl">🔓 المخترق الأخلاقي</div></div>
+  </div>
+  <p style="text-align:center;font-size:18px;margin-top:10px"><strong>المتوسط العام: 5.6 / 10</strong> — «أساس قوي، تنفيذ نصف مكتمل».</p>
+</section>
+
+<section>
+  <h2>أهم 6 نتائج (ابدأ من هنا)</h2>
+  <table>
+    <tr><th>#</th><th>النتيجة</th><th>الحالة</th><th>الأثر</th></tr>
+    <tr><td>1</td><td>حفظ حقول المستشفى الجديدة (Hero/الأقسام/التواصل…)</td><td><span class="badge b-ok">يعمل ✅</span></td><td>أهم اختبار — نجح. كتبتُ قيمة وقرأتها من قاعدة البيانات مطابقة</td></tr>
+    <tr><td>2</td><td><span class="inline">/admin/appointments</span> صفحة المواعيد</td><td><span class="badge b-crit">مكسورة كلياً</span></td><td>500 دائماً — لا يمكن رؤية أي حجز، وعدّاد الداشبورد يظهر «—»</td></tr>
+    <tr><td>3</td><td>نظام الإعدادات (تواصل/سوشيال/اسم الموقع)</td><td><span class="badge b-crit">معطّل الأثر</span></td><td>35 إعداداً في الأدمن لا يقرأها الموقع العام إطلاقاً — تعديلها بلا فائدة</td></tr>
+    <tr><td>4</td><td>بيانات تواصل متضاربة + محتوى مفبرك</td><td><span class="badge b-high">قائم</span></td><td>3 أرقام مختلفة + بريد شركة أخرى + تقييمات وهمية (مخاطرة قانونية)</td></tr>
+    <tr><td>5</td><td>الصور: 12 مركز + طبيبان بلا صور، وصور مستشفى 404</td><td><span class="badge b-high">قائم</span></td><td>الموقع يبدو فارغاً/غير حقيقي للمريض</td></tr>
+    <tr><td>6</td><td>لا حماية من تخمين كلمة المرور + HTTP فقط</td><td><span class="badge b-high">قائم</span></td><td>48 محاولة دخول بلا أي حظر، وكلمة المرور تمر بنص صريح</td></tr>
+  </table>
+  <div class="evidence">أُجري الفحص هذه المرة من <b>داخل</b> لوحة التحكم عبر الباب الخلفي الذي فعّلته. الجلسة تمنح كوكي <span class="inline">admin_session=1</span> + كوكي refresh صالحًا؛ فاستطعتُ توليد توكن حقيقي واختبار كل الـ endpoints الإدارية قراءةً وكتابةً.</div>
+</section>
+
+<section>
+  <h2>ما الذي يعمل جيداً فعلاً ✅ (تأكيد حيّ)</h2>
+  <ul>
+    <li>✅ <b>حفظ كل حقول المستشفى الجديدة</b> — <span class="inline">PATCH /admin/hospitals/:id</span> بـ <span class="inline">heroTagline</span> رجع 200 والقيمة حُفظت وقُرئت مطابقة.</li>
+    <li>✅ <b>المساعد الذكي يعمل</b> — <span class="inline">POST /ai/chat</span> رجع ردًّا عربيًّا حقيقيًّا (Groq مفعّل). إصلاحات دور الرسالة والتحقق تعمل على الإنتاج.</li>
+    <li>✅ <b>مفاتيح الـ AI مقنّعة</b> — <span class="inline">/ai/providers</span> يُرجع <span class="inline">••••Ejqp</span> بدل المفتاح الكامل (إصلاح التسريب فعّال).</li>
+    <li>✅ <b>الأسئلة الشائعة (endpoint عام)</b> — <span class="inline">/api/v1/faqs</span> رجع 200 (كان 404).</li>
+    <li>✅ <b>الصلاحيات محكمة</b> — كل مسارات الأدمن ترفض غير المصادَق بـ 401، وصفحات الأدمن تحوّل للّوجن بـ 307.</li>
+    <li>✅ <b>لا حقن XSS منعكس</b> في البحث، و<b>التحقق من المدخلات</b> يرفض الحمولات غير الصالحة بـ 400.</li>
+    <li>✅ <b>الأداء ممتاز</b> — TTFB بين 0.17s و0.66s، gzip مفعّل، رؤوس أمان Helmet على الـ API سليمة.</li>
+    <li>✅ <b>معالجة 404</b> صحيحة على صفحات المستشفى/القسم الجديدة.</li>
+  </ul>
+</section>
+
+<!-- ============ CRITICAL ISSUES ============ -->
+<section>
+  <h2>🔴 المشاكل الحرجة (توقف الإطلاق)</h2>
+
+  <div class="issue crit">
+    <h4><span class="badge b-crit">حرج</span> C-1 · صفحة إدارة المواعيد مكسورة بالكامل (500)</h4>
+    <p><b>الشخصيات:</b> المدير (2/10) · المطور (2/10) · QA (3/10)</p>
+    <div class="evidence"><span class="inline">GET /admin/appointments</span> يُرجع <b>500 Internal Server Error</b> في كل الحالات (بلا فلتر، مع pageSize، مع فلتر الحالة) — اختُبر 4 مرات. ونتيجةً لذلك يظهر عدّاد «المواعيد» في الداشبورد كـ «—».</p>
+    <p>المدير <b>لا يستطيع رؤية أي طلب حجز إطلاقاً</b> — أي أن الوظيفة الأساسية للموقع (استقبال المرضى) معطّلة إدارياً. المرضى قد يحجزون (الإنشاء يعمل) لكن لا أحد يرى الحجوزات.</p>
+    <div class="fix">
+      <strong>التشخيص أولاً (خطوة إلزامية):</strong> السبب غالباً صف بيانات به مرجع تالف أو قيمة enum لا يعرفها الـ Prisma Client المنشور (متوافق مع مشكلة النشر خارج git). شغّل على السيرفر فور استدعاء الصفحة:
+      <pre><code>ssh root@169.58.77.61
+docker logs insan-api --tail 60
+# افتح صفحة المواعيد في المتصفح، ثم اقرأ آخر خطأ في الـ logs
+# ابحث عن: PrismaClientKnownRequestError أو "inconsistent" أو "Invalid value for enum"</code></pre>
+      <strong>الإصلاح الأرجح (توحيد الكود مع قاعدة البيانات):</strong>
+      <pre><code># على السيرفر — أعد توليد Prisma Client وطبّق أي migration ناقص
+docker exec insan-api npx prisma migrate deploy
+docker exec insan-api npx prisma generate
+docker compose -f docker-compose.prod.yml restart api</code></pre>
+      <strong>تحصين دفاعي في الكود</strong> — الملف <span class="inline">apps/api/src/modules/leads/leads.service.ts</span> داخل <span class="inline">findAllAppointments</span>، غلّف الاستعلام حتى لا ينهار كل شيء بسبب صف واحد تالف:
+      <pre><code>// بدّل include الكامل بـ select آمن، وتحقّق أن العلاقات موجودة
+// إن استمر الخطأ بعد migrate deploy، فالسبب صف يتيم (FK لمستشفى/طبيب محذوف)
+// شغّل هذا الاستعلام لإيجاده:
+// SELECT id, "hospitalId", "doctorId", "medicalCenterId", status FROM "AppointmentRequest";</code></pre>
+    </div>
+  </div>
+
+  <div class="issue crit">
+    <h4><span class="badge b-crit">حرج</span> C-2 · نظام الإعدادات مفصول تماماً عن الموقع العام</h4>
+    <p><b>الشخصيات:</b> المدير (2/10) · العميل (4/10)</p>
+    <div class="evidence">توجد <b>35 إعداداً</b> في قاعدة البيانات (بريد، هاتف، واتساب، عنوان، ساعات العمل، روابط سوشيال، اسم الموقع) وendpoint عام <span class="inline">/api/v1/settings</span> يعمل (200). لكن بحثتُ في كود الواجهة فلم أجد <b>أي</b> استدعاء لها: لا <span class="inline">getSettings</span> في <span class="inline">public-api.ts</span>، ولا <span class="inline">Footer.tsx</span> ولا <span class="inline">HomeContactSection.tsx</span> يقرأها.</div>
+    <p>النتيجة: صفحة «الإعدادات» في الأدمن تبدو كاملة، لكن <b>تعديل أي قيمة فيها لا يُغيّر شيئاً على الموقع</b>. المكوّنات تعرض قيمًا ثابتة مكتوبة في الكود بدلاً منها. وهذا هو مصدر مشكلة بيانات التواصل المتضاربة (C-3).</p>
+    <p>إضافةً لذلك، قيم الإعدادات نفسها placeholders: <span class="inline">contact_phone = "+20-XXX-XXX-XXXX"</span>.</p>
+    <div class="fix">
+      <strong>الحل جزءان:</strong>
+      <p><b>1) أضف دالة قراءة الإعدادات</b> — الملف <span class="inline">apps/web/lib/public-api.ts</span> في النهاية:</p>
+      <pre><code>export async function getSettings() {
+  const res = await pub&lt;{ success: boolean; data: any[] }&gt;('/settings');
+  const map: Record&lt;string, any&gt; = {};
+  (res?.data ?? []).forEach((s) =&gt; { map[s.key] = s.value; });
+  return map; // مثال: map.contact_email, map.contact_phone
+}</code></pre>
+      <p><b>2) اجعل الفوتر وقسم التواصل يقرآن منها</b> بدل القيم الثابتة (راجع C-3).</p>
+      <p><b>3) املأ قيم الإعدادات الحقيقية</b> — استخدم أداة إدخال البيانات المرفقة (تبويب «الإعدادات»).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HIGH ============ -->
+<section>
+  <h2>🟠 المشاكل المهمة</h2>
+
+  <div class="issue high">
+    <h4><span class="badge b-high">عالٍ</span> C-3 · بيانات تواصل متضاربة + محتوى مفبرك (قانوني)</h4>
+    <p><b>الشخصيات:</b> العميل (2/10) · المدير (3/10)</p>
+    <div class="evidence">على الصفحة نفسها: الشريط العلوي <span class="inline">info@insan-platform.com</span> · الفوتر <span class="inline">info@hospitalgroup.com</span> (شركة أخرى!) · قسم التواصل رقم <span class="inline">0123 456 7890</span> · الفوتر <span class="inline">+20 000 000 000</span>. وتقييمات ثابتة «4.9/5 · 1,234 تقييم» وموعد وهمي لطبيبة «سارة جونسون» غير موجودة، وكل بطاقة طبيب تعرض «5.0 (127 تقييم)» و«10 سنوات خبرة».</div>
+    <p>⚖️ عرض تقييمات ومراجعات مفبركة على منصة صحية قد يُعدّ إعلاناً مضللاً. وتضارب البيانات يهدم ثقة المريض فوراً.</p>
+    <div class="fix">
+      <strong>1) وحّد بيانات التواصل من الإعدادات</strong> — الملف <span class="inline">apps/web/components/public/Footer.tsx</span>: احذف القيم الثابتة واقرأ من <span class="inline">getSettings()</span> (بعد إصلاح C-2). نفس الشيء في <span class="inline">HomeContactSection.tsx</span> (الأسطر ~29، ~39، ~49).
+      <strong style="display:block;margin-top:10px">2) احذف التقييمات والمواعيد الوهمية</strong> — الملف <span class="inline">apps/web/components/public/HeroSection.tsx</span>: احذف بلوكات <span class="inline">trust-badges</span> و<span class="inline">appointment-card</span> و<span class="inline">rating-card</span>. والملف <span class="inline">DoctorCard.tsx</span>: احذف بلوكَي <span class="inline">experience-info</span> و<span class="inline">rating-section</span> (أو اربطهما بحقول حقيقية).
+    </div>
+  </div>
+
+  <div class="issue high">
+    <h4><span class="badge b-high">عالٍ</span> C-4 · لا نظام لرفع الصور (جذر نقص المحتوى)</h4>
+    <p><b>الشخصيات:</b> المدير (2/10) · العميل (4/10)</p>
+    <div class="evidence">12 مركزاً طبياً بلا صورة (heroImage=false للجميع)، والطبيبان بلا صور (photo=false)، وصورتا مستشفى المستقبل <span class="inline">/images/future-hero.jpg</span> و<span class="inline">/logos/future-logo.png</span> ترجعان 404. ووجدتُ أن مكوّن <span class="inline">ImageUpload.tsx</span> أُضيف حديثاً في الكود المحلي، لكن <b>لا يوجد endpoint رفع في الـ API</b> (لا FileInterceptor ولا multer)، و<span class="inline">POST /admin/media</span> غير موجود.</div>
+    <div class="fix">
+      <strong>حل فوري (بدون كود):</strong> ألصق روابط صور خارجية جاهزة في خانات الصور (الأداة المرفقة تفعل هذا دفعة واحدة). <br>
+      <strong>حل جذري:</strong> ابنِ <span class="inline">MediaModule</span> في الـ API بـ endpoint <span class="inline">POST /admin/media/upload</span> محمي (JWT+Permission)، يتحقق من النوع (jpeg/png/webp فقط) والحجم (≤5MB) ويعيد تسمية الملف عشوائياً ويحفظ على Docker volume. ثم اربط <span class="inline">ImageUpload.tsx</span> به.
+      <div class="evidence" style="background:#fee2e2;border-color:#dc2626">تحذير أمني: رفع الملفات أخطر ميزة — بدون التحقق من النوع والحجم وإعادة التسمية يمكن رفع ملف تنفيذي والسيطرة على السيرفر.</div>
+    </div>
+  </div>
+
+  <div class="issue high">
+    <h4><span class="badge b-high">عالٍ</span> C-5 · لا حماية من تخمين كلمة المرور</h4>
+    <p><b>الشخصية:</b> المخترق الأخلاقي (3/10)</p>
+    <div class="evidence">أرسلتُ <b>48 محاولة دخول متتالية</b> بحساب وهمي → 48 × 401، <b>صفر × 429</b>. الحد العام 100/دقيقة/IP فقط = 144 ألف محاولة يومياً. و<span class="inline">recaptcha_enabled = false</span>. وبريد الأدمن معروف.</div>
+    <div class="fix">
+      <strong>الملف</strong> <span class="inline">apps/api/src/modules/auth/auth.controller.ts</span> — أضف فوق دالة <span class="inline">login</span>:
+      <pre><code>import { Throttle } from '@nestjs/throttler';
+// ...
+@Throttle({ default: { limit: 5, ttl: 60000 } })   // 5 محاولات/دقيقة
+@Post('login')</code></pre>
+    </div>
+  </div>
+
+  <div class="issue high">
+    <h4><span class="badge b-high">عالٍ</span> C-6 · الموقع على HTTP فقط — بلا تشفير</h4>
+    <p><b>الشخصية:</b> المخترق الأخلاقي (4/10)</p>
+    <div class="evidence"><span class="inline">nginx.conf</span> فيه <span class="inline">listen 80</span> فقط، بلا بلوك 443، رغم أن compose ينشر 443 ويركّب مجلد SSL. كلمة مرور الأدمن وكوكي الجلسة يمران بنص صريح.</div>
+    <div class="fix"><strong>يتطلب نطاقاً حقيقياً</strong> موجّهاً للسيرفر (لا يمكن إصدار شهادة لـ IP). ثبّت Let's Encrypt عبر certbot، أضف بلوك <span class="inline">listen 443 ssl</span>، وحوّل 80→443 بـ 301. (خطوات تفصيلية في تقرير <span class="inline">FULL_AUDIT_2026-07-29.md</span> الخطوة 7).</div>
+  </div>
+
+  <div class="issue high">
+    <h4><span class="badge b-high">عالٍ</span> C-7 · النشر خارج git + مجلد public سيُمحى</h4>
+    <p><b>الشخصية:</b> المطور (3/10)</p>
+    <div class="evidence">الكلاسات على الإنتاج (وحتى الباب الخلفي نفسه) غير موجودة في أي فرع git. <span class="inline">deploy.ps1</span> يرفع مجلد العمل المحلي كأرشيف لا من git. و<span class="inline">apps/web/public/</span> فارغ في git بينما الإنتاج يخدم منه صورًا وُضعت يدوياً — أول <span class="inline">--build</span> نظيف سيمحوها كلها.</div>
+    <div class="fix">
+      1) اسحب الكود والصور الحيّة من السيرفر وارفعها على git قبل أي إعادة بناء. <br>
+      2) أضف حارساً في أول <span class="inline">deploy.ps1</span> يرفض النشر لو فيه تعديلات غير مرفوعة:
+      <pre><code>$dirty = git status --porcelain
+if ($dirty) { Write-Host "توقف: تعديلات غير مرفوعة على git" -ForegroundColor Red; exit 1 }</code></pre>
+      3) تأكد أن مجلد المرفوعات على Docker volume دائم.
+    </div>
+  </div>
+</section>
+
+<!-- ============ MEDIUM ============ -->
+<section>
+  <h2>🟡 المشاكل المتوسطة</h2>
+
+  <div class="issue med">
+    <h4><span class="badge b-med">متوسط</span> C-8 · <span class="inline">GET /admin/medical-centers/:id</span> يرجع 500</h4>
+    <div class="evidence">جلب مركز طبي واحد بالـ id يرجع 500 (بينما القائمة والتحديث PATCH يعملان بنجاح — اختُبر وحُفظ وأُرجِع). المصدر: <span class="inline">findOne</span> يضمّن علاقات (clinics/doctors/hospitals) بها صف تالف.</div>
+    <div class="fix">لحسن الحظ مودال التعديل يستخدم بيانات القائمة لا الـ single-GET، فإضافة الصور للمراكز ما زالت ممكنة. لكن أصلح الجذر بنفس منهج C-1 (logs + migrate deploy). خطورته أقل لأنه لا يعطّل الإدارة فعلياً.</div>
+  </div>
+
+  <div class="issue med">
+    <h4><span class="badge b-med">متوسط</span> C-9 · لا شاشة/endpoint إداري للأسئلة الشائعة</h4>
+    <div class="evidence"><span class="inline">POST /admin/faqs</span> يرجع 404 — لا يوجد endpoint إداري. الجدول <span class="inline">FaqItem</span> موجود والعرض العام يعمل، لكن لا سبيل لإضافة سؤال إلا من قاعدة البيانات مباشرة.</div>
+    <div class="fix">أضف endpoints إدارية في <span class="inline">faqs.controller.ts</span> (GET/POST/PATCH/DELETE على <span class="inline">/admin/faqs</span>) بحراسة JWT+Permission، وشاشة <span class="inline">/admin/faqs</span> على نمط <span class="inline">TestimonialModal</span>، ورابط في القائمة الجانبية. الحقول ثنائية اللغة → استخدم <span class="inline">&lt;BilingualInput /&gt;</span>.</div>
+  </div>
+
+  <div class="issue med">
+    <h4><span class="badge b-med">متوسط</span> C-10 · روابط «خدماتنا» في الفوتر مكسورة (404×5)</h4>
+    <div class="evidence"><span class="inline">/services/emergency, /services/icu, /services/outpatient, /services/radiology, /services/surgeries</span> — الخمسة ترجع 404 على كل صفحة.</div>
+    <div class="fix">في <span class="inline">Footer.tsx</span>: وجّهها إلى <span class="inline">/medical-centers</span>، أو احذف قسم «خدماتنا» حتى تُبنى صفحات الخدمات.</div>
+  </div>
+
+  <div class="issue med">
+    <h4><span class="badge b-med">متوسط</span> C-11 · SEO معطّل — sitemap يشير لنطاق نفق ميت</h4>
+    <div class="evidence"><span class="inline">sitemap.xml</span> و<span class="inline">robots.txt</span> يشيران إلى <span class="inline">https://insan-web-2026.loca.lt</span> (نطاق تطوير مؤقت). جوجل لن يفهرس شيئاً.</div>
+    <div class="fix">على السيرفر في <span class="inline">.env.production</span>: <span class="inline">NEXT_PUBLIC_SITE_URL=http://169.58.77.61</span> (ثم النطاق الحقيقي لاحقاً)، وأعد بناء web (المتغيّر يُحقن وقت البناء).</div>
+  </div>
+
+  <div class="issue med">
+    <h4><span class="badge b-med">متوسط</span> C-12 · لا وسوم مشاركة اجتماعية (Open Graph)</h4>
+    <div class="evidence">لا <span class="inline">og:image</span> ولا <span class="inline">og:title</span>. مشاركة أي رابط على واتساب/فيسبوك تظهر رابطاً عارياً.</div>
+    <div class="fix">أضف <span class="inline">openGraph</span> و<span class="inline">twitter</span> و<span class="inline">metadataBase</span> في <span class="inline">apps/web/app/layout.tsx</span> داخل <span class="inline">metadata</span>، وأنشئ صورة <span class="inline">og-image.jpg</span> بمقاس 1200×630.</div>
+  </div>
+
+  <div class="issue med">
+    <h4><span class="badge b-med">متوسط</span> C-13 · لوحة الأدمن بلا رؤوس حماية (Clickjacking)</h4>
+    <p><b>الشخصية:</b> المخترق الأخلاقي</p>
+    <div class="evidence">صفحات Next.js (وفيها لوحة الأدمن) تحمل <span class="inline">X-Content-Type-Options</span> فقط. مفقود: CSP، X-Frame-Options، Referrer-Policy. ويكشف <span class="inline">X-Powered-By: Next.js</span>.</div>
+    <div class="fix">في <span class="inline">apps/web/next.config.js</span>، وسّع <span class="inline">headers()</span>:
+      <pre><code>{ key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+{ key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+{ key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },</code></pre>
+      وأضف <span class="inline">poweredByHeader: false</span>.
+    </div>
+  </div>
+
+  <div class="issue med">
+    <h4><span class="badge b-med">متوسط</span> C-14 · نموذج الحجز بلا ربط تسميات (إتاحة وصول)</h4>
+    <div class="evidence"><span class="inline">/book</span> فيه 5 حقول و8 تسميات، صفر ربط <span class="inline">id/for</span>. قارئ الشاشة لا يصف الحقول — مريض كفيف لا يستطيع الحجز.</div>
+    <div class="fix">في <span class="inline">AppointmentForm.tsx</span> اربط كل <span class="inline">&lt;label htmlFor="x"&gt;</span> بـ <span class="inline">&lt;input id="x"&gt;</span>.</div>
+  </div>
+</section>
+
+<!-- ============ LOW ============ -->
+<section>
+  <h2>⚪ ملاحظات منخفضة</h2>
+  <ul>
+    <li><span class="badge b-low">منخفض</span> <b>حركات AOS ميّتة:</b> 26 عنصراً يحمل <span class="inline">data-aos</span> ومكتبة AOS غير محمّلة. إما حمّلها في <span class="inline">layout.tsx</span> أو احذف الخصائص.</li>
+    <li><span class="badge b-low">منخفض</span> <b>خبر بلا تاريخ نشر:</b> <span class="inline">opening-new-branch</span> حالته PUBLISHED و<span class="inline">publishedAt=null</span>. امنع النشر بدون تاريخ في <span class="inline">news.service.ts</span>.</li>
+    <li><span class="badge b-low">منخفض</span> <b>تكامل فيسبوك معطّل:</b> 5 تكاملات كلها غير مفعّلة، فالمزامنة لن تعمل (وهي تستورد كمسودة الآن — سلوك صحيح، نبّه فريقك).</li>
+    <li><span class="badge b-low">منخفض</span> <b>صفحتان في الأدمن قد لا تكونان مبنيتين:</b> <span class="inline">/admin/profile</span> و<span class="inline">/admin/settings/ai</span> (البديل الموجود <span class="inline">/admin/ai-assistant</span>).</li>
+    <li><span class="badge b-low">منخفض</span> <b>معرض الصور شبه فارغ:</b> يعرض صورتي المستشفيين فقط.</li>
+  </ul>
+</section>
+
+<!-- ============ PERSONA MATRIX ============ -->
+<section>
+  <h2>جدول التقييم التفصيلي حسب الشخصية</h2>
+  <table>
+    <tr>
+      <th>الصفحة / الميزة</th>
+      <th>👤 عميل</th><th>🏥 مدير</th><th>🧪 QA</th><th>💻 مطور</th><th>🔓 مخترق</th>
+      <th>أبرز ملاحظة</th>
+    </tr>
+    <tr><td>الرئيسية <span class="inline">/</span></td><td>5</td><td>6</td><td>6</td><td>7</td><td>7</td><td>تصميم ممتاز لكن أرقام/تقييمات مفبركة</td></tr>
+    <tr><td>تفاصيل مستشفى <span class="inline">/hospitals/[slug]</span></td><td>7</td><td>7</td><td>8</td><td>8</td><td>8</td><td>السيكشنات تعمل وتختفي بأمان عند فراغ البيانات ✅</td></tr>
+    <tr><td>صفحة القسم</td><td>7</td><td>7</td><td>8</td><td>8</td><td>8</td><td>404 صحيح للقسم غير الموجود ✅</td></tr>
+    <tr><td>المراكز الطبية</td><td>3</td><td>4</td><td>5</td><td>7</td><td>7</td><td>12 مركزاً بلا صورة واحدة</td></tr>
+    <tr><td>الأطباء</td><td>3</td><td>3</td><td>5</td><td>6</td><td>7</td><td>بلا صور + خبرة/تقييم ثابت مزيّف</td></tr>
+    <tr><td>الحجز <span class="inline">/book</span></td><td>6</td><td>7</td><td>5</td><td>6</td><td>7</td><td>يعمل، لكن بلا ربط تسميات (a11y)</td></tr>
+    <tr><td>التواصل / الفوتر</td><td>2</td><td>3</td><td>4</td><td>4</td><td>7</td><td>3 أرقام متضاربة + بريد شركة أخرى</td></tr>
+    <tr><td>الأسئلة الشائعة</td><td>4</td><td>3</td><td>5</td><td>6</td><td>7</td><td>فارغة + لا شاشة إدارة</td></tr>
+    <tr><td>المعرض / المستثمرون</td><td>4</td><td>4</td><td>6</td><td>7</td><td>7</td><td>محتوى ضئيل</td></tr>
+    <tr><td>SEO (sitemap/OG)</td><td>—</td><td>3</td><td>3</td><td>4</td><td>6</td><td>نطاق نفق ميت + لا Open Graph</td></tr>
+    <tr><td>أدمن: المستشفيات</td><td>—</td><td>8</td><td>8</td><td>8</td><td>7</td><td>الحفظ يعمل بالكامل ✅ (أهم اختبار)</td></tr>
+    <tr><td>أدمن: المواعيد</td><td>—</td><td>1</td><td>2</td><td>2</td><td>6</td><td>مكسورة كلياً — 500</td></tr>
+    <tr><td>أدمن: المراكز الطبية</td><td>—</td><td>6</td><td>6</td><td>6</td><td>7</td><td>القائمة والحفظ يعملان، single-GET مكسور</td></tr>
+    <tr><td>أدمن: الإعدادات</td><td>—</td><td>2</td><td>4</td><td>4</td><td>7</td><td>يحفظ لكن لا أثر له على الموقع</td></tr>
+    <tr><td>أدمن: المساعد الذكي</td><td>—</td><td>8</td><td>8</td><td>8</td><td>7</td><td>يعمل + المفاتيح مقنّعة ✅</td></tr>
+    <tr><td>الأمن العام</td><td>—</td><td>—</td><td>6</td><td>6</td><td>5</td><td>صلاحيات محكمة، لكن لا HTTPS ولا حماية تخمين</td></tr>
+  </table>
+</section>
+
+<!-- ============ HACKER TESTS ============ -->
+<section>
+  <h2>🔓 نتائج اختبارات الاختراق (تفصيلي)</h2>
+  <table>
+    <tr><th>الاختبار</th><th>النتيجة</th><th>الحكم</th></tr>
+    <tr><td>وصول مباشر لـ 7 مسارات API إدارية بلا توكن</td><td>401 للجميع</td><td><span class="badge b-ok">آمن</span></td></tr>
+    <tr><td>وصول لصفحات أدمن بلا جلسة</td><td>307 → /admin/login</td><td><span class="badge b-ok">آمن</span></td></tr>
+    <tr><td>XSS منعكس في <span class="inline">/search?q=&lt;script&gt;</span></td><td>مُهرّب بالكامل</td><td><span class="badge b-ok">آمن</span></td></tr>
+    <tr><td>تسريب مفاتيح AI</td><td>مقنّعة <span class="inline">••••Ejqp</span></td><td><span class="badge b-ok">آمن</span></td></tr>
+    <tr><td>حقن حمولات موعد غير صالحة</td><td>400 (مرفوضة)</td><td><span class="badge b-ok">آمن</span></td></tr>
+    <tr><td>تخمين كلمة المرور (48 محاولة)</td><td>بلا حظر إطلاقاً</td><td><span class="badge b-crit">ثغرة</span></td></tr>
+    <tr><td>التشفير أثناء النقل (HTTPS)</td><td>HTTP فقط</td><td><span class="badge b-crit">ثغرة</span></td></tr>
+    <tr><td>Clickjacking على الأدمن</td><td>لا X-Frame-Options على الويب</td><td><span class="badge b-high">خطر</span></td></tr>
+    <tr><td>الباب الخلفي (dev bypass)</td><td>كوكي <span class="inline">admin_session=1</span> + refresh صالح</td><td><span class="badge b-high">أزِله قبل الإطلاق</span></td></tr>
+  </table>
+  <div class="evidence" style="background:#fee2e2;border-color:#dc2626">الباب الخلفي الذي فعّلته للفحص <b>يجب إزالته تماماً قبل الإطلاق</b> — أي شخص يعرف آليته يدخل لوحة التحكم كاملة بلا كلمة مرور. تأكد أنه ليس مرفوعاً في أي مسار عام.</div>
+</section>
+
+<section>
+  <h2>خارطة الطريق المرتّبة بالأولوية</h2>
+  <table>
+    <tr><th>المرحلة</th><th>المهام</th><th>لماذا</th></tr>
+    <tr><td><b>اليوم</b></td><td>C-2 (ربط الإعدادات) · C-3 (حذف المفبرك) · C-10 (روابط الفوتر) · C-11 (sitemap)</td><td>مصداقية فورية بلا مخاطرة</td></tr>
+    <tr><td><b>هذا الأسبوع</b></td><td>C-1 (المواعيد 500) · C-5 (حماية الدخول) · C-6 (HTTPS) · إزالة الباب الخلفي</td><td>وظيفة أساسية + أمن</td></tr>
+    <tr><td><b>أسبوعان</b></td><td>C-4 (رفع الصور) · C-9 (شاشة FAQ) · C-8 (MC single-GET) · C-12 (OG)</td><td>اكتمال الإدارة والتسويق</td></tr>
+    <tr><td><b>لاحقاً</b></td><td>C-7 (انضباط git) · C-13/C-14 (رؤوس/a11y) · الملاحظات المنخفضة</td><td>استدامة وجودة</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>📥 أداة إدخال البيانات المرفقة</h2>
+  <p>أرفقتُ ملف <span class="inline">insan-content-cockpit.html</span> — أداة تفاعلية تساعدك على ملء كل البيانات الناقصة دفعة واحدة (بيانات التواصل، صور المراكز والأطباء، محتوى المستشفيات) عبر ملف JSON واحد، ثم تُنشئ لك كود استيراد جاهزًا يرفع كل شيء إلى الموقع الحيّ في ضغطة واحدة. افتح الأداة واتبع الدليل بداخلها.</p>
+</section>
+
+<footer>
+  تقرير آليّ مبني على فحص فعلي حيّ — منصة إنسان للرعاية الصحية · 2026-07-30<br>
+  كل اختبارات الكتابة أُجريت بقيم اختبار مؤقتة ورُجّعت لأصلها. لم تُحذف أو تُعدَّل أي بيانات حقيقية.
+</footer>
+
+</div>
+
+<script>
+// copy-to-clipboard for code blocks
+document.querySelectorAll('pre').forEach(pre=>{
+  pre.style.cursor='pointer'; pre.title='اضغط للنسخ';
+  pre.addEventListener('click',()=>{
+    navigator.clipboard.writeText(pre.innerText).then(()=>{
+      const old=pre.style.outline; pre.style.outline='2px solid #16a34a';
+      setTimeout(()=>pre.style.outline=old,600);
+    });
+  });
+});
+</script>
+</body>
+</html>

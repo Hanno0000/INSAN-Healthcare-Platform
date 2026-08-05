@@ -1,0 +1,195 @@
+{
+  "_meta": {
+    "version": "1.0-draft",
+    "date": "2026-08-01",
+    "source_of_truth": "business/brand/ENTITY_REGISTRY.md + MEDICAL_SERVICES_TAXONOMY.md",
+    "built_by": "Claude — structural draft from brand docs; factual gaps left for operator",
+    "markers": {
+      "__NEEDS_OPERATOR__": "قيمة حقيقية لازم تدخلها أنت أو فريقك — مش موجودة في وثائق المشروع",
+      "suggestedImage": "مسار صورة مقترحة من business/Media (لسه محتاجة تُرفع على السيرفر — الموقع مفهوش نظام رفع بعد)"
+    },
+    "rules_applied": [
+      "لا إحصائيات مفبركة: كل heroStats متروكة NEEDS_OPERATOR بدل اختراع أرقام",
+      "المراكز = 12 مركز رسمي فقط (لا عيون/جلدية/أعصاب — دول مش في السجل)",
+      "ICU والطوارئ = أقسام (departments) مش مراكز",
+      "المراكز 1-4 في المستشفيين، 5-12 في الدلتا فقط"
+    ]
+  },
+
+  "settings": {
+    "site_name": { "ar": "منظومة إنسان للرعاية الصحية", "en": "INSAN Healthcare Platform" },
+    "site_tagline": { "ar": "الرعاية الصحية المتكاملة — نظام واحد أينما ذهبت", "en": "Integrated Healthcare — the same system wherever you go" },
+    "default_meta_description": { "ar": "منظومة إنسان تربط المرضى بأفضل الكفاءات الطبية في مصر من خلال مستشفياتها المتخصصة ومراكزها الطبية، بمعيار موحّد للرعاية.", "en": "INSAN connects patients with leading medical expertise in Egypt through its specialized hospitals and medical centers, under one unified standard of care." },
+    "contact_email": "__NEEDS_OPERATOR__",
+    "contact_phone": "__NEEDS_OPERATOR__",
+    "emergency_phone": "__NEEDS_OPERATOR__",
+    "whatsapp_number": "__NEEDS_OPERATOR__",
+    "contact_address": { "ar": "__NEEDS_OPERATOR__", "en": "__NEEDS_OPERATOR__" },
+    "working_hours": { "ar": "__NEEDS_OPERATOR__ (مثال: السبت - الخميس 9ص-5م، الطوارئ 24 ساعة)", "en": "__NEEDS_OPERATOR__" },
+    "social_facebook": "__NEEDS_OPERATOR__",
+    "social_instagram": "__NEEDS_OPERATOR__",
+    "social_youtube": "__NEEDS_OPERATOR__",
+    "social_linkedin": "__NEEDS_OPERATOR__"
+  },
+
+  "hospitals": [
+    {
+      "slug": "future-hospital",
+      "registry_id": "HOSP-001",
+      "name": { "ar": "مستشفى المستقبل التخصصي", "en": "Future Specialized Hospital" },
+      "shortDescription": { "ar": "مستشفى تخصصي يعمل تحت منظومة إنسان بمعيار موحّد للرعاية.", "en": "A specialized hospital operating under the INSAN platform to a unified standard of care." },
+      "description": { "ar": "مستشفى المستقبل التخصصي هو أحد مستشفيَي منظومة إنسان، ويحمل موقع القيادة والابتكار في المنظومة. يضم أربعة مراكز طبية متخصصة إلى جانب الأقسام المستشفوية من طوارئ وعناية مركزة وعمليات وأشعة ومعمل.", "en": "Future Specialized Hospital is one of INSAN's two hospitals, carrying the platform's position of leadership and innovation. It operates four specialized medical centers alongside hospital-wide departments including Emergency, Intensive Care, Operating Rooms, Radiology and Laboratory." },
+      "heroTagline": { "ar": "القيادة والابتكار في الرعاية الصحية", "en": "Leadership and innovation in healthcare" },
+      "heroImage": "__NEEDS_OPERATOR__",
+      "suggestedImage": "business/Media/Facility/Hospital Exterior/future-hospital-exterior-016.jpeg",
+      "logoUrl": "__NEEDS_OPERATOR__",
+      "brandColor": "#0B1F3A",
+      "googleMapsUrl": "__NEEDS_OPERATOR__ (رابط Google Maps Embed يبدأ بـ https://www.google.com/maps/embed)",
+      "heroStats": "__NEEDS_OPERATOR__ (3 إحصائيات حقيقية: مثال سنوات الخبرة / عدد المرضى / عدد الأطباء — لا تخترع أرقام)",
+      "contactInfo": { "phone": "24156739 - 24156798", "email": "__NEEDS_OPERATOR__", "address": { "ar": "مستشفى المستقبل مصر الجديدة ٦٧ أ نخلة المطيعي - ميدان تريومف - اتجاه صلاح سالم", "en": "67 A Nakhla El Motiey - Triumph Square - Towards Salah Salem, Heliopolis" } },
+      "locations": "__NEEDS_OPERATOR__ (مصفوفة مواقع: كل موقع {name:{ar,en}, mapsUrl})",
+      "journeySteps": "USE_DEFAULT",
+      "departments": ["icu", "emergency", "operating-rooms", "radiology", "laboratory", "outpatient-clinics"],
+      "centers": ["cardiac-internal-medicine", "urology-laser", "digestive-liver", "general-surgery"]
+    },
+    {
+      "slug": "delta-hospital",
+      "registry_id": "HOSP-002",
+      "name": { "ar": "مستشفى الدلتا الدولي", "en": "Delta International Hospital" },
+      "shortDescription": { "ar": "مستشفى يعمل تحت منظومة إنسان ويشغّل المراكز الطبية الاثني عشر كاملة.", "en": "A hospital operating under the INSAN platform, running the full set of twelve medical centers." },
+      "description": { "ar": "مستشفى الدلتا الدولي يعمل تحت منظومة إنسان وتديره شركة L'Avenir Medical. وهو المستشفى الوحيد في المنظومة الذي يشغّل المراكز الطبية الاثني عشر كاملة، إلى جانب الأقسام المستشفوية من طوارئ وعناية مركزة وعمليات وأشعة ومعمل — ما يجعله أكمل تطبيق لنموذج المراكز في المنظومة.", "en": "Delta International Hospital operates under the INSAN platform and is managed by L'Avenir Medical. It is the only site in the ecosystem that runs the full set of twelve medical centers, alongside hospital-wide departments — making it the most complete implementation of the centers model." },
+      "heroTagline": { "ar": "اثنا عشر مركزًا طبيًا تحت سقف واحد", "en": "Twelve medical centers under one roof" },
+      "heroImage": "__NEEDS_OPERATOR__",
+      "suggestedImage": "business/Media/Facility/Reception & Waiting/reception-lobby-counter-and-stairs.jpeg",
+      "logoUrl": "__NEEDS_OPERATOR__",
+      "brandColor": "#0E7C86",
+      "googleMapsUrl": "__NEEDS_OPERATOR__",
+      "heroStats": "__NEEDS_OPERATOR__",
+      "contactInfo": { "phone": "__NEEDS_OPERATOR__", "email": "__NEEDS_OPERATOR__", "address": { "ar": "__NEEDS_OPERATOR__", "en": "__NEEDS_OPERATOR__" } },
+      "locations": "__NEEDS_OPERATOR__",
+      "journeySteps": "USE_DEFAULT",
+      "departments": ["icu", "emergency", "operating-rooms", "radiology", "laboratory", "outpatient-clinics"],
+      "centers": ["cardiac-internal-medicine", "urology-laser", "digestive-liver", "general-surgery", "diabetic-foot-vascular", "pain-management", "womens-childrens-health", "dental", "ent-head-neck", "orthopedic-sports", "chest-sleep", "senior-health-screening"]
+    }
+  ],
+
+  "departments_catalog": [
+    { "slug": "icu", "name": { "ar": "وحدة العناية المركزة", "en": "Intensive Care Unit" }, "registry_id": "MED-001",
+      "shortDescription": { "ar": "رعاية حرجة على مدار الساعة بأجهزة إنعاش ومتابعة متقدمة.", "en": "Round-the-clock critical care with advanced life-support and monitoring." },
+      "suggestedImage": "business/Media/Services/Intensive Care Unit/icu-bay-beds-5-6-ventilator-monitors.jpeg" },
+    { "slug": "emergency", "name": { "ar": "قسم الطوارئ", "en": "Emergency Department" }, "registry_id": "MED-002",
+      "shortDescription": { "ar": "استقبال وطوارئ على مدار 24 ساعة لجميع الحالات العاجلة.", "en": "24-hour reception and emergency care for all urgent cases." },
+      "suggestedImage": "business/Media/Services/Emergency Department/emergency-exam-bays-wide.jpeg" },
+    { "slug": "operating-rooms", "name": { "ar": "غرف العمليات", "en": "Operating Rooms" }, "registry_id": "MED-003",
+      "shortDescription": { "ar": "غرف عمليات مجهّزة لمختلف التخصصات الجراحية.", "en": "Operating theatres equipped for a range of surgical specialties." },
+      "suggestedImage": "business/Media/Services/Operating Room/or-theatre-table-anaesthesia-light.jpeg" },
+    { "slug": "radiology", "name": { "ar": "الأشعة والتصوير", "en": "Radiology & Imaging" }, "registry_id": "MED-004",
+      "shortDescription": { "ar": "خدمات تشخيص بالأشعة والتصوير المقطعي والرنين.", "en": "Diagnostic imaging including X-ray, CT and MRI." },
+      "suggestedImage": "business/Media/Services/Radiology Department/ct-control-console-and-gantry.jpeg" },
+    { "slug": "laboratory", "name": { "ar": "المعمل", "en": "Laboratory" }, "registry_id": "MED-005",
+      "shortDescription": { "ar": "تحاليل طبية ومعملية دقيقة تدعم التشخيص والعلاج.", "en": "Accurate medical and laboratory testing supporting diagnosis and treatment." },
+      "suggestedImage": "__NEEDS_OPERATOR__" },
+    { "slug": "outpatient-clinics", "name": { "ar": "العيادات الخارجية", "en": "Outpatient Clinics" }, "registry_id": "MED-006",
+      "shortDescription": { "ar": "عيادات خارجية تخصصية للكشف والمتابعة بمواعيد مرنة.", "en": "Specialty outpatient clinics for consultation and follow-up with flexible appointments." },
+      "suggestedImage": "business/Media/Services/Outpatient Clinic/clinic-door-ent.jpeg" }
+  ],
+
+  "centers": [
+    { "slug": "cardiac-internal-medicine", "registry_id": "CEN-001", "isFeatured": true, "hospitalSlugs": ["future-hospital", "delta-hospital"],
+      "name": { "ar": "مركز القلب والباطنة وإحالة الرعايات الحرجة", "en": "Cardiac & Internal Medicine Center" },
+      "description": { "ar": "رعاية متكاملة لأمراض القلب والباطنة مع إحالة وتنسيق الرعايات الحرجة.", "en": "Comprehensive cardiac and internal medicine care with critical-care referral and coordination." },
+      "heroImage": "__NEEDS_OPERATOR__", "suggestedImage": "business/Media/Services/Intensive Care Unit/icu-isolation-room-door-sign.jpeg" },
+    { "slug": "urology-laser", "registry_id": "CEN-002", "isFeatured": true, "hospitalSlugs": ["future-hospital", "delta-hospital"],
+      "name": { "ar": "مركز جراحات المسالك والليزر", "en": "Urology & Laser Surgery Center" },
+      "description": { "ar": "تشخيص وعلاج أمراض المسالك البولية وجراحات الليزر الحديثة.", "en": "Diagnosis and treatment of urological conditions and modern laser surgery." },
+      "heroImage": "__NEEDS_OPERATOR__", "suggestedImage": "business/Media/Services/Operating Room/or-suite-entrance-sign.jpeg" },
+    { "slug": "digestive-liver", "registry_id": "CEN-003", "isFeatured": true, "hospitalSlugs": ["future-hospital", "delta-hospital"],
+      "name": { "ar": "مركز مناظير الجهاز الهضمي والكبد", "en": "Digestive & Liver Endoscopy Center" },
+      "description": { "ar": "مناظير تشخيصية وعلاجية للجهاز الهضمي والكبد.", "en": "Diagnostic and therapeutic endoscopy for the digestive system and liver." },
+      "heroImage": "__NEEDS_OPERATOR__", "suggestedImage": "business/Media/Services/Diagnostics/" },
+    { "slug": "general-surgery", "registry_id": "CEN-004", "isFeatured": true, "hospitalSlugs": ["future-hospital", "delta-hospital"],
+      "name": { "ar": "مركز الجراحات العامة والمناظير", "en": "General Surgery & Endoscopy Center" },
+      "description": { "ar": "جراحات عامة ومناظير جراحية بأحدث التقنيات.", "en": "General surgery and laparoscopic procedures using modern techniques." },
+      "heroImage": "__NEEDS_OPERATOR__", "suggestedImage": "business/Media/Services/Operating Room/or-corridor-theatre-1-door.jpeg" },
+    { "slug": "diabetic-foot-vascular", "registry_id": "CEN-005", "isFeatured": true, "hospitalSlugs": ["delta-hospital"],
+      "name": { "ar": "مركز القدم السكري والأوعية الدموية", "en": "Diabetic Foot & Vascular Center" },
+      "description": { "ar": "رعاية متخصصة للقدم السكري وأمراض الأوعية الدموية.", "en": "Specialized care for diabetic foot and vascular conditions." },
+      "heroImage": "__NEEDS_OPERATOR__", "suggestedImage": "__NEEDS_OPERATOR__" },
+    { "slug": "pain-management", "registry_id": "CEN-006", "isFeatured": false, "hospitalSlugs": ["delta-hospital"],
+      "name": { "ar": "مركز علاج الألم والتدخلات المحدودة", "en": "Pain Management Center" },
+      "description": { "ar": "علاج الألم المزمن عبر تدخلات محدودة وغير جراحية.", "en": "Management of chronic pain through minimally invasive interventions." },
+      "heroImage": "__NEEDS_OPERATOR__", "suggestedImage": "__NEEDS_OPERATOR__" },
+    { "slug": "womens-childrens-health", "registry_id": "CEN-007", "isFeatured": true, "hospitalSlugs": ["delta-hospital"],
+      "name": { "ar": "مركز صحة المرأة والطفل", "en": "Women's & Children's Health Center" },
+      "description": { "ar": "رعاية صحية متكاملة للمرأة والطفل من الحمل حتى متابعة الأطفال.", "en": "Comprehensive health care for women and children, from pregnancy to pediatric follow-up." },
+      "heroImage": "__NEEDS_OPERATOR__", "suggestedImage": "business/Media/Services/Neonatal Intensive Care Unit/nicu-entrance-sign.jpeg" },
+    { "slug": "dental", "registry_id": "CEN-008", "isFeatured": true, "hospitalSlugs": ["delta-hospital"],
+      "name": { "ar": "مركز الأسنان للكبار والأطفال وذوي الهمم", "en": "Dental Center" },
+      "description": { "ar": "طب وجراحة الأسنان للكبار والأطفال وذوي الهمم.", "en": "Dental care and surgery for adults, children and people with special needs." },
+      "heroImage": "__NEEDS_OPERATOR__", "suggestedImage": "business/Media/Services/Dental Center/dental-operatory-010.jpeg" },
+    { "slug": "ent-head-neck", "registry_id": "CEN-009", "isFeatured": false, "hospitalSlugs": ["delta-hospital"],
+      "name": { "ar": "مركز الأنف والأذن وجراحات الرقبة والرأس", "en": "ENT & Head/Neck Surgery Center" },
+      "description": { "ar": "تشخيص وعلاج أمراض الأنف والأذن والحنجرة وجراحات الرأس والرقبة.", "en": "Diagnosis and treatment of ear, nose and throat conditions and head/neck surgery." },
+      "heroImage": "__NEEDS_OPERATOR__", "suggestedImage": "business/Media/Services/Outpatient Clinic/clinic-door-ent.jpeg" },
+    { "slug": "orthopedic-sports", "registry_id": "CEN-010", "isFeatured": true, "hospitalSlugs": ["delta-hospital"],
+      "name": { "ar": "مركز العظام وإصابات الملاعب", "en": "Orthopedic & Sports Injury Center" },
+      "description": { "ar": "علاج أمراض العظام والمفاصل وإصابات الملاعب والتأهيل.", "en": "Treatment of orthopedic and joint conditions, sports injuries and rehabilitation." },
+      "heroImage": "__NEEDS_OPERATOR__", "suggestedImage": "__NEEDS_OPERATOR__" },
+    { "slug": "chest-sleep", "registry_id": "CEN-011", "isFeatured": false, "hospitalSlugs": ["delta-hospital"],
+      "name": { "ar": "مركز الصدر واضطرابات النوم", "en": "Chest & Sleep Disorders Center" },
+      "description": { "ar": "تشخيص وعلاج أمراض الصدر والجهاز التنفسي واضطرابات النوم.", "en": "Diagnosis and treatment of chest and respiratory conditions and sleep disorders." },
+      "heroImage": "__NEEDS_OPERATOR__", "suggestedImage": "__NEEDS_OPERATOR__" },
+    { "slug": "senior-health-screening", "registry_id": "CEN-012", "isFeatured": false, "hospitalSlugs": ["delta-hospital"],
+      "name": { "ar": "مركز صحة كبار السن والفحص الشامل", "en": "Senior Health & Screening Center" },
+      "description": { "ar": "رعاية شاملة لكبار السن وبرامج الفحص الطبي الدوري.", "en": "Comprehensive senior care and periodic health screening programs." },
+      "heroImage": "__NEEDS_OPERATOR__", "suggestedImage": "__NEEDS_OPERATOR__" }
+  ],
+
+  "doctors": {
+    "_note": "لا يوجد أي بيانات أطباء حقيقية في وثائق المشروع (ملف Meet Our Doctors استراتيجية حملة، مش بيانات). املأ هذه القائمة أنت. كرّر القالب لكل طبيب.",
+    "_template": {
+      "slug": "dr-example-name",
+      "name": { "ar": "د. الاسم الكامل", "en": "Dr. Full Name" },
+      "title": { "ar": "استشاري / أخصائي", "en": "Consultant / Specialist" },
+      "specialty": { "ar": "التخصص", "en": "Specialty" },
+      "bio": { "ar": "نبذة مختصرة", "en": "Short bio" },
+      "centerSlug": "أي slug من قائمة المراكز أعلاه",
+      "photo": "__NEEDS_OPERATOR__",
+      "isFeatured": false
+    },
+    "list": []
+  },
+
+  "faqs": {
+    "_note": "الأسئلة الشائعة الحقيقية تحتاج إجاباتك. تركت 3 أسئلة عامة آمنة كبداية — راجعها وعدّلها وزوّد عليها. لا تنشر إجابة غير مؤكّدة.",
+    "list": [
+      { "order": 1, "topic": { "ar": "المواعيد والحجز", "en": "Appointments" },
+        "question": { "ar": "كيف أحجز موعدًا؟", "en": "How do I book an appointment?" },
+        "answer": { "ar": "__NEEDS_OPERATOR__ (وضّح خطوات الحجز الفعلية عبر الموقع/الهاتف)", "en": "__NEEDS_OPERATOR__" } },
+      { "order": 2, "topic": { "ar": "الطوارئ", "en": "Emergency" },
+        "question": { "ar": "هل الطوارئ متاحة على مدار الساعة؟", "en": "Is the emergency department open 24/7?" },
+        "answer": { "ar": "__NEEDS_OPERATOR__", "en": "__NEEDS_OPERATOR__" } },
+      { "order": 3, "topic": { "ar": "التأمين", "en": "Insurance" },
+        "question": { "ar": "هل تقبلون التأمين الطبي؟", "en": "Do you accept medical insurance?" },
+        "answer": { "ar": "__NEEDS_OPERATOR__", "en": "__NEEDS_OPERATOR__" } }
+    ]
+  },
+
+  "cleanup_actions": {
+    "_note": "كيانات موجودة على الموقع حاليًا وليست في السجل الرسمي — يجب حذفها أو تحويلها. سكربت الضخّ سيتعامل معها بعد موافقتك.",
+    "centers_to_remove_or_reassign": [
+      "ophthalmology-center (عيون — غير مسجّل)",
+      "dermatology-center (جلدية — غير مسجّل)",
+      "neurology-center (أعصاب — غير مسجّل)",
+      "pediatrics-center (طب أطفال منفصل — مدمج ضمن مركز صحة المرأة والطفل)",
+      "icu-center (يجب أن يكون قسمًا لا مركزًا)",
+      "emergency-center (يجب أن يكون قسمًا لا مركزًا)",
+      "senior-care-center (يُدمج/يُعاد تسميته إلى senior-health-screening)",
+      "cardiac-center → يُعاد تسميته/دمجه في cardiac-internal-medicine",
+      "digestive-center → digestive-liver",
+      "womens-health-center → womens-childrens-health",
+      "orthopedic-center → orthopedic-sports",
+      "dental-center → dental"
+    ]
+  }
+}

@@ -7,6 +7,31 @@
 
 ---
 
+## 0. The Slogan
+
+> ### أساس الخدمة الطبية احترام الإنسان
+>
+> *Respect for the human being is the foundation of medical service.*
+
+This is the platform's slogan and its single most quoted line. It is the reason
+the platform is called **إنسان**.
+
+**It is stated here, in the document every content worker loads, because it was
+previously stated nowhere a worker could see it** — it appeared only inside
+`PLATFORM_KNOWLEDGE_BASE.md` and two individual knowledge files, and four of the
+workers that write or judge content never load those. Measured 2026-08-05.
+
+**How workers must use it.** It is a *philosophy*, not a stamp. It governs what
+is said and how — respecting the patient's time, explaining in language they
+understand, involving them in the decision, protecting their dignity, never
+proposing what is not needed. It is not a signature to append to posts, and
+repeating it verbatim in every post is exactly the kind of hollow branding
+`AI_CREATIVE_CONSTITUTION.md` forbids.
+
+Quote it when it earns its place. Obey it always.
+
+---
+
 ## 1. Vision
 
 INSAN is building a unified Egyptian Healthcare Ecosystem that connects hospitals, medical centers, healthcare professionals, and patients under one trusted platform.
@@ -55,6 +80,36 @@ Every entity maintains its own operational identity while sharing one unified st
 - Inside hospitals.
 - As standalone facilities.
 - As future INSAN-operated healthcare entities.
+
+### 4.1 What this means for every piece of content
+
+The hierarchy above is not a diagram — it is a rule about attribution, and it
+binds every worker that writes, designs, judges, or answers.
+
+**A hospital is not an independent brand that happens to be nearby.** Future
+Specialized Hospital and Delta International Hospital operate **under the INSAN
+Healthcare Platform**, to INSAN's standards, with INSAN's governance. So does
+every medical center, and so will every entity added later.
+
+| Publishing page | What the content must carry |
+|---|---|
+| **INSAN** | The platform's own voice. It should reinforce the hospitals and centers that actually deliver the care. |
+| **A hospital** (Future, Delta) | The hospital's story — **and that it operates under the INSAN Healthcare Platform.** |
+| **A medical center** | The center's story — **and its hospital, and the platform above it.** |
+
+This is the same rule `AI_CREATIVE_CONSTITUTION.md` §16 states as
+*Ecosystem Cross-Platform Reinforcement*, written here because this document is
+the source of truth for the hierarchy itself.
+
+**Naturally, never mechanically.** The constitution is explicit: cross-platform
+reinforcement must feel educational and contextual. A line bolted onto the end
+of every post — *"under the management of INSAN"* — is the failure mode, not the
+requirement. The reader should finish a hospital post understanding that a
+standard sits behind it, whether or not the word INSAN appeared.
+
+**A campaign card is where this starts.** The card is read once per campaign and
+inherited by every post built from it, so a card that fails to place its entity
+inside the ecosystem passes that omission to everything downstream, silently.
 
 ---
 
