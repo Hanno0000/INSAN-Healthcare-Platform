@@ -5,6 +5,11 @@ import { Calendar } from 'lucide-react';
 import CountUp from 'react-countup';
 import { t } from '@/lib/utils';
 import type { Bilingual, HeroStat } from '@/lib/public-api';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, EffectFade, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/effect-fade';
+import 'swiper/css/pagination';
 
 interface Props {
   name: Bilingual;
@@ -12,13 +17,21 @@ interface Props {
   stats?: HeroStat[];
   heroImage?: string;
   hospitalId: string;
+  departments?: any[];
 }
 
-export default function HospitalHeroSection({ name, tagline, stats, heroImage, hospitalId }: Props) {
+export default function HospitalHeroSection({ name, tagline, stats, heroImage, hospitalId, departments = [] }: Props) {
+  // Collect images for the slideshow
+  const slideImages = [];
+  if (heroImage) slideImages.push(heroImage);
+  departments.forEach(d => {
+    if (d.image && !slideImages.includes(d.image)) slideImages.push(d.image);
+  });
+
   return (
     <section id="hero" className="relative bg-light-bg py-20 lg:py-32 overflow-hidden w-full">
       <div className="container mx-auto px-4 md:px-8 max-w-7xl">
-        <div className={`grid grid-cols-1 ${heroImage ? 'lg:grid-cols-2' : ''} gap-12 items-center`}>
+        <div className={`grid grid-cols-1 ${slideImages.length > 0 ? 'lg:grid-cols-2' : ''} gap-12 items-center`}>
 
           {/* Left Content */}
           <div className="hero-content space-y-6 z-10" data-aos="fade-left">
@@ -53,11 +66,24 @@ export default function HospitalHeroSection({ name, tagline, stats, heroImage, h
             </div>
           </div>
 
-          {/* Right Visual */}
-          {heroImage && (
+          {/* Right Visual (Slideshow) */}
+          {slideImages.length > 0 && (
             <div className="hero-visual relative z-10" data-aos="fade-right">
-              <div className="main-image relative rounded-card overflow-hidden shadow-floating">
-                <img src={heroImage} alt={t(name)} className="w-full h-auto object-cover aspect-[4/3]" />
+              <div className="main-image relative rounded-card overflow-hidden shadow-floating aspect-[4/3]">
+                <Swiper
+                  modules={[Autoplay, EffectFade, Pagination]}
+                  effect="fade"
+                  autoplay={{ delay: 3500, disableOnInteraction: false }}
+                  pagination={{ clickable: true }}
+                  loop={slideImages.length > 1}
+                  className="w-full h-full"
+                >
+                  {slideImages.map((img, idx) => (
+                    <SwiperSlide key={idx}>
+                      <img src={img} alt={`${t(name)} - ${idx}`} className="w-full h-full object-cover" />
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
               </div>
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-accent-500/5 rounded-full blur-3xl -z-10"></div>
             </div>

@@ -166,7 +166,29 @@
         "bio": { "ar": "خبرة تزيد عن ٢٠ عاماً في أمراض القلب. زميل الكلية الملكية للأطباء.", "en": "Over 20 years of experience in cardiology. Fellow of the Royal College of Physicians." },
         "centerSlug": "cardiac-internal-medicine",
         "hospitalSlug": "future-hospital",
-        "photo": "/media/dr-ahmed-yassin.jpeg",
+        "photo": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=1000&auto=format&fit=crop",
+        "isFeatured": true
+      },
+      {
+        "slug": "dr-sara-mahmoud",
+        "name": { "ar": "د. سارة محمود", "en": "Dr. Sara Mahmoud" },
+        "title": { "ar": "أخصائي جراحة عامة", "en": "General Surgery Specialist" },
+        "specialty": { "ar": "الجراحة العامة", "en": "General Surgery" },
+        "bio": { "ar": "متخصصة في الجراحات الدقيقة والمناظير.", "en": "Specialized in micro-surgeries and endoscopy." },
+        "centerSlug": "general-surgery",
+        "hospitalSlug": "future-hospital",
+        "photo": "https://images.unsplash.com/photo-1594824432258-f9a888c34796?q=80&w=1000&auto=format&fit=crop",
+        "isFeatured": true
+      },
+      {
+        "slug": "dr-khalid-omar",
+        "name": { "ar": "د. خالد عمر", "en": "Dr. Khalid Omar" },
+        "title": { "ar": "استشاري الباطنة", "en": "Internal Medicine Consultant" },
+        "specialty": { "ar": "الباطنة العامة", "en": "Internal Medicine" },
+        "bio": { "ar": "خبير في تشخيص وعلاج الأمراض الباطنية المعقدة.", "en": "Expert in diagnosing and treating complex internal diseases." },
+        "centerSlug": "cardiac-internal-medicine",
+        "hospitalSlug": "delta-hospital",
+        "photo": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=1000&auto=format&fit=crop",
         "isFeatured": true
       }
     ]

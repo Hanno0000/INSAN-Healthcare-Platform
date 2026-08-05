@@ -73,6 +73,7 @@ export default async function HospitalDetailPage({ params }: Props) {
         stats={h.heroStats}
         heroImage={h.heroImage}
         hospitalId={h.id}
+        departments={h.departments}
       />
 
       {/* 2 */}
