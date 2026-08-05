@@ -662,6 +662,11 @@
         <input type="text" id="pl-objective"
                placeholder="build trust for Delta, and bookings for the clinics">
       </div>
+      <div class="input-group">
+        <label>Lean on anything? <span style="font-weight:400;text-transform:none">optional</span></label>
+        <input type="text" id="pl-emphasis"
+               placeholder="40% ICU and Emergency, 40% the centers, 20% the rest">
+      </div>
 
       <div id="pl-ceiling-note" class="note"></div>
 
@@ -1185,6 +1190,22 @@
     // For an operation that is one call rather than a walk over rows. The row
     // counter below would read "0 / 1" and invite the operator to wonder which
     // row a card build was on.
+    // Bring the result into view.
+    //
+    // #result-area sits at the very bottom of the page, after every card. With
+    // the cards expanded the result rendered below the fold and nothing scrolled
+    // to it, so a button that worked perfectly looked like a button that did
+    // nothing — reported by the operator on the first production run, about a
+    // run that had in fact succeeded.
+    function revealResult() {
+      var area = document.getElementById('result-area');
+      if (!area) return;
+
+      if (area.scrollIntoView) {
+        area.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
     function showWorking(title, detail) {
       document.getElementById('result-area').innerHTML =
         '<div class="card" style="border-left:3px solid var(--blue)">' +
@@ -1196,6 +1217,7 @@
             '</div>' +
           '</div>' +
         '</div>';
+      revealResult();
     }
 
     function showProgress(workerName, start, end) {
@@ -1261,6 +1283,7 @@
             '<div class="result-meta-item"><span class="val">' + ts + '</span>Completed</div>' +
           '</div>' +
         '</div>';
+      revealResult();
     }
 
     function showError(title, message, suggestion) {
@@ -1271,6 +1294,7 @@
           '<div class="result-body">' + message + '</div>' +
           (suggestion ? '<div style="margin-top:8px;font-size:11px;color:var(--text-secondary)"><strong>Suggestion:</strong> ' + suggestion + '</div>' : '') +
         '</div>';
+      revealResult();
     }
 
     // Deliberately not the error card. The operator asked for this to happen.
@@ -1284,6 +1308,7 @@
             (nextRow ? ' Resume from row ' + nextRow + '.' : '') +
           '</div>' +
         '</div>';
+      revealResult();
     }
 
     function showInfo(title, message) {
@@ -1293,6 +1318,7 @@
           '<div class="result-title">&#9432; ' + title + '</div>' +
           '<div class="result-body">' + message + '</div>' +
         '</div>';
+      revealResult();
     }
 
     // ==================== EXECUTION ====================
@@ -1926,6 +1952,7 @@
       var perDay = parseInt(document.getElementById('pl-per-day').value, 10);
       var pages = selectedPages();
       var objective = document.getElementById('pl-objective').value.trim();
+      var emphasis = document.getElementById('pl-emphasis').value.trim();
 
       if (!days || days < 1) { showInfo('Campaign Planner', 'How many days?'); return; }
       if (!perDay || perDay < 1) { showInfo('Campaign Planner', 'How many posts per page per day?'); return; }
@@ -1966,7 +1993,8 @@
         op: 'plan',
         planner: {
           days: days, postsPerDay: perDay, pages: pages,
-          objective: objective, overrideCeiling: dailyTotal > ceiling
+          objective: objective, emphasis: emphasis,
+          overrideCeiling: dailyTotal > ceiling
         },
         info: { name: 'Plan a Cycle' },
         rows: { start: 0, end: 0, count: rows }

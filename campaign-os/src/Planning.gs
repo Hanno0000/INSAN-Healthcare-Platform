@@ -1250,6 +1250,22 @@ var PlannerRunner = {
       SheetWriter.writeCell(row, 'Hospital Brand',
         this.brandFor(entry.page), sheetName);
 
+      // What this cycle is for, stamped on every row of the batch.
+      //
+      // The operator states an objective when they plan — "this month is about
+      // the new clinic, not bookings" — and the planner used it to choose the
+      // slots and then dropped it. It reached no column, so the Content
+      // Strategy Worker never saw it and decided each row's Content Objective
+      // from the campaign card alone. The card describes what the campaign
+      // permanently IS; the objective is what this particular cycle WANTS, and
+      // those are different questions that were being answered by one source.
+      //
+      // Per row rather than per batch because a row travels alone: Transfer
+      // carries it into the pipeline, and W3 reads one row at a time and never
+      // sees the batch it belongs to.
+      SheetWriter.writeCell(row, 'Cycle Objective',
+        String(brief.objective || '').trim(), sheetName);
+
       if (entry.group) {
         SheetWriter.writeCell(row, 'Campaign Group', entry.group, sheetName);
       }
@@ -2914,7 +2930,13 @@ var Transfer = {
     'Page': 'Publishing Page',
     'Campaign Group': 'Campaign Group',
     'Campaign Name': 'Campaign Name',
-    'Hospital Brand': 'Hospital Brand'
+    'Hospital Brand': 'Hospital Brand',
+
+    // What the cycle was for. Written per row by the planner and carried
+    // forward so the Content Strategy Worker can read it — it is the only
+    // input that says what this cycle wants, as distinct from what the
+    // campaign permanently is.
+    'Cycle Objective': 'Cycle Objective'
   },
 
   // The twelve strategy fields on Campaign Cards, copied per row because the

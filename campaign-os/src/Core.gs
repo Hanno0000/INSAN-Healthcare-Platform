@@ -835,7 +835,24 @@ var CONFIG = {
     // Stamped once per planning run. The calendar accumulates cycle after
     // cycle, and dates cannot separate two plans that overlap or a cycle that
     // was replanned. See Batches.gs.
-    { sheet: 'Content Calendar', column: 'Batch ID' }
+    { sheet: 'Content Calendar', column: 'Batch ID' },
+
+    // Provenance. CardBuilder writes both on every build and neither column
+    // existed, so writeCell skipped them silently and every card looked
+    // hand-written — SYSTEM_ARCHITECTURE §3.3 calls an empty Knowledge Source
+    // a defect, and on the first real run all of them were empty. Found by
+    // reading the workbook after the first production card, 2026-08-05.
+    { sheet: 'Campaign Cards', column: 'Knowledge Source' },
+    { sheet: 'Campaign Cards', column: 'Card Built At' },
+
+    // The cycle's intent, stamped on every row of a planning batch. The
+    // operator states an objective when planning — "this month is engagement,
+    // not awareness" — and until now the planner used it to choose slots and
+    // then discarded it: it reached no column, so the Content Strategy Worker
+    // never learned what the cycle was for and invented a Content Objective
+    // per row from the card alone.
+    { sheet: 'Content Calendar', column: 'Cycle Objective' },
+    { sheet: 'Content Pipeline', column: 'Cycle Objective' }
   ],
 
   // ================================
@@ -929,7 +946,13 @@ var CONFIG = {
         'Trust Promise', 'Emotional Trigger', 'Psychological Barrier',
         'Content Pillars', 'Approved Content Angles',
         'Non-Negotiable Rules', 'CTA Strategy', 'Primary KPI',
-        'Target Audience'
+        'Target Audience',
+        // What THIS cycle is for, as opposed to what the campaign permanently
+        // is. Every other column here comes from the card and is the same for
+        // every cycle; this one changes each time the operator plans, and
+        // without it the worker was deciding Content Objective from the card
+        // alone — the same answer every month, whatever the operator asked for.
+        'Cycle Objective'
       ],
       writeColumns: [
         'Content Objective', 'Content Angle', 'Content Type',

@@ -638,7 +638,7 @@ function runCampaignPlanner() {
 function _collectPlanningBrief(ui, check) {
   var config = CONFIG.CAMPAIGN_PLANNER || {};
 
-  var daysResponse = ui.prompt('Campaign Planner — 1 of 4',
+  var daysResponse = ui.prompt('Campaign Planner — 1 of 5',
     'How many days should this plan cover?\n\nExample: 7',
     ui.ButtonSet.OK_CANCEL);
 
@@ -650,7 +650,7 @@ function _collectPlanningBrief(ui, check) {
     return null;
   }
 
-  var pagesResponse = ui.prompt('Campaign Planner — 2 of 4',
+  var pagesResponse = ui.prompt('Campaign Planner — 2 of 5',
     'Which pages? Comma-separated.\n\n' +
     // One source. A second hardcoded page list here would drift from the
     // dropdown the same way four vocabularies drifted from the sheet.
@@ -669,7 +669,7 @@ function _collectPlanningBrief(ui, check) {
     return null;
   }
 
-  var perDayResponse = ui.prompt('Campaign Planner — 3 of 4',
+  var perDayResponse = ui.prompt('Campaign Planner — 3 of 5',
     'Posts per page per day?\n\n' +
     'PROJECT_DECISIONS caps this at ' + (config.MAX_POSTS_PER_DAY || 3) +
     ' across all pages and recommends an average of 1.5–2.\n' +
@@ -699,13 +699,38 @@ function _collectPlanningBrief(ui, check) {
     if (over !== ui.Button.YES) return null;
   }
 
-  var objectiveResponse = ui.prompt('Campaign Planner — 4 of 4',
+  var objectiveResponse = ui.prompt('Campaign Planner — 4 of 5',
     'What is this cycle for?\n\n' +
     'It decides the funnel mix and the CTA balance.\n' +
     'Example: build trust for Delta, and bookings for the outpatient clinics',
     ui.ButtonSet.OK_CANCEL);
 
   if (objectiveResponse.getSelectedButton() !== ui.Button.OK) return null;
+
+  // How the cycle should be weighted across campaigns.
+  //
+  // The planner's prompt has always been sent an `emphasis` line and both
+  // callers hardcoded it to '', so it read "none stated" on every run: the
+  // channel existed and nothing ever filled it. Without it the model weights a
+  // plan from Priority and Target Posts on the cards, which describe the
+  // campaign in general — not what this cycle should lean on.
+  //
+  // Free text on purpose. "40% ICU and Emergency, 40% the six centers, 20% the
+  // rest" is a sentence the operator can write and the model can act on;
+  // turning it into per-campaign percentage inputs would mean one prompt per
+  // eligible campaign, which is unusable at ten and absurd at forty.
+  var emphasisResponse = ui.prompt('Campaign Planner — 5 of 5',
+    'Any campaign to lean on, or hold back? Optional — leave blank for an ' +
+    'even spread.\n\n' +
+    'Plain language works:\n' +
+    '  "40% ICU and Emergency, 40% the medical centers, 20% everything else"\n' +
+    '  "heavy on Kabarona, light on corporate"\n' +
+    '  "no more than two posts on any one campaign"\n\n' +
+    'The cards\' Priority and Target Posts are already visible to the planner; ' +
+    'this overrides them for this cycle only.',
+    ui.ButtonSet.OK_CANCEL);
+
+  if (emphasisResponse.getSelectedButton() !== ui.Button.OK) return null;
 
   var start = new Date();
   start.setDate(start.getDate() + 1);
@@ -715,7 +740,7 @@ function _collectPlanningBrief(ui, check) {
     pages: pages,
     postsPerDay: postsPerDay,
     objective: String(objectiveResponse.getResponseText()).trim(),
-    emphasis: '',
+    emphasis: String(emphasisResponse.getResponseText()).trim(),
     campaigns: check.ready.map(function(c) { return c.name; }),
     startDate: start,
     startText: Utilities.formatDate(start, Session.getScriptTimeZone(), 'yyyy-MM-dd')
@@ -3355,12 +3380,21 @@ function _highestContentIdInSheet() {
 // ================================
 
 
+// Opened as a modeless dialog, not a sidebar.
+//
+// A Google Sheets sidebar is fixed at roughly 300px and IGNORES setWidth —
+// that method only applies to dialogs. This called setWidth(420) and had done
+// nothing since the day it was written: the operator got 300px, read the panel
+// as cramped, and was right.
+//
+// Modeless keeps the sheet usable underneath, which a modal would not: the
+// operator watches rows fill in while a run is going.
 function showControlCenter() {
   var html = HtmlService.createHtmlOutputFromFile('ControlCenter')
     .setTitle('Production Control Center')
-    .setWidth(420)
-    .setHeight(640);
-  SpreadsheetApp.getUi().showSidebar(html);
+    .setWidth(900)
+    .setHeight(720);
+  SpreadsheetApp.getUi().showModelessDialog(html, 'Production Control Center');
 }
 
 
@@ -3828,6 +3862,7 @@ function executeCampaignPlanner(brief) {
     var postsPerDay = parseInt(brief && brief.postsPerDay, 10);
     var pages = (brief && brief.pages) || [];
     var objective = String((brief && brief.objective) || '').trim();
+    var emphasis = String((brief && brief.emphasis) || '').trim();
 
     if (!days || days < 1) return { success: false, error: 'Days must be at least 1.' };
     if (!postsPerDay || postsPerDay < 1) {
@@ -3884,7 +3919,7 @@ function executeCampaignPlanner(brief) {
       pages: pages,
       postsPerDay: postsPerDay,
       objective: objective,
-      emphasis: '',
+      emphasis: emphasis,
       campaigns: check.ready.map(function(c) { return c.name; }),
       startDate: start,
       startText: Utilities.formatDate(start, Session.getScriptTimeZone(), 'yyyy-MM-dd')

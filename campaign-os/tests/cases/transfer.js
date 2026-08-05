@@ -63,8 +63,20 @@ module.exports = {
       'Day becomes Publishing Date');
     t.is(Transfer.CALENDAR_TO_PIPELINE['Page'], 'Publishing Page',
       'Page becomes Publishing Page');
-    t.is(Object.keys(Transfer.CALENDAR_TO_PIPELINE).length, 6,
-      'six columns cross, matching what the old array formula carried (D:H plus Day)');
+    // Six of these are the scheduling identity the old array formula carried
+    // (D:H plus Day). The seventh, Cycle Objective, is new on 2026-08-05 and is
+    // deliberately MORE than the formula did: the formula could only move
+    // columns that already existed on the calendar, and what a cycle is for was
+    // never written down at all — the planner asked for it, used it to choose
+    // slots, and dropped it.
+    t.is(Object.keys(Transfer.CALENDAR_TO_PIPELINE).length, 7,
+      'seven columns cross — the six the old array formula carried, plus the ' +
+      'cycle objective it had no way to carry');
+
+    t.is(Transfer.CALENDAR_TO_PIPELINE['Cycle Objective'], 'Cycle Objective',
+      'the cycle objective crosses under its own name, so the Content Strategy ' +
+      'Worker can read what this cycle wanted rather than inferring it from the ' +
+      'card, which says the same thing every month');
 
     // --- the twelve strategy fields ---
     t.is(Transfer.CARD_STRATEGY.length, 12,

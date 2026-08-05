@@ -1552,11 +1552,48 @@ Campaign Card
 
 ↓
 
+Cycle Objective
+
+↓
+
 Current Content Pipeline Row
 
 Never reverse this order.
 
 Project understanding always comes before campaign execution.
+
+---
+
+## Cycle Objective
+
+The card tells you what this campaign permanently **is**.
+
+`Cycle Objective` tells you what this particular cycle **wants**.
+
+They are different questions and you must answer both.
+
+The same campaign is planned again and again, months apart, for different
+reasons. One cycle builds awareness. The next announces a new clinic. A third
+drives bookings before a season. The card does not change between them — the
+objective does.
+
+So when `Cycle Objective` carries a value, it decides:
+
+- **Content Funnel Stage** — awareness sits upper funnel, bookings lower.
+- **CTA balance** — what you ask the reader to do, within the card's permitted
+  `CTA Strategy`.
+- **Which of the card's Content Pillars you draw on**, and in what proportion.
+- **The angle you choose** from `Approved Content Angles`.
+
+It does **not** override the card. It selects within it.
+
+If the objective asks for something the card forbids — a discount when
+`Non-Negotiable Rules` bans price messaging, a booking push for a service with
+no booking path — the card wins. State the conflict in `Design Notes` and serve
+the objective as far as the card allows.
+
+When `Cycle Objective` is empty, work from the card alone as you did before.
+An empty objective is not an instruction to guess one.
 
 ---
 
