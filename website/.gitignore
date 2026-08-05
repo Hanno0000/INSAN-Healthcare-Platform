@@ -22,3 +22,6 @@ docker-compose.prod.yml
 # Local DB test scripts (never commit real connection strings)
 test-db.js
 *.local.js
+
+# Media Files
+/public/media

@@ -70,12 +70,7 @@ export default function Header({ navItems, settings = [] }: Props) {
         
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
-          <div className="w-9 h-9 bg-accent-500 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">إ</span>
-          </div>
-          <span className="font-bold text-heading text-2xl tracking-tight hidden sm:block font-montserrat">
-            INSAN
-          </span>
+          <img src="/media/brand/logo-color.png" alt="منظومة إنسان - INSAN Ecosystem" className="h-10 w-auto object-contain" />
         </Link>
 
         {/* Desktop Nav */}
