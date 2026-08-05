@@ -16,6 +16,16 @@ import { ContentStatus } from '@prisma/client';
 /** تعبير منتظم يقبل روابط تضمين خرائط جوجل الرسمية فقط */
 const MAPS_EMBED = /^https:\/\/(www\.)?google\.com\/maps\/embed/;
 
+export class HospitalDepartmentDto {
+  @IsString()
+  @Matches(/^[a-z0-9-]+$/, { message: 'slug must be lowercase letters, numbers, and hyphens only' })
+  slug: string;
+
+  @ValidateNested()
+  @Type(() => BilingualDto)
+  name: BilingualDto;
+}
+
 export class CreateHospitalDto {
   @IsString()
   @Matches(/^[a-z0-9-]+$/, { message: 'slug must be lowercase letters, numbers, and hyphens only' })
@@ -89,7 +99,9 @@ export class CreateHospitalDto {
   @IsOptional()
   @IsArray()
   @ArrayMaxSize(30)
-  departments?: any[];
+  @ValidateNested({ each: true })
+  @Type(() => HospitalDepartmentDto)
+  departments?: HospitalDepartmentDto[];
 
   @IsOptional()
   @IsArray()

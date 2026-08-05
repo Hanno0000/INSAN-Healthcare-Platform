@@ -84,6 +84,9 @@ async function processEntities(type, endpoint, items) {
             continue;
         }
 
+        // Ensure PUBLISHED status for all main entities unless explicitly defined
+        if (!cleaned.status) cleaned.status = 'PUBLISHED';
+
         // Hydrate departments and centers for hospitals
         if (type === 'hospitals') {
             if (Array.isArray(cleaned.departments)) {
@@ -103,6 +106,15 @@ async function processEntities(type, endpoint, items) {
                     }
                     return slug;
                 });
+            }
+        } else if (type === 'centers') {
+            // Map hospitalSlugs to hospitalIds
+            if (Array.isArray(cleaned.hospitalSlugs)) {
+                const hospitals = await getEntities('/admin/hospitals?pageSize=100');
+                cleaned.hospitalIds = cleaned.hospitalSlugs
+                    .map(slug => hospitals.find(h => h.slug === slug)?.id)
+                    .filter(id => !!id);
+                delete cleaned.hospitalSlugs;
             }
         }
 
