@@ -60,4 +60,20 @@ export class CreateMedicalCenterDto {
   /** Structured services list — stored as JSON */
   @IsOptional()
   services?: any;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => BilingualDto)
+  shortDescription?: BilingualDto;
+
+  @IsOptional()
+  @IsString()
+  brandColor?: string;
+
+  @IsOptional()
+  @IsString()
+  logoUrl?: string;
+
+  @IsOptional()
+  customFields?: any;
 }

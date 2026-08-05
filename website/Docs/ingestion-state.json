@@ -36,42 +36,72 @@
           "name": {
             "ar": "وحدة العناية المركزة",
             "en": "Intensive Care Unit"
-          }
+          },
+          "shortDescription": {
+            "ar": "رعاية حرجة على مدار الساعة بأجهزة إنعاش ومتابعة متقدمة.",
+            "en": "Round-the-clock critical care with advanced life-support and monitoring."
+          },
+          "image": "business/Media/Services/Intensive Care Unit/icu-bay-beds-5-6-ventilator-monitors.jpeg"
         },
         {
           "slug": "emergency",
           "name": {
-            "ar": "قسم الطوارئ",
+            "ar": "مركز الاستجابة السريعة (الطوارئ)",
             "en": "Emergency Department"
-          }
+          },
+          "shortDescription": {
+            "ar": "استقبال وطوارئ على مدار 24 ساعة لجميع الحالات العاجلة.",
+            "en": "24-hour reception and emergency care for all urgent cases."
+          },
+          "image": "business/Media/Services/Emergency Department/emergency-exam-bays-wide.jpeg"
         },
         {
           "slug": "operating-rooms",
           "name": {
             "ar": "غرف العمليات",
             "en": "Operating Rooms"
-          }
+          },
+          "shortDescription": {
+            "ar": "غرف عمليات مجهّزة لمختلف التخصصات الجراحية.",
+            "en": "Operating theatres equipped for a range of surgical specialties."
+          },
+          "image": "business/Media/Services/Operating Room/or-theatre-table-anaesthesia-light.jpeg"
         },
         {
           "slug": "radiology",
           "name": {
             "ar": "الأشعة والتصوير",
             "en": "Radiology & Imaging"
-          }
+          },
+          "shortDescription": {
+            "ar": "خدمات تشخيص بالأشعة والتصوير المقطعي والرنين.",
+            "en": "Diagnostic imaging including X-ray, CT and MRI."
+          },
+          "image": "business/Media/Services/Radiology Department/ct-control-console-and-gantry.jpeg"
         },
         {
           "slug": "laboratory",
           "name": {
             "ar": "المعمل",
             "en": "Laboratory"
-          }
+          },
+          "shortDescription": {
+            "ar": "تحاليل طبية ومعملية دقيقة تدعم التشخيص والعلاج.",
+            "en": "Accurate medical and laboratory testing supporting diagnosis and treatment."
+          },
+          "image": null
         },
         {
           "slug": "outpatient-clinics",
           "name": {
             "ar": "العيادات الخارجية",
             "en": "Outpatient Clinics"
-          }
+          },
+          "shortDescription": {
+            "ar": "عيادات خارجية تخصصية للكشف والمتابعة بمواعيد مرنة.",
+            "en": "Specialty outpatient clinics for consultation and follow-up with flexible appointments."
+          },
+          "image": "business/Media/Services/Outpatient Clinic/clinic-door-ent.jpeg"
         }
       ],
       "centers": [
@@ -142,42 +172,72 @@
           "name": {
             "ar": "وحدة العناية المركزة",
             "en": "Intensive Care Unit"
-          }
+          },
+          "shortDescription": {
+            "ar": "رعاية حرجة على مدار الساعة بأجهزة إنعاش ومتابعة متقدمة.",
+            "en": "Round-the-clock critical care with advanced life-support and monitoring."
+          },
+          "image": "business/Media/Services/Intensive Care Unit/icu-bay-beds-5-6-ventilator-monitors.jpeg"
         },
         {
           "slug": "emergency",
           "name": {
-            "ar": "قسم الطوارئ",
+            "ar": "مركز الاستجابة السريعة (الطوارئ)",
             "en": "Emergency Department"
-          }
+          },
+          "shortDescription": {
+            "ar": "استقبال وطوارئ على مدار 24 ساعة لجميع الحالات العاجلة.",
+            "en": "24-hour reception and emergency care for all urgent cases."
+          },
+          "image": "business/Media/Services/Emergency Department/emergency-exam-bays-wide.jpeg"
         },
         {
           "slug": "operating-rooms",
           "name": {
             "ar": "غرف العمليات",
             "en": "Operating Rooms"
-          }
+          },
+          "shortDescription": {
+            "ar": "غرف عمليات مجهّزة لمختلف التخصصات الجراحية.",
+            "en": "Operating theatres equipped for a range of surgical specialties."
+          },
+          "image": "business/Media/Services/Operating Room/or-theatre-table-anaesthesia-light.jpeg"
         },
         {
           "slug": "radiology",
           "name": {
             "ar": "الأشعة والتصوير",
             "en": "Radiology & Imaging"
-          }
+          },
+          "shortDescription": {
+            "ar": "خدمات تشخيص بالأشعة والتصوير المقطعي والرنين.",
+            "en": "Diagnostic imaging including X-ray, CT and MRI."
+          },
+          "image": "business/Media/Services/Radiology Department/ct-control-console-and-gantry.jpeg"
         },
         {
           "slug": "laboratory",
           "name": {
             "ar": "المعمل",
             "en": "Laboratory"
-          }
+          },
+          "shortDescription": {
+            "ar": "تحاليل طبية ومعملية دقيقة تدعم التشخيص والعلاج.",
+            "en": "Accurate medical and laboratory testing supporting diagnosis and treatment."
+          },
+          "image": null
         },
         {
           "slug": "outpatient-clinics",
           "name": {
             "ar": "العيادات الخارجية",
             "en": "Outpatient Clinics"
-          }
+          },
+          "shortDescription": {
+            "ar": "عيادات خارجية تخصصية للكشف والمتابعة بمواعيد مرنة.",
+            "en": "Specialty outpatient clinics for consultation and follow-up with flexible appointments."
+          },
+          "image": "business/Media/Services/Outpatient Clinic/clinic-door-ent.jpeg"
         }
       ],
       "centers": [

@@ -4,9 +4,10 @@ const conn = new Client();
 conn.on('ready', () => {
   console.log('Client :: ready');
   conn.exec(`
-    pwd
-    ls -la
-    find / -name "INSAN-Healthcare-Platform" -type d 2>/dev/null
+    cd /root/INSAN-Healthcare-Platform/website || exit 1
+    git pull origin main
+    docker-compose -f docker-compose.prod.yml build api
+    docker-compose -f docker-compose.prod.yml up -d api
   `, (err, stream) => {
     if (err) throw err;
     stream.on('close', (code, signal) => {
