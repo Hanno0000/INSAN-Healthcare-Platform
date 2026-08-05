@@ -127,6 +127,25 @@ async function processEntities(type, endpoint, items) {
                     .filter(id => !!id);
                 delete cleaned.hospitalSlugs;
             }
+        } else if (type === 'doctors') {
+            if (cleaned.centerSlug || cleaned.centerSlugs) {
+                const centers = await getEntities('/admin/medical-centers?pageSize=100');
+                const slugs = cleaned.centerSlugs || [cleaned.centerSlug];
+                cleaned.medicalCenterIds = slugs
+                    .map(slug => centers.find(c => c.slug === slug)?.id)
+                    .filter(id => !!id);
+                delete cleaned.centerSlug;
+                delete cleaned.centerSlugs;
+            }
+            if (cleaned.hospitalSlug || cleaned.hospitalSlugs) {
+                const hospitals = await getEntities('/admin/hospitals?pageSize=100');
+                const slugs = cleaned.hospitalSlugs || [cleaned.hospitalSlug];
+                cleaned.hospitalIds = slugs
+                    .map(slug => hospitals.find(h => h.slug === slug)?.id)
+                    .filter(id => !!id);
+                delete cleaned.hospitalSlug;
+                delete cleaned.hospitalSlugs;
+            }
         }
 
         try {
@@ -175,6 +194,7 @@ async function main() {
         
         if (data.hospitals) await processEntities('hospitals', '/admin/hospitals', data.hospitals);
         if (data.centers) await processEntities('centers', '/admin/medical-centers', data.centers);
+        if (data.doctors && data.doctors.list) await processEntities('doctors', '/admin/doctors', data.doctors.list);
         
         if (data.settings) {
             console.log(`\nProcessing settings...`);

@@ -19,7 +19,7 @@
         "ar": "القيادة والابتكار في الرعاية الصحية",
         "en": "Leadership and innovation in healthcare"
       },
-      "suggestedImage": "business/Media/Facility/Hospital Exterior/future-hospital-exterior-016.jpeg",
+      "suggestedImage": "/media/future-hospital-exterior-016.jpeg",
       "brandColor": "#0B1F3A",
       "contactInfo": {
         "phone": "01122224352 - 01151001177",
@@ -41,7 +41,7 @@
             "ar": "رعاية حرجة على مدار الساعة بأجهزة إنعاش ومتابعة متقدمة.",
             "en": "Round-the-clock critical care with advanced life-support and monitoring."
           },
-          "image": "business/Media/Services/Intensive Care Unit/icu-bay-beds-5-6-ventilator-monitors.jpeg"
+          "image": "/media/icu-bay-beds-5-6-ventilator-monitors.jpeg"
         },
         {
           "slug": "emergency",
@@ -53,7 +53,7 @@
             "ar": "استقبال وطوارئ على مدار 24 ساعة لجميع الحالات العاجلة.",
             "en": "24-hour reception and emergency care for all urgent cases."
           },
-          "image": "business/Media/Services/Emergency Department/emergency-exam-bays-wide.jpeg"
+          "image": "/media/emergency-exam-bays-wide.jpeg"
         },
         {
           "slug": "operating-rooms",
@@ -65,7 +65,7 @@
             "ar": "غرف عمليات مجهّزة لمختلف التخصصات الجراحية.",
             "en": "Operating theatres equipped for a range of surgical specialties."
           },
-          "image": "business/Media/Services/Operating Room/or-theatre-table-anaesthesia-light.jpeg"
+          "image": "/media/or-theatre-table-anaesthesia-light.jpeg"
         },
         {
           "slug": "radiology",
@@ -77,7 +77,7 @@
             "ar": "خدمات تشخيص بالأشعة والتصوير المقطعي والرنين.",
             "en": "Diagnostic imaging including X-ray, CT and MRI."
           },
-          "image": "business/Media/Services/Radiology Department/ct-control-console-and-gantry.jpeg"
+          "image": "/media/ct-control-console-and-gantry.jpeg"
         },
         {
           "slug": "laboratory",
@@ -101,7 +101,7 @@
             "ar": "عيادات خارجية تخصصية للكشف والمتابعة بمواعيد مرنة.",
             "en": "Specialty outpatient clinics for consultation and follow-up with flexible appointments."
           },
-          "image": "business/Media/Services/Outpatient Clinic/clinic-door-ent.jpeg"
+          "image": "/media/clinic-door-ent.jpeg"
         }
       ],
       "centers": [
@@ -155,7 +155,7 @@
         "ar": "اثنا عشر مركزًا طبيًا تحت سقف واحد",
         "en": "Twelve medical centers under one roof"
       },
-      "suggestedImage": "business/Media/Facility/Reception & Waiting/reception-lobby-counter-and-stairs.jpeg",
+      "suggestedImage": "/media/reception-lobby-counter-and-stairs.jpeg",
       "brandColor": "#0E7C86",
       "contactInfo": {
         "phone": "01217778869 - 01500668657",
@@ -177,7 +177,7 @@
             "ar": "رعاية حرجة على مدار الساعة بأجهزة إنعاش ومتابعة متقدمة.",
             "en": "Round-the-clock critical care with advanced life-support and monitoring."
           },
-          "image": "business/Media/Services/Intensive Care Unit/icu-bay-beds-5-6-ventilator-monitors.jpeg"
+          "image": "/media/icu-bay-beds-5-6-ventilator-monitors.jpeg"
         },
         {
           "slug": "emergency",
@@ -189,7 +189,7 @@
             "ar": "استقبال وطوارئ على مدار 24 ساعة لجميع الحالات العاجلة.",
             "en": "24-hour reception and emergency care for all urgent cases."
           },
-          "image": "business/Media/Services/Emergency Department/emergency-exam-bays-wide.jpeg"
+          "image": "/media/emergency-exam-bays-wide.jpeg"
         },
         {
           "slug": "operating-rooms",
@@ -201,7 +201,7 @@
             "ar": "غرف عمليات مجهّزة لمختلف التخصصات الجراحية.",
             "en": "Operating theatres equipped for a range of surgical specialties."
           },
-          "image": "business/Media/Services/Operating Room/or-theatre-table-anaesthesia-light.jpeg"
+          "image": "/media/or-theatre-table-anaesthesia-light.jpeg"
         },
         {
           "slug": "radiology",
@@ -213,7 +213,7 @@
             "ar": "خدمات تشخيص بالأشعة والتصوير المقطعي والرنين.",
             "en": "Diagnostic imaging including X-ray, CT and MRI."
           },
-          "image": "business/Media/Services/Radiology Department/ct-control-console-and-gantry.jpeg"
+          "image": "/media/ct-control-console-and-gantry.jpeg"
         },
         {
           "slug": "laboratory",
@@ -237,7 +237,7 @@
             "ar": "عيادات خارجية تخصصية للكشف والمتابعة بمواعيد مرنة.",
             "en": "Specialty outpatient clinics for consultation and follow-up with flexible appointments."
           },
-          "image": "business/Media/Services/Outpatient Clinic/clinic-door-ent.jpeg"
+          "image": "/media/clinic-door-ent.jpeg"
         }
       ],
       "centers": [
@@ -334,10 +334,6 @@
       "slug": "cardiac-internal-medicine",
       "registry_id": "CEN-001",
       "isFeatured": true,
-      "hospitalSlugs": [
-        "future-hospital",
-        "delta-hospital"
-      ],
       "name": {
         "ar": "مركز القلب والباطنة وإحالة الرعايات الحرجة",
         "en": "Cardiac & Internal Medicine Center"
@@ -346,16 +342,17 @@
         "ar": "رعاية متكاملة لأمراض القلب والباطنة مع إحالة وتنسيق الرعايات الحرجة.",
         "en": "Comprehensive cardiac and internal medicine care with critical-care referral and coordination."
       },
-      "suggestedImage": "business/Media/Services/Intensive Care Unit/icu-isolation-room-door-sign.jpeg"
+      "suggestedImage": "/media/icu-isolation-room-door-sign.jpeg",
+      "status": "PUBLISHED",
+      "hospitalIds": [
+        "cms316h2h000phxgj7oakdpf4",
+        "cms316h9y000qhxgjm7tlqye1"
+      ]
     },
     "urology-laser": {
       "slug": "urology-laser",
       "registry_id": "CEN-002",
       "isFeatured": true,
-      "hospitalSlugs": [
-        "future-hospital",
-        "delta-hospital"
-      ],
       "name": {
         "ar": "مركز جراحات المسالك والليزر",
         "en": "Urology & Laser Surgery Center"
@@ -364,16 +361,17 @@
         "ar": "تشخيص وعلاج أمراض المسالك البولية وجراحات الليزر الحديثة.",
         "en": "Diagnosis and treatment of urological conditions and modern laser surgery."
       },
-      "suggestedImage": "business/Media/Services/Operating Room/or-suite-entrance-sign.jpeg"
+      "suggestedImage": "/media/or-suite-entrance-sign.jpeg",
+      "status": "PUBLISHED",
+      "hospitalIds": [
+        "cms316h2h000phxgj7oakdpf4",
+        "cms316h9y000qhxgjm7tlqye1"
+      ]
     },
     "digestive-liver": {
       "slug": "digestive-liver",
       "registry_id": "CEN-003",
       "isFeatured": true,
-      "hospitalSlugs": [
-        "future-hospital",
-        "delta-hospital"
-      ],
       "name": {
         "ar": "مركز مناظير الجهاز الهضمي والكبد",
         "en": "Digestive & Liver Endoscopy Center"
@@ -382,16 +380,17 @@
         "ar": "مناظير تشخيصية وعلاجية للجهاز الهضمي والكبد.",
         "en": "Diagnostic and therapeutic endoscopy for the digestive system and liver."
       },
-      "suggestedImage": "business/Media/Services/Diagnostics/"
+      "suggestedImage": "business/Media/Services/Diagnostics/",
+      "status": "PUBLISHED",
+      "hospitalIds": [
+        "cms316h2h000phxgj7oakdpf4",
+        "cms316h9y000qhxgjm7tlqye1"
+      ]
     },
     "general-surgery": {
       "slug": "general-surgery",
       "registry_id": "CEN-004",
       "isFeatured": true,
-      "hospitalSlugs": [
-        "future-hospital",
-        "delta-hospital"
-      ],
       "name": {
         "ar": "مركز الجراحات العامة والمناظير",
         "en": "General Surgery & Endoscopy Center"
@@ -400,15 +399,17 @@
         "ar": "جراحات عامة ومناظير جراحية بأحدث التقنيات.",
         "en": "General surgery and laparoscopic procedures using modern techniques."
       },
-      "suggestedImage": "business/Media/Services/Operating Room/or-corridor-theatre-1-door.jpeg"
+      "suggestedImage": "/media/or-corridor-theatre-1-door.jpeg",
+      "status": "PUBLISHED",
+      "hospitalIds": [
+        "cms316h2h000phxgj7oakdpf4",
+        "cms316h9y000qhxgjm7tlqye1"
+      ]
     },
     "diabetic-foot-vascular": {
       "slug": "diabetic-foot-vascular",
       "registry_id": "CEN-005",
       "isFeatured": true,
-      "hospitalSlugs": [
-        "delta-hospital"
-      ],
       "name": {
         "ar": "مركز القدم السكري والأوعية الدموية",
         "en": "Diabetic Foot & Vascular Center"
@@ -416,15 +417,16 @@
       "description": {
         "ar": "رعاية متخصصة للقدم السكري وأمراض الأوعية الدموية.",
         "en": "Specialized care for diabetic foot and vascular conditions."
-      }
+      },
+      "status": "PUBLISHED",
+      "hospitalIds": [
+        "cms316h9y000qhxgjm7tlqye1"
+      ]
     },
     "pain-management": {
       "slug": "pain-management",
       "registry_id": "CEN-006",
       "isFeatured": false,
-      "hospitalSlugs": [
-        "delta-hospital"
-      ],
       "name": {
         "ar": "مركز علاج الألم والتدخلات المحدودة",
         "en": "Pain Management Center"
@@ -432,15 +434,16 @@
       "description": {
         "ar": "علاج الألم المزمن عبر تدخلات محدودة وغير جراحية.",
         "en": "Management of chronic pain through minimally invasive interventions."
-      }
+      },
+      "status": "PUBLISHED",
+      "hospitalIds": [
+        "cms316h9y000qhxgjm7tlqye1"
+      ]
     },
     "womens-childrens-health": {
       "slug": "womens-childrens-health",
       "registry_id": "CEN-007",
       "isFeatured": true,
-      "hospitalSlugs": [
-        "delta-hospital"
-      ],
       "name": {
         "ar": "مركز صحة المرأة والطفل",
         "en": "Women's & Children's Health Center"
@@ -449,15 +452,16 @@
         "ar": "رعاية صحية متكاملة للمرأة والطفل من الحمل حتى متابعة الأطفال.",
         "en": "Comprehensive health care for women and children, from pregnancy to pediatric follow-up."
       },
-      "suggestedImage": "business/Media/Services/Neonatal Intensive Care Unit/nicu-entrance-sign.jpeg"
+      "suggestedImage": "/media/nicu-entrance-sign.jpeg",
+      "status": "PUBLISHED",
+      "hospitalIds": [
+        "cms316h9y000qhxgjm7tlqye1"
+      ]
     },
     "dental": {
       "slug": "dental",
       "registry_id": "CEN-008",
       "isFeatured": true,
-      "hospitalSlugs": [
-        "delta-hospital"
-      ],
       "name": {
         "ar": "مركز الأسنان للكبار والأطفال وذوي الهمم",
         "en": "Dental Center"
@@ -466,15 +470,16 @@
         "ar": "طب وجراحة الأسنان للكبار والأطفال وذوي الهمم.",
         "en": "Dental care and surgery for adults, children and people with special needs."
       },
-      "suggestedImage": "business/Media/Services/Dental Center/dental-operatory-010.jpeg"
+      "suggestedImage": "/media/dental-operatory-010.jpeg",
+      "status": "PUBLISHED",
+      "hospitalIds": [
+        "cms316h9y000qhxgjm7tlqye1"
+      ]
     },
     "ent-head-neck": {
       "slug": "ent-head-neck",
       "registry_id": "CEN-009",
       "isFeatured": false,
-      "hospitalSlugs": [
-        "delta-hospital"
-      ],
       "name": {
         "ar": "مركز الأنف والأذن وجراحات الرقبة والرأس",
         "en": "ENT & Head/Neck Surgery Center"
@@ -483,15 +488,16 @@
         "ar": "تشخيص وعلاج أمراض الأنف والأذن والحنجرة وجراحات الرأس والرقبة.",
         "en": "Diagnosis and treatment of ear, nose and throat conditions and head/neck surgery."
       },
-      "suggestedImage": "business/Media/Services/Outpatient Clinic/clinic-door-ent.jpeg"
+      "suggestedImage": "/media/clinic-door-ent.jpeg",
+      "status": "PUBLISHED",
+      "hospitalIds": [
+        "cms316h9y000qhxgjm7tlqye1"
+      ]
     },
     "orthopedic-sports": {
       "slug": "orthopedic-sports",
       "registry_id": "CEN-010",
       "isFeatured": true,
-      "hospitalSlugs": [
-        "delta-hospital"
-      ],
       "name": {
         "ar": "مركز العظام وإصابات الملاعب",
         "en": "Orthopedic & Sports Injury Center"
@@ -499,15 +505,16 @@
       "description": {
         "ar": "علاج أمراض العظام والمفاصل وإصابات الملاعب والتأهيل.",
         "en": "Treatment of orthopedic and joint conditions, sports injuries and rehabilitation."
-      }
+      },
+      "status": "PUBLISHED",
+      "hospitalIds": [
+        "cms316h9y000qhxgjm7tlqye1"
+      ]
     },
     "chest-sleep": {
       "slug": "chest-sleep",
       "registry_id": "CEN-011",
       "isFeatured": false,
-      "hospitalSlugs": [
-        "delta-hospital"
-      ],
       "name": {
         "ar": "مركز الصدر واضطرابات النوم",
         "en": "Chest & Sleep Disorders Center"
@@ -515,15 +522,16 @@
       "description": {
         "ar": "تشخيص وعلاج أمراض الصدر والجهاز التنفسي واضطرابات النوم.",
         "en": "Diagnosis and treatment of chest and respiratory conditions and sleep disorders."
-      }
+      },
+      "status": "PUBLISHED",
+      "hospitalIds": [
+        "cms316h9y000qhxgjm7tlqye1"
+      ]
     },
     "senior-health-screening": {
       "slug": "senior-health-screening",
       "registry_id": "CEN-012",
       "isFeatured": false,
-      "hospitalSlugs": [
-        "delta-hospital"
-      ],
       "name": {
         "ar": "مركز صحة كبار السن والفحص الشامل",
         "en": "Senior Health & Screening Center"
@@ -531,7 +539,11 @@
       "description": {
         "ar": "رعاية شاملة لكبار السن وبرامج الفحص الطبي الدوري.",
         "en": "Comprehensive senior care and periodic health screening programs."
-      }
+      },
+      "status": "PUBLISHED",
+      "hospitalIds": [
+        "cms316h9y000qhxgjm7tlqye1"
+      ]
     }
   },
   "settings": {

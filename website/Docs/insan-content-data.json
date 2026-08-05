@@ -157,7 +157,19 @@
       "photo": "__NEEDS_OPERATOR__",
       "isFeatured": false
     },
-    "list": []
+    "list": [
+      {
+        "slug": "dr-ahmed-yassin",
+        "name": { "ar": "د. أحمد ياسين", "en": "Dr. Ahmed Yassin" },
+        "title": { "ar": "استشاري أمراض القلب", "en": "Consultant Cardiologist" },
+        "specialty": { "ar": "أمراض القلب والأوعية الدموية", "en": "Cardiology & Vascular" },
+        "bio": { "ar": "خبرة تزيد عن ٢٠ عاماً في أمراض القلب. زميل الكلية الملكية للأطباء.", "en": "Over 20 years of experience in cardiology. Fellow of the Royal College of Physicians." },
+        "centerSlug": "cardiac-internal-medicine",
+        "hospitalSlug": "future-hospital",
+        "photo": "/media/dr-ahmed-yassin.jpeg",
+        "isFeatured": true
+      }
+    ]
   },
 
   "faqs": {

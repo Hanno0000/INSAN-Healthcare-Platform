@@ -1,0 +1,36 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Contabo Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.CONTABO_HOST }}
+          username: ${{ secrets.CONTABO_USERNAME }}
+          password: ${{ secrets.CONTABO_PASSWORD }}
+          script: |
+            cd /root/INSAN-Healthcare-Platform/website || exit 1
+            
+            echo "Fetching latest changes..."
+            git pull origin main
+            
+            echo "Rebuilding API and Web..."
+            docker compose -f docker-compose.prod.yml build api web
+            
+            echo "Starting containers..."
+            docker compose -f docker-compose.prod.yml up -d api web
+            
+            echo "Syncing database schema..."
+            docker exec insan-api npx prisma db push --accept-data-loss
+            
+            echo "Running data ingestion and sync..."
+            docker exec insan-api node /app/scripts/sync-images.js
+            docker exec insan-api node /app/scripts/ingest-batch.js
+            
+            echo "Deployment Complete!"
