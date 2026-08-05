@@ -32,16 +32,16 @@ export default function AboutPage() {
         <div className="container mx-auto px-4 md:px-8 max-w-7xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div data-aos="fade-left">
-              <span className="text-accent-500 font-bold font-cairo tracking-wider uppercase text-sm mb-4 block">قصتنا</span>
+              <span className="text-accent-500 font-bold font-cairo tracking-wider uppercase text-sm mb-4 block">منظومة رعاية صحية متكاملة</span>
               <h2 className="text-3xl md:text-5xl font-bold text-heading font-montserrat mb-6 leading-tight">
-                رحلتنا نحو <span className="text-accent-500">رعاية صحية</span> لا مثيل لها
+                أساس الخدمة الطبية <span className="text-accent-500">احترام الإنسان</span>
               </h2>
               <div className="space-y-4 text-default font-cairo text-lg leading-relaxed">
                 <p>
-                  بدأت قصة "منظومة إنسان" بحلم بسيط: توفير رعاية صحية متكاملة تجمع بين الدقة الطبية الصارمة والدفء الإنساني الذي يحتاجه المريض في أوقاته الصعبة.
+                  نحن لسنا مجرد مستشفيات تقدم خدمات طبية مفرقة. نحن منصة (إنسان) التي تدير وتطور <strong>منظومة رعاية صحية متكاملة (Healthcare Ecosystem)</strong>.
                 </p>
                 <p>
-                  تأسست المنظومة لتكون المظلة التي تجمع تحتها أفضل المستشفيات والمراكز الطبية التخصصية، مثل مستشفى المستقبل ومستشفى الدلتا، مع نخبة من ألمع الأسماء في عالم الطب. نحن لا نعالج المرض فحسب، بل نرعى الإنسان بكافة احتياجاته.
+                  المريض لدينا لا يدخل مجرد مستشفى، بل يدخل مظلة متكاملة تضمن له كافة التخصصات عبر مراكزنا الطبية المتطورة (مثل مستشفى المستقبل ومستشفى الدلتا). نحن نطبق معايير طبية وتشغيلية موحدة في كل مكان نذهب إليه، لنؤسس لعلاقة طويلة المدى مبنية على الاحترافية، الجودة، والثقة المطلقة.
                 </p>
               </div>
               <div className="mt-10 flex gap-4">
@@ -82,7 +82,7 @@ export default function AboutPage() {
               </div>
               <h3 className="text-2xl font-bold text-heading font-montserrat mb-4">رؤيتنا</h3>
               <p className="text-default font-cairo leading-relaxed">
-                أن نكون الخيار الأول والوجهة الموثوقة للرعاية الصحية في مصر والشرق الأوسط، وأن نضع معايير جديدة للتميز الطبي المقترن باللمسة الإنسانية، مستفيدين من أحدث الابتكارات التكنولوجية.
+                أن نكون المنصة الرائدة للرعاية الصحية في مصر، من خلال بناء وإدارة مؤسسات طبية ومراكز متخصصة تحت نظام تشغيلي موحد (Ecosystem). نهدف إلى ربط المستشفيات، الأطباء، والمرضى تحت مظلة واحدة يثق بها الجميع.
               </p>
             </div>
             
@@ -93,7 +93,7 @@ export default function AboutPage() {
               </div>
               <h3 className="text-2xl font-bold text-heading font-montserrat mb-4">رسالتنا</h3>
               <p className="text-default font-cairo leading-relaxed">
-                تقديم خدمات طبية وعلاجية عالية الجودة بطريقة آمنة وفعالة، وتوفير بيئة استشفائية تضع المريض وذويه في مركز الاهتمام، مع الالتزام المستمر بالتطوير والبحث العلمي ونقل المعرفة.
+                تقديم تجربة استشفائية تتمحور حول الإنسان، مع الالتزام التام باحترام إنسانية المريض في كل مرحلة. الحفاظ على أعلى معايير الجودة وسلامة المرضى بشفافية مطلقة، وتطبيق بروتوكولات طبية متطورة توفر الرعاية الكاملة للمريض وذويه.
               </p>
             </div>
           </div>
