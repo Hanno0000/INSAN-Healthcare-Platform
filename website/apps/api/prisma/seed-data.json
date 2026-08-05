@@ -14,8 +14,8 @@
         "ar": "مستشفى المستقبل التخصصي هو أحد أبرز المستشفيات...",
         "en": "Future Specialized Hospital is a leading hospital..."
       },
-      "logoUrl": "/logos/future-logo.png",
-      "heroImage": "/images/future-hero.jpg",
+      "logoUrl": "/media/brand/logo-color.png",
+      "heroImage": "/media/future/Facility/Hospital Exterior/future-hospital-exterior-016.jpeg",
       "brandColor": "#1B4FCC",
       "status": "PUBLISHED",
       "departments": [
@@ -29,7 +29,7 @@
             "ar": "أحدث أجهزة القسطرة",
             "en": "Advanced cardiac care"
           },
-          "image": "/images/dept-cardio.jpg"
+          "image": "/media/future/Services/Operating Room/or-theatre-table-anaesthesia-light.jpeg"
         },
         {
           "slug": "orthopedics",
@@ -41,7 +41,7 @@
             "ar": "جراحات المفاصل",
             "en": "Joint surgeries"
           },
-          "image": "/images/dept-ortho.jpg"
+          "image": "/media/future/Services/Outpatient Clinic/clinic-consultation-room-desk.jpeg"
         }
       ],
       "locations": [
