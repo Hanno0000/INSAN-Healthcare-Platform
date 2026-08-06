@@ -195,3 +195,16 @@
 72. **Foundation:** محتاجين الـ Business Objectives الدقيقة (مستهدفات التشغيل).
 73. **Operations:** هل فيه رقم خط ساخن (Hotline) مخصص لمركز الاستجابة السريعة؟
 74. **Offers/KPI:** إيه هو الـ Primary KPI لمركز الاستجابة السريعة (مثل حجم التردد اليومي، سرعة الاستجابة Door-to-doctor time)؟
+
+---
+
+## عاشرًا — مراكز وبرامج الجراحات (CEN-004, CEN-013, CEN-014)
+
+`centers/MEDICAL_CENTER_GENERAL_SURGERY.md`
+`centers/MEDICAL_CENTER_PROCTOLOGY.md`
+`centers/MEDICAL_CENTER_BARIATRIC.md`
+
+75. **Foundation:** محتاجين الـ Business Objectives الدقيقة للمراكز الثلاثة (الجراحة العامة، المستقيم، السمنة).
+76. **Operations:** مواعيد العمل الدقيقة للعيادات التخصصية في المراكز الثلاثة.
+77. **Operations:** أرقام التليفونات أو لينكات الحجز المباشرة للعيادات.
+78. **Offers/KPI:** ما هي أسعار الكشوفات والباقات (مثلاً برنامج التحول الصحي 360)؟ وإيه هو الـ Primary KPI المالي لكل مركز؟
