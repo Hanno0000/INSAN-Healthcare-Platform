@@ -335,232 +335,175 @@
   ],
   "medicalCenters": [
     {
-      "slug": "orthopedic-center",
-      "name": {
-        "ar": "مركز العناية العظمية والمفاصل",
-        "en": "Orthopedic & Joint Care Center"
-      },
-      "isFeatured": true,
-      "hospitalSlugs": [
-        "future-hospital",
-        "delta-hospital"
-      ],
-      "clinics": [
-        {
-          "name": {
-            "ar": "عيادة العظام",
-            "en": "Orthopedic Clinic"
-          },
-          "schedule": {
-            "ar": "السبت والأربعاء 9-5",
-            "en": "Sat & Wed 9-5"
-          }
-        }
-      ],
-      "bookingQuestions": [
-        {
-          "questionText": {
-            "ar": "هل تعاني من أمراض مزمنة؟",
-            "en": "Do you have chronic diseases?"
-          },
-          "questionType": "radio",
-          "options": [
-            {
-              "label": {
-                "ar": "نعم",
-                "en": "Yes"
-              },
-              "value": "yes"
-            },
-            {
-              "label": {
-                "ar": "لا",
-                "en": "No"
-              },
-              "value": "no"
-            }
-          ],
-          "isRequired": true
-        }
-      ],
-      "registryId": "CEN-010"
-    },
-    {
+      "registryId": "CEN-001",
       "slug": "cardiac-internal-medicine-center",
       "name": {
-        "ar": "مركز الباطنة والقلب وإحالة الرعايات الحرجة والمتوسطة",
-        "en": "Cardiac & Internal Medicine Center"
+        "en": "Cardiac & Internal Medicine Center",
+        "ar": "مركز الباطنة والقلب وإحالة الرعايات الحرجة والمتوسطة"
       },
       "shortDescription": {
-        "ar": "The center integrates several interconnected medical functions:",
-        "en": "The center integrates several interconnected medical functions:"
+        "en": "The Cardiac & Internal Medicine Center is a comprehensive, multidisciplinary hub at INSAN designed to manage complex internal medicine cases, cardiac emergencies, and critical care referrals. Operating across Future Specialized Hospital and Delta International Hospital, it provides a seamless continuum of care from outpatient clinics to highly specialized intensive care units.",
+        "ar": "The Cardiac & Internal Medicine Center is a comprehensive, multidisciplinary hub at INSAN designed to manage complex internal medicine cases, cardiac emergencies, and critical care referrals. Operating across Future Specialized Hospital and Delta International Hospital, it provides a seamless continuum of care from outpatient clinics to highly specialized intensive care units."
       },
       "description": {
-        "ar": "The Cardiac & Internal Medicine Center is a comprehensive, multidisciplinary hub at INSAN designed to manage complex internal medicine cases, cardiac emergencies, and critical care referrals. Operating across Future Specialized Hospital and Delta International Hospital, it provides a seamless continuum of care from outpatient clinics to highly specialized intensive care units.",
-        "en": "The Cardiac & Internal Medicine Center is a comprehensive, multidisciplinary hub at INSAN designed to manage complex internal medicine cases, cardiac emergencies, and critical care referrals. Operating across Future Specialized Hospital and Delta International Hospital, it provides a seamless continuum of care from outpatient clinics to highly specialized intensive care units."
+        "en": "The center integrates several interconnected medical functions:\n*   **Outpatient Clinics:** Including General Internal Medicine, Hepatology (الكبد), Endocrinology (الغدد الصماء), Nephrology (الكلى), Pulmonology (الصدر), Neurology (مخ وأعصاب), and Geriatrics (طب مسنين).\n*   **Inpatient & Critical Care Beds:** A dynamic capacity of Inpatient wards (داخلي), Intermediate Care (رعاية متوسطة), and Intensive Care (رعاية مركزة). Bed assignment is strictly based on the treating consultant's medical decision.\n*   **Diagnostic Capabilities:** Comprehensive laboratory and radiology services including Ultrasound, Echocardiography (Echo), Stress Echo, and CT Scans (available at Future, with Delta receiving a CT in 3 months).\n*   **Emergency & Mobile Care:** 24/7 Emergency response, Home Medical Services, and fully equipped Ambulance services (currently based at Future).\n*   **External Network:** While Cath Labs (diagnostic, therapeutic, and cerebral) are not physically inside the hospitals yet, the center maintains direct, 24/7 contracts with premier specialized centers. Professors and consultants are available around the clock for both elective procedures and emergency interventions.",
+        "ar": "The center integrates several interconnected medical functions:\n*   **Outpatient Clinics:** Including General Internal Medicine, Hepatology (الكبد), Endocrinology (الغدد الصماء), Nephrology (الكلى), Pulmonology (الصدر), Neurology (مخ وأعصاب), and Geriatrics (طب مسنين).\n*   **Inpatient & Critical Care Beds:** A dynamic capacity of Inpatient wards (داخلي), Intermediate Care (رعاية متوسطة), and Intensive Care (رعاية مركزة). Bed assignment is strictly based on the treating consultant's medical decision.\n*   **Diagnostic Capabilities:** Comprehensive laboratory and radiology services including Ultrasound, Echocardiography (Echo), Stress Echo, and CT Scans (available at Future, with Delta receiving a CT in 3 months).\n*   **Emergency & Mobile Care:** 24/7 Emergency response, Home Medical Services, and fully equipped Ambulance services (currently based at Future).\n*   **External Network:** While Cath Labs (diagnostic, therapeutic, and cerebral) are not physically inside the hospitals yet, the center maintains direct, 24/7 contracts with premier specialized centers. Professors and consultants are available around the clock for both elective procedures and emergency interventions."
+      },
+      "content": {
+        "en": "The Cardiac & Internal Medicine Center is a comprehensive, multidisciplinary hub at INSAN designed to manage complex internal medicine cases, cardiac emergencies, and critical care referrals. Operating across Future Specialized Hospital and Delta International Hospital, it provides a seamless continuum of care from outpatient clinics to highly specialized intensive care units.\n\nThe center integrates several interconnected medical functions:\n*   **Outpatient Clinics:** Including General Internal Medicine, Hepatology (الكبد), Endocrinology (الغدد الصماء), Nephrology (الكلى), Pulmonology (الصدر), Neurology (مخ وأعصاب), and Geriatrics (طب مسنين).\n*   **Inpatient & Critical Care Beds:** A dynamic capacity of Inpatient wards (داخلي), Intermediate Care (رعاية متوسطة), and Intensive Care (رعاية مركزة). Bed assignment is strictly based on the treating consultant's medical decision.\n*   **Diagnostic Capabilities:** Comprehensive laboratory and radiology services including Ultrasound, Echocardiography (Echo), Stress Echo, and CT Scans (available at Future, with Delta receiving a CT in 3 months).\n*   **Emergency & Mobile Care:** 24/7 Emergency response, Home Medical Services, and fully equipped Ambulance services (currently based at Future).\n*   **External Network:** While Cath Labs (diagnostic, therapeutic, and cerebral) are not physically inside the hospitals yet, the center maintains direct, 24/7 contracts with premier specialized centers. Professors and consultants are available around the clock for both elective procedures and emergency interventions.",
+        "ar": "The Cardiac & Internal Medicine Center is a comprehensive, multidisciplinary hub at INSAN designed to manage complex internal medicine cases, cardiac emergencies, and critical care referrals. Operating across Future Specialized Hospital and Delta International Hospital, it provides a seamless continuum of care from outpatient clinics to highly specialized intensive care units.\n\nThe center integrates several interconnected medical functions:\n*   **Outpatient Clinics:** Including General Internal Medicine, Hepatology (الكبد), Endocrinology (الغدد الصماء), Nephrology (الكلى), Pulmonology (الصدر), Neurology (مخ وأعصاب), and Geriatrics (طب مسنين).\n*   **Inpatient & Critical Care Beds:** A dynamic capacity of Inpatient wards (داخلي), Intermediate Care (رعاية متوسطة), and Intensive Care (رعاية مركزة). Bed assignment is strictly based on the treating consultant's medical decision.\n*   **Diagnostic Capabilities:** Comprehensive laboratory and radiology services including Ultrasound, Echocardiography (Echo), Stress Echo, and CT Scans (available at Future, with Delta receiving a CT in 3 months).\n*   **Emergency & Mobile Care:** 24/7 Emergency response, Home Medical Services, and fully equipped Ambulance services (currently based at Future).\n*   **External Network:** While Cath Labs (diagnostic, therapeutic, and cerebral) are not physically inside the hospitals yet, the center maintains direct, 24/7 contracts with premier specialized centers. Professors and consultants are available around the clock for both elective procedures and emergency interventions."
       },
       "features": [
         {
           "title": {
-            "ar": "**Comprehensive Clinics:** Covering all major internal medicine sub-specialties.",
-            "en": "**Comprehensive Clinics:** Covering all major internal medicine sub-specialties."
+            "en": "**Comprehensive Clinics:** Covering all major internal medicine sub-specialties.",
+            "ar": "**Comprehensive Clinics:** Covering all major internal medicine sub-specialties."
           }
         },
         {
           "title": {
-            "ar": "**Advanced Diagnostics:** Ultrasound, Echocardiography, Stress Echo, CT (Future, soon at Delta).",
-            "en": "**Advanced Diagnostics:** Ultrasound, Echocardiography, Stress Echo, CT (Future, soon at Delta)."
+            "en": "**Advanced Diagnostics:** Ultrasound, Echocardiography, Stress Echo, CT (Future, soon at Delta).",
+            "ar": "**Advanced Diagnostics:** Ultrasound, Echocardiography, Stress Echo, CT (Future, soon at Delta)."
           }
         },
         {
           "title": {
-            "ar": "**ICU Life Support:** Patient monitors, CRRT (Continuous Renal Replacement Therapy), Infusion pumps, Ventilators, CPAP for respiratory failure, and Dialysis.",
-            "en": "**ICU Life Support:** Patient monitors, CRRT (Continuous Renal Replacement Therapy), Infusion pumps, Ventilators, CPAP for respiratory failure, and Dialysis."
+            "en": "**ICU Life Support:** Patient monitors, CRRT (Continuous Renal Replacement Therapy), Infusion pumps, Ventilators, CPAP for respiratory failure, and Dialysis.",
+            "ar": "**ICU Life Support:** Patient monitors, CRRT (Continuous Renal Replacement Therapy), Infusion pumps, Ventilators, CPAP for respiratory failure, and Dialysis."
           }
         },
         {
           "title": {
-            "ar": "**Logistics:** 24/7 Emergency Room, Home visits, and Ambulance (at Future).",
-            "en": "**Logistics:** 24/7 Emergency Room, Home visits, and Ambulance (at Future)."
+            "en": "**Logistics:** 24/7 Emergency Room, Home visits, and Ambulance (at Future).",
+            "ar": "**Logistics:** 24/7 Emergency Room, Home visits, and Ambulance (at Future)."
           }
         }
-      ],
-      "isFeatured": true,
-      "hospitalSlugs": [
-        "future-hospital",
-        "delta-hospital"
       ],
       "clinics": [
         {
           "name": {
-            "ar": "General Internal Medicine (الباطنة العامة)",
-            "en": "General Internal Medicine (الباطنة العامة)"
+            "en": "General Internal Medicine (الباطنة العامة)",
+            "ar": "General Internal Medicine (الباطنة العامة)"
           }
         },
         {
           "name": {
-            "ar": "Hepatology (الباطنة والكبد)",
-            "en": "Hepatology (الباطنة والكبد)"
+            "en": "Hepatology (الباطنة والكبد)",
+            "ar": "Hepatology (الباطنة والكبد)"
           }
         },
         {
           "name": {
-            "ar": "Endocrinology (الباطنة والغدد الصماء)",
-            "en": "Endocrinology (الباطنة والغدد الصماء)"
+            "en": "Endocrinology (الباطنة والغدد الصماء)",
+            "ar": "Endocrinology (الباطنة والغدد الصماء)"
           }
         },
         {
           "name": {
-            "ar": "Nephrology (الباطنة والكلى)",
-            "en": "Nephrology (الباطنة والكلى)"
+            "en": "Nephrology (الباطنة والكلى)",
+            "ar": "Nephrology (الباطنة والكلى)"
           }
         },
         {
           "name": {
-            "ar": "Pulmonology (الباطنة والصدر)",
-            "en": "Pulmonology (الباطنة والصدر)"
+            "en": "Pulmonology (الباطنة والصدر)",
+            "ar": "Pulmonology (الباطنة والصدر)"
           }
         },
         {
           "name": {
-            "ar": "Neurology (مخ وأعصاب)",
-            "en": "Neurology (مخ وأعصاب)"
+            "en": "Neurology (مخ وأعصاب)",
+            "ar": "Neurology (مخ وأعصاب)"
           }
         },
         {
           "name": {
-            "ar": "Geriatrics (طب مسنين)",
-            "en": "Geriatrics (طب مسنين)"
+            "en": "Geriatrics (طب مسنين)",
+            "ar": "Geriatrics (طب مسنين)"
           }
         }
-      ],
-      "bookingQuestions": [],
-      "registryId": "CEN-001",
-      "content": {
-        "ar": "The center integrates several interconnected medical functions:\n*   **Outpatient Clinics:** Including General Internal Medicine, Hepatology (الكبد), Endocrinology (الغدد الصماء), Nephrology (الكلى), Pulmonology (الصدر), Neurology (مخ وأعصاب), and Geriatrics (طب مسنين).\n*   **Inpatient & Critical Care Beds:** A dynamic capacity of Inpatient wards (داخلي), Intermediate Care (رعاية متوسطة), and Intensive Care (رعاية مركزة). Bed assignment is strictly based on the treating consultant's medical decision.\n*   **Diagnostic Capabilities:** Comprehensive laboratory and radiology services including Ultrasound, Echocardiography (Echo), Stress Echo, and CT Scans (available at Future, with Delta receiving a CT in 3 months).\n*   **Emergency & Mobile Care:** 24/7 Emergency response, Home Medical Services, and fully equipped Ambulance services (currently based at Future).\n*   **External Network:** While Cath Labs (diagnostic, therapeutic, and cerebral) are not physically inside the hospitals yet, the center maintains direct, 24/7 contracts with premier specialized centers. Professors and consultants are available around the clock for both elective procedures and emergency interventions.",
-        "en": "The center integrates several interconnected medical functions:\n*   **Outpatient Clinics:** Including General Internal Medicine, Hepatology (الكبد), Endocrinology (الغدد الصماء), Nephrology (الكلى), Pulmonology (الصدر), Neurology (مخ وأعصاب), and Geriatrics (طب مسنين).\n*   **Inpatient & Critical Care Beds:** A dynamic capacity of Inpatient wards (داخلي), Intermediate Care (رعاية متوسطة), and Intensive Care (رعاية مركزة). Bed assignment is strictly based on the treating consultant's medical decision.\n*   **Diagnostic Capabilities:** Comprehensive laboratory and radiology services including Ultrasound, Echocardiography (Echo), Stress Echo, and CT Scans (available at Future, with Delta receiving a CT in 3 months).\n*   **Emergency & Mobile Care:** 24/7 Emergency response, Home Medical Services, and fully equipped Ambulance services (currently based at Future).\n*   **External Network:** While Cath Labs (diagnostic, therapeutic, and cerebral) are not physically inside the hospitals yet, the center maintains direct, 24/7 contracts with premier specialized centers. Professors and consultants are available around the clock for both elective procedures and emergency interventions."
-      }
+      ]
     },
     {
       "registryId": "CEN-007",
       "slug": "women-s-children-s-health-center",
       "name": {
-        "ar": "مركز صحة المرأة والطفل",
-        "en": "Women's & Children's Health Center"
+        "en": "Women's & Children's Health Center",
+        "ar": "مركز صحة المرأة والطفل"
       },
       "shortDescription": {
-        "ar": "An integrated women's healthcare platform offering diagnostic, therapeutic, and surgical services. Key services include:",
-        "en": "An integrated women's healthcare platform offering diagnostic, therapeutic, and surgical services. Key services include:"
+        "en": "The Women's & Children's Health Center at Delta International Hospital is a specialized, comprehensive hub providing integrated care for women across all stages of life. From normal and high-risk pregnancy follow-ups to complex gynecological surgeries, the center offers a seamless continuum of care under the supervision of university professors and PhD-holding consultants.",
+        "ar": "The Women's & Children's Health Center at Delta International Hospital is a specialized, comprehensive hub providing integrated care for women across all stages of life. From normal and high-risk pregnancy follow-ups to complex gynecological surgeries, the center offers a seamless continuum of care under the supervision of university professors and PhD-holding consultants."
       },
       "description": {
-        "ar": "The Women's & Children's Health Center at Delta International Hospital is a specialized, comprehensive hub providing integrated care for women across all stages of life. From normal and high-risk pregnancy follow-ups to complex gynecological surgeries, the center offers a seamless continuum of care under the supervision of university professors and PhD-holding consultants.",
-        "en": "The Women's & Children's Health Center at Delta International Hospital is a specialized, comprehensive hub providing integrated care for women across all stages of life. From normal and high-risk pregnancy follow-ups to complex gynecological surgeries, the center offers a seamless continuum of care under the supervision of university professors and PhD-holding consultants."
+        "en": "An integrated women's healthcare platform offering diagnostic, therapeutic, and surgical services. Key services include:\n*   Normal and high-risk pregnancy management (including twins).\n*   Normal and Cesarean deliveries.\n*   Fetal monitoring (Sonar and Doppler).\n*   Diagnostic and therapeutic gynecological endoscopy.\n*   Surgical removal of the uterus, fibroids, and ovarian cysts.\n*   Treatment for endometriosis, urinary incontinence, and menstrual disorders.\n*   Postpartum care and family planning clinics.\n*   Neonatal incubators and care.",
+        "ar": "An integrated women's healthcare platform offering diagnostic, therapeutic, and surgical services. Key services include:\n*   Normal and high-risk pregnancy management (including twins).\n*   Normal and Cesarean deliveries.\n*   Fetal monitoring (Sonar and Doppler).\n*   Diagnostic and therapeutic gynecological endoscopy.\n*   Surgical removal of the uterus, fibroids, and ovarian cysts.\n*   Treatment for endometriosis, urinary incontinence, and menstrual disorders.\n*   Postpartum care and family planning clinics.\n*   Neonatal incubators and care."
       },
       "content": {
-        "ar": "An integrated women's healthcare platform offering diagnostic, therapeutic, and surgical services. Key services include:\n*   Normal and high-risk pregnancy management (including twins).\n*   Normal and Cesarean deliveries.\n*   Fetal monitoring (Sonar and Doppler).\n*   Diagnostic and therapeutic gynecological endoscopy.\n*   Surgical removal of the uterus, fibroids, and ovarian cysts.\n*   Treatment for endometriosis, urinary incontinence, and menstrual disorders.\n*   Postpartum care and family planning clinics.\n*   Neonatal incubators and care.",
-        "en": "An integrated women's healthcare platform offering diagnostic, therapeutic, and surgical services. Key services include:\n*   Normal and high-risk pregnancy management (including twins).\n*   Normal and Cesarean deliveries.\n*   Fetal monitoring (Sonar and Doppler).\n*   Diagnostic and therapeutic gynecological endoscopy.\n*   Surgical removal of the uterus, fibroids, and ovarian cysts.\n*   Treatment for endometriosis, urinary incontinence, and menstrual disorders.\n*   Postpartum care and family planning clinics.\n*   Neonatal incubators and care."
+        "en": "The Women's & Children's Health Center at Delta International Hospital is a specialized, comprehensive hub providing integrated care for women across all stages of life. From normal and high-risk pregnancy follow-ups to complex gynecological surgeries, the center offers a seamless continuum of care under the supervision of university professors and PhD-holding consultants.\n\nAn integrated women's healthcare platform offering diagnostic, therapeutic, and surgical services. Key services include:\n*   Normal and high-risk pregnancy management (including twins).\n*   Normal and Cesarean deliveries.\n*   Fetal monitoring (Sonar and Doppler).\n*   Diagnostic and therapeutic gynecological endoscopy.\n*   Surgical removal of the uterus, fibroids, and ovarian cysts.\n*   Treatment for endometriosis, urinary incontinence, and menstrual disorders.\n*   Postpartum care and family planning clinics.\n*   Neonatal incubators and care.",
+        "ar": "The Women's & Children's Health Center at Delta International Hospital is a specialized, comprehensive hub providing integrated care for women across all stages of life. From normal and high-risk pregnancy follow-ups to complex gynecological surgeries, the center offers a seamless continuum of care under the supervision of university professors and PhD-holding consultants.\n\nAn integrated women's healthcare platform offering diagnostic, therapeutic, and surgical services. Key services include:\n*   Normal and high-risk pregnancy management (including twins).\n*   Normal and Cesarean deliveries.\n*   Fetal monitoring (Sonar and Doppler).\n*   Diagnostic and therapeutic gynecological endoscopy.\n*   Surgical removal of the uterus, fibroids, and ovarian cysts.\n*   Treatment for endometriosis, urinary incontinence, and menstrual disorders.\n*   Postpartum care and family planning clinics.\n*   Neonatal incubators and care."
       },
       "features": [
         {
           "title": {
-            "ar": "**Exclusive Tech:** The first machine in the hospital to simultaneously monitor maternal and fetal pulses.",
-            "en": "**Exclusive Tech:** The first machine in the hospital to simultaneously monitor maternal and fetal pulses."
+            "en": "**Exclusive Tech:** The first machine in the hospital to simultaneously monitor maternal and fetal pulses.",
+            "ar": "**Exclusive Tech:** The first machine in the hospital to simultaneously monitor maternal and fetal pulses."
           }
         },
         {
           "title": {
-            "ar": "**Expert Team:** Professors and consultants from various Egyptian universities.",
-            "en": "**Expert Team:** Professors and consultants from various Egyptian universities."
+            "en": "**Expert Team:** Professors and consultants from various Egyptian universities.",
+            "ar": "**Expert Team:** Professors and consultants from various Egyptian universities."
           }
         },
         {
           "title": {
-            "ar": "**Infrastructure:** Fully equipped delivery rooms, surgical theaters, and neonatal incubators.",
-            "en": "**Infrastructure:** Fully equipped delivery rooms, surgical theaters, and neonatal incubators."
+            "en": "**Infrastructure:** Fully equipped delivery rooms, surgical theaters, and neonatal incubators.",
+            "ar": "**Infrastructure:** Fully equipped delivery rooms, surgical theaters, and neonatal incubators."
           }
         },
         {
           "title": {
-            "ar": "**Support:** 24/7 anesthesia and emergency departments, with instant access to Internal Medicine, Cardiology, and ICU.",
-            "en": "**Support:** 24/7 anesthesia and emergency departments, with instant access to Internal Medicine, Cardiology, and ICU."
+            "en": "**Support:** 24/7 anesthesia and emergency departments, with instant access to Internal Medicine, Cardiology, and ICU.",
+            "ar": "**Support:** 24/7 anesthesia and emergency departments, with instant access to Internal Medicine, Cardiology, and ICU."
           }
         },
         {
           "title": {
-            "ar": "**Open Access:** The unique ability for a patient to bring her own external doctor to perform the delivery, utilizing the hospital's premium facilities.",
-            "en": "**Open Access:** The unique ability for a patient to bring her own external doctor to perform the delivery, utilizing the hospital's premium facilities."
+            "en": "**Open Access:** The unique ability for a patient to bring her own external doctor to perform the delivery, utilizing the hospital's premium facilities.",
+            "ar": "**Open Access:** The unique ability for a patient to bring her own external doctor to perform the delivery, utilizing the hospital's premium facilities."
           }
         }
       ],
       "clinics": [
         {
           "name": {
-            "ar": "Obstetrics & Gynecology",
-            "en": "Obstetrics & Gynecology"
+            "en": "Obstetrics & Gynecology",
+            "ar": "Obstetrics & Gynecology"
           }
         },
         {
           "name": {
-            "ar": "Pregnancy Follow-up (Normal & High-Risk)",
-            "en": "Pregnancy Follow-up (Normal & High-Risk)"
+            "en": "Pregnancy Follow-up (Normal & High-Risk)",
+            "ar": "Pregnancy Follow-up (Normal & High-Risk)"
           }
         },
         {
           "name": {
-            "ar": "Delayed Conception (تأخر الإنجاب)",
-            "en": "Delayed Conception (تأخر الإنجاب)"
+            "en": "Delayed Conception (تأخر الإنجاب)",
+            "ar": "Delayed Conception (تأخر الإنجاب)"
           }
         },
         {
           "name": {
-            "ar": "Gynecological Endoscopy",
-            "en": "Gynecological Endoscopy"
+            "en": "Gynecological Endoscopy",
+            "ar": "Gynecological Endoscopy"
           }
         },
         {
           "name": {
-            "ar": "Gynecological Oncology",
-            "en": "Gynecological Oncology"
+            "en": "Gynecological Oncology",
+            "ar": "Gynecological Oncology"
           }
         }
       ]
@@ -569,345 +512,298 @@
       "registryId": "CEN-002",
       "slug": "urology-andrology-surgery-center",
       "name": {
-        "ar": "مركز جراحات المسالك البولية والذكورة",
-        "en": "Urology & Andrology Surgery Center"
+        "en": "Urology & Andrology Surgery Center",
+        "ar": "مركز جراحات المسالك البولية والذكورة"
       },
       "shortDescription": {
-        "ar": "A specialized surgical and medical center handling:",
-        "en": "A specialized surgical and medical center handling:"
+        "en": "The Urology & Andrology Surgery Center provides comprehensive diagnostic and therapeutic services for all diseases affecting the kidneys, ureters, bladder, prostate, and urethra. It also specializes in andrology and male infertility surgeries, offering medical, endoscopic, laser, and traditional surgical treatments based on individualized patient assessment.",
+        "ar": "The Urology & Andrology Surgery Center provides comprehensive diagnostic and therapeutic services for all diseases affecting the kidneys, ureters, bladder, prostate, and urethra. It also specializes in andrology and male infertility surgeries, offering medical, endoscopic, laser, and traditional surgical treatments based on individualized patient assessment."
       },
       "description": {
-        "ar": "The Urology & Andrology Surgery Center provides comprehensive diagnostic and therapeutic services for all diseases affecting the kidneys, ureters, bladder, prostate, and urethra. It also specializes in andrology and male infertility surgeries, offering medical, endoscopic, laser, and traditional surgical treatments based on individualized patient assessment.",
-        "en": "The Urology & Andrology Surgery Center provides comprehensive diagnostic and therapeutic services for all diseases affecting the kidneys, ureters, bladder, prostate, and urethra. It also specializes in andrology and male infertility surgeries, offering medical, endoscopic, laser, and traditional surgical treatments based on individualized patient assessment."
+        "en": "A specialized surgical and medical center handling:\n*   Endoscopic and laser lithotripsy for kidney and ureteral stones.\n*   Endoscopic and laser prostatectomy (and treatment of BPH).\n*   Treatment of urethral strictures.\n*   Excision of bladder and kidney tumors.\n*   Andrology surgeries: Varicocele, undescended testicle, hydrocele.\n*   Male infertility treatments.\n*   Urinary incontinence surgeries.\n*   Pediatric urology (undescended testicles, complicated circumcision, urethral stricture, urinary reflux, congenital defects).",
+        "ar": "A specialized surgical and medical center handling:\n*   Endoscopic and laser lithotripsy for kidney and ureteral stones.\n*   Endoscopic and laser prostatectomy (and treatment of BPH).\n*   Treatment of urethral strictures.\n*   Excision of bladder and kidney tumors.\n*   Andrology surgeries: Varicocele, undescended testicle, hydrocele.\n*   Male infertility treatments.\n*   Urinary incontinence surgeries.\n*   Pediatric urology (undescended testicles, complicated circumcision, urethral stricture, urinary reflux, congenital defects)."
       },
       "content": {
-        "ar": "A specialized surgical and medical center handling:\n*   Endoscopic and laser lithotripsy for kidney and ureteral stones.\n*   Endoscopic and laser prostatectomy (and treatment of BPH).\n*   Treatment of urethral strictures.\n*   Excision of bladder and kidney tumors.\n*   Andrology surgeries: Varicocele, undescended testicle, hydrocele.\n*   Male infertility treatments.\n*   Urinary incontinence surgeries.\n*   Pediatric urology (undescended testicles, complicated circumcision, urethral stricture, urinary reflux, congenital defects).",
-        "en": "A specialized surgical and medical center handling:\n*   Endoscopic and laser lithotripsy for kidney and ureteral stones.\n*   Endoscopic and laser prostatectomy (and treatment of BPH).\n*   Treatment of urethral strictures.\n*   Excision of bladder and kidney tumors.\n*   Andrology surgeries: Varicocele, undescended testicle, hydrocele.\n*   Male infertility treatments.\n*   Urinary incontinence surgeries.\n*   Pediatric urology (undescended testicles, complicated circumcision, urethral stricture, urinary reflux, congenital defects)."
+        "en": "The Urology & Andrology Surgery Center provides comprehensive diagnostic and therapeutic services for all diseases affecting the kidneys, ureters, bladder, prostate, and urethra. It also specializes in andrology and male infertility surgeries, offering medical, endoscopic, laser, and traditional surgical treatments based on individualized patient assessment.\n\nA specialized surgical and medical center handling:\n*   Endoscopic and laser lithotripsy for kidney and ureteral stones.\n*   Endoscopic and laser prostatectomy (and treatment of BPH).\n*   Treatment of urethral strictures.\n*   Excision of bladder and kidney tumors.\n*   Andrology surgeries: Varicocele, undescended testicle, hydrocele.\n*   Male infertility treatments.\n*   Urinary incontinence surgeries.\n*   Pediatric urology (undescended testicles, complicated circumcision, urethral stricture, urinary reflux, congenital defects).",
+        "ar": "The Urology & Andrology Surgery Center provides comprehensive diagnostic and therapeutic services for all diseases affecting the kidneys, ureters, bladder, prostate, and urethra. It also specializes in andrology and male infertility surgeries, offering medical, endoscopic, laser, and traditional surgical treatments based on individualized patient assessment.\n\nA specialized surgical and medical center handling:\n*   Endoscopic and laser lithotripsy for kidney and ureteral stones.\n*   Endoscopic and laser prostatectomy (and treatment of BPH).\n*   Treatment of urethral strictures.\n*   Excision of bladder and kidney tumors.\n*   Andrology surgeries: Varicocele, undescended testicle, hydrocele.\n*   Male infertility treatments.\n*   Urinary incontinence surgeries.\n*   Pediatric urology (undescended testicles, complicated circumcision, urethral stricture, urinary reflux, congenital defects)."
       },
       "features": [
         {
           "title": {
-            "ar": "**Advanced Tech:** Laser and Endoscopy for stones and prostate.",
-            "en": "**Advanced Tech:** Laser and Endoscopy for stones and prostate."
+            "en": "**Advanced Tech:** Laser and Endoscopy for stones and prostate.",
+            "ar": "**Advanced Tech:** Laser and Endoscopy for stones and prostate."
           }
         },
         {
           "title": {
-            "ar": "**24/7 ER:** Fully equipped emergency department to handle acute retention, renal colic, trauma, and bleeding.",
-            "en": "**24/7 ER:** Fully equipped emergency department to handle acute retention, renal colic, trauma, and bleeding."
+            "en": "**24/7 ER:** Fully equipped emergency department to handle acute retention, renal colic, trauma, and bleeding.",
+            "ar": "**24/7 ER:** Fully equipped emergency department to handle acute retention, renal colic, trauma, and bleeding."
           }
         },
         {
           "title": {
-            "ar": "**All-inclusive Diagnostics:** All necessary labs and imaging can be done inside the hospital prior to surgery.",
-            "en": "**All-inclusive Diagnostics:** All necessary labs and imaging can be done inside the hospital prior to surgery."
+            "en": "**All-inclusive Diagnostics:** All necessary labs and imaging can be done inside the hospital prior to surgery.",
+            "ar": "**All-inclusive Diagnostics:** All necessary labs and imaging can be done inside the hospital prior to surgery."
           }
         },
         {
           "title": {
-            "ar": "**Multidisciplinary Readiness:** Ability to prep and operate on high-risk patients (elderly, diabetics) after careful medical optimization.",
-            "en": "**Multidisciplinary Readiness:** Ability to prep and operate on high-risk patients (elderly, diabetics) after careful medical optimization."
+            "en": "**Multidisciplinary Readiness:** Ability to prep and operate on high-risk patients (elderly, diabetics) after careful medical optimization.",
+            "ar": "**Multidisciplinary Readiness:** Ability to prep and operate on high-risk patients (elderly, diabetics) after careful medical optimization."
           }
         }
       ],
-      "clinics": []
+      "clinics": [
+        {
+          "name": {
+            "en": "<!-- NEEDS-OPERATOR: Missing the exact list of specialized clinics within the center (if broken down) -->",
+            "ar": "<!-- NEEDS-OPERATOR: Missing the exact list of specialized clinics within the center (if broken down) -->"
+          }
+        }
+      ]
     },
     {
-      "registryId": "CEN-013",
+      "registryId": "CEN-006",
       "slug": "pediatrics-neonatology-center",
       "name": {
-        "ar": "مركز طب الأطفال وحديثي الولادة",
-        "en": "Pediatrics & Neonatology Center"
+        "en": "Pediatrics & Neonatology Center",
+        "ar": "مركز طب الأطفال وحديثي الولادة"
       },
       "shortDescription": {
-        "ar": "A specialized, multi-disciplinary center offering diagnostic, therapeutic, and emergency services for children, including:",
-        "en": "A specialized, multi-disciplinary center offering diagnostic, therapeutic, and emergency services for children, including:"
+        "en": "The Pediatrics & Neonatology Center at Delta International Hospital provides comprehensive, integrated healthcare for children from birth through adolescence. Featuring 11 specialized pediatric clinics, 12 fully equipped incubators, and a 24/7 pediatric emergency department, it stands as a massive, all-inclusive hub for child health, growth monitoring, and urgent care.",
+        "ar": "The Pediatrics & Neonatology Center at Delta International Hospital provides comprehensive, integrated healthcare for children from birth through adolescence. Featuring 11 specialized pediatric clinics, 12 fully equipped incubators, and a 24/7 pediatric emergency department, it stands as a massive, all-inclusive hub for child health, growth monitoring, and urgent care."
       },
       "description": {
-        "ar": "The Pediatrics & Neonatology Center at Delta International Hospital provides comprehensive, integrated healthcare for children from birth through adolescence. Featuring 11 specialized pediatric clinics, 12 fully equipped incubators, and a 24/7 pediatric emergency department, it stands as a massive, all-inclusive hub for child health, growth monitoring, and urgent care.",
-        "en": "The Pediatrics & Neonatology Center at Delta International Hospital provides comprehensive, integrated healthcare for children from birth through adolescence. Featuring 11 specialized pediatric clinics, 12 fully equipped incubators, and a 24/7 pediatric emergency department, it stands as a massive, all-inclusive hub for child health, growth monitoring, and urgent care."
+        "en": "A specialized, multi-disciplinary center offering diagnostic, therapeutic, and emergency services for children, including:\n*   24/7 Pediatric Emergency Room.\n*   12 fully equipped Neonatal Intensive Care Unit (NICU) incubators.\n*   11 highly specialized pediatric clinics.\n*   Vaccination services according to approved schedules.\n*   Growth, nutrition, and development monitoring.",
+        "ar": "A specialized, multi-disciplinary center offering diagnostic, therapeutic, and emergency services for children, including:\n*   24/7 Pediatric Emergency Room.\n*   12 fully equipped Neonatal Intensive Care Unit (NICU) incubators.\n*   11 highly specialized pediatric clinics.\n*   Vaccination services according to approved schedules.\n*   Growth, nutrition, and development monitoring."
       },
       "content": {
-        "ar": "A specialized, multi-disciplinary center offering diagnostic, therapeutic, and emergency services for children, including:\n*   24/7 Pediatric Emergency Room.\n*   12 fully equipped Neonatal Intensive Care Unit (NICU) incubators.\n*   11 highly specialized pediatric clinics.\n*   Vaccination services according to approved schedules.\n*   Growth, nutrition, and development monitoring.",
-        "en": "A specialized, multi-disciplinary center offering diagnostic, therapeutic, and emergency services for children, including:\n*   24/7 Pediatric Emergency Room.\n*   12 fully equipped Neonatal Intensive Care Unit (NICU) incubators.\n*   11 highly specialized pediatric clinics.\n*   Vaccination services according to approved schedules.\n*   Growth, nutrition, and development monitoring."
+        "en": "The Pediatrics & Neonatology Center at Delta International Hospital provides comprehensive, integrated healthcare for children from birth through adolescence. Featuring 11 specialized pediatric clinics, 12 fully equipped incubators, and a 24/7 pediatric emergency department, it stands as a massive, all-inclusive hub for child health, growth monitoring, and urgent care.\n\nA specialized, multi-disciplinary center offering diagnostic, therapeutic, and emergency services for children, including:\n*   24/7 Pediatric Emergency Room.\n*   12 fully equipped Neonatal Intensive Care Unit (NICU) incubators.\n*   11 highly specialized pediatric clinics.\n*   Vaccination services according to approved schedules.\n*   Growth, nutrition, and development monitoring.",
+        "ar": "The Pediatrics & Neonatology Center at Delta International Hospital provides comprehensive, integrated healthcare for children from birth through adolescence. Featuring 11 specialized pediatric clinics, 12 fully equipped incubators, and a 24/7 pediatric emergency department, it stands as a massive, all-inclusive hub for child health, growth monitoring, and urgent care.\n\nA specialized, multi-disciplinary center offering diagnostic, therapeutic, and emergency services for children, including:\n*   24/7 Pediatric Emergency Room.\n*   12 fully equipped Neonatal Intensive Care Unit (NICU) incubators.\n*   11 highly specialized pediatric clinics.\n*   Vaccination services according to approved schedules.\n*   Growth, nutrition, and development monitoring."
       },
       "features": [
         {
           "title": {
-            "ar": "**12 Equipped Incubators:** Ready for premature babies, jaundice, and critical neonatal care.",
-            "en": "**12 Equipped Incubators:** Ready for premature babies, jaundice, and critical neonatal care."
+            "en": "**12 Equipped Incubators:** Ready for premature babies, jaundice, and critical neonatal care.",
+            "ar": "**12 Equipped Incubators:** Ready for premature babies, jaundice, and critical neonatal care."
           }
         },
         {
           "title": {
-            "ar": "**24/7 Pediatric ER:** Always staffed by trained pediatricians.",
-            "en": "**24/7 Pediatric ER:** Always staffed by trained pediatricians."
+            "en": "**24/7 Pediatric ER:** Always staffed by trained pediatricians.",
+            "ar": "**24/7 Pediatric ER:** Always staffed by trained pediatricians."
           }
         },
         {
           "title": {
-            "ar": "**11 Sub-specialty Clinics:** Covering every system in the child's body.",
-            "en": "**11 Sub-specialty Clinics:** Covering every system in the child's body."
+            "en": "**11 Sub-specialty Clinics:** Covering every system in the child's body.",
+            "ar": "**11 Sub-specialty Clinics:** Covering every system in the child's body."
           }
         },
         {
           "title": {
-            "ar": "**Economic Pricing:** High-quality care at a fair, accessible price point.",
-            "en": "**Economic Pricing:** High-quality care at a fair, accessible price point."
+            "en": "**Economic Pricing:** High-quality care at a fair, accessible price point.",
+            "ar": "**Economic Pricing:** High-quality care at a fair, accessible price point."
           }
         },
         {
           "title": {
-            "ar": "**All-in-One:** Labs and X-rays are available in the same building.",
-            "en": "**All-in-One:** Labs and X-rays are available in the same building."
+            "en": "**All-in-One:** Labs and X-rays are available in the same building.",
+            "ar": "**All-in-One:** Labs and X-rays are available in the same building."
           }
         }
       ],
       "clinics": [
         {
           "name": {
-            "ar": "The center boasts a massive array of 11 sub-specialties:",
-            "en": "The center boasts a massive array of 11 sub-specialties:"
+            "en": "The center boasts a massive array of 11 sub-specialties:\n1.  **General Pediatrics:** Initial assessment",
+            "ar": "The center boasts a massive array of 11 sub-specialties:\n1.  **General Pediatrics:** Initial assessment"
           }
         },
         {
           "name": {
-            "ar": "General Pediatrics:** Initial assessment, routine illnesses.",
-            "en": "General Pediatrics:** Initial assessment, routine illnesses."
+            "en": "routine illnesses.\n2.  **Neonatology:** Newborn care",
+            "ar": "routine illnesses.\n2.  **Neonatology:** Newborn care"
           }
         },
         {
           "name": {
-            "ar": "Neonatology:** Newborn care, breastfeeding, jaundice.",
-            "en": "Neonatology:** Newborn care, breastfeeding, jaundice."
+            "en": "breastfeeding",
+            "ar": "breastfeeding"
           }
         },
         {
           "name": {
-            "ar": "Incubator Follow-up:** Care for preemies post-discharge.",
-            "en": "Incubator Follow-up:** Care for preemies post-discharge."
+            "en": "jaundice.\n3.  **Incubator Follow-up:** Care for preemies post-discharge.\n4.  **Pulmonology & Allergy:** Asthma",
+            "ar": "jaundice.\n3.  **Incubator Follow-up:** Care for preemies post-discharge.\n4.  **Pulmonology & Allergy:** Asthma"
           }
         },
         {
           "name": {
-            "ar": "Pulmonology & Allergy:** Asthma, chronic cough, bronchitis.",
-            "en": "Pulmonology & Allergy:** Asthma, chronic cough, bronchitis."
+            "en": "chronic cough",
+            "ar": "chronic cough"
           }
         },
         {
           "name": {
-            "ar": "Gastroenterology & Nutrition:** Chronic constipation/diarrhea, GERD, dairy allergy, malnutrition.",
-            "en": "Gastroenterology & Nutrition:** Chronic constipation/diarrhea, GERD, dairy allergy, malnutrition."
+            "en": "bronchitis.\n5.  **Gastroenterology & Nutrition:** Chronic constipation/diarrhea",
+            "ar": "bronchitis.\n5.  **Gastroenterology & Nutrition:** Chronic constipation/diarrhea"
           }
         },
         {
           "name": {
-            "ar": "Endocrinology & Diabetes:** Pediatric diabetes, short stature, thyroid issues, obesity.",
-            "en": "Endocrinology & Diabetes:** Pediatric diabetes, short stature, thyroid issues, obesity."
+            "en": "GERD",
+            "ar": "GERD"
           }
         },
         {
           "name": {
-            "ar": "Nephrology & Urology:** Recurrent UTIs, urinary reflux, bedwetting.",
-            "en": "Nephrology & Urology:** Recurrent UTIs, urinary reflux, bedwetting."
+            "en": "dairy allergy",
+            "ar": "dairy allergy"
           }
         },
         {
           "name": {
-            "ar": "Neurology:** Convulsions, epilepsy, delayed walking/speech, motor disorders.",
-            "en": "Neurology:** Convulsions, epilepsy, delayed walking/speech, motor disorders."
+            "en": "malnutrition.\n6.  **Endocrinology & Diabetes:** Pediatric diabetes",
+            "ar": "malnutrition.\n6.  **Endocrinology & Diabetes:** Pediatric diabetes"
           }
         },
         {
           "name": {
-            "ar": "Cardiology:** Congenital heart defects, murmurs, cyanosis, pediatric Echo/ECG.",
-            "en": "Cardiology:** Congenital heart defects, murmurs, cyanosis, pediatric Echo/ECG."
+            "en": "short stature",
+            "ar": "short stature"
           }
         },
         {
           "name": {
-            "ar": "Hematology:** Anemia and blood disorders.",
-            "en": "Hematology:** Anemia and blood disorders."
+            "en": "thyroid issues",
+            "ar": "thyroid issues"
           }
         },
         {
           "name": {
-            "ar": "Growth, Development & Vaccination:** Monitoring milestones, weight/height, and administering approved vaccines.",
-            "en": "Growth, Development & Vaccination:** Monitoring milestones, weight/height, and administering approved vaccines."
+            "en": "obesity.\n7.  **Nephrology & Urology:** Recurrent UTIs",
+            "ar": "obesity.\n7.  **Nephrology & Urology:** Recurrent UTIs"
+          }
+        },
+        {
+          "name": {
+            "en": "urinary reflux",
+            "ar": "urinary reflux"
+          }
+        },
+        {
+          "name": {
+            "en": "bedwetting.\n8.  **Neurology:** Convulsions",
+            "ar": "bedwetting.\n8.  **Neurology:** Convulsions"
+          }
+        },
+        {
+          "name": {
+            "en": "epilepsy",
+            "ar": "epilepsy"
+          }
+        },
+        {
+          "name": {
+            "en": "delayed walking/speech",
+            "ar": "delayed walking/speech"
+          }
+        },
+        {
+          "name": {
+            "en": "motor disorders.\n9.  **Cardiology:** Congenital heart defects",
+            "ar": "motor disorders.\n9.  **Cardiology:** Congenital heart defects"
+          }
+        },
+        {
+          "name": {
+            "en": "murmurs",
+            "ar": "murmurs"
+          }
+        },
+        {
+          "name": {
+            "en": "cyanosis",
+            "ar": "cyanosis"
+          }
+        },
+        {
+          "name": {
+            "en": "pediatric Echo/ECG.\n10. **Hematology:** Anemia and blood disorders.\n11. **Growth",
+            "ar": "pediatric Echo/ECG.\n10. **Hematology:** Anemia and blood disorders.\n11. **Growth"
+          }
+        },
+        {
+          "name": {
+            "en": "Development & Vaccination:** Monitoring milestones",
+            "ar": "Development & Vaccination:** Monitoring milestones"
+          }
+        },
+        {
+          "name": {
+            "en": "weight/height",
+            "ar": "weight/height"
+          }
+        },
+        {
+          "name": {
+            "en": "and administering approved vaccines.",
+            "ar": "and administering approved vaccines."
           }
         }
       ]
     },
     {
-      "registryId": "CEN-009",
+      "registryId": "CEN-005",
       "slug": "ent-head-and-neck-surgery-center",
       "name": {
-        "ar": "مركز الأنف والأذن والحنجرة وجراحات الرأس والرقبة",
-        "en": "ENT & Head and Neck Surgery Center"
+        "en": "ENT & Head and Neck Surgery Center",
+        "ar": "مركز الأنف والأذن والحنجرة وجراحات الرأس والرقبة"
       },
       "shortDescription": {
-        "ar": "An integrated center handling:",
-        "en": "An integrated center handling:"
+        "en": "The ENT & Head and Neck Surgery Center is a comprehensive, highly specialized unit providing elite diagnostic, therapeutic, and surgical services for both adults and children. It operates under the strict supervision of university professors and PhD-holding consultants, utilizing the latest endoscopy and diagnostic technology in the region.",
+        "ar": "The ENT & Head and Neck Surgery Center is a comprehensive, highly specialized unit providing elite diagnostic, therapeutic, and surgical services for both adults and children. It operates under the strict supervision of university professors and PhD-holding consultants, utilizing the latest endoscopy and diagnostic technology in the region."
       },
       "description": {
-        "ar": "The ENT & Head and Neck Surgery Center is a comprehensive, highly specialized unit providing elite diagnostic, therapeutic, and surgical services for both adults and children. It operates under the strict supervision of university professors and PhD-holding consultants, utilizing the latest endoscopy and diagnostic technology in the region.",
-        "en": "The ENT & Head and Neck Surgery Center is a comprehensive, highly specialized unit providing elite diagnostic, therapeutic, and surgical services for both adults and children. It operates under the strict supervision of university professors and PhD-holding consultants, utilizing the latest endoscopy and diagnostic technology in the region."
+        "en": "An integrated center handling:\n*   Nose and Sinus diseases (Allergies, Endoscopic Sinus Surgery, Septoplasty).\n*   Ear diseases (Hearing loss, Tinnitus, Vertigo/Balance, Tympanoplasty, Middle Ear surgeries).\n*   Throat and Larynx (Tonsillectomy, Adenoidectomy, Vocal Cords, Snoring and Sleep Apnea).\n*   Head and Neck Surgeries (Tumor excision, Salivary glands, Neck cysts/masses).\n*   Pediatric ENT.",
+        "ar": "An integrated center handling:\n*   Nose and Sinus diseases (Allergies, Endoscopic Sinus Surgery, Septoplasty).\n*   Ear diseases (Hearing loss, Tinnitus, Vertigo/Balance, Tympanoplasty, Middle Ear surgeries).\n*   Throat and Larynx (Tonsillectomy, Adenoidectomy, Vocal Cords, Snoring and Sleep Apnea).\n*   Head and Neck Surgeries (Tumor excision, Salivary glands, Neck cysts/masses).\n*   Pediatric ENT."
       },
       "content": {
-        "ar": "An integrated center handling:\n*   Nose and Sinus diseases (Allergies, Endoscopic Sinus Surgery, Septoplasty).\n*   Ear diseases (Hearing loss, Tinnitus, Vertigo/Balance, Tympanoplasty, Middle Ear surgeries).\n*   Throat and Larynx (Tonsillectomy, Adenoidectomy, Vocal Cords, Snoring and Sleep Apnea).\n*   Head and Neck Surgeries (Tumor excision, Salivary glands, Neck cysts/masses).\n*   Pediatric ENT.",
-        "en": "An integrated center handling:\n*   Nose and Sinus diseases (Allergies, Endoscopic Sinus Surgery, Septoplasty).\n*   Ear diseases (Hearing loss, Tinnitus, Vertigo/Balance, Tympanoplasty, Middle Ear surgeries).\n*   Throat and Larynx (Tonsillectomy, Adenoidectomy, Vocal Cords, Snoring and Sleep Apnea).\n*   Head and Neck Surgeries (Tumor excision, Salivary glands, Neck cysts/masses).\n*   Pediatric ENT."
+        "en": "The ENT & Head and Neck Surgery Center is a comprehensive, highly specialized unit providing elite diagnostic, therapeutic, and surgical services for both adults and children. It operates under the strict supervision of university professors and PhD-holding consultants, utilizing the latest endoscopy and diagnostic technology in the region.\n\nAn integrated center handling:\n*   Nose and Sinus diseases (Allergies, Endoscopic Sinus Surgery, Septoplasty).\n*   Ear diseases (Hearing loss, Tinnitus, Vertigo/Balance, Tympanoplasty, Middle Ear surgeries).\n*   Throat and Larynx (Tonsillectomy, Adenoidectomy, Vocal Cords, Snoring and Sleep Apnea).\n*   Head and Neck Surgeries (Tumor excision, Salivary glands, Neck cysts/masses).\n*   Pediatric ENT.",
+        "ar": "The ENT & Head and Neck Surgery Center is a comprehensive, highly specialized unit providing elite diagnostic, therapeutic, and surgical services for both adults and children. It operates under the strict supervision of university professors and PhD-holding consultants, utilizing the latest endoscopy and diagnostic technology in the region.\n\nAn integrated center handling:\n*   Nose and Sinus diseases (Allergies, Endoscopic Sinus Surgery, Septoplasty).\n*   Ear diseases (Hearing loss, Tinnitus, Vertigo/Balance, Tympanoplasty, Middle Ear surgeries).\n*   Throat and Larynx (Tonsillectomy, Adenoidectomy, Vocal Cords, Snoring and Sleep Apnea).\n*   Head and Neck Surgeries (Tumor excision, Salivary glands, Neck cysts/masses).\n*   Pediatric ENT."
       },
       "features": [
         {
           "title": {
-            "ar": "**Academic Elite:** Staffed by university professors and consultants.",
-            "en": "**Academic Elite:** Staffed by university professors and consultants."
+            "en": "**Academic Elite:** Staffed by university professors and consultants.",
+            "ar": "**Academic Elite:** Staffed by university professors and consultants."
           }
         },
         {
           "title": {
-            "ar": "**Advanced Diagnostics:** State-of-the-art ENT units with full endoscopic capabilities.",
-            "en": "**Advanced Diagnostics:** State-of-the-art ENT units with full endoscopic capabilities."
+            "en": "**Advanced Diagnostics:** State-of-the-art ENT units with full endoscopic capabilities.",
+            "ar": "**Advanced Diagnostics:** State-of-the-art ENT units with full endoscopic capabilities."
           }
         },
         {
           "title": {
-            "ar": "**Fully Equipped ORs:** Designed for delicate microscopic ear surgeries and endoscopic sinus surgeries.",
-            "en": "**Fully Equipped ORs:** Designed for delicate microscopic ear surgeries and endoscopic sinus surgeries."
+            "en": "**Fully Equipped ORs:** Designed for delicate microscopic ear surgeries and endoscopic sinus surgeries.",
+            "ar": "**Fully Equipped ORs:** Designed for delicate microscopic ear surgeries and endoscopic sinus surgeries."
           }
         },
         {
           "title": {
-            "ar": "**All-in-One Facility:** Diagnostics, labs, radiology, surgery, and follow-up are all conducted within the hospital.",
-            "en": "**All-in-One Facility:** Diagnostics, labs, radiology, surgery, and follow-up are all conducted within the hospital."
+            "en": "**All-in-One Facility:** Diagnostics, labs, radiology, surgery, and follow-up are all conducted within the hospital.",
+            "ar": "**All-in-One Facility:** Diagnostics, labs, radiology, surgery, and follow-up are all conducted within the hospital."
           }
         }
       ],
       "clinics": [
         {
           "name": {
-            "ar": "Nose Clinics.",
-            "en": "Nose Clinics."
-          }
-        },
-        {
-          "name": {
-            "ar": "Ear Clinics.",
-            "en": "Ear Clinics."
-          }
-        },
-        {
-          "name": {
-            "ar": "Larynx and Vocal Cords Clinics.",
-            "en": "Larynx and Vocal Cords Clinics."
-          }
-        },
-        {
-          "name": {
-            "ar": "Sinus Clinics.",
-            "en": "Sinus Clinics."
-          }
-        },
-        {
-          "name": {
-            "ar": "Allergic Rhinitis Clinics.",
-            "en": "Allergic Rhinitis Clinics."
-          }
-        },
-        {
-          "name": {
-            "ar": "Hearing and Balance Clinics.",
-            "en": "Hearing and Balance Clinics."
-          }
-        },
-        {
-          "name": {
-            "ar": "Pediatric ENT Clinics.",
-            "en": "Pediatric ENT Clinics."
-          }
-        },
-        {
-          "name": {
-            "ar": "Head and Neck Surgery Clinics.",
-            "en": "Head and Neck Surgery Clinics."
-          }
-        }
-      ]
-    },
-    {
-      "registryId": "CEN-015",
-      "slug": "bariatric-metabolic-surgeries-center",
-      "name": {
-        "en": "Bariatric & Metabolic Surgeries Center",
-        "ar": "مركز جراحات السمنة والتمثيل الغذائي"
-      },
-      "shortDescription": {
-        "en": "A highly specialized center providing comprehensive, long-term solutions for obesity and metabolic diseases (like Type 2 Diabetes). It is deliberately named the \"Bariatric & Metabolic Surgeries Center\" rather than a \"Sleeve Center\" to emphasize that it provides integrated health solutions, not just a single surgical procedure.",
-        "ar": "A highly specialized center providing comprehensive, long-term solutions for obesity and metabolic diseases (like Type 2 Diabetes). It is deliberately named the \"Bariatric & Metabolic Surgeries Center\" rather than a \"Sleeve Center\" to emphasize that it provides integrated health solutions, not just a single surgical procedure."
-      },
-      "description": {
-        "en": "A multidisciplinary program encompassing:\n*   Obesity Assessment (Diet, Meds, Surgery).\n*   Bariatric Surgery (Sleeve, Gastric Bypass, Mini-Bypass, Corrective Surgeries).\n*   Obesity & Diabetes Management (Insulin resistance).\n*   Post-Op Clinical Nutrition.\n*   Long-term Post-Op Follow-up (Weight loss, labs, vitamins).",
-        "ar": "A multidisciplinary program encompassing:\n*   Obesity Assessment (Diet, Meds, Surgery).\n*   Bariatric Surgery (Sleeve, Gastric Bypass, Mini-Bypass, Corrective Surgeries).\n*   Obesity & Diabetes Management (Insulin resistance).\n*   Post-Op Clinical Nutrition.\n*   Long-term Post-Op Follow-up (Weight loss, labs, vitamins)."
-      },
-      "content": {
-        "en": "A highly specialized center providing comprehensive, long-term solutions for obesity and metabolic diseases (like Type 2 Diabetes). It is deliberately named the \"Bariatric & Metabolic Surgeries Center\" rather than a \"Sleeve Center\" to emphasize that it provides integrated health solutions, not just a single surgical procedure.\n\nA multidisciplinary program encompassing:\n*   Obesity Assessment (Diet, Meds, Surgery).\n*   Bariatric Surgery (Sleeve, Gastric Bypass, Mini-Bypass, Corrective Surgeries).\n*   Obesity & Diabetes Management (Insulin resistance).\n*   Post-Op Clinical Nutrition.\n*   Long-term Post-Op Follow-up (Weight loss, labs, vitamins).",
-        "ar": "A highly specialized center providing comprehensive, long-term solutions for obesity and metabolic diseases (like Type 2 Diabetes). It is deliberately named the \"Bariatric & Metabolic Surgeries Center\" rather than a \"Sleeve Center\" to emphasize that it provides integrated health solutions, not just a single surgical procedure.\n\nA multidisciplinary program encompassing:\n*   Obesity Assessment (Diet, Meds, Surgery).\n*   Bariatric Surgery (Sleeve, Gastric Bypass, Mini-Bypass, Corrective Surgeries).\n*   Obesity & Diabetes Management (Insulin resistance).\n*   Post-Op Clinical Nutrition.\n*   Long-term Post-Op Follow-up (Weight loss, labs, vitamins)."
-      },
-      "features": [
-        {
-          "title": {
-            "en": "University Professors and Consultants.",
-            "ar": "University Professors and Consultants."
-          }
-        },
-        {
-          "title": {
-            "en": "Modern Laparoscopic techniques (minimal incisions).",
-            "ar": "Modern Laparoscopic techniques (minimal incisions)."
-          }
-        },
-        {
-          "title": {
-            "en": "Equipped ORs and ICUs specifically for bariatric patients.",
-            "ar": "Equipped ORs and ICUs specifically for bariatric patients."
-          }
-        },
-        {
-          "title": {
-            "en": "Dedicated Clinical Nutritionists.",
-            "ar": "Dedicated Clinical Nutritionists."
-          }
-        }
-      ],
-      "clinics": [
-        {
-          "name": {
-            "en": "1. Obesity Assessment Clinic.\n2. Bariatric Surgeries Clinic (Sleeve",
-            "ar": "1. Obesity Assessment Clinic.\n2. Bariatric Surgeries Clinic (Sleeve"
-          }
-        },
-        {
-          "name": {
-            "en": "Bypass",
-            "ar": "Bypass"
-          }
-        },
-        {
-          "name": {
-            "en": "Corrective).\n3. Obesity & Diabetes Clinic.\n4. Post-Op Clinical Nutrition Clinic.\n5. Post-Op Follow-up Clinic (Weight",
-            "ar": "Corrective).\n3. Obesity & Diabetes Clinic.\n4. Post-Op Clinical Nutrition Clinic.\n5. Post-Op Follow-up Clinic (Weight"
-          }
-        },
-        {
-          "name": {
-            "en": "labs",
-            "ar": "labs"
-          }
-        },
-        {
-          "name": {
-            "en": "vitamins).",
-            "ar": "vitamins)."
+            "en": "1.  Nose Clinics.\n2.  Ear Clinics.\n3.  Larynx and Vocal Cords Clinics.\n4.  Sinus Clinics.\n5.  Allergic Rhinitis Clinics.\n6.  Hearing and Balance Clinics.\n7.  Pediatric ENT Clinics.\n8.  Head and Neck Surgery Clinics.",
+            "ar": "1.  Nose Clinics.\n2.  Ear Clinics.\n3.  Larynx and Vocal Cords Clinics.\n4.  Sinus Clinics.\n5.  Allergic Rhinitis Clinics.\n6.  Hearing and Balance Clinics.\n7.  Pediatric ENT Clinics.\n8.  Head and Neck Surgery Clinics."
           }
         }
       ]
@@ -1076,6 +972,84 @@
           "name": {
             "en": "Post-op Follow-up.",
             "ar": "Post-op Follow-up."
+          }
+        }
+      ]
+    },
+    {
+      "registryId": "CEN-013",
+      "slug": "bariatric-metabolic-surgeries-center",
+      "name": {
+        "en": "Bariatric & Metabolic Surgeries Center",
+        "ar": "مركز جراحات السمنة والتمثيل الغذائي"
+      },
+      "shortDescription": {
+        "en": "A highly specialized center providing comprehensive, long-term solutions for obesity and metabolic diseases (like Type 2 Diabetes). It is deliberately named the \"Bariatric & Metabolic Surgeries Center\" rather than a \"Sleeve Center\" to emphasize that it provides integrated health solutions, not just a single surgical procedure.",
+        "ar": "A highly specialized center providing comprehensive, long-term solutions for obesity and metabolic diseases (like Type 2 Diabetes). It is deliberately named the \"Bariatric & Metabolic Surgeries Center\" rather than a \"Sleeve Center\" to emphasize that it provides integrated health solutions, not just a single surgical procedure."
+      },
+      "description": {
+        "en": "A multidisciplinary program encompassing:\n*   Obesity Assessment (Diet, Meds, Surgery).\n*   Bariatric Surgery (Sleeve, Gastric Bypass, Mini-Bypass, Corrective Surgeries).\n*   Obesity & Diabetes Management (Insulin resistance).\n*   Post-Op Clinical Nutrition.\n*   Long-term Post-Op Follow-up (Weight loss, labs, vitamins).",
+        "ar": "A multidisciplinary program encompassing:\n*   Obesity Assessment (Diet, Meds, Surgery).\n*   Bariatric Surgery (Sleeve, Gastric Bypass, Mini-Bypass, Corrective Surgeries).\n*   Obesity & Diabetes Management (Insulin resistance).\n*   Post-Op Clinical Nutrition.\n*   Long-term Post-Op Follow-up (Weight loss, labs, vitamins)."
+      },
+      "content": {
+        "en": "A highly specialized center providing comprehensive, long-term solutions for obesity and metabolic diseases (like Type 2 Diabetes). It is deliberately named the \"Bariatric & Metabolic Surgeries Center\" rather than a \"Sleeve Center\" to emphasize that it provides integrated health solutions, not just a single surgical procedure.\n\nA multidisciplinary program encompassing:\n*   Obesity Assessment (Diet, Meds, Surgery).\n*   Bariatric Surgery (Sleeve, Gastric Bypass, Mini-Bypass, Corrective Surgeries).\n*   Obesity & Diabetes Management (Insulin resistance).\n*   Post-Op Clinical Nutrition.\n*   Long-term Post-Op Follow-up (Weight loss, labs, vitamins).",
+        "ar": "A highly specialized center providing comprehensive, long-term solutions for obesity and metabolic diseases (like Type 2 Diabetes). It is deliberately named the \"Bariatric & Metabolic Surgeries Center\" rather than a \"Sleeve Center\" to emphasize that it provides integrated health solutions, not just a single surgical procedure.\n\nA multidisciplinary program encompassing:\n*   Obesity Assessment (Diet, Meds, Surgery).\n*   Bariatric Surgery (Sleeve, Gastric Bypass, Mini-Bypass, Corrective Surgeries).\n*   Obesity & Diabetes Management (Insulin resistance).\n*   Post-Op Clinical Nutrition.\n*   Long-term Post-Op Follow-up (Weight loss, labs, vitamins)."
+      },
+      "features": [
+        {
+          "title": {
+            "en": "University Professors and Consultants.",
+            "ar": "University Professors and Consultants."
+          }
+        },
+        {
+          "title": {
+            "en": "Modern Laparoscopic techniques (minimal incisions).",
+            "ar": "Modern Laparoscopic techniques (minimal incisions)."
+          }
+        },
+        {
+          "title": {
+            "en": "Equipped ORs and ICUs specifically for bariatric patients.",
+            "ar": "Equipped ORs and ICUs specifically for bariatric patients."
+          }
+        },
+        {
+          "title": {
+            "en": "Dedicated Clinical Nutritionists.",
+            "ar": "Dedicated Clinical Nutritionists."
+          }
+        }
+      ],
+      "clinics": [
+        {
+          "name": {
+            "en": "1. Obesity Assessment Clinic.\n2. Bariatric Surgeries Clinic (Sleeve",
+            "ar": "1. Obesity Assessment Clinic.\n2. Bariatric Surgeries Clinic (Sleeve"
+          }
+        },
+        {
+          "name": {
+            "en": "Bypass",
+            "ar": "Bypass"
+          }
+        },
+        {
+          "name": {
+            "en": "Corrective).\n3. Obesity & Diabetes Clinic.\n4. Post-Op Clinical Nutrition Clinic.\n5. Post-Op Follow-up Clinic (Weight",
+            "ar": "Corrective).\n3. Obesity & Diabetes Clinic.\n4. Post-Op Clinical Nutrition Clinic.\n5. Post-Op Follow-up Clinic (Weight"
+          }
+        },
+        {
+          "name": {
+            "en": "labs",
+            "ar": "labs"
+          }
+        },
+        {
+          "name": {
+            "en": "vitamins).",
+            "ar": "vitamins)."
           }
         }
       ]

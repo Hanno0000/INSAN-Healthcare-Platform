@@ -449,7 +449,10 @@ async function seedMedicalCenters(hospitals: Record<string, any>) {
         name,
         isFeatured: content.isFeatured ?? false,
         status: 'PUBLISHED' as any,
+        shortDescription: content.shortDescription ?? { ar: '', en: '' },
         description: content.description ?? { ar: '', en: '' },
+        features: content.features ?? null,
+        services: content.services ?? null,
         customFields: { registryId: entry.id },
         clinics:
           clinics?.length && primaryHospital
@@ -460,6 +463,10 @@ async function seedMedicalCenters(hospitals: Record<string, any>) {
       update: {
         name,
         status: 'PUBLISHED' as any,
+        shortDescription: content.shortDescription ?? { ar: '', en: '' },
+        description: content.description ?? { ar: '', en: '' },
+        features: content.features ?? null,
+        services: content.services ?? null,
         customFields: { registryId: entry.id },
         clinics:
           clinics?.length && primaryHospital

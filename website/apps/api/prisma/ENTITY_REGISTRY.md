@@ -68,21 +68,14 @@ that difference is deliberate and is recorded in the knowledge file's
 | MED-005 | Laboratory | المعمل | DEPARTMENT | — | Future, Delta |
 | MED-006 | Outpatient Clinics | العيادات الخارجية | DEPARTMENT | — | Future, Delta |
 | MED-007 | General Surgery & Specialized Surgical Clinics | مركز الجراحات العامة والعيادات التخصصية | DEPARTMENT | — | Future, Delta |
-| CEN-001 | Cardiac & Internal Medicine Center | مركز القلب والباطنة وإحالة الرعايات الحرجة | CENTER | Cardiac Center | Future, Delta |
-| CEN-002 | Urology & Laser Surgery Center | مركز جراحات المسالك والليزر | CENTER | Urology Center | Future, Delta |
-| CEN-003 | Digestive & Liver Endoscopy Center | مركز مناظير الجهاز الهضمي والكبد | CENTER | Digestive Center | Future, Delta |
-| CEN-004 | General Surgery & Endoscopy Center | مركز الجراحات العامة والمناظير | CENTER | General Surgery Center | Future, Delta |
-| CEN-005 | Diabetic Foot & Vascular Center | مركز القدم السكري والأوعية الدموية | CENTER | Diabetic Foot Center | Delta |
-| CEN-006 | Pain Management Center | مركز علاج الألم والتدخلات المحدودة | CENTER | Pain Management Center | Delta |
+| CEN-001 | Cardiac & Internal Medicine Center | مركز الباطنة والقلب وإحالة الرعايات الحرجة والمتوسطة | CENTER | Cardiac Center | Future, Delta |
 | CEN-007 | Women's & Children's Health Center | مركز صحة المرأة والطفل | CENTER | Women's Health Center | Delta |
-| CEN-008 | Dental Center | مركز الأسنان للكبار والأطفال وذوي الهمم | CENTER | Dental Center | Delta |
-| CEN-009 | ENT & Head/Neck Surgery Center | مركز الأنف والأذن وجراحات الرقبة والرأس | CENTER | ENT Center | Delta |
-| CEN-010 | Orthopedic & Sports Injury Center | مركز العظام وإصابات الملاعب | CENTER | Orthopedic Center | Delta |
-| CEN-011 | Chest & Sleep Disorders Center | مركز الصدر واضطرابات النوم | CENTER | Chest & Sleep Center | Delta |
-| CEN-012 | Senior Health & Screening Center | مركز صحة كبار السن والفحص الشامل | CENTER | — | Delta |
-| CEN-013 | Pediatrics & Neonatology Center | مركز طب الأطفال وحديثي الولادة | CENTER | — | Delta |
+| CEN-002 | Urology & Andrology Surgery Center | مركز جراحات المسالك البولية والذكورة | CENTER | Urology Center | Future, Delta |
+| CEN-006 | Pediatrics & Neonatology Center | مركز طب الأطفال وحديثي الولادة | CENTER | Pediatric Center | Delta |
+| CEN-005 | ENT & Head and Neck Surgery Center | مركز الأنف والأذن والحنجرة وجراحات الرأس والرقبة | CENTER | ENT Center | Future, Delta |
+| CEN-004 | General Surgery & Endoscopy Center | مركز الجراحات العامة والمناظير | CENTER | General Surgery Center | Future, Delta |
 | CEN-014 | Colorectal & Anal Surgeries Center | مركز جراحات المستقيم والشرج | CENTER | Proctology Center | Future, Delta |
-| CEN-015 | Bariatric & Metabolic Surgeries Center | مركز جراحات السمنة والتمثيل الغذائي | CENTER | Bariatric Center | Future, Delta |
+| CEN-013 | Bariatric & Metabolic Surgeries Center | مركز جراحات السمنة والتمثيل الغذائي | CENTER | Bariatric Center | Future, Delta |
 | HOSP-001 | Future Specialized Hospital | مستشفى المستقبل التخصصي | HOSPITAL | — | Future |
 | HOSP-002 | Delta International Hospital | مستشفى الدلتا الدولي | HOSPITAL | Delta Restore Trust | Delta |
 | PROG-001 | Kabarona Program | برنامج كبارنا | PROGRAM | Kabarona Continuous Care Program | Future, Delta |
