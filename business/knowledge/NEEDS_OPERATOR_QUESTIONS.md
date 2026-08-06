@@ -145,3 +145,17 @@
 45. **Marketing:** محتاجين نحدد الـ Audience Psychology بعمق، والـ Narrative Themes، والـ Content Pillars، والـ Storytelling Opportunities.
 46. **Offers:** هل فيه باقات تسعيرية للعمليات (تفتيت، بروستاتا، ذكورة) أو عروض حالية؟ وإيه هو الـ Primary KPI للمركز؟
 47. **Governance:** إيه الـ Can Promise الصريح، وإزاي المركز بيعكس فلسفة INSAN؟
+
+---
+
+## سابعًا — مركز طب الأطفال وحديثي الولادة (CEN-006)
+
+`centers/MEDICAL_CENTER_PEDIATRICS.md`
+
+48. **Foundation:** محتاجين الـ Vision & Mission والـ Business Objectives والـ Marketing Objectives والـ Core Promise.
+49. **Human Understanding:** إيه هو الـ Human Insight والـ Emotional Strategy للمركز ده؟
+50. **Operations:** مواعيد العمل الدقيقة للـ 11 عيادة تخصصية للأطفال.
+51. **Operations:** أرقام التليفونات أو لينكات الحجز المباشرة للعيادات.
+52. **Marketing:** محتاجين نحدد الـ Audience Psychology بعمق، والـ Narrative Themes، والـ Content Pillars، والـ Storytelling Opportunities.
+53. **Offers:** ما هو "سعر الكشف الاقتصادي" المذكور؟ وإيه أسعار الحضانات والتطعيمات لو متاحة؟ وإيه هو الـ Primary KPI للمركز؟
+54. **Governance:** إيه الـ Can Promise الصريح، وإزاي المركز بيعكس فلسفة INSAN؟
