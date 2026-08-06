@@ -9,7 +9,7 @@
 > that has read only this file could write a month of campaign content about this
 > entity without inventing a single fact.
 >
-> **Reference implementation:** `departments/MEDICAL_SERVICE_ICU.md` (2,761 lines).
+> **Reference implementation:** `departments/MEDICAL_DEPARTMENT_ICU.md` (2,761 lines).
 >
 > `→ Campaign Cards.X` markers show which card column a section feeds. Sections marked
 > **[REQUIRED]** will cause the Campaign Card Builder to fail if left empty.

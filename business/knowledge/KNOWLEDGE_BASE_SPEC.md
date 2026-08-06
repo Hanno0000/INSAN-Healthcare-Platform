@@ -29,7 +29,7 @@ business/knowledge/
 ├── VOICE_RECORDING_SHEET.html  ← the same content as 32 spoken questions
 │
 ├── departments/                Hospital-wide clinical operations
-│      MEDICAL_SERVICE_ICU.md
+│      MEDICAL_DEPARTMENT_ICU.md
 │      MEDICAL_SERVICE_EMERGENCY.md
 │      …
 │
@@ -72,7 +72,7 @@ business/knowledge/
 
 | Level prefix | Folder | Example |
 |---|---|---|
-| `MEDICAL_SERVICE_` | departments/ | `MEDICAL_SERVICE_ICU.md` |
+| `MEDICAL_SERVICE_` | departments/ | `MEDICAL_DEPARTMENT_ICU.md` |
 | `MEDICAL_CENTER_` | centers/ | `MEDICAL_CENTER_ORTHOPEDIC.md` |
 | `CLINIC_` | clinics/ | `CLINIC_DIABETES.md` |
 | `PROGRAM_` | programs/ | `PROGRAM_KABARONA.md` |
@@ -125,7 +125,7 @@ Measured against the live workbook on 2026-07-30:
 
 | File | Entity | Calendar campaign | Slots |
 |---|---|---|---|
-| `MEDICAL_SERVICE_ICU.md` | Intensive Care Unit | **ICU Center** | 11 |
+| `MEDICAL_DEPARTMENT_ICU.md` | Intensive Care Unit | **ICU Center** | 11 |
 | `MEDICAL_SERVICE_EMERGENCY.md` | Emergency Department | **Emergency Center** | 16 |
 | `HOSPITAL_DELTA.md` | Delta International Hospital | **Delta Restore Trust** | 8 |
 | `PROGRAM_KABARONA.md` | Kabarona Program | **Kabarona Continuous Care Program** ¹ | 6 |
@@ -219,7 +219,7 @@ worker.
 
 ## 6. Depth standard
 
-`MEDICAL_SERVICE_ICU.md` (2,761 lines) is the reference implementation. A new file is
+`MEDICAL_DEPARTMENT_ICU.md` (2,761 lines) is the reference implementation. A new file is
 not "done" because every heading has a sentence under it.
 
 **Test:** could a worker that has read only this file write a month of campaign content
@@ -242,7 +242,7 @@ Specifically avoid:
 
 | Entity | File | Status |
 |---|---|---|
-| ICU | `departments/MEDICAL_SERVICE_ICU.md` | ✅ builds a card |
+| ICU | `departments/MEDICAL_DEPARTMENT_ICU.md` | ✅ builds a card |
 | Emergency | `departments/MEDICAL_SERVICE_EMERGENCY.md` | 🟠 **16 slots** — structurally complete, awaiting operator facts in Core Features, Service Journey and Institutional Knowledge |
 | Operating Rooms | `departments/MEDICAL_SERVICE_OPERATIONS.md` | ❌ |
 | Radiology & Imaging | `departments/MEDICAL_SERVICE_RADIOLOGY.md` | ❌ |
