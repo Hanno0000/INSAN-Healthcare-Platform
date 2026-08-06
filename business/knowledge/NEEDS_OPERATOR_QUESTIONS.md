@@ -131,3 +131,17 @@
 38. **FAQ details:** Need the names of the treating professors/consultants.
 39. **FAQ details:** Need the specific phone numbers/links for booking.
 40. **Q30 (Offers):** Need the exact pricing for the pregnancy follow-up packages, delivery packages, and endoscopy if currently active.
+
+---
+
+## سادسًا — مركز جراحات المسالك البولية والذكورة (CEN-002)
+
+`centers/MEDICAL_CENTER_UROLOGY.md`
+
+41. **Foundation:** محتاجين الـ Vision & Mission والـ Business Objectives والـ Marketing Objectives والـ Core Promise.
+42. **Human Understanding:** إيه هو الـ Human Insight والـ Emotional Strategy للمركز ده؟
+43. **Operations:** إيه هي العيادات التخصصية اللي جوه المركز ومواعيد عملها بالتفصيل؟
+44. **Operations:** أرقام التليفونات أو لينكات الحجز المباشرة.
+45. **Marketing:** محتاجين نحدد الـ Audience Psychology بعمق، والـ Narrative Themes، والـ Content Pillars، والـ Storytelling Opportunities.
+46. **Offers:** هل فيه باقات تسعيرية للعمليات (تفتيت، بروستاتا، ذكورة) أو عروض حالية؟ وإيه هو الـ Primary KPI للمركز؟
+47. **Governance:** إيه الـ Can Promise الصريح، وإزاي المركز بيعكس فلسفة INSAN؟
