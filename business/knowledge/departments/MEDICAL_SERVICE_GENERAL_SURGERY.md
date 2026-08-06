@@ -1,5 +1,5 @@
 ---
-entity_id:      MED-004
+entity_id:      MED-007
 entity_name_en: General Surgery & Specialized Surgical Clinics
 entity_name_ar: مركز الجراحات العامة والعيادات التخصصية
 campaign_name:  General Surgery Center

@@ -868,6 +868,166 @@
       "schedule": null,
       "services": null,
       "bookingQuestions": []
+    },
+    {
+      "registryId": "MED-007",
+      "slug": "general-surgery-specialized-surgical-clinics",
+      "name": {
+        "en": "General Surgery & Specialized Surgical Clinics",
+        "ar": "مركز الجراحات العامة والعيادات التخصصية"
+      },
+      "shortDescription": {
+        "en": "",
+        "ar": ""
+      },
+      "description": {
+        "en": "",
+        "ar": ""
+      },
+      "isFeatured": false,
+      "features": [],
+      "clinics": [],
+      "schedule": null,
+      "services": null,
+      "bookingQuestions": []
+    },
+    {
+      "registryId": "MED-006",
+      "slug": "outpatient-clinics",
+      "name": {
+        "en": "Outpatient Clinics",
+        "ar": "العيادات الخارجية"
+      },
+      "shortDescription": {
+        "en": "The Outpatient Clinics serve as the primary gateway for elective and non-emergency medical care at INSAN.",
+        "ar": "The Outpatient Clinics serve as the primary gateway for elective and non-emergency medical care at INSAN."
+      },
+      "description": {
+        "en": "The Outpatient Clinics serve as the primary gateway for elective and non-emergency medical care at INSAN. More than just a traditional hospital department, it operates as a comprehensive diagnostic and consultation platform hosting multiple specialized programs.",
+        "ar": "The Outpatient Clinics serve as the primary gateway for elective and non-emergency medical care at INSAN. More than just a traditional hospital department, it operates as a comprehensive diagnostic and consultation platform hosting multiple specialized programs."
+      },
+      "isFeatured": false,
+      "features": [],
+      "clinics": [],
+      "schedule": null,
+      "services": null,
+      "bookingQuestions": []
+    },
+    {
+      "registryId": "MED-002",
+      "slug": "emergency-department",
+      "name": {
+        "en": "Emergency Department (Rapid Response Center)",
+        "ar": "قسم الطوارئ (مركز الاستجابة السريعة)"
+      },
+      "shortDescription": {
+        "en": "\"The gateway to the entire hospital.\" We are not just one doctor on shift; we are an entire medical ecosystem moving for the patient from the first minute.",
+        "ar": "\"The gateway to the entire hospital.\" We are not just one doctor on shift; we are an entire medical ecosystem moving for the patient from the first minute."
+      },
+      "description": {
+        "en": "The Rapid Response Center is a 24/7, fully integrated life-saving ecosystem. We are actively shifting the brand perception from a standard \"Emergency Room\" to a \"Rapid Response Center,\" emphasizing that the entire hospital's capabilities (all specialties, labs, imaging, ORs, ICUs, and incubators) mobilize from the first minute of the patient's arrival.\n\n\"The gateway to the entire hospital.\" We are not just one doctor on shift; we are an entire medical ecosystem moving for the patient from the first minute.",
+        "ar": "The Rapid Response Center is a 24/7, fully integrated life-saving ecosystem. We are actively shifting the brand perception from a standard \"Emergency Room\" to a \"Rapid Response Center,\" emphasizing that the entire hospital's capabilities (all specialties, labs, imaging, ORs, ICUs, and incubators) mobilize from the first minute of the patient's arrival.\n\n\"The gateway to the entire hospital.\" We are not just one doctor on shift; we are an entire medical ecosystem moving for the patient from the first minute."
+      },
+      "isFeatured": false,
+      "features": [
+        {
+          "title": {
+            "en": "Immediate Triage: Service starts the moment the patient arrives.",
+            "ar": "Immediate Triage: Service starts the moment the patient arrives."
+          }
+        },
+        {
+          "title": {
+            "en": "24/7 Availability: All specialties, labs, and radiology are operational around the clock.",
+            "ar": "24/7 Availability: All specialties, labs, and radiology are operational around the clock."
+          }
+        },
+        {
+          "title": {
+            "en": "High-Acuity Readiness: Adult ICU, Pediatric ICU, Incubators, and ORs are always on standby.",
+            "ar": "High-Acuity Readiness: Adult ICU, Pediatric ICU, Incubators, and ORs are always on standby."
+          }
+        },
+        {
+          "title": {
+            "en": "Electronic Medical Records: Creating a medical file from the first visit for continuity of care.",
+            "ar": "Electronic Medical Records: Creating a medical file from the first visit for continuity of care."
+          }
+        }
+      ],
+      "clinics": [],
+      "schedule": null,
+      "services": null,
+      "bookingQuestions": []
+    },
+    {
+      "registryId": "MED-001",
+      "slug": "intensive-care-unit",
+      "name": {
+        "en": "Intensive Care Unit",
+        "ar": "وحدة العناية المركزة (مركز الرعاية الشاملة للحالات الحرجة)"
+      },
+      "shortDescription": {
+        "en": "\"الثقة قبل العلاج.\" (Trust before treatment.) We are a comprehensive critical care ecosystem that treats the family's fear as rigorously as the patient's illness.",
+        "ar": "\"الثقة قبل العلاج.\" (Trust before treatment.) We are a comprehensive critical care ecosystem that treats the family's fear as rigorously as the patient's illness."
+      },
+      "description": {
+        "en": "The Intensive Care Unit is not marketed as a traditional hospital department filled with beds and monitors. It is positioned as an independent, integrated entity—\"مركز الرعاية الشاملة للحالات الحرجة\" (Comprehensive Critical Care Center). It is a system that fights to save lives while deeply respecting the human dignity of the patient and their family in every step.\n\n\"الثقة قبل العلاج.\" (Trust before treatment.) We are a comprehensive critical care ecosystem that treats the family's fear as rigorously as the patient's illness.",
+        "ar": "The Intensive Care Unit is not marketed as a traditional hospital department filled with beds and monitors. It is positioned as an independent, integrated entity—\"مركز الرعاية الشاملة للحالات الحرجة\" (Comprehensive Critical Care Center). It is a system that fights to save lives while deeply respecting the human dignity of the patient and their family in every step.\n\n\"الثقة قبل العلاج.\" (Trust before treatment.) We are a comprehensive critical care ecosystem that treats the family's fear as rigorously as the patient's illness."
+      },
+      "isFeatured": false,
+      "features": [
+        {
+          "title": {
+            "en": "24/7 Intensivists and specialized ICU nursing.",
+            "ar": "24/7 Intensivists and specialized ICU nursing."
+          }
+        },
+        {
+          "title": {
+            "en": "Immediate access to all sub-specialties (Cardiology, Neuro, Surgery).",
+            "ar": "Immediate access to all sub-specialties (Cardiology, Neuro, Surgery)."
+          }
+        },
+        {
+          "title": {
+            "en": "In-house Lab and Radiology.",
+            "ar": "In-house Lab and Radiology."
+          }
+        },
+        {
+          "title": {
+            "en": "Strict Infection Control and Quality protocols.",
+            "ar": "Strict Infection Control and Quality protocols."
+          }
+        }
+      ],
+      "clinics": [],
+      "schedule": null,
+      "services": null,
+      "bookingQuestions": []
+    },
+    {
+      "registryId": "PROG-001",
+      "slug": "kabarona-program",
+      "name": {
+        "en": "Kabarona Program",
+        "ar": "برنامج كبارنا"
+      },
+      "shortDescription": {
+        "en": "",
+        "ar": ""
+      },
+      "description": {
+        "en": "",
+        "ar": ""
+      },
+      "isFeatured": false,
+      "features": [],
+      "clinics": [],
+      "schedule": null,
+      "services": null,
+      "bookingQuestions": []
     }
   ],
   "doctors": [
