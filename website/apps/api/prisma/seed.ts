@@ -383,11 +383,11 @@ function readRegistryCenters() {
   }> = [];
 
   for (const line of fs.readFileSync(registryPath, 'utf8').split('\n')) {
-    if (!/^\|\s*CEN-\d+/.test(line)) continue;
+    if (!/^\|\s*(CEN|MED|PROG)-\d+/.test(line)) continue;
     const cells = line.split('|').map((c) => c.trim());
     // Leading and trailing empties from the outer pipes.
     const [, id, nameEn, nameAr, level, , hospitals] = cells;
-    if (level !== 'CENTER') continue;
+    if (!['CENTER', 'DEPARTMENT', 'PROGRAM'].includes(level)) continue;
 
     const slugs = hospitals
       .split(',')
