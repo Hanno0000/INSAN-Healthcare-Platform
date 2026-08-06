@@ -109,3 +109,15 @@
 3. ابني الـ cards.
 
 *آخر تحديث: 2026-07-30*
+
+---
+
+## رابعًا — العيادات الخارجية (MED-006)
+
+`departments/MEDICAL_SERVICE_OUTPATIENT_CLINICS.md`
+
+33. **FAQ details:** Need the names of the doctors, their exact specialties, and titles.
+34. **FAQ details:** Need the general consultation pricing for standard clinics.
+35. **FAQ details:** Need the pricing for Labs, X-Ray, and Echo.
+36. **FAQ details:** Need the specific phone numbers/links for booking.
+37. **FAQ details:** Need the list of available corporate or insurance contracts.
