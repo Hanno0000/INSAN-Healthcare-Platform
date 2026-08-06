@@ -603,6 +603,13 @@ async function seedPages() {
                 { label: { ar: 'اكتشف منظومتنا', en: 'Explore Our Ecosystem' }, href: '/hospitals' },
                 { label: { ar: 'تواصل معنا', en: 'Contact Us' }, href: '/contact' },
               ],
+            } : page.slug === 'about' ? {
+              title: { ar: 'منظومة إنسان للرعاية الصحية', en: 'INSAN Healthcare Ecosystem' },
+              subtitle: { ar: 'أساس الخدمة الطبية احترام الإنسان', en: 'Respect for the human being is the foundation of medical service.' },
+              ctas: [
+                { label: { ar: 'احجز موعدك الآن', en: 'Book an Appointment' }, href: '/contact' },
+                { label: { ar: 'تصفح مراكزنا الطبية', en: 'Explore Medical Centers' }, href: '/medical-centers' },
+              ],
             } : {})
           },
         },
@@ -621,10 +628,30 @@ async function seedPages() {
           order: 2,
           isVisible: true,
           config: {
-            heading: { ar: 'محتوى الصفحة', en: 'Page Content' },
+            heading: { 
+              ar: page.slug === 'about' ? 'من نحن' : 'محتوى الصفحة', 
+              en: page.slug === 'about' ? 'Who We Are' : 'Page Content' 
+            },
             content: { 
-              ar: 'هذا محتوى تجريبي يظهر في لوحة التحكم ويمكن تعديله لاحقاً.', 
-              en: 'This is dummy content that appears in the admin panel and can be edited later.' 
+              ar: page.slug === 'about' ? 
+`"إنسان" ليست مجرد مستشفى، بل هي منصة شاملة لإدارة وتطوير وتحويل مؤسسات الرعاية الصحية. نعمل على توحيد معايير الجودة والتشغيل لتوفير مسار علاجي سلس وآمن، يبدأ من العيادات الخارجية والمراكز المتخصصة، وصولاً إلى غرف العمليات ووحدات العناية المركزة.
+
+رؤيتنا طويلة المدى هي أن نصبح المنصة الرائدة للرعاية الصحية في مصر، من خلال الارتقاء بالمؤسسات الطبية تحت نظام تشغيلي وهوية واحدة، تضع المريض دائماً في المركز.
+
+### شبكة "إنسان"
+نحن ندير ونوجه مجموعة من أبرز المستشفيات والمراكز المتخصصة، لضمان أعلى مستويات الرعاية:
+- **مستشفى المستقبل التخصصي:** رمز القيادة والابتكار، توفر رعاية متقدمة عبر أحدث التقنيات.
+- **مستشفى الدلتا الدولي:** إعادة بناء الثقة، من خلال تقديم خدمات طبية موثوقة وآمنة.
+- **المراكز الطبية التخصصية:** ندير 12 مركزاً طبياً متخصصاً، مثل مركز القلب والباطنة، ومركز صحة المرأة والطفل، تعمل جميعها بمعايير "إنسان" الطبية الفائقة.
+
+### فلسفتنا في الرعاية
+كل قرار طبي وإداري في منظومة إنسان ينبع من فلسفة واضحة:
+- **احترام وقتك:** نعمل بجد لتقليل أوقات الانتظار.
+- **لغة تفهمها:** نشرح لك حالتك بلغة واضحة وشفافة.
+- **الرعاية الضرورية فقط:** نلتزم بأعلى درجات الأمانة الطبية.
+- **الكرامة أولاً:** حماية كرامة المريض وخصوصيته هي قاعدة أساسية.`
+              : 'هذا محتوى تجريبي يظهر في لوحة التحكم ويمكن تعديله لاحقاً.', 
+              en: page.slug === 'about' ? 'INSAN is a comprehensive platform for managing and transforming healthcare institutions. Our vision is to become the leading healthcare platform in Egypt.' : 'This is dummy content that appears in the admin panel and can be edited later.' 
             }
           },
         },
