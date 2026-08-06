@@ -501,7 +501,8 @@ async function seedMedicalCenters(hospitals: Record<string, any>) {
     select: { slug: true, name: true },
   });
   for (const o of orphans) {
-    console.warn(`    ! "${o.slug}" is in the database but NOT in ENTITY_REGISTRY.md — add it there or remove it`);
+    console.warn(`    ! "${o.slug}" is in the database but NOT in ENTITY_REGISTRY.md — removing it`);
+    await prisma.medicalCenter.delete({ where: { slug: o.slug } });
   }
 
   console.log(`    ✓ ${created} medical centers seeded from the registry`);
