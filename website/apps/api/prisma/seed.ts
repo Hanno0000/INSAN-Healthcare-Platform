@@ -364,7 +364,7 @@ async function seedHospitals() {
  * ignored.
  */
 function readRegistryCenters() {
-  const registryPath = path.resolve(__dirname, '../../../../business/brand/ENTITY_REGISTRY.md');
+  const registryPath = path.resolve(__dirname, 'ENTITY_REGISTRY.md');
   if (!fs.existsSync(registryPath)) {
     throw new Error(`ENTITY_REGISTRY.md not found at ${registryPath} — refusing to seed centres from nothing.`);
   }
