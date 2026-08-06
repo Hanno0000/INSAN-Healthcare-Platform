@@ -582,6 +582,21 @@ async function seedPages() {
     { slug: 'terms', type: 'legal', title: { ar: 'شروط الاستخدام', en: 'Terms of Use' }, status: 'PUBLISHED' as const, robotsIndex: true },
   ];
 
+  if (seedData.pages && Array.isArray(seedData.pages)) {
+    for (const p of seedData.pages) {
+      if (!pages.find(x => x.slug === p.slug)) {
+        pages.push({
+          slug: p.slug,
+          type: p.type || 'standard',
+          title: p.title,
+          status: p.status,
+          robotsIndex: true,
+          sections: p.sections
+        } as any);
+      }
+    }
+  }
+
   for (const page of pages) {
     const p = await prisma.page.upsert({
       where: { slug: page.slug },
@@ -594,7 +609,24 @@ async function seedPages() {
       where: { pageId: p.id, componentType: 'Hero' },
     });
     
-    if (!existingHero) {
+    if ((page as any).sections && (page as any).sections.length > 0) {
+      for (const sec of (page as any).sections) {
+        await prisma.section.upsert({
+          where: { id: sec.id },
+          create: {
+            id: sec.id,
+            pageId: p.id,
+            componentType: sec.type === 'rich_text' ? 'text' : sec.type,
+            order: sec.order,
+            isVisible: true,
+            config: sec.content
+          },
+          update: {
+            config: sec.content
+          }
+        });
+      }
+    } else if (!existingHero) {
       await prisma.section.create({
         data: {
           pageId: p.id,
