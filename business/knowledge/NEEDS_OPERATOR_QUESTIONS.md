@@ -89,6 +89,18 @@
 
 ---
 
+## ثالثًا — مركز الباطنة والقلب وإحالة الرعايات الحرجة والمتوسطة (CEN-001)
+
+`centers/MEDICAL_CENTER_CARDIAC_INTERNAL_MEDICINE.md`
+
+28. **Q21 (Core Promise):** Skipped in the briefing. Please define the one-sentence core promise we make to the patient.
+29. **Q28 (Can Promise):** Skipped in the briefing. Please define the explicit guarantees we can make.
+30. **FAQ details:** Need the names of the treating doctors for the clinics.
+31. **FAQ details:** Need the specific booking phone numbers/links for the center.
+32. **Q30 (Offers):** Need the comprehensive checkup programs pricing and details that were mentioned as "will send to the agency".
+
+---
+
 ## بعد ما تجاوب
 
 1. أكتب الأقسام من إجاباتك، وأشيل علامات `NEEDS-OPERATOR`.
