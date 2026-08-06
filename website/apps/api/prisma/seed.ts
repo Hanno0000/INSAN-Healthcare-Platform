@@ -600,7 +600,13 @@ async function seedPages() {
   for (const page of pages) {
     const p = await prisma.page.upsert({
       where: { slug: page.slug },
-      create: page,
+      create: {
+        slug: page.slug,
+        type: page.type,
+        title: page.title,
+        status: page.status,
+        robotsIndex: page.robotsIndex,
+      },
       update: { title: page.title, status: page.status },
     });
 
