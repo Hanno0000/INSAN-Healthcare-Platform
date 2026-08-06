@@ -172,15 +172,68 @@
     {
       "slug": "cardiac-center",
       "name": {
-        "ar": "مركز القلب والأوعية الدموية",
-        "en": "Cardiac & Vascular Center"
+        "ar": "مركز الباطنة والقلب وإحالة الرعايات الحرجة والمتوسطة",
+        "en": "Cardiac & Internal Medicine Center"
+      },
+      "shortDescription": {
+        "ar": "إدارة الحالات المعقدة وطوارئ القلب ورعاية الحالات الحرجة.",
+        "en": "Managing complex cases, cardiac emergencies, and critical care."
+      },
+      "description": {
+        "ar": "المركز هو نقطة ارتكاز متكاملة ومتعددة التخصصات في إنسان، مصمم لإدارة حالات الباطنة المعقدة وطوارئ القلب. يقدم المركز سلسلة متصلة من الرعاية بدءاً من العيادات الخارجية وحتى وحدات العناية المركزة، مع استجابة طوارئ على مدار الساعة، التشخيص الدقيق والتدخل الفوري.",
+        "en": "The Cardiac & Internal Medicine Center is a comprehensive, multidisciplinary hub at INSAN designed to manage complex internal medicine cases and cardiac emergencies. It provides a seamless continuum of care from outpatient clinics to highly specialized intensive care units with 24/7 emergency response."
+      },
+      "features": {
+        "ar": [
+          "استجابة فورية لحالات الطوارئ على مدار الساعة",
+          "عيادات شاملة لجميع تخصصات الباطنة",
+          "تجهيزات تشخيصية متقدمة (Ultrasound, Echo, CT)",
+          "غرف رعاية مركزة خاصة مع تمريض خاص",
+          "متابعة دقيقة للحالات لمنع تكرار دخول العناية المركزة"
+        ],
+        "en": [
+          "24/7 immediate emergency response",
+          "Comprehensive clinics for all internal medicine sub-specialties",
+          "Advanced diagnostics (Ultrasound, Echo, CT)",
+          "Private ICU rooms with dedicated nursing",
+          "Rigorous follow-up to prevent repeat ICU admissions"
+        ]
       },
       "isFeatured": true,
       "hospitalSlugs": [
         "future-hospital",
         "delta-hospital"
       ],
-      "clinics": [],
+      "clinics": [
+        {
+          "name": { "ar": "الباطنة العامة", "en": "General Internal Medicine" },
+          "schedule": { "ar": "يومياً عدا الجمعة", "en": "Daily except Friday" }
+        },
+        {
+          "name": { "ar": "الباطنة والكبد", "en": "Hepatology" },
+          "schedule": { "ar": "يومياً عدا الجمعة", "en": "Daily except Friday" }
+        },
+        {
+          "name": { "ar": "الباطنة والغدد الصماء", "en": "Endocrinology" },
+          "schedule": { "ar": "يومياً عدا الجمعة", "en": "Daily except Friday" }
+        },
+        {
+          "name": { "ar": "الباطنة والكلى", "en": "Nephrology" },
+          "schedule": { "ar": "يومياً عدا الجمعة", "en": "Daily except Friday" }
+        },
+        {
+          "name": { "ar": "الباطنة والصدر", "en": "Pulmonology" },
+          "schedule": { "ar": "يومياً عدا الجمعة", "en": "Daily except Friday" }
+        },
+        {
+          "name": { "ar": "مخ وأعصاب", "en": "Neurology" },
+          "schedule": { "ar": "يومياً عدا الجمعة", "en": "Daily except Friday" }
+        },
+        {
+          "name": { "ar": "طب مسنين", "en": "Geriatrics" },
+          "schedule": { "ar": "يومياً عدا الجمعة", "en": "Daily except Friday" }
+        }
+      ],
       "bookingQuestions": [],
       "registryId": "CEN-001"
     }
