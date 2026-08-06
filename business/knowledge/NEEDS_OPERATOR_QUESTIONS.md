@@ -121,3 +121,13 @@
 35. **FAQ details:** Need the pricing for Labs, X-Ray, and Echo.
 36. **FAQ details:** Need the specific phone numbers/links for booking.
 37. **FAQ details:** Need the list of available corporate or insurance contracts.
+
+---
+
+## خامسًا — مركز صحة المرأة والطفل (CEN-007)
+
+`centers/MEDICAL_CENTER_WOMENS_HEALTH.md`
+
+38. **FAQ details:** Need the names of the treating professors/consultants.
+39. **FAQ details:** Need the specific phone numbers/links for booking.
+40. **Q30 (Offers):** Need the exact pricing for the pregnancy follow-up packages, delivery packages, and endoscopy if currently active.
