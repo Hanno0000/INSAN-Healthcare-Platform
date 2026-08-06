@@ -406,42 +406,70 @@
           "name": {
             "en": "General Internal Medicine",
             "ar": "الباطنة العامة"
+          },
+          "schedule": {
+            "en": "By Appointment",
+            "ar": "بحجز مسبق"
           }
         },
         {
           "name": {
             "en": "Hepatology",
             "ar": "الباطنة والكبد"
+          },
+          "schedule": {
+            "en": "By Appointment",
+            "ar": "بحجز مسبق"
           }
         },
         {
           "name": {
             "en": "Endocrinology",
             "ar": "الباطنة والغدد الصماء"
+          },
+          "schedule": {
+            "en": "By Appointment",
+            "ar": "بحجز مسبق"
           }
         },
         {
           "name": {
             "en": "Nephrology",
             "ar": "الباطنة والكلى"
+          },
+          "schedule": {
+            "en": "By Appointment",
+            "ar": "بحجز مسبق"
           }
         },
         {
           "name": {
             "en": "Pulmonology",
             "ar": "الباطنة والصدر"
+          },
+          "schedule": {
+            "en": "By Appointment",
+            "ar": "بحجز مسبق"
           }
         },
         {
           "name": {
             "en": "Neurology",
             "ar": "مخ وأعصاب"
+          },
+          "schedule": {
+            "en": "By Appointment",
+            "ar": "بحجز مسبق"
           }
         },
         {
           "name": {
             "en": "Geriatrics",
             "ar": "طب مسنين"
+          },
+          "schedule": {
+            "en": "By Appointment",
+            "ar": "بحجز مسبق"
           }
         }
       ],
@@ -502,30 +530,50 @@
           "name": {
             "en": "Obstetrics & Gynecology",
             "ar": "Obstetrics & Gynecology"
+          },
+          "schedule": {
+            "en": "By Appointment",
+            "ar": "بحجز مسبق"
           }
         },
         {
           "name": {
             "en": "Pregnancy Follow-up",
             "ar": "Normal & High-Risk"
+          },
+          "schedule": {
+            "en": "By Appointment",
+            "ar": "بحجز مسبق"
           }
         },
         {
           "name": {
             "en": "Delayed Conception",
             "ar": "تأخر الإنجاب"
+          },
+          "schedule": {
+            "en": "By Appointment",
+            "ar": "بحجز مسبق"
           }
         },
         {
           "name": {
             "en": "Gynecological Endoscopy",
             "ar": "Gynecological Endoscopy"
+          },
+          "schedule": {
+            "en": "By Appointment",
+            "ar": "بحجز مسبق"
           }
         },
         {
           "name": {
             "en": "Gynecological Oncology",
             "ar": "Gynecological Oncology"
+          },
+          "schedule": {
+            "en": "By Appointment",
+            "ar": "بحجز مسبق"
           }
         }
       ],
