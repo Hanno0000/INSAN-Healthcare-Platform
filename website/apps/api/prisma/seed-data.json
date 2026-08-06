@@ -451,10 +451,10 @@
     },
     {
       "registryId": "CEN-007",
-      "slug": "women-s-children-s-health-center",
+      "slug": "womens-health-center",
       "name": {
-        "en": "Women's & Children's Health Center",
-        "ar": "مركز صحة المرأة والطفل"
+        "en": "Women's Health Center",
+        "ar": "مركز صحة المرأة"
       },
       "shortDescription": {
         "en": "The ultimate safe haven for women's health, characterized by the slogan: \"A safe birth journey... and a beautiful memory starting from the first moment\" (رحلة ولادة آمنة... وذكرى جميلة تبدأ من أول لحظة).",

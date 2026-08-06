@@ -1,7 +1,7 @@
 ---
 entity_id:      CEN-007
-entity_name_en: Women's & Children's Health Center
-entity_name_ar: مركز صحة المرأة والطفل
+entity_name_en: Women's Health Center
+entity_name_ar: مركز صحة المرأة
 campaign_name:  Women's Health Center
 service_level:  CENTER
 campaign_type:  Medical Services
@@ -12,7 +12,7 @@ version:        2.0
 last_updated:   2026-08-06
 ---
 
-# Women's & Children's Health Center (مركز صحة المرأة والطفل)
+# Women's Health Center (مركز صحة المرأة)
 
 ## 1. Foundation
 

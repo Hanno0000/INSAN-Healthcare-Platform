@@ -69,7 +69,7 @@ that difference is deliberate and is recorded in the knowledge file's
 | MED-006 | Outpatient Clinics | العيادات الخارجية | DEPARTMENT | — | Future, Delta |
 | MED-007 | General Surgery & Specialized Surgical Clinics | مركز الجراحات العامة والعيادات التخصصية | DEPARTMENT | — | Future, Delta |
 | CEN-001 | Cardiac & Internal Medicine Center | مركز الباطنة والقلب وإحالة الرعايات الحرجة والمتوسطة | CENTER | Cardiac Center | Future, Delta |
-| CEN-007 | Women's & Children's Health Center | مركز صحة المرأة والطفل | CENTER | Women's Health Center | Delta |
+| CEN-007 | Women's Health Center | مركز صحة المرأة | CENTER | Women's Health Center | Delta |
 | CEN-002 | Urology & Andrology Surgery Center | مركز جراحات المسالك البولية والذكورة | CENTER | Urology Center | Future, Delta |
 | CEN-006 | Pediatrics & Neonatology Center | مركز طب الأطفال وحديثي الولادة | CENTER | Pediatric Center | Delta |
 | CEN-005 | ENT & Head and Neck Surgery Center | مركز الأنف والأذن والحنجرة وجراحات الرأس والرقبة | CENTER | ENT Center | Future, Delta |
