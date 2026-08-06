@@ -78,14 +78,49 @@ export default async function MedicalCenterDetailPage({ params }: Props) {
             </div>
           )}
 
-          {/* Clinics will be added when API returns them */}
-          <div className="mt-8 p-6 bg-gray-50 rounded-2xl border border-gray-100">
-            <h2 className="text-lg font-bold text-primary-900 mb-2">العيادات والتخصصات</h2>
-            <p className="text-gray-500 text-sm">تواصل مع فريقنا لمعرفة العيادات والمواعيد المتاحة.</p>
-            <Link href="/contact" className="mt-4 inline-block text-secondary-500 hover:underline text-sm font-medium">
-              تواصل معنا
-            </Link>
-          </div>
+          {c.features && Array.isArray(c.features) && c.features.length > 0 && (
+            <div className="mb-12">
+              <h2 className="text-xl font-bold text-primary-900 mb-4">مميزات المركز</h2>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {c.features.map((feature: any, i: number) => (
+                  <li key={i} className="flex items-start gap-3 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <div className="text-secondary-500 mt-1">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+                    </div>
+                    <span className="text-gray-700">{t(feature.title || feature)}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {c.clinics && c.clinics.length > 0 ? (
+            <div className="mt-8 p-6 bg-gray-50 rounded-2xl border border-gray-100">
+              <h2 className="text-xl font-bold text-primary-900 mb-4">العيادات والتخصصات</h2>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {c.clinics.map((clinic: any, i: number) => (
+                  <li key={clinic.id || i} className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm border border-gray-50">
+                     <div className="w-2 h-2 rounded-full bg-secondary-500"></div>
+                     <span className="text-gray-800 font-medium">{t(clinic.name)}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-6 border-t border-gray-200 pt-4">
+                <p className="text-gray-500 text-sm">تواصل مع فريقنا لحجز موعد في هذه العيادات.</p>
+                <Link href="/contact" className="mt-2 inline-block text-secondary-500 hover:underline text-sm font-medium">
+                  تواصل معنا
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-8 p-6 bg-gray-50 rounded-2xl border border-gray-100">
+              <h2 className="text-lg font-bold text-primary-900 mb-2">العيادات والتخصصات</h2>
+              <p className="text-gray-500 text-sm">تواصل مع فريقنا لمعرفة العيادات والمواعيد المتاحة.</p>
+              <Link href="/contact" className="mt-4 inline-block text-secondary-500 hover:underline text-sm font-medium">
+                تواصل معنا
+              </Link>
+            </div>
+          )}
         </div>
       </section>
     </PublicLayout>
