@@ -67,6 +67,7 @@ that difference is deliberate and is recorded in the knowledge file's
 | MED-004 | Radiology & Imaging | الأشعة والتصوير | DEPARTMENT | — | Future, Delta |
 | MED-005 | Laboratory | المعمل | DEPARTMENT | — | Future, Delta |
 | MED-006 | Outpatient Clinics | العيادات الخارجية | DEPARTMENT | — | Future, Delta |
+| MED-007 | General Surgery & Specialized Surgical Clinics | مركز الجراحات العامة والعيادات التخصصية | DEPARTMENT | — | Future, Delta |
 | CEN-001 | Cardiac & Internal Medicine Center | مركز القلب والباطنة وإحالة الرعايات الحرجة | CENTER | Cardiac Center | Future, Delta |
 | CEN-002 | Urology & Laser Surgery Center | مركز جراحات المسالك والليزر | CENTER | Urology Center | Future, Delta |
 | CEN-003 | Digestive & Liver Endoscopy Center | مركز مناظير الجهاز الهضمي والكبد | CENTER | Digestive Center | Future, Delta |
@@ -80,6 +81,8 @@ that difference is deliberate and is recorded in the knowledge file's
 | CEN-011 | Chest & Sleep Disorders Center | مركز الصدر واضطرابات النوم | CENTER | Chest & Sleep Center | Delta |
 | CEN-012 | Senior Health & Screening Center | مركز صحة كبار السن والفحص الشامل | CENTER | — | Delta |
 | CEN-013 | Pediatrics & Neonatology Center | مركز طب الأطفال وحديثي الولادة | CENTER | — | Delta |
+| CEN-014 | Colorectal & Anal Surgeries Center | مركز جراحات المستقيم والشرج | CENTER | Proctology Center | Future, Delta |
+| CEN-015 | Bariatric & Metabolic Surgeries Center | مركز جراحات السمنة والتمثيل الغذائي | CENTER | Bariatric Center | Future, Delta |
 | HOSP-001 | Future Specialized Hospital | مستشفى المستقبل التخصصي | HOSPITAL | — | Future |
 | HOSP-002 | Delta International Hospital | مستشفى الدلتا الدولي | HOSPITAL | Delta Restore Trust | Delta |
 | PROG-001 | Kabarona Program | برنامج كبارنا | PROGRAM | Kabarona Continuous Care Program | Future, Delta |

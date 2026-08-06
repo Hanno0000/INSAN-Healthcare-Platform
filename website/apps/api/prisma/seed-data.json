@@ -102,6 +102,54 @@
             "ar": "The Rapid Response Center is a 24/7, fully integrated life-saving ecosystem. We are actively shifting the brand perception from a standard \"Emergency Room\" to a \"Rapid Response Center,\" emphasizing that the entire hospital's capabilities (all specialties, labs, imaging, ORs, ICUs, and incubators) mobilize from the first minute of the patient's arrival.",
             "en": "The Rapid Response Center is a 24/7, fully integrated life-saving ecosystem. We are actively shifting the brand perception from a standard \"Emergency Room\" to a \"Rapid Response Center,\" emphasizing that the entire hospital's capabilities (all specialties, labs, imaging, ORs, ICUs, and incubators) mobilize from the first minute of the patient's arrival."
           }
+        },
+        {
+          "registryId": "MED-001",
+          "slug": "icu",
+          "name": {
+            "en": "Intensive Care Unit",
+            "ar": "وحدة العناية المركزة"
+          },
+          "description": {
+            "en": "An organized critical care system designed to provide continuous, coordinated, and multidisciplinary care for critically ill patients.",
+            "ar": "نظام رعاية حرجة متكامل مصمم لتقديم رعاية مستمرة ومنسقة ومتعددة التخصصات للمرضى ذوي الحالات الحرجة."
+          },
+          "content": {
+            "en": "An organized critical care system designed to provide continuous, coordinated, and multidisciplinary care for critically ill patients.",
+            "ar": "نظام رعاية حرجة متكامل مصمم لتقديم رعاية مستمرة ومنسقة ومتعددة التخصصات للمرضى ذوي الحالات الحرجة."
+          }
+        },
+        {
+          "registryId": "MED-002",
+          "slug": "emergency",
+          "name": {
+            "en": "Emergency Department",
+            "ar": "قسم الطوارئ"
+          },
+          "description": {
+            "en": "The 24/7 gateway to the healthcare ecosystem, providing rapid, life-saving triage and care with clear communication and dignity.",
+            "ar": "بوابة الرعاية الصحية على مدار الساعة، لتقديم رعاية عاجلة ومنقذة للحياة مع تواصل واضح واحترام كامل."
+          },
+          "content": {
+            "en": "The 24/7 gateway to the healthcare ecosystem, providing rapid, life-saving triage and care with clear communication and dignity.",
+            "ar": "بوابة الرعاية الصحية على مدار الساعة، لتقديم رعاية عاجلة ومنقذة للحياة مع تواصل واضح واحترام كامل."
+          }
+        },
+        {
+          "registryId": "MED-007",
+          "slug": "general-surgery-clinics",
+          "name": {
+            "en": "General Surgery & Specialized Surgical Clinics",
+            "ar": "مركز الجراحات العامة والعيادات التخصصية"
+          },
+          "description": {
+            "en": "General surgery and specialized surgical clinics offering comprehensive surgical care.",
+            "ar": "جراحات عامة وعيادات جراحية تخصصية تقدم رعاية جراحية متكاملة."
+          },
+          "content": {
+            "en": "General surgery and specialized surgical clinics offering comprehensive surgical care.",
+            "ar": "جراحات عامة وعيادات جراحية تخصصية تقدم رعاية جراحية متكاملة."
+          }
         }
       ],
       "locations": [
@@ -219,6 +267,54 @@
           "content": {
             "ar": "The Rapid Response Center is a 24/7, fully integrated life-saving ecosystem. We are actively shifting the brand perception from a standard \"Emergency Room\" to a \"Rapid Response Center,\" emphasizing that the entire hospital's capabilities (all specialties, labs, imaging, ORs, ICUs, and incubators) mobilize from the first minute of the patient's arrival.",
             "en": "The Rapid Response Center is a 24/7, fully integrated life-saving ecosystem. We are actively shifting the brand perception from a standard \"Emergency Room\" to a \"Rapid Response Center,\" emphasizing that the entire hospital's capabilities (all specialties, labs, imaging, ORs, ICUs, and incubators) mobilize from the first minute of the patient's arrival."
+          }
+        },
+        {
+          "registryId": "MED-001",
+          "slug": "icu",
+          "name": {
+            "en": "Intensive Care Unit",
+            "ar": "وحدة العناية المركزة"
+          },
+          "description": {
+            "en": "An organized critical care system designed to provide continuous, coordinated, and multidisciplinary care for critically ill patients.",
+            "ar": "نظام رعاية حرجة متكامل مصمم لتقديم رعاية مستمرة ومنسقة ومتعددة التخصصات للمرضى ذوي الحالات الحرجة."
+          },
+          "content": {
+            "en": "An organized critical care system designed to provide continuous, coordinated, and multidisciplinary care for critically ill patients.",
+            "ar": "نظام رعاية حرجة متكامل مصمم لتقديم رعاية مستمرة ومنسقة ومتعددة التخصصات للمرضى ذوي الحالات الحرجة."
+          }
+        },
+        {
+          "registryId": "MED-002",
+          "slug": "emergency",
+          "name": {
+            "en": "Emergency Department",
+            "ar": "قسم الطوارئ"
+          },
+          "description": {
+            "en": "The 24/7 gateway to the healthcare ecosystem, providing rapid, life-saving triage and care with clear communication and dignity.",
+            "ar": "بوابة الرعاية الصحية على مدار الساعة، لتقديم رعاية عاجلة ومنقذة للحياة مع تواصل واضح واحترام كامل."
+          },
+          "content": {
+            "en": "The 24/7 gateway to the healthcare ecosystem, providing rapid, life-saving triage and care with clear communication and dignity.",
+            "ar": "بوابة الرعاية الصحية على مدار الساعة، لتقديم رعاية عاجلة ومنقذة للحياة مع تواصل واضح واحترام كامل."
+          }
+        },
+        {
+          "registryId": "MED-007",
+          "slug": "general-surgery-clinics",
+          "name": {
+            "en": "General Surgery & Specialized Surgical Clinics",
+            "ar": "مركز الجراحات العامة والعيادات التخصصية"
+          },
+          "description": {
+            "en": "General surgery and specialized surgical clinics offering comprehensive surgical care.",
+            "ar": "جراحات عامة وعيادات جراحية تخصصية تقدم رعاية جراحية متكاملة."
+          },
+          "content": {
+            "en": "General surgery and specialized surgical clinics offering comprehensive surgical care.",
+            "ar": "جراحات عامة وعيادات جراحية تخصصية تقدم رعاية جراحية متكاملة."
           }
         }
       ],
@@ -739,16 +835,250 @@
       ]
     },
     {
-      "registryId": "CEN-004",
-      "slug": "general-surgery-specialized-surgical-clinics",
+      "registryId": "CEN-015",
+      "slug": "bariatric-metabolic-surgeries-center",
       "name": {
-        "ar": "مركز الجراحات العامة والعيادات التخصصية",
-        "en": "General Surgery & Specialized Surgical Clinics"
+        "en": "Bariatric & Metabolic Surgeries Center",
+        "ar": "مركز جراحات السمنة والتمثيل الغذائي"
       },
       "shortDescription": {
-        "ar": "",
-        "en": ""
-      }
+        "en": "A highly specialized center providing comprehensive, long-term solutions for obesity and metabolic diseases (like Type 2 Diabetes). It is deliberately named the \"Bariatric & Metabolic Surgeries Center\" rather than a \"Sleeve Center\" to emphasize that it provides integrated health solutions, not just a single surgical procedure.",
+        "ar": "A highly specialized center providing comprehensive, long-term solutions for obesity and metabolic diseases (like Type 2 Diabetes). It is deliberately named the \"Bariatric & Metabolic Surgeries Center\" rather than a \"Sleeve Center\" to emphasize that it provides integrated health solutions, not just a single surgical procedure."
+      },
+      "description": {
+        "en": "A multidisciplinary program encompassing:\n*   Obesity Assessment (Diet, Meds, Surgery).\n*   Bariatric Surgery (Sleeve, Gastric Bypass, Mini-Bypass, Corrective Surgeries).\n*   Obesity & Diabetes Management (Insulin resistance).\n*   Post-Op Clinical Nutrition.\n*   Long-term Post-Op Follow-up (Weight loss, labs, vitamins).",
+        "ar": "A multidisciplinary program encompassing:\n*   Obesity Assessment (Diet, Meds, Surgery).\n*   Bariatric Surgery (Sleeve, Gastric Bypass, Mini-Bypass, Corrective Surgeries).\n*   Obesity & Diabetes Management (Insulin resistance).\n*   Post-Op Clinical Nutrition.\n*   Long-term Post-Op Follow-up (Weight loss, labs, vitamins)."
+      },
+      "content": {
+        "en": "A highly specialized center providing comprehensive, long-term solutions for obesity and metabolic diseases (like Type 2 Diabetes). It is deliberately named the \"Bariatric & Metabolic Surgeries Center\" rather than a \"Sleeve Center\" to emphasize that it provides integrated health solutions, not just a single surgical procedure.\n\nA multidisciplinary program encompassing:\n*   Obesity Assessment (Diet, Meds, Surgery).\n*   Bariatric Surgery (Sleeve, Gastric Bypass, Mini-Bypass, Corrective Surgeries).\n*   Obesity & Diabetes Management (Insulin resistance).\n*   Post-Op Clinical Nutrition.\n*   Long-term Post-Op Follow-up (Weight loss, labs, vitamins).",
+        "ar": "A highly specialized center providing comprehensive, long-term solutions for obesity and metabolic diseases (like Type 2 Diabetes). It is deliberately named the \"Bariatric & Metabolic Surgeries Center\" rather than a \"Sleeve Center\" to emphasize that it provides integrated health solutions, not just a single surgical procedure.\n\nA multidisciplinary program encompassing:\n*   Obesity Assessment (Diet, Meds, Surgery).\n*   Bariatric Surgery (Sleeve, Gastric Bypass, Mini-Bypass, Corrective Surgeries).\n*   Obesity & Diabetes Management (Insulin resistance).\n*   Post-Op Clinical Nutrition.\n*   Long-term Post-Op Follow-up (Weight loss, labs, vitamins)."
+      },
+      "features": [
+        {
+          "title": {
+            "en": "University Professors and Consultants.",
+            "ar": "University Professors and Consultants."
+          }
+        },
+        {
+          "title": {
+            "en": "Modern Laparoscopic techniques (minimal incisions).",
+            "ar": "Modern Laparoscopic techniques (minimal incisions)."
+          }
+        },
+        {
+          "title": {
+            "en": "Equipped ORs and ICUs specifically for bariatric patients.",
+            "ar": "Equipped ORs and ICUs specifically for bariatric patients."
+          }
+        },
+        {
+          "title": {
+            "en": "Dedicated Clinical Nutritionists.",
+            "ar": "Dedicated Clinical Nutritionists."
+          }
+        }
+      ],
+      "clinics": [
+        {
+          "name": {
+            "en": "1. Obesity Assessment Clinic.\n2. Bariatric Surgeries Clinic (Sleeve",
+            "ar": "1. Obesity Assessment Clinic.\n2. Bariatric Surgeries Clinic (Sleeve"
+          }
+        },
+        {
+          "name": {
+            "en": "Bypass",
+            "ar": "Bypass"
+          }
+        },
+        {
+          "name": {
+            "en": "Corrective).\n3. Obesity & Diabetes Clinic.\n4. Post-Op Clinical Nutrition Clinic.\n5. Post-Op Follow-up Clinic (Weight",
+            "ar": "Corrective).\n3. Obesity & Diabetes Clinic.\n4. Post-Op Clinical Nutrition Clinic.\n5. Post-Op Follow-up Clinic (Weight"
+          }
+        },
+        {
+          "name": {
+            "en": "labs",
+            "ar": "labs"
+          }
+        },
+        {
+          "name": {
+            "en": "vitamins).",
+            "ar": "vitamins)."
+          }
+        }
+      ]
+    },
+    {
+      "registryId": "CEN-004",
+      "slug": "general-surgery-endoscopy-center",
+      "name": {
+        "en": "General Surgery & Endoscopy Center",
+        "ar": "مركز الجراحات العامة والمناظير"
+      },
+      "shortDescription": {
+        "en": "An integrated program for diagnosing and treating all conditions requiring surgical intervention. It is not just a place to \"perform operations,\" but a center dedicated to reaching the correct diagnosis and selecting the most appropriate treatment method (medical, endoscopic, laser, or open surgery) based strictly on the patient's medical condition.",
+        "ar": "An integrated program for diagnosing and treating all conditions requiring surgical intervention. It is not just a place to \"perform operations,\" but a center dedicated to reaching the correct diagnosis and selecting the most appropriate treatment method (medical, endoscopic, laser, or open surgery) based strictly on the patient's medical condition."
+      },
+      "description": {
+        "en": "A comprehensive surgical hub covering:\n*   General Surgery Clinics.\n*   GI Surgery Clinics.\n*   Breast Surgery Clinics.\n*   Thyroid Surgery Clinics.\n*   Surgical Procedures: Gallbladder (laparoscopic), all types of Hernias, Appendectomy, Stomach & Duodenum, Small/Large Intestine, General Surgical Oncology, Minor surgeries.\n*   24/7 Surgical Emergencies.\n*(Note: Excludes Cardio, Neuro, Ortho, Uro, OB/GYN, and pure Plastic surgeries, which are referred to their specific departments).*",
+        "ar": "A comprehensive surgical hub covering:\n*   General Surgery Clinics.\n*   GI Surgery Clinics.\n*   Breast Surgery Clinics.\n*   Thyroid Surgery Clinics.\n*   Surgical Procedures: Gallbladder (laparoscopic), all types of Hernias, Appendectomy, Stomach & Duodenum, Small/Large Intestine, General Surgical Oncology, Minor surgeries.\n*   24/7 Surgical Emergencies.\n*(Note: Excludes Cardio, Neuro, Ortho, Uro, OB/GYN, and pure Plastic surgeries, which are referred to their specific departments).*"
+      },
+      "content": {
+        "en": "An integrated program for diagnosing and treating all conditions requiring surgical intervention. It is not just a place to \"perform operations,\" but a center dedicated to reaching the correct diagnosis and selecting the most appropriate treatment method (medical, endoscopic, laser, or open surgery) based strictly on the patient's medical condition.\n\nA comprehensive surgical hub covering:\n*   General Surgery Clinics.\n*   GI Surgery Clinics.\n*   Breast Surgery Clinics.\n*   Thyroid Surgery Clinics.\n*   Surgical Procedures: Gallbladder (laparoscopic), all types of Hernias, Appendectomy, Stomach & Duodenum, Small/Large Intestine, General Surgical Oncology, Minor surgeries.\n*   24/7 Surgical Emergencies.\n*(Note: Excludes Cardio, Neuro, Ortho, Uro, OB/GYN, and pure Plastic surgeries, which are referred to their specific departments).*",
+        "ar": "An integrated program for diagnosing and treating all conditions requiring surgical intervention. It is not just a place to \"perform operations,\" but a center dedicated to reaching the correct diagnosis and selecting the most appropriate treatment method (medical, endoscopic, laser, or open surgery) based strictly on the patient's medical condition.\n\nA comprehensive surgical hub covering:\n*   General Surgery Clinics.\n*   GI Surgery Clinics.\n*   Breast Surgery Clinics.\n*   Thyroid Surgery Clinics.\n*   Surgical Procedures: Gallbladder (laparoscopic), all types of Hernias, Appendectomy, Stomach & Duodenum, Small/Large Intestine, General Surgical Oncology, Minor surgeries.\n*   24/7 Surgical Emergencies.\n*(Note: Excludes Cardio, Neuro, Ortho, Uro, OB/GYN, and pure Plastic surgeries, which are referred to their specific departments).*"
+      },
+      "features": [
+        {
+          "title": {
+            "en": "Consultants and Professors from Egyptian Universities (all hold PhDs).",
+            "ar": "Consultants and Professors from Egyptian Universities (all hold PhDs)."
+          }
+        },
+        {
+          "title": {
+            "en": "High-end Laparoscopic towers.",
+            "ar": "High-end Laparoscopic towers."
+          }
+        },
+        {
+          "title": {
+            "en": "Fully equipped ORs and adult ICUs.",
+            "ar": "Fully equipped ORs and adult ICUs."
+          }
+        },
+        {
+          "title": {
+            "en": "Comprehensive in-house diagnostics (Labs, Radiology).",
+            "ar": "Comprehensive in-house diagnostics (Labs, Radiology)."
+          }
+        }
+      ],
+      "clinics": [
+        {
+          "name": {
+            "en": "General Surgery",
+            "ar": "General Surgery"
+          }
+        },
+        {
+          "name": {
+            "en": "GI Surgery",
+            "ar": "GI Surgery"
+          }
+        },
+        {
+          "name": {
+            "en": "Breast",
+            "ar": "Breast"
+          }
+        },
+        {
+          "name": {
+            "en": "Thyroid.",
+            "ar": "Thyroid."
+          }
+        }
+      ]
+    },
+    {
+      "registryId": "CEN-014",
+      "slug": "colorectal-anal-surgeries-center",
+      "name": {
+        "en": "Colorectal & Anal Surgeries Center",
+        "ar": "مركز جراحات المستقيم والشرج"
+      },
+      "shortDescription": {
+        "en": "A highly specialized center dedicated to the diagnosis and treatment of lower gastrointestinal issues, including hemorrhoids, anal fissures, fistulas, pilonidal cysts, and colorectal tumors.",
+        "ar": "A highly specialized center dedicated to the diagnosis and treatment of lower gastrointestinal issues, including hemorrhoids, anal fissures, fistulas, pilonidal cysts, and colorectal tumors."
+      },
+      "description": {
+        "en": "Provides comprehensive care through specialized clinics (Hemorrhoids, Fissure, Fistula, Pilonidal Cyst, Colorectal Tumors, Chronic Constipation/Incontinence) and advanced surgical interventions (Laser and Traditional Surgery).",
+        "ar": "Provides comprehensive care through specialized clinics (Hemorrhoids, Fissure, Fistula, Pilonidal Cyst, Colorectal Tumors, Chronic Constipation/Incontinence) and advanced surgical interventions (Laser and Traditional Surgery)."
+      },
+      "content": {
+        "en": "A highly specialized center dedicated to the diagnosis and treatment of lower gastrointestinal issues, including hemorrhoids, anal fissures, fistulas, pilonidal cysts, and colorectal tumors.\n\nProvides comprehensive care through specialized clinics (Hemorrhoids, Fissure, Fistula, Pilonidal Cyst, Colorectal Tumors, Chronic Constipation/Incontinence) and advanced surgical interventions (Laser and Traditional Surgery).",
+        "ar": "A highly specialized center dedicated to the diagnosis and treatment of lower gastrointestinal issues, including hemorrhoids, anal fissures, fistulas, pilonidal cysts, and colorectal tumors.\n\nProvides comprehensive care through specialized clinics (Hemorrhoids, Fissure, Fistula, Pilonidal Cyst, Colorectal Tumors, Chronic Constipation/Incontinence) and advanced surgical interventions (Laser and Traditional Surgery)."
+      },
+      "features": [
+        {
+          "title": {
+            "en": "University Professors specializing in Colorectal surgery.",
+            "ar": "University Professors specializing in Colorectal surgery."
+          }
+        },
+        {
+          "title": {
+            "en": "Latest Laser technologies.",
+            "ar": "Latest Laser technologies."
+          }
+        },
+        {
+          "title": {
+            "en": "Fully equipped ORs for advanced tumor excisions.",
+            "ar": "Fully equipped ORs for advanced tumor excisions."
+          }
+        },
+        {
+          "title": {
+            "en": "In-house colonoscopy capabilities.",
+            "ar": "In-house colonoscopy capabilities."
+          }
+        }
+      ],
+      "clinics": [
+        {
+          "name": {
+            "en": "Hemorrhoids",
+            "ar": "Hemorrhoids"
+          }
+        },
+        {
+          "name": {
+            "en": "Anal Fissure",
+            "ar": "Anal Fissure"
+          }
+        },
+        {
+          "name": {
+            "en": "Anal Fistula",
+            "ar": "Anal Fistula"
+          }
+        },
+        {
+          "name": {
+            "en": "Pilonidal Cyst",
+            "ar": "Pilonidal Cyst"
+          }
+        },
+        {
+          "name": {
+            "en": "Colorectal Diseases",
+            "ar": "Colorectal Diseases"
+          }
+        },
+        {
+          "name": {
+            "en": "Colorectal Tumors",
+            "ar": "Colorectal Tumors"
+          }
+        },
+        {
+          "name": {
+            "en": "Chronic Constipation & Incontinence",
+            "ar": "Chronic Constipation & Incontinence"
+          }
+        },
+        {
+          "name": {
+            "en": "Post-op Follow-up.",
+            "ar": "Post-op Follow-up."
+          }
+        }
+      ]
     }
   ],
   "doctors": [
