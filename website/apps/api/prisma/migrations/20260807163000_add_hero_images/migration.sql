@@ -1,0 +1,1 @@
+ALTER TABLE "Hospital" ADD COLUMN IF NOT EXISTS "heroImages" JSONB DEFAULT '[]';
