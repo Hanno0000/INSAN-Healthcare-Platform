@@ -12,6 +12,9 @@ You will be prompted to enter the SSH password for the root user.
 
 $ServerIP = "169.58.77.61"
 $Username = "root"
+# Absolute path of the checkout on the production server. If this is ever wrong,
+# the script must abort — never fall through and run docker compose elsewhere.
+$ProjectDir = "/root/INSAN-Healthcare-Platform"
 
 Write-Host "========================================================" -ForegroundColor Cyan
 Write-Host " INSAN Healthcare Platform - Deployment Script" -ForegroundColor Cyan
@@ -23,13 +26,16 @@ Write-Host ""
 
 # Commands to run on the remote server
 $RemoteCommands = @"
+set -e
 echo '--- Connected to server successfully ---'
-echo 'Navigating to project directory...'
-cd /app || cd /root/website
+echo 'Navigating to project directory: $ProjectDir'
+cd "$ProjectDir"
 
 echo 'Pulling latest changes from GitHub...'
 git checkout main
 git pull origin main
+echo 'Now on commit:'
+git rev-parse --short HEAD
 
 echo 'Rebuilding and restarting Docker containers...'
 docker compose down
