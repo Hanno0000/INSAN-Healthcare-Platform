@@ -34,4 +34,24 @@ export class PaginationQueryDto {
   @IsOptional()
   @IsIn(['asc', 'desc'])
   sortDir?: 'asc' | 'desc';
+
+  /**
+   * Entity kind for /medical-centers, which stores centers, hospital
+   * departments and programmes in one table. Without this field the global
+   * whitelisting pipe strips `?type=` before the service sees it, and every
+   * caller silently gets the unfiltered list.
+   */
+  @IsOptional()
+  @IsIn(['CENTER', 'DEPARTMENT', 'PROGRAM'])
+  type?: string;
+
+  /** Restrict medical centers to those linked to one hospital. */
+  @IsOptional()
+  @IsString()
+  hospitalId?: string;
+
+  /** Featured-only flag, passed through as the string 'true'. */
+  @IsOptional()
+  @IsString()
+  isFeatured?: string;
 }

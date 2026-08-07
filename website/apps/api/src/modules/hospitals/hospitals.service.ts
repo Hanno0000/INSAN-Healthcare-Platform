@@ -87,7 +87,10 @@ export class HospitalsService {
       where: { slug },
       include: {
         // المراكز الطبية التابعة + عيادات كل مركز (للسيكشن 2 و 4)
+        // الأقسام والبرامج تُخزَّن في نفس الجدول، فلا بد من قصر هذا السيكشن
+        // على المراكز وحدها وإلا ظهرت "وحدة العناية المركزة" كمركز تابع.
         medicalCenters: {
+          where: { medicalCenter: { type: 'CENTER' } },
           include: {
             medicalCenter: {
               select: {
