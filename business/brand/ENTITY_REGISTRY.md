@@ -61,7 +61,7 @@ that difference is deliberate and is recorded in the knowledge file's
 
 | ID | Entity (EN) | Entity (AR) | Level | Campaign Name | Hospitals |
 |---|---|---|---|---|---|
-| MED-001 | Intensive Care Unit | وحدة العناية المركزة | DEPARTMENT | ICU Center | Future, Delta |
+| MED-001 | Intensive Care Unit | وحدة العناية المركزة | DEPARTMENT | Critical Care Center | Future, Delta |
 | MED-002 | Emergency Department | قسم الطوارئ | DEPARTMENT | Emergency Center | Future, Delta |
 | MED-003 | Operating Rooms | غرف العمليات | DEPARTMENT | — | Future, Delta |
 | MED-004 | Radiology & Imaging | الأشعة والتصوير | DEPARTMENT | — | Future, Delta |

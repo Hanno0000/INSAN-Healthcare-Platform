@@ -3637,7 +3637,10 @@ var VisualPlan = {
   productionMode: function(rowData) {
     try {
       var domain = DriveLoader.resolveAssetDomain(rowData);
-      var assets = DriveLoader.listProjectAssets(domain);
+
+      // Scoped to the row's hospital: Delta's ICU does not look like Future's,
+      // and photographs are filed per hospital since 2026-08-06.
+      var assets = DriveLoader.listProjectAssets(domain, rowData['Hospital Brand']);
 
       return {
         mode: assets.length ? 'PROJECT_ASSET' : 'AI_GENERATED',
@@ -3895,7 +3898,8 @@ var ServiceRunner = {
       // the Visual Planner and then read by nothing at all, so every asset was
       // invented from a text description with no photographic ground truth.
       var assetDomain = DriveLoader.resolveAssetDomain(rowData);
-      var referenceImages = DriveLoader.loadProjectAssets(assetDomain);
+      var referenceImages = DriveLoader.loadProjectAssets(
+        assetDomain, null, rowData['Hospital Brand']);
       var usingReference = referenceImages.length > 0;
 
       if (usingReference) {

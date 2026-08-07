@@ -55,8 +55,9 @@ module.exports = {
     const icu = e.filter((x) => x.id === 'MED-001')[0];
     t.is(icu.nameEn, 'Intensive Care Unit', 'MED-001 is the ICU');
     t.is(icu.level, 'DEPARTMENT', 'and it is a Department, not a Center');
-    t.is(icu.campaignName, 'ICU Center',
-      'while the campaign it is filed under is called ICU Center — both statements stand');
+    t.is(icu.campaignName, 'Critical Care Center',
+      'while the campaign it is filed under is called Critical Care Center — ' +
+      'both statements stand, which is the whole reason campaign_name exists');
 
     // The em dash means "registered and real, no campaign scheduled". It must
     // become an empty string, not the literal dash, or the checker will look
@@ -76,26 +77,21 @@ module.exports = {
     const icuFm = CardBuilder.parseFrontMatter(
       fx.repoFile('business/knowledge/departments/MEDICAL_DEPARTMENT_ICU.md'));
 
-    // ⚠️ ICU'S JOIN KEY IS BROKEN, and this is the check that says so.
+    // The join key, in the two places this repository owns.
     //
-    // The V2 rewrite on 2026-08-06 renamed ICU's campaign from "ICU Center" to
-    // "Critical Care Center". The registry still lists "ICU Center", and so does
-    // the Content Calendar the operator planned nine live rows against.
+    // Renaming a campaign is a THREE-place change: the knowledge file, this
+    // registry, and every existing Content Calendar row. The V2 rewrite on
+    // 2026-08-06 did one of the three — the file said "Critical Care Center"
+    // while the registry and nine live calendar rows said "ICU Center", which
+    // orphans the card: every field correct, joined to nothing, and the twelve
+    // strategy fields arriving blank. KNOWLEDGE_BASE_SPEC §4.1 is about exactly
+    // this, and it is the defect that cost 67% of rows their strategy once.
     //
-    // campaign_name is the join key. A card filed under a name nothing else uses
-    // is orphaned: every field correct, joined to nothing, and the twelve
-    // strategy fields arrive blank — KNOWLEDGE_BASE_SPEC §4.1 is about exactly
-    // this, and it is the defect that cost 67% of rows their strategy once
-    // already.
-    //
-    // Renaming a campaign is legitimate. It is a THREE-place change: the
-    // knowledge file, the registry, and every existing calendar row. One of the
-    // three was done.
-    t.notOk(registered.indexOf(CardBuilder.campaignNameFor(icuFm)) !== -1,
-      'ICU\'s campaign name is NOT in the registry — "' +
-      CardBuilder.campaignNameFor(icuFm) + '" in the knowledge file against ' +
-      '"ICU Center" in the registry. Delete this check and restore the positive ' +
-      'one when the rename is completed in all three places');
+    // Two of the three are aligned here on 2026-08-07. The third is the live
+    // sheet and only the operator can change it — which is why the sheet-side
+    // check is `Check Knowledge File`, and why it reports slot counts.
+    t.includes(registered, CardBuilder.campaignNameFor(icuFm),
+      "the ICU knowledge file's campaign name is one the registry lists");
 
     const kabarona = CardBuilder.parseFrontMatter(
       fx.repoFile('business/knowledge/programs/PROGRAM_KABARONA.md'));

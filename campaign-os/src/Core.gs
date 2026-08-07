@@ -183,24 +183,23 @@ var CONFIG = {
   BRANDING: {
     ENABLED: true,
 
-    // Drive: My Drive / Insan / business / Media / Future / Brand Identity / Png
+    // Drive: My Drive / Insan / business / Media / Brand Identity / Png
     // Resolved from PROJECT_ASSETS.FOLDER_ID, so only one id is configured.
     //
-    // ⚠️ Repathed 2026-08-07. `business/Media` was reorganised per hospital on
-    // 2026-08-06 — Insan/, Future/, Delta/ — and the whole Brand Identity tree
-    // moved under Future/. Every logo lookup was resolving to nothing, which does
-    // not throw: Branding places the marks it can find and logs the rest, so
-    // artwork would have come out unbranded with one line in the log. The same
-    // failure mode as a blank Hospital Brand, arriving from a different
-    // direction.
+    // `business/Media` was reorganised per hospital on 2026-08-06 — Insan/,
+    // Future/, Delta/ — which is right for PHOTOGRAPHS: a ward photo belongs to
+    // the hospital it was taken in. The reorganisation swept Brand Identity into
+    // Future/ along with them, and every logo lookup then resolved to nothing.
+    // That does not throw — Branding places the marks it finds and logs the rest
+    // — so artwork would have come out unbranded with one line in the log.
     //
-    // ⚠️ AND THE PATH IS ODD. These are SHARED brand assets — INSAN's own
-    // Color.png, Delta.png, lvenir.png, the Wedge marks — sitting inside the
-    // FUTURE hospital's folder, which is where the reorganisation left them.
-    // Delta/Brand Identity exists and is empty. It works, and it will confuse the
-    // next person: a shared-assets folder alongside the three hospitals would be
-    // the honest structure. Operator's call.
-    LOGO_FOLDER: 'Future/Brand Identity/Png',
+    // LOGOS ARE NOT PER HOSPITAL, and that is the whole reason this sits at the
+    // Media root beside the three hospital folders rather than inside one of
+    // them. BRAND_SETS below is the proof: a Future post carries INSAN + WEDGE +
+    // FUTURE marks, a Delta post carries INSAN + LVENIR + DELTA. Every post needs
+    // marks belonging to several brands at once, so no per-hospital folder can
+    // hold them. Moved back up 2026-08-07.
+    LOGO_FOLDER: 'Brand Identity/Png',
 
     // The `* Transparent.png` set only. Every one is verified RGBA.
     // The `* White.png` files have NO alpha channel — placing one composites a
@@ -238,9 +237,8 @@ var CONFIG = {
 
     // Optional. Missing icons degrade to the label alone rather than failing —
     // a post without a small glyph is fine, a post that never shipped is not.
-    // One level above the logos, in Brand Identity itself. Repathed with
-    // LOGO_FOLDER above; see the note there.
-    ICON_FOLDER: 'Future/Brand Identity',
+    // One level above the logos, in Brand Identity itself.
+    ICON_FOLDER: 'Brand Identity',
     ICONS: {
       WHATSAPP: 'icon-whatsapp.png',
       PHONE:    'icon-phone.png'
@@ -3013,13 +3011,39 @@ var DriveLoader = {
   // brand material sits at the top — so a domain's folder is a path, not a
   // direct child. Walking the segments keeps the Drive layout free to be
   // organised for humans rather than flattened for the code.
-  _assetSubfolder: function(folderPath) {
+  // `hospital` scopes the lookup to one hospital's photographs.
+  //
+  // Added 2026-08-07. `business/Media` was reorganised per hospital on
+  // 2026-08-06 — Insan/, Future/, Delta/ — which is correct for photographs: a
+  // ward photo belongs to the hospital it was taken in, and Delta's ICU does not
+  // look like Future's. But every domain path in CONFIG was written against the
+  // flat layout, so all fifteen resolved to null and every row fell back to AI
+  // generation with no reference photograph. Silently — an absent folder means
+  // "no reference images", which is indistinguishable from a folder that moved.
+  //
+  // Tries `<Hospital>/<path>` first, then the bare `<path>`. The fallback is not
+  // decoration: shared material that is genuinely not per hospital keeps working
+  // from the root, and a row whose Hospital Brand is blank still finds whatever
+  // is there rather than finding nothing.
+  _assetSubfolder: function(folderPath, hospital) {
     var rootId = CONFIG.PROJECT_ASSETS && CONFIG.PROJECT_ASSETS.FOLDER_ID;
 
     if (!rootId || !String(rootId).trim() || !folderPath) {
       return null;
     }
 
+    var scoped = String(hospital || '').trim();
+
+    if (scoped) {
+      var underHospital = this._walkAssetPath(scoped + '/' + folderPath);
+      if (underHospital) return underHospital;
+    }
+
+    return this._walkAssetPath(folderPath);
+  },
+
+  _walkAssetPath: function(folderPath) {
+    var rootId = CONFIG.PROJECT_ASSETS && CONFIG.PROJECT_ASSETS.FOLDER_ID;
     var segments = String(folderPath).split('/');
     var current;
 
@@ -3117,12 +3141,12 @@ var DriveLoader = {
     }
   },
 
-  listProjectAssets: function(domain) {
+  listProjectAssets: function(domain, hospital) {
     if (!domain) {
       return [];
     }
 
-    var folder = this._assetSubfolder(domain.folder);
+    var folder = this._assetSubfolder(domain.folder, hospital);
 
     if (!folder) {
       return [];
@@ -3148,12 +3172,12 @@ var DriveLoader = {
   },
 
   // Actual bytes, for handing to the image model as visual reference.
-  loadProjectAssets: function(domain, maxImages) {
+  loadProjectAssets: function(domain, maxImages, hospital) {
     if (!domain) {
       return [];
     }
 
-    var folder = this._assetSubfolder(domain.folder);
+    var folder = this._assetSubfolder(domain.folder, hospital);
 
     if (!folder) {
       return [];

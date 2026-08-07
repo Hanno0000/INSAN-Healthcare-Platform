@@ -32,39 +32,31 @@ module.exports = {
     t.is(fm['- ICU Awareness Campaign'], undefined,
       'indented list items are not read as front-matter keys');
 
-    // --- ⚠️ ICU REGRESSED, and the suite says so rather than absorbing it ---
+    // --- ICU is the reference implementation and must stay buildable ---
     //
-    // ICU was the reference implementation: 2,773 lines, every required section
-    // written, the one file proven to build a card. On 2026-08-06 it was
-    // deliberately replaced — "refactor: replace V1 ICU file with V2
-    // Comprehensive Critical Care Center", commit d0e9c4f — with a 233-line
-    // rewrite that dropped five of the seventeen required sections.
+    // It is 2,773 lines and every required section is written. It matters more
+    // than any other single file for two reasons: it is the one card proven to
+    // build, and its structure is the template every other knowledge file is
+    // written against — so a change to its shape propagates into every file
+    // written afterwards.
     //
-    // That was somebody's deliberate work and this suite does not undo it. What
-    // it will not do is let it pass quietly: the file cannot build a card, and
-    // the first campaign the operator successfully ran end to end was ICU's.
-    //
-    // Delete this block when the rewrite is finished. Until then it is the only
-    // thing in the repository that states the reference file is broken.
+    // That is not hypothetical. On 2026-08-06 it was replaced by a 233-line
+    // rewrite (d0e9c4f) that dropped five of the seventeen required sections,
+    // and the eight centre files created after it inherited the broken shape.
+    // Restored 2026-08-07, keeping the two renames that were correct: the
+    // Arabic name and the campaign name.
     const icuCheck = CardBuilder.validate(icu, 'MEDICAL_DEPARTMENT_ICU.md');
-    const REGRESSED = [
-      'What We Are Really Selling',
-      'Psychological Barriers',
-      'Narrative Themes',
-      'Content Pillars',
-      'Relationship With INSAN'
-    ];
 
-    const stillMissing = REGRESSED.filter((section) =>
-      icuCheck.problems.some((p) => p.indexOf(section) !== -1));
+    t.is(icuCheck.problems, [], 'ICU has no structural problems');
+    t.is(icuCheck.gaps, [], 'ICU has no unresolved operator markers');
+    t.ok(icuCheck.ok, 'ICU may build a card');
 
-    t.is(stillMissing, REGRESSED,
-      'ICU is still missing exactly the five required sections the V2 rewrite ' +
-      'dropped — if this fails because the list shrank, the rewrite is being ' +
-      'finished and this block should be deleted, not adjusted');
-    t.notOk(icuCheck.ok,
-      'and so ICU cannot build a card — the file that used to be the proof that ' +
-      'the whole chain works');
+    // The structure IS the template, so its size is load-bearing. A 233-line
+    // ICU is the shape of the failure, not a tidier version of the same file.
+    t.ok(icu.split('\n').length > 2000,
+      `ICU is the full reference file — ${icu.split('\n').length} lines. A short ` +
+      'one means it has been replaced by a skeleton again, which is how eight ' +
+      'other files were written against the wrong shape');
 
     // --- a file that is structurally complete but waiting on the operator ---
     // Held against a file that IS structurally complete, so the distinction
@@ -145,23 +137,23 @@ module.exports = {
       'MEDICAL_CENTER_WOMENS_HEALTH.md'
     ];
 
-    // ⚠️ Two files are STRUCTURALLY broken, which is worse than blocked: a gap
-    // is a fact nobody has supplied yet, a missing required section is a file
-    // that does not have the shape of a knowledge file.
+    // ⚠️ STRUCTURALLY broken is worse than blocked: a gap is a fact nobody has
+    // supplied yet, a missing required section is a file that does not have the
+    // shape of a knowledge file at all.
     //
-    //   MEDICAL_DEPARTMENT_ICU.md            the V2 rewrite dropped 5 of 17
     //   MEDICAL_SERVICE_OUTPATIENT_CLINICS.md  missing Why This Service Exists
     //
-    // Held as an exact list so a THIRD one cannot join them quietly.
+    // Held as an exact list so a second one cannot join it quietly. ICU was on
+    // this list between 2026-08-06 and 2026-08-07 and is not any more.
     const KNOWN_BROKEN = [
-      'MEDICAL_DEPARTMENT_ICU.md',
       'MEDICAL_SERVICE_OUTPATIENT_CLINICS.md'
     ];
 
     t.is(broken.map((b) => b.split(':')[0]).sort(), [...KNOWN_BROKEN].sort(),
-      'exactly two knowledge files are structurally broken, both mid-rewrite — ' +
-      'a new name here is a file that lost a required section');
-    t.is(ready.length, 23, '23 knowledge files build a card');
+      'one knowledge file is structurally broken — Outpatient Clinics, missing ' +
+      'Why This Service Exists. A new name here is a file that lost a required ' +
+      'section, which is how eight centre files inherited a broken shape');
+    t.is(ready.length, 24, '24 knowledge files build a card');
     t.is(blocked.sort(), [...KNOWN_BLOCKED].sort(),
       `exactly ${KNOWN_BLOCKED.length} are waiting on operator facts`);
 

@@ -2144,7 +2144,8 @@ function runWorker(workerName, rowNumber) {
     // reflects reality instead of being a guess that nothing acts on.
     if (upperName === 'VISUAL_PLANNER_WORKER') {
       var plannerDomain = DriveLoader.resolveAssetDomain(rowData);
-      var availableAssets = DriveLoader.listProjectAssets(plannerDomain);
+      var availableAssets = DriveLoader.listProjectAssets(
+        plannerDomain, rowData['Hospital Brand']);
 
       context += '\n\n## PROJECT ASSET AVAILABILITY\n\n';
 
