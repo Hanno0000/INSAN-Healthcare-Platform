@@ -99,9 +99,13 @@ module.exports = {
 
     // The sections inside them are the units this repository is written and
     // reviewed in, and the units the checks above read.
+    // 31 original sources, plus EnablementRunner and EnablementChannel added
+    // 2026-08-07. The count is pinned rather than the names alone because a
+    // section silently absorbed into a neighbour keeps every name defined while
+    // losing the boundary the reviews and `fx.srcSection` depend on.
     const sections = Object.keys(fx.srcSections()).sort();
-    t.is(sections.length, 31,
-      `all 31 original sources are still present as sections — found ${sections.length}`);
+    t.is(sections.length, 33,
+      `31 original sources plus the two Enablement sections — found ${sections.length}`);
 
     // ControlCenter.html is looked up BY NAME at runtime:
     //

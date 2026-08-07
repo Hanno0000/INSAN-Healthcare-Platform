@@ -70,9 +70,47 @@ module.exports = {
         `${name} can be overridden from Script Properties`);
     }
 
-    t.is(Object.keys(map).length, Object.keys(ids).length,
-      'the resolver maps exactly these ids and no others — a name here with no ' +
-      'id, or an id with no name, is a configuration nobody can set');
+    // --- what the resolver carries that is NOT a Google id ---
+    //
+    // Two kinds, and they have opposite rules from the ids above.
+    //
+    // CREDENTIALS must be EMPTY in CONFIG. A folder id in a public repository is
+    // harmless — it names a folder nobody outside the project can open. A bot
+    // token is a live credential: committed once, it is compromised, and the
+    // fix is revoking it rather than deleting the line. So the check on these is
+    // the exact inverse of the check on ids.
+    const credentials = {
+      'TELEGRAM_BOT_TOKEN':  CONFIG.ENABLEMENT.TELEGRAM.BOT_TOKEN,
+      'TELEGRAM_CHANNEL_ID': CONFIG.ENABLEMENT.TELEGRAM.CHANNEL_ID
+    };
+
+    for (const name of Object.keys(credentials)) {
+      t.is(credentials[name], '',
+        `${name} is empty in CONFIG — it is a live credential and this ` +
+        'repository is public, so Script Properties is the only place it exists');
+      t.ok(Object.prototype.hasOwnProperty.call(map, name),
+        `and ${name} is still settable from Script Properties`);
+    }
+
+    // OPTIONAL OVERRIDES are folder ids with a documented fallback, so an empty
+    // value is correct rather than missing.
+    const optional = {
+      'ENABLEMENT_PROMPTS_FOLDER_ID': CONFIG.ENABLEMENT_PROMPTS_FOLDER_ID
+    };
+
+    for (const name of Object.keys(optional)) {
+      t.ok(optional[name] === '' || looksLikeId(optional[name]),
+        `${name} is either unset or a real id — it falls back to ` +
+        'PROMPTS_FOLDER_ID, so blank is a valid state and a malformed id is not');
+      t.ok(Object.prototype.hasOwnProperty.call(map, name),
+        `and ${name} is settable from Script Properties`);
+    }
+
+    t.is(Object.keys(map).length,
+      Object.keys(ids).length + Object.keys(credentials).length +
+      Object.keys(optional).length,
+      'the resolver maps exactly these and no others — a name here with no ' +
+      'entry, or an entry with no name, is a configuration nobody can set');
 
     // --- the values, pinned ---
     // Confirmed against Drive by the operator on 2026-08-02. Pinned so that

@@ -187,6 +187,10 @@ function onOpen() {
       .createMenu('Publishing & Ads')
       .addItem('Publish Approved Rows', 'runPublishingWorker')
       .addItem('Draft Paid Ads', 'runPaidAdsWorker'))
+    .addSubMenu(SpreadsheetApp.getUi()
+      .createMenu('Internal Team')
+      .addItem('Brief the Operations Team', 'runEnablementWorker')
+      .addItem('Send Approved Briefs to Telegram', 'sendEnablementBriefs'))
     .addSeparator()
     .addItem('Resume Last Run', 'resumeLastRun')
     .addSeparator()
@@ -1529,6 +1533,135 @@ function runPaidAdsWorker() {
 
   } catch (e) {
     ui.alert('Paid Ads', e.message || e.toString(), ui.ButtonSet.OK);
+  }
+}
+
+
+// ---------------------------------------------------------------------------
+// OPERATIONS ENABLEMENT — W11
+//
+// The one worker in this system that faces inward. It reads the campaign's
+// approved copy and works out what the internal team has to DO about it, so a
+// patient who arrives expecting what the advert promised meets a team that
+// knows what was promised.
+// ---------------------------------------------------------------------------
+
+function runEnablementWorker() {
+  var ui = SpreadsheetApp.getUi();
+
+  var range = askForRowRange(CONFIG.SHEET_NAME);
+  if (!range) return;
+
+  var cfg = CONFIG.ENABLEMENT;
+
+  var confirm = Browser.msgBox(
+    'Brief the Operations Team',
+    'Rows: ' + range.start + ' to ' + range.end + '\n\n' +
+    'Reads the rows the Creative Director has APPROVED and works out what the\n' +
+    'internal team must do about them.\n\n' +
+    'It does not produce one brief per post. The same message on three pages\n' +
+    'is one brief, and anything the team was already told is skipped.\n\n' +
+    'Nothing is sent anywhere. Briefs land as drafts for you to approve.' +
+    '\n\nProceed?',
+    Browser.Buttons.YES_NO
+  );
+
+  if (confirm !== 'yes') return;
+
+  try {
+    var result = EnablementRunner.run(range.start, range.end);
+
+    if (result.message) {
+      ui.alert('Operations Enablement', result.message, ui.ButtonSet.OK);
+      return;
+    }
+
+    var lines = [
+      'Campaigns read:   ' + result.campaigns,
+      'Post groups:      ' + result.groups + '   (after collapsing pages)',
+      '',
+      'New briefs:       ' + result.written,
+      'Already covered:  ' + result.covered + '   (skipped — the team has seen it)',
+      'To restate:       ' + result.restate + '   (older than ' +
+        cfg.RESTATE_AFTER_MONTHS + ' months — your call)'
+    ];
+
+    if (result.refused && result.refused.length) {
+      lines.push('', 'REFUSED — no operational instruction can be traced to a source:');
+      for (var r = 0; r < result.refused.length; r++) {
+        lines.push('  • ' + result.refused[r]);
+      }
+    }
+
+    if (result.concerns && result.concerns.length) {
+      lines.push('', 'The worker flagged these — a post promises something the');
+      lines.push('knowledge file does not support:');
+      for (var c = 0; c < result.concerns.length; c++) {
+        lines.push('  • ' + result.concerns[c]);
+      }
+    }
+
+    lines.push('', 'Open "' + cfg.SHEET_NAME + '", read them, and set Status to "' +
+      cfg.STATUS.APPROVED + '" on the ones that ship.');
+
+    ui.alert('Operations Enablement', lines.join('\n'), ui.ButtonSet.OK);
+
+  } catch (e) {
+    ui.alert('Operations Enablement', e.message || e.toString(), ui.ButtonSet.OK);
+  }
+}
+
+
+function sendEnablementBriefs() {
+  var ui = SpreadsheetApp.getUi();
+  var cfg = CONFIG.ENABLEMENT;
+
+  var confirm = Browser.msgBox(
+    'Send to Telegram',
+    'Renders slides for every brief marked "' + cfg.STATUS.APPROVED + '" and\n' +
+    'posts each one to the operations channel as an album.\n\n' +
+    'This reaches real staff. Nothing marked Draft, Queued or Restate is\n' +
+    'touched.\n\n' +
+    'The Arabic is set as real type in Slides, never generated — which is why\n' +
+    'what you tried by hand came out reversed.' +
+    '\n\nProceed?',
+    Browser.Buttons.YES_NO
+  );
+
+  if (confirm !== 'yes') return;
+
+  try {
+    var result = EnablementRunner.sendApproved();
+
+    if (!result.sent && !result.failed) {
+      ui.alert(
+        'Send to Telegram',
+        'Nothing was marked "' + cfg.STATUS.APPROVED + '".\n\n' +
+        'Open "' + cfg.SHEET_NAME + '", read the drafts, and set Status on the ' +
+        'ones that should reach the team.',
+        ui.ButtonSet.OK
+      );
+      return;
+    }
+
+    var lines = ['Sent:   ' + result.sent, 'Failed: ' + result.failed];
+
+    if (result.errors.length) {
+      lines.push('');
+      for (var i = 0; i < result.errors.length; i++) {
+        lines.push('  • ' + result.errors[i]);
+      }
+    }
+
+    if (result.sent) {
+      lines.push('', 'Recorded in the ledger, so the next cycle will not send ' +
+        'them again for ' + cfg.RESTATE_AFTER_MONTHS + ' months.');
+    }
+
+    ui.alert('Send to Telegram', lines.join('\n'), ui.ButtonSet.OK);
+
+  } catch (e) {
+    ui.alert('Send to Telegram', e.message || e.toString(), ui.ButtonSet.OK);
   }
 }
 

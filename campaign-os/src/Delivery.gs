@@ -1039,3 +1039,1197 @@ var AdsRunner = {
 // END SOURCE FILE: AdsRunner.gs
 // ---------------------------------------------------------------------------
 
+
+// ---------------------------------------------------------------------------
+// BEGIN SOURCE FILE: EnablementRunner.gs
+// ---------------------------------------------------------------------------
+// ================================
+// OPERATIONS ENABLEMENT — W11
+//
+// Every other worker in this system faces outward, at a patient. This one faces
+// inward, at the people who have to meet what those workers promised.
+//
+// The failure it exists to stop has no error message. A campaign runs, a patient
+// reads "the team already knows about your case before you arrive," and phones
+// the next morning — and the person answering has never seen the post. Nothing
+// in the pipeline notices. The patient does.
+//
+// WHAT MAKES IT DIFFERENT FROM EVERY OTHER WORKER: its output is read as an
+// instruction by staff inside a hospital. A weak advert is a wasted impression;
+// a wrong operational instruction is a policy nobody approved being followed on
+// a ward. That asymmetry is why this worker refuses knowledge files with
+// unresolved gaps, and why nothing reaches the channel without the operator
+// approving it by hand.
+//
+// See CONFIG.ENABLEMENT for the three filters and why their order matters.
+// ================================
+
+var EnablementRunner = {
+
+  WORKER_NAME: 'OPERATIONS_ENABLEMENT_WORKER',
+
+  _config: function() {
+    return CONFIG.ENABLEMENT || {};
+  },
+
+  // ----------------------------------------------------------------- sheets
+
+  // Both tabs, built from the same column lists the writers use. Same reasoning
+  // as AdsRunner.ensureSheet: a missing column is skipped silently by the
+  // writer and the run still reports success.
+  ensureSheets: function() {
+    return {
+      briefs: this._ensureSheet(this._config().SHEET_NAME, this._config().COLUMNS),
+      ledger: this._ensureSheet(this._config().LEDGER_SHEET_NAME,
+        this._config().LEDGER_COLUMNS)
+    };
+  },
+
+  _ensureSheet: function(name, columns) {
+    var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = spreadsheet.getSheetByName(name);
+
+    if (!sheet) {
+      sheet = spreadsheet.insertSheet(name);
+      sheet.appendRow(columns);
+
+      var header = sheet.getRange(1, 1, 1, columns.length);
+      header.setFontWeight('bold');
+      header.setBackground('#0d1b2a');
+      header.setFontColor('#ffffff');
+      sheet.setFrozenRows(1);
+
+      Logger.log('ENABLEMENT | created "' + name + '" with ' + columns.length + ' columns');
+      return sheet;
+    }
+
+    var width = Math.max(sheet.getLastColumn(), 1);
+    var existing = sheet.getRange(1, 1, 1, width).getValues()[0]
+      .map(function(h) { return String(h).trim(); });
+
+    for (var i = 0; i < columns.length; i++) {
+      if (existing.indexOf(columns[i]) === -1) {
+        sheet.getRange(1, sheet.getLastColumn() + 1).setValue(columns[i]);
+        Logger.log('ENABLEMENT | added missing column "' + columns[i] + '"');
+      }
+    }
+
+    return sheet;
+  },
+
+  _columnMap: function(sheet) {
+    var width = Math.max(sheet.getLastColumn(), 1);
+    var header = sheet.getRange(1, 1, 1, width).getValues()[0];
+    var map = {};
+
+    for (var i = 0; i < header.length; i++) {
+      var name = String(header[i]).trim();
+      if (name) {
+        map[name] = i + 1;
+      }
+    }
+
+    return map;
+  },
+
+  // ------------------------------------------------------- FILTER 1: pages
+
+  // Approved Content Pipeline rows, grouped so that the same campaign saying the
+  // same thing on three pages is one entry.
+  //
+  // Approval is the trigger, not publication: the team has to be ready BEFORE
+  // the post goes out. A patient sees the advert at 8am and phones at 9.
+  collectApproved: function(startRow, endRow) {
+    var sheetName = CONFIG.SHEET_NAME;
+    var lastRow = SheetSchema.getLastRow(sheetName);
+
+    startRow = Math.max(startRow || CONFIG.DATA_START_ROW, CONFIG.DATA_START_ROW);
+    endRow = Math.min(endRow || lastRow, lastRow);
+
+    var groups = {};
+    var order = [];
+
+    for (var row = startRow; row <= endRow; row++) {
+      var data = SheetSchema.getRowData(row, sheetName);
+
+      if (String(data['Creative Director Review Status'] || '').trim() !== 'Approved') {
+        continue;
+      }
+
+      var copy = String(data['Creative Director Post Copy'] || '').trim();
+      var campaign = String(data['Campaign Name'] || '').trim();
+
+      if (!copy || !campaign) {
+        continue;
+      }
+
+      var key = this.groupKey(data);
+
+      if (!groups[key]) {
+        groups[key] = {
+          key: key,
+          campaign: campaign,
+          angle: String(data['Content Angle'] || '').trim(),
+          objective: String(data['Cycle Objective'] || '').trim(),
+          contentIds: [],
+          pages: [],
+          copies: [],
+          earliestDate: null
+        };
+        order.push(key);
+      }
+
+      var group = groups[key];
+      var contentId = String(data[CONFIG.COLUMN_NAMES.CONTENT_ID] || '').trim();
+      var page = String(data['Publishing Page'] || '').trim();
+
+      if (contentId) group.contentIds.push(contentId);
+      if (page && group.pages.indexOf(page) === -1) group.pages.push(page);
+
+      // One copy per group is enough for the model to read the promise. Keeping
+      // all three would triple the tokens to say the same thing in three
+      // slightly different ways.
+      if (!group.copies.length) group.copies.push(copy);
+
+      var date = data['Publishing Date'];
+      if (date && (!group.earliestDate || date < group.earliestDate)) {
+        group.earliestDate = date;
+      }
+    }
+
+    return order.map(function(k) { return groups[k]; });
+  },
+
+  // The grouping key, from CONFIG so the decision is stated once and checkable.
+  groupKey: function(rowData) {
+    var by = this._config().GROUP_BY || ['Campaign Name'];
+    var parts = [];
+
+    for (var i = 0; i < by.length; i++) {
+      parts.push(String(rowData[by[i]] || '').trim().toLowerCase());
+    }
+
+    return parts.join('::');
+  },
+
+  // ------------------------------------------------------ FILTER 3: ledger
+
+  // Campaign + behaviour slug. Deliberately NOT the headline: the same
+  // operational ask reworded is the same ask, and a fingerprint that changes
+  // when the wording changes would let every cycle re-send everything.
+  fingerprint: function(campaign, slug) {
+    return String(campaign || '').trim().toLowerCase() + '::' +
+      String(slug || '').trim().toLowerCase();
+  },
+
+  readLedger: function(sheet) {
+    var map = this._columnMap(sheet);
+    var lastRow = sheet.getLastRow();
+    var entries = {};
+
+    if (lastRow < CONFIG.DATA_START_ROW || !map['Fingerprint']) {
+      return entries;
+    }
+
+    var width = Math.max(sheet.getLastColumn(), 1);
+    var values = sheet
+      .getRange(CONFIG.DATA_START_ROW, 1, lastRow - CONFIG.DATA_START_ROW + 1, width)
+      .getValues();
+
+    for (var i = 0; i < values.length; i++) {
+      var fp = String(values[i][map['Fingerprint'] - 1] || '').trim();
+      if (!fp) continue;
+
+      entries[fp] = {
+        fingerprint: fp,
+        campaign: String(values[i][map['Campaign Name'] - 1] || '').trim(),
+        slug: String(values[i][map['Behaviour Slug'] - 1] || '').trim(),
+        lastSent: values[i][map['Last Sent'] - 1] || null,
+        timesSent: parseInt(values[i][map['Times Sent'] - 1], 10) || 0,
+        row: CONFIG.DATA_START_ROW + i
+      };
+    }
+
+    return entries;
+  },
+
+  // Three outcomes, and the middle one is the whole point of the ledger.
+  //
+  //   new      — never sent. Produce it.
+  //   covered  — sent recently. Skip, and say which brief already covers it.
+  //   restate  — sent long enough ago that staff have turned over since. ASK
+  //              the operator; do not decide. Blocking here would mean a nurse
+  //              who joined in March never sees what went out in January.
+  ledgerVerdict: function(entry, now) {
+    if (!entry) {
+      return { state: 'new' };
+    }
+
+    var months = this._config().RESTATE_AFTER_MONTHS || 4;
+    var last = entry.lastSent ? new Date(entry.lastSent) : null;
+
+    if (!last || isNaN(last.getTime())) {
+      return { state: 'covered', since: null, times: entry.timesSent };
+    }
+
+    var elapsedMs = now.getTime() - last.getTime();
+    var monthsMs = months * 30.44 * 24 * 60 * 60 * 1000;
+
+    if (elapsedMs >= monthsMs) {
+      return {
+        state: 'restate',
+        since: last,
+        times: entry.timesSent,
+        monthsElapsed: Math.floor(elapsedMs / (30.44 * 24 * 60 * 60 * 1000))
+      };
+    }
+
+    return { state: 'covered', since: last, times: entry.timesSent };
+  },
+
+  // --------------------------------------------------------- the rhythm cap
+
+  // How many pieces have already reached the channel in the trailing seven
+  // days. Everything over the cap is Queued rather than dropped — the operator
+  // set a pace, not a ceiling on what matters.
+  sentThisWeek: function(ledger, now) {
+    var weekMs = 7 * 24 * 60 * 60 * 1000;
+    var count = 0;
+
+    for (var fp in ledger) {
+      var last = ledger[fp].lastSent ? new Date(ledger[fp].lastSent) : null;
+      if (last && !isNaN(last.getTime()) && (now.getTime() - last.getTime()) < weekMs) {
+        count++;
+      }
+    }
+
+    return count;
+  },
+
+  // ------------------------------------------------------------- the gate
+
+  // A knowledge file with an unresolved gap marker produces no operational
+  // instruction at all.
+  //
+  // This is stricter than the campaign side, on purpose. CardBuilder refuses a
+  // gapped file because a guessed strategy becomes every post about an entity.
+  // Here the consequence is heavier: a guessed instruction is a hospital
+  // following a policy nobody approved. Where marketing risks a wasted
+  // impression, this risks a patient meeting a promise the ward never agreed to.
+  knowledgeGate: function(content, fileName) {
+    if (!this._config().REFUSE_ON_KNOWLEDGE_GAPS) {
+      return { ok: true, gaps: [] };
+    }
+
+    var check = CardBuilder.validate(content, fileName);
+
+    if (check.problems.length) {
+      return {
+        ok: false,
+        reason: 'structurally incomplete: ' + check.problems[0],
+        gaps: check.gaps
+      };
+    }
+
+    if (check.gaps.length) {
+      return {
+        ok: false,
+        reason: check.gaps.length + ' unresolved operator gap(s), first at line ' +
+          check.gaps[0].line + ' under "' + check.gaps[0].section + '"',
+        gaps: check.gaps
+      };
+    }
+
+    return { ok: true, gaps: [] };
+  },
+
+  // -------------------------------------------------- FILTER 2: the model
+
+  // ONE call per campaign per cycle, not one per post. The model is given every
+  // approved promise the campaign makes and asked what the team must do about
+  // them — which is where thirty posts collapse into a handful of behaviours.
+  //
+  // Static first, dynamic last: the manual and the project documents are
+  // identical across campaigns, so they sit in the cached prefix.
+  _buildPrompt: function(campaign, groups, knowledge, ledgerSlugs) {
+    var config = this._config();
+    var folderId = PropertiesService.getScriptProperties()
+      .getProperty('ENABLEMENT_PROMPTS_FOLDER_ID') ||
+      CONFIG.ENABLEMENT_PROMPTS_FOLDER_ID || CONFIG.PROMPTS_FOLDER_ID;
+
+    var manual = DriveLoader.loadMarkdown(config.promptFile, folderId);
+
+    if (!manual) {
+      throw new Error(
+        'Could not load ' + config.promptFile + '. Put it in the prompts ' +
+        'folder, or set ENABLEMENT_PROMPTS_FOLDER_ID in Script Properties.'
+      );
+    }
+
+    var docs = [];
+    for (var d = 0; d < (config.docs || []).length; d++) {
+      var name = config.docs[d];
+      docs.push(
+        '=== PROJECT DOCUMENT: ' + name + ' ===',
+        DriveLoader.loadMarkdown(name, CONFIG.DOCS_FOLDER_ID) || '[not loaded]',
+        ''
+      );
+    }
+
+    var staticPart = [
+      'You are executing inside the INSAN Healthcare AI Operating System.',
+      'Worker: ' + this.WORKER_NAME,
+      '',
+      'You face inward. Every other worker in this system writes to a patient;',
+      'you write to the staff who have to meet what those workers promised.',
+      '',
+      '=== YOUR TRAINING MANUAL ===',
+      '',
+      manual,
+      '',
+      '=== END OF TRAINING MANUAL ===',
+      ''
+    ].concat(docs).join('\n');
+
+    var promiseLines = [];
+    for (var g = 0; g < groups.length; g++) {
+      promiseLines.push(
+        '--- approved post ' + (g + 1) + ' of ' + groups.length +
+        ' | angle: ' + (groups[g].angle || 'unspecified') +
+        ' | pages: ' + (groups[g].pages.join(', ') || 'unspecified') + ' ---',
+        groups[g].copies[0] || '',
+        ''
+      );
+    }
+
+    var alreadyCovered = ledgerSlugs && ledgerSlugs.length
+      ? [
+          'The team has ALREADY been briefed on these behaviours for this',
+          'campaign. Do not return them again, and do not return a reworded',
+          'version of one — the team has seen it:',
+          '',
+          '  ' + ledgerSlugs.join('\n  '),
+          ''
+        ].join('\n')
+      : 'Nothing has been sent to the team about this campaign yet.\n';
+
+    var dynamicPart = [
+      '=== KNOWLEDGE FILE: ' + campaign + ' ===',
+      '',
+      'The operational source of truth. A behaviour you describe must be',
+      'supported by this file — the posts below say what was PROMISED, this',
+      'says what is actually true of the service.',
+      '',
+      knowledge,
+      '',
+      '=== WHAT THE PATIENT HAS ALREADY BEEN SHOWN ===',
+      '',
+      'These are the approved posts for this cycle. Every one of them is either',
+      'live or about to be. A patient reading them forms an expectation, and',
+      'that expectation reaches the front desk within a day.',
+      '',
+      promiseLines.join('\n'),
+      '=== ALREADY BRIEFED ===',
+      '',
+      alreadyCovered,
+      '=== OUTPUT FORMAT ===',
+      '',
+      'Return a single valid JSON object. No markdown fences, no text around it.',
+      '',
+      '{',
+      '  "behaviours": [',
+      '    {',
+      '      "slug": "kebab-case-identifier-for-this-behaviour",',
+      '      "headline": "...",',
+      '      "patient_expects": "...",',
+      '      "team_must_do": "...",',
+      '      "trust_builder": "...",',
+      '      "trust_breaker": "..."',
+      '    }',
+      '  ]',
+      '}',
+      '',
+      'RULES ON THE NUMBER OF BEHAVIOURS. Return the distinct operational asks,',
+      'not one per post. Thirty posts about one service typically ask the team',
+      'for three to six different things; if you are returning one per post you',
+      'have not understood the task. Two posts that require the same action from',
+      'the same person are ONE behaviour.',
+      '',
+      'RULES ON THE SLUG. It is the identity of the behaviour and it is matched',
+      'against future cycles, so it must describe the ACTION and not the',
+      'campaign. "update-family-without-being-asked" is right;',
+      '"icu-campaign-post-3" is not.',
+      '',
+      '"team_must_do" must be observable. A patient or a supervisor standing in',
+      'the room must be able to see whether it happened. "Respect the family" is',
+      'not observable. "Update the family every two hours without waiting to be',
+      'asked" is.',
+      '',
+      'Every field must be in simple Egyptian Arabic, as spoken to hospital',
+      'staff — not Classical Arabic, not marketing language. The slug stays in',
+      'English, because it is an identifier rather than something anyone reads.',
+      '',
+      'Never invent a promise the posts did not make, and never invent a',
+      'capability the knowledge file does not state. If the posts promise',
+      'something the knowledge file does not support, omit it and say so in a',
+      '"concerns" array alongside "behaviours".',
+      '',
+      '=== END OF OUTPUT FORMAT ==='
+    ].join('\n');
+
+    return { prompt: staticPart + '\n\n' + dynamicPart, staticPart: staticPart };
+  },
+
+  _parse: function(text) {
+    var cleaned = String(text || '').trim();
+
+    if (cleaned.indexOf('```') === 0) {
+      cleaned = cleaned.replace(/^```(json)?/, '').replace(/```$/, '').trim();
+    }
+
+    var first = cleaned.indexOf('{');
+    var last = cleaned.lastIndexOf('}');
+
+    if (first === -1 || last <= first) {
+      throw new Error(
+        'The enablement worker returned no JSON. Response began: ' +
+        cleaned.substring(0, 200)
+      );
+    }
+
+    var parsed = JSON.parse(cleaned.substring(first, last + 1));
+
+    if (!parsed || !parsed.behaviours || !parsed.behaviours.length) {
+      throw new Error(
+        'The enablement worker returned no behaviours. Response began: ' +
+        cleaned.substring(0, 200)
+      );
+    }
+
+    var out = [];
+
+    for (var i = 0; i < parsed.behaviours.length; i++) {
+      var b = parsed.behaviours[i];
+      var slug = String(b.slug || '').trim().toLowerCase().replace(/\s+/g, '-');
+
+      // A behaviour with no slug has no identity, so the ledger cannot dedupe
+      // it and it would be re-sent every cycle forever. Refused rather than
+      // given a generated id, which would look like an identity and not be one.
+      if (!slug) {
+        Logger.log('ENABLEMENT | dropped a behaviour with no slug: ' +
+          String(b.headline || '').substring(0, 60));
+        continue;
+      }
+
+      out.push({
+        slug: slug,
+        headline: String(b.headline || '').trim(),
+        patientExpects: String(b.patient_expects || '').trim(),
+        teamMustDo: String(b.team_must_do || '').trim(),
+        trustBuilder: String(b.trust_builder || '').trim(),
+        trustBreaker: String(b.trust_breaker || '').trim()
+      });
+    }
+
+    return { behaviours: out, concerns: parsed.concerns || [] };
+  },
+
+  // ------------------------------------------------------------------- run
+
+  // The three filters, in the order that matters: FREE ONES FIRST.
+  //
+  //   1. group by page      — deterministic, no tokens
+  //   2. ledger, per campaign — deterministic, no tokens; a campaign entirely
+  //                             covered never reaches the model at all
+  //   3. one model call     — only for campaigns with something left to say
+  //   4. ledger, per behaviour — the model may still return something covered
+  //
+  // Nothing is sent here. Rows land as Draft and the operator approves them.
+  run: function(startRow, endRow) {
+    ConfigResolver.apply();
+
+    var config = this._config();
+    var sheets = this.ensureSheets();
+    var ledger = this.readLedger(sheets.ledger);
+    var now = new Date();
+    var runStart = now.getTime();
+
+    var groups = this.collectApproved(startRow, endRow);
+
+    if (!groups.length) {
+      return {
+        campaigns: 0, written: 0, covered: 0, restate: 0, queued: 0,
+        message: 'No approved rows in that range. This worker reads rows the ' +
+          'Creative Director has approved — approval is the trigger, because ' +
+          'the team has to be ready before the post goes out, not after.'
+      };
+    }
+
+    // Group the groups, by campaign — the model call is per campaign.
+    var byCampaign = {};
+    var campaignOrder = [];
+
+    for (var i = 0; i < groups.length; i++) {
+      var name = groups[i].campaign;
+      if (!byCampaign[name]) {
+        byCampaign[name] = [];
+        campaignOrder.push(name);
+      }
+      byCampaign[name].push(groups[i]);
+    }
+
+    var written = 0;
+    var covered = 0;
+    var restate = 0;
+    var refused = [];
+    var allConcerns = [];
+
+    // The cap counts what has already gone out this week, then everything this
+    // run adds on top of it. Queued, never dropped.
+    var weekSoFar = this.sentThisWeek(ledger, now);
+    var capacity = Math.max(0, (config.MAX_PER_WEEK || 2) - weekSoFar);
+
+    for (var c = 0; c < campaignOrder.length; c++) {
+      var campaign = campaignOrder[c];
+      var campaignGroups = byCampaign[campaign];
+
+      var knowledge = this._knowledgeFor(campaign);
+
+      if (!knowledge.found) {
+        refused.push(campaign + ': ' + knowledge.reason);
+        continue;
+      }
+
+      var gate = this.knowledgeGate(knowledge.content, knowledge.fileName);
+
+      if (!gate.ok) {
+        refused.push(campaign + ': ' + gate.reason);
+        Logger.log('ENABLEMENT_REFUSED | ' + campaign + ' | ' + gate.reason);
+        continue;
+      }
+
+      // What this campaign has already told the team. Passed to the model so it
+      // does not spend output re-deriving something that will be discarded.
+      var knownSlugs = [];
+      for (var fp in ledger) {
+        if (ledger[fp].campaign.toLowerCase() === campaign.toLowerCase()) {
+          knownSlugs.push(ledger[fp].slug);
+        }
+      }
+
+      var built = this._buildPrompt(campaign, campaignGroups, knowledge.content, knownSlugs);
+
+      var response = AIProvider.call(built.prompt, {
+        temperature: config.temperature,
+        provider: config.provider || undefined,
+        model: config.model || undefined,
+        cachePrefix: built.staticPart
+      });
+
+      var parsed = this._parse(response.text);
+
+      for (var b = 0; b < parsed.concerns.length; b++) {
+        allConcerns.push(campaign + ': ' + parsed.concerns[b]);
+      }
+
+      var contentIds = [];
+      var pages = [];
+      var earliest = null;
+
+      for (var q = 0; q < campaignGroups.length; q++) {
+        contentIds = contentIds.concat(campaignGroups[q].contentIds);
+        for (var p = 0; p < campaignGroups[q].pages.length; p++) {
+          if (pages.indexOf(campaignGroups[q].pages[p]) === -1) {
+            pages.push(campaignGroups[q].pages[p]);
+          }
+        }
+        if (campaignGroups[q].earliestDate &&
+            (!earliest || campaignGroups[q].earliestDate < earliest)) {
+          earliest = campaignGroups[q].earliestDate;
+        }
+      }
+
+      for (var n = 0; n < parsed.behaviours.length; n++) {
+        var behaviour = parsed.behaviours[n];
+        var fingerprint = this.fingerprint(campaign, behaviour.slug);
+        var verdict = this.ledgerVerdict(ledger[fingerprint], now);
+
+        var status;
+        var previously = '';
+
+        if (verdict.state === 'covered') {
+          status = config.STATUS.SKIPPED;
+          previously = 'sent ' + (verdict.since ? this._dateOnly(verdict.since) : 'previously') +
+            ' (' + verdict.times + 'x)';
+          covered++;
+
+        } else if (verdict.state === 'restate') {
+          status = config.STATUS.RESTATE;
+          previously = 'last sent ' + this._dateOnly(verdict.since) + ', ' +
+            verdict.monthsElapsed + ' months ago — staff have turned over since';
+          restate++;
+
+        } else if (capacity > 0) {
+          status = config.STATUS.DRAFT;
+          capacity--;
+          written++;
+
+        } else {
+          status = config.STATUS.QUEUED;
+          previously = 'over the ' + (config.MAX_PER_WEEK || 2) +
+            '-per-week pace; nothing is lost, this waits its turn';
+          written++;
+        }
+
+        this._writeBrief(sheets.briefs, {
+          campaign: campaign,
+          behaviour: behaviour,
+          fingerprint: fingerprint,
+          contentIds: contentIds,
+          pages: pages,
+          cycleStart: earliest,
+          status: status,
+          previously: previously
+        });
+      }
+    }
+
+    var runtime = new Date().getTime() - runStart;
+
+    Logger.logSuccess(
+      this.WORKER_NAME, startRow || CONFIG.DATA_START_ROW, runtime, 0, 0,
+      campaignOrder.length + ' campaign(s) | ' + groups.length + ' post group(s) | ' +
+      written + ' new | ' + covered + ' already covered | ' + restate + ' to restate' +
+      (refused.length ? ' | refused: ' + refused.length : '')
+    );
+
+    return {
+      campaigns: campaignOrder.length,
+      groups: groups.length,
+      written: written,
+      covered: covered,
+      restate: restate,
+      refused: refused,
+      concerns: allConcerns
+    };
+  },
+
+  // The campaign's knowledge file, via the card's Knowledge Source column.
+  //
+  // The join runs backwards here compared with everywhere else — a campaign
+  // name to the file it came from, rather than a file to the card it builds —
+  // and Knowledge Source is exactly that link, written by CardBuilder when it
+  // built the card. Scanning the knowledge base instead would mean reading
+  // several hundred KB from Drive to answer a question the sheet already holds.
+  //
+  // An empty Knowledge Source means the card was hand-written, and a
+  // hand-written card has no traceable source of truth behind it. Refused
+  // rather than guessed: this worker's output is read as an instruction.
+  _knowledgeFor: function(campaignName) {
+    var cardSheet = CONFIG.CAMPAIGN_CARDS_SHEET_NAME;
+    var lastRow = SheetSchema.getLastRow(cardSheet);
+    var wanted = String(campaignName || '').trim().toLowerCase();
+    var source = '';
+
+    for (var row = CONFIG.DATA_START_ROW; row <= lastRow; row++) {
+      var data = SheetSchema.getRowData(row, cardSheet);
+
+      if (String(data['Campaign Name'] || '').trim().toLowerCase() === wanted) {
+        source = String(data['Knowledge Source'] || '').trim();
+        break;
+      }
+    }
+
+    if (!source) {
+      return {
+        found: false,
+        reason: 'no Knowledge Source on the Campaign Cards row for "' +
+          campaignName + '". Either the campaign has no card, or the card was ' +
+          'written by hand — and a hand-written card has no source of truth ' +
+          'behind it to trace an operational instruction to.'
+      };
+    }
+
+    try {
+      var file = CardBuilder.findKnowledgeFile(source);
+      return { found: true, content: file.content, fileName: file.name };
+    } catch (e) {
+      return { found: false, reason: e.message || String(e) };
+    }
+  },
+
+  _dateOnly: function(date) {
+    return Utilities.formatDate(new Date(date),
+      Session.getScriptTimeZone(), 'yyyy-MM-dd');
+  },
+
+  // ------------------------------------------------------------ the sending
+
+  // Every Approved brief, rendered and sent, then recorded in the ledger.
+  //
+  // The ledger write is what makes the next cycle cheap: it is the only reason
+  // a campaign that runs again in November does not re-send everything it sent
+  // in August. Written AFTER the send succeeds — a ledger entry for something
+  // that never arrived would silently suppress it forever.
+  sendApproved: function() {
+    ConfigResolver.apply();
+
+    var config = this._config();
+    var sheets = this.ensureSheets();
+    var map = this._columnMap(sheets.briefs);
+    var lastRow = sheets.briefs.getLastRow();
+    var now = new Date();
+
+    var sent = 0;
+    var failed = 0;
+    var errors = [];
+
+    for (var row = CONFIG.DATA_START_ROW; row <= lastRow; row++) {
+      var status = String(sheets.briefs.getRange(row, map['Status']).getValue() || '').trim();
+      var gate = EnablementChannel.gate(status);
+
+      if (!gate.send) {
+        continue;
+      }
+
+      var brief = {
+        fingerprint: String(sheets.briefs.getRange(row, map['Brief ID']).getValue() || '').trim(),
+        campaign: String(sheets.briefs.getRange(row, map['Campaign Name']).getValue() || '').trim(),
+        slug: String(sheets.briefs.getRange(row, map['Behaviour Slug']).getValue() || '').trim(),
+        headline: String(sheets.briefs.getRange(row, map['Headline']).getValue() || '').trim(),
+        patientExpects: String(sheets.briefs.getRange(row, map['Patient Expects']).getValue() || '').trim(),
+        teamMustDo: String(sheets.briefs.getRange(row, map['Team Must Do']).getValue() || '').trim(),
+        trustBuilder: String(sheets.briefs.getRange(row, map['Trust Builder']).getValue() || '').trim(),
+        trustBreaker: String(sheets.briefs.getRange(row, map['Trust Breaker']).getValue() || '').trim()
+      };
+
+      try {
+        var blobs = EnablementChannel.render(brief);
+        var messageId = EnablementChannel.send(brief, blobs);
+
+        sheets.briefs.getRange(row, map['Status']).setValue(config.STATUS.SENT);
+        sheets.briefs.getRange(row, map['Telegram Message ID']).setValue(messageId);
+        sheets.briefs.getRange(row, map['Sent At']).setValue(now);
+
+        this._recordSent(sheets.ledger, brief, messageId, now);
+        sent++;
+
+      } catch (e) {
+        failed++;
+        errors.push(brief.slug + ': ' + (e.message || e.toString()));
+        Logger.log('ENABLEMENT_SEND_FAILED | ' + brief.slug + ' | ' + e.toString());
+      }
+    }
+
+    return { sent: sent, failed: failed, errors: errors };
+  },
+
+  // One ledger row per behaviour, updated in place when it goes out again after
+  // a restate. Times Sent is kept because a behaviour on its third airing is
+  // worth a different conversation from one on its first.
+  _recordSent: function(sheet, brief, messageId, now) {
+    var existing = this.readLedger(sheet);
+    var entry = existing[brief.fingerprint];
+    var map = this._columnMap(sheet);
+
+    if (entry) {
+      sheet.getRange(entry.row, map['Last Sent']).setValue(now);
+      sheet.getRange(entry.row, map['Times Sent']).setValue(entry.timesSent + 1);
+      sheet.getRange(entry.row, map['Telegram Message ID']).setValue(messageId);
+      return entry.row;
+    }
+
+    var row = sheet.getLastRow() + 1;
+    var values = {
+      'Fingerprint': brief.fingerprint,
+      'Campaign Name': brief.campaign,
+      'Behaviour Slug': brief.slug,
+      'Headline': brief.headline,
+      'First Sent': now,
+      'Last Sent': now,
+      'Times Sent': 1,
+      'Telegram Message ID': messageId
+    };
+
+    for (var field in values) {
+      if (map[field]) {
+        sheet.getRange(row, map[field]).setValue(values[field]);
+      }
+    }
+
+    return row;
+  },
+
+  _writeBrief: function(sheet, entry) {
+    var map = this._columnMap(sheet);
+    var row = sheet.getLastRow() + 1;
+    var b = entry.behaviour;
+
+    var values = {
+      'Brief ID': entry.fingerprint,
+      'Campaign Name': entry.campaign,
+      'Behaviour Slug': b.slug,
+      'Headline': b.headline,
+      'Patient Expects': b.patientExpects,
+      'Team Must Do': b.teamMustDo,
+      'Trust Builder': b.trustBuilder,
+      'Trust Breaker': b.trustBreaker,
+      'Source Content IDs': entry.contentIds.join(', '),
+      'Publishing Pages': entry.pages.join(', '),
+      'Cycle Start': entry.cycleStart || '',
+      'Status': entry.status,
+      'Previously Sent': entry.previously || '',
+      'Notes': ''
+    };
+
+    for (var field in values) {
+      if (map[field]) {
+        sheet.getRange(row, map[field]).setValue(values[field]);
+      }
+    }
+
+    return row;
+  }
+};
+
+// ---------------------------------------------------------------------------
+// END SOURCE FILE: EnablementRunner.gs
+// ---------------------------------------------------------------------------
+
+
+// ---------------------------------------------------------------------------
+// BEGIN SOURCE FILE: EnablementChannel.gs
+// ---------------------------------------------------------------------------
+// ================================
+// ENABLEMENT CHANNEL — slides, and the Telegram send
+//
+// ⚠️ ARABIC IS SET AS REAL TYPE. NEVER GENERATED.
+//
+// The operator tested these briefs by hand on a video model and got exactly
+// what TextOverlay.gs already documents: text running left to right,
+// disconnected letterforms, misspellings. That is not a prompt failure and no
+// instruction fixes it — Arabic needs contextual letter shaping and RTL
+// ordering, which a generative model reproduces by luck.
+//
+// So the slides are built the same way the campaign artwork is: Google Slides
+// sets the type in a real font at a known size, and the page is exported as an
+// image. Slides has a text shaping engine. A diffusion model does not.
+//
+// This is why stage one is slides rather than video, and why stage two can be
+// video without re-opening the question: whatever produces the moving picture,
+// the words stay real type composited over it.
+// ================================
+
+var EnablementChannel = {
+
+  _config: function() {
+    return CONFIG.ENABLEMENT || {};
+  },
+
+  // ---------------------------------------------------------------- slides
+
+  // One brief becomes a short deck: what the patient expects, what the team
+  // does, what builds trust, what breaks it. One idea per card, because the
+  // audience reads this on a phone between two other things.
+  cardsFor: function(brief) {
+    var cards = [];
+
+    if (brief.headline) {
+      cards.push({ kind: 'headline', title: '', body: brief.headline });
+    }
+    if (brief.patientExpects) {
+      cards.push({ kind: 'expect', title: 'المريض جايلك مستني', body: brief.patientExpects });
+    }
+    if (brief.teamMustDo) {
+      cards.push({ kind: 'do', title: 'المطلوب منّا', body: brief.teamMustDo });
+    }
+    if (brief.trustBuilder) {
+      cards.push({ kind: 'build', title: 'ده اللي بيكسب ثقته', body: brief.trustBuilder });
+    }
+    if (brief.trustBreaker) {
+      cards.push({ kind: 'break', title: 'وده اللي بيضيّعها', body: brief.trustBreaker });
+    }
+
+    var max = this._config().MAX_SLIDES_PER_BRIEF || 6;
+    return cards.slice(0, max);
+  },
+
+  // Builds the deck. One Slides page per card, exported as PNG.
+  //
+  // The type is set by Slides, which has a real text shaping engine — that is
+  // the whole reason this path exists rather than a prompt asking a model for
+  // "a card with Arabic text on it".
+  render: function(brief) {
+    var cfg = this._config();
+    var cards = this.cardsFor(brief);
+    var scratchId = null;
+    var blobs = [];
+
+    if (!cards.length) {
+      throw new Error('Brief "' + brief.slug + '" has no content to put on a slide.');
+    }
+
+    try {
+      scratchId = this._openScratch();
+
+      var presentation = SlidesApp.openById(scratchId);
+      var pageW = presentation.getPageWidth();
+      var pageH = presentation.getPageHeight();
+
+      // The template carries one slide. Append the rest, then fill all of them.
+      var slides = presentation.getSlides();
+      while (slides.length < cards.length) {
+        presentation.appendSlide(SlidesApp.PredefinedLayout.BLANK);
+        slides = presentation.getSlides();
+      }
+
+      for (var i = 0; i < cards.length; i++) {
+        this._drawCard(slides[i], cards[i], pageW, pageH, brief);
+      }
+
+      var pageIds = [];
+      for (var p = 0; p < cards.length; p++) {
+        pageIds.push(slides[p].getObjectId());
+      }
+
+      presentation.saveAndClose();
+
+      for (var e = 0; e < pageIds.length; e++) {
+        blobs.push(this._exportPage(scratchId, pageIds[e],
+          brief.slug + '-' + (e + 1) + '.png'));
+      }
+
+      return blobs;
+
+    } finally {
+      // Same reasoning as TextOverlay: the copy is scaffolding, and leaving it
+      // behind would put one presentation in the operator's Drive per brief.
+      if (scratchId) {
+        try {
+          DriveApp.getFileById(scratchId).setTrashed(true);
+        } catch (cleanupErr) {
+          Logger.log('ENABLEMENT | could not trash scratch deck: ' + cleanupErr.toString());
+        }
+      }
+    }
+  },
+
+  // 9:16, from the same template the Story/Reel overlay copies. A presentation's
+  // page size cannot be set through any API — copying is the only operation
+  // that carries it — which is why this borrows rather than creating one.
+  _openScratch: function() {
+    var templateId = (CONFIG.TEXT_OVERLAY.TEMPLATES || {})['9:16'];
+
+    if (!templateId || !String(templateId).trim()) {
+      throw new Error(
+        'No 9:16 overlay template configured. Run setUpOverlayTemplates() from ' +
+        'the Apps Script editor — the enablement slides use the same vertical ' +
+        'template the Story and Reel artwork does.'
+      );
+    }
+
+    return DriveApp.getFileById(templateId)
+      .makeCopy('insan-enablement-scratch')
+      .getId();
+  },
+
+  // One idea per card, large type, generous margins. The audience reads this on
+  // a phone between two other things, and the design brief the operator wrote
+  // is explicit that clarity outranks decoration.
+  _drawCard: function(slide, card, pageW, pageH, brief) {
+    var cfg = CONFIG.TEXT_OVERLAY || {};
+    var margin = pageW * 0.10;
+    var boxW = pageW - (margin * 2);
+
+    var background = card.kind === 'break' ? '#7f1d1d'
+      : card.kind === 'build' ? '#14532d'
+      : '#0d1b2a';
+
+    slide.getBackground().setSolidFill(background);
+
+    var top = pageH * 0.30;
+
+    if (card.title) {
+      var titleBox = slide.insertTextBox(card.title, margin, top, boxW, pageH * 0.10);
+      var titleStyle = titleBox.getText().getTextStyle();
+      titleStyle.setFontFamily(cfg.FONT_FAMILY || 'Cairo');
+      titleStyle.setFontSize(34);
+      titleStyle.setForegroundColor('#9ca3af');
+      titleStyle.setBold(false);
+      titleBox.getText().getParagraphs().forEach(function(p) {
+        p.getRange().getParagraphStyle()
+          .setParagraphAlignment(SlidesApp.ParagraphAlignment.END);
+      });
+      top += pageH * 0.11;
+    }
+
+    var bodyBox = slide.insertTextBox(card.body, margin, top, boxW, pageH * 0.34);
+    var bodyStyle = bodyBox.getText().getTextStyle();
+    bodyStyle.setFontFamily(cfg.FONT_FAMILY || 'Cairo');
+    bodyStyle.setFontSize(card.kind === 'headline' ? 56 : 44);
+    bodyStyle.setForegroundColor(cfg.TEXT_COLOR || '#ffffff');
+    bodyStyle.setBold(true);
+
+    // Right-aligned, because the text is Arabic. Slides handles the shaping and
+    // the bidirectional ordering; the alignment is the one part that is ours.
+    bodyBox.getText().getParagraphs().forEach(function(p) {
+      p.getRange().getParagraphStyle()
+        .setParagraphAlignment(SlidesApp.ParagraphAlignment.END);
+    });
+  },
+
+  _exportPage: function(presentationId, pageObjectId, name) {
+    var url = 'https://docs.google.com/presentation/d/' + presentationId +
+      '/export/png?id=' + presentationId + '&pageid=' + pageObjectId;
+
+    var response = UrlFetchApp.fetch(url, {
+      headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() },
+      muteHttpExceptions: true
+    });
+
+    if (response.getResponseCode() !== 200) {
+      throw new Error('Could not export enablement slide (' +
+        response.getResponseCode() + ').');
+    }
+
+    return response.getBlob().setName(name);
+  },
+
+  // --------------------------------------------------------------- sending
+
+  // Bot token and channel id, from Script Properties only. A bot token is a
+  // live credential and this repository is public, so CONFIG carries the shape
+  // and never the value.
+  credentials: function() {
+    var telegram = this._config().TELEGRAM || {};
+    var token = String(telegram.BOT_TOKEN || '').trim();
+    var channel = String(telegram.CHANNEL_ID || '').trim();
+
+    if (!token) {
+      throw new Error(
+        'No Telegram bot token. Set TELEGRAM_BOT_TOKEN in Script Properties — ' +
+        'File > Project Settings > Script Properties. It is never stored in ' +
+        'CONFIG.gs because this repository is public.'
+      );
+    }
+
+    if (!channel) {
+      throw new Error(
+        'No Telegram channel. Set TELEGRAM_CHANNEL_ID in Script Properties — ' +
+        'the channel id (like -1001234567890) or @channelname, with the bot ' +
+        'added to the channel as an administrator.'
+      );
+    }
+
+    return { token: token, channel: channel, base: telegram.API_BASE };
+  },
+
+  // Only a brief the operator has marked Approved is sent. This is the same
+  // discipline as the Publishing worker and for a stronger reason: this reaches
+  // staff as an instruction, so nothing may leave the system on a model's say-so.
+  gate: function(status) {
+    var approved = this._config().STATUS.APPROVED;
+
+    if (String(status || '').trim() !== approved) {
+      return {
+        send: false,
+        reason: 'Status is "' + status + '", not "' + approved + '". Nothing ' +
+          'reaches the channel until you approve it — the team reads this as ' +
+          'an instruction, not as a suggestion.'
+      };
+    }
+
+    return { send: true };
+  },
+
+  _call: function(method, payload) {
+    var creds = this.credentials();
+    var url = creds.base + creds.token + '/' + method;
+
+    var response = UrlFetchApp.fetch(url, {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true
+    });
+
+    var code = response.getResponseCode();
+    var body = response.getContentText();
+
+    if (code !== 200) {
+      throw new Error('Telegram ' + method + ' failed (' + code + '): ' + body);
+    }
+
+    var parsed = JSON.parse(body);
+
+    if (!parsed.ok) {
+      throw new Error('Telegram ' + method + ' refused: ' +
+        (parsed.description || body));
+    }
+
+    return parsed.result;
+  },
+
+  // A brief goes out as one album, so it arrives as a single item in the
+  // channel rather than five notifications the team scrolls past separately.
+  //
+  // sendMediaGroup needs multipart rather than JSON: the images are attached
+  // and referenced from the media array by name.
+  send: function(brief, blobs) {
+    var creds = this.credentials();
+    var media = [];
+    var payload = { chat_id: creds.channel };
+
+    for (var i = 0; i < blobs.length; i++) {
+      var key = 'photo' + i;
+      payload[key] = blobs[i];
+      media.push({
+        type: 'photo',
+        media: 'attach://' + key,
+        // The caption rides on the first image only; Telegram shows one caption
+        // per album and repeating it would show nothing extra.
+        caption: i === 0 ? this.caption(brief) : undefined
+      });
+    }
+
+    payload.media = JSON.stringify(media);
+
+    var response = UrlFetchApp.fetch(
+      creds.base + creds.token + '/sendMediaGroup',
+      { method: 'post', payload: payload, muteHttpExceptions: true }
+    );
+
+    var body = response.getContentText();
+
+    if (response.getResponseCode() !== 200) {
+      throw new Error('Telegram sendMediaGroup failed (' +
+        response.getResponseCode() + '): ' + body);
+    }
+
+    var parsed = JSON.parse(body);
+
+    if (!parsed.ok) {
+      throw new Error('Telegram refused the album: ' + (parsed.description || body));
+    }
+
+    return parsed.result && parsed.result.length
+      ? String(parsed.result[0].message_id)
+      : '';
+  },
+
+  // Named so a brief can be found again months later. The team scrolls a
+  // channel, not a spreadsheet — an untitled album is unfindable the next day.
+  caption: function(brief) {
+    return [
+      '📌 ' + (brief.campaign || ''),
+      brief.headline || '',
+      '',
+      'ده اللي المريض شافه، وده اللي محتاجينه منّا.'
+    ].join('\n');
+  }
+};
+
+// ---------------------------------------------------------------------------
+// END SOURCE FILE: EnablementChannel.gs
+// ---------------------------------------------------------------------------
+

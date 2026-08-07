@@ -1456,6 +1456,152 @@ var CONFIG = {
   },
 
   // ================================
+  // OPERATIONS ENABLEMENT  (W11)
+  //
+  // Marketing creates an expectation; operations has to meet it. A patient who
+  // saw "the team already knows about your case before you arrive" phones the
+  // hospital the next morning, and the person who answers has never seen the
+  // post. This worker closes that gap: it turns the campaign's approved copy
+  // into what the internal team must actually DO, and puts it on a Telegram
+  // channel the staff already read.
+  //
+  // IT IS A READ-ONLY BRANCH, like Paid Ads. It reads approved Content Pipeline
+  // rows and writes only into its own two tabs. No worker's columns are touched,
+  // so it cannot interfere with the pipeline it observes.
+  //
+  // ⚠️ THE UNIT IS A BEHAVIOUR, NOT A POST. One campaign about Critical Care
+  // runs 90 posts across three pages over ten days and asks the team for perhaps
+  // five distinct things. Producing media per post would cost 90 generations,
+  // and — worse — would bury the staff in near-identical videos until they stop
+  // watching. The three filters below take that 90 to about 5, and to nearly
+  // zero when a campaign runs again.
+  //
+  // The order of the filters is the design: DECIDE CHEAPLY, PRODUCE EXPENSIVELY.
+  // Grouping and the ledger are free and deterministic and run first; one text
+  // call per campaign runs second; only what survives both reaches media.
+  // ================================
+
+  // Where OPERATIONS_ENABLEMENT_WORKER.md lives. Blank is a valid state and the
+  // normal one: empty falls back to PROMPTS_FOLDER_ID, so the prompt can sit
+  // beside the others until it earns its own folder.
+  ENABLEMENT_PROMPTS_FOLDER_ID: '',
+
+  ENABLEMENT: {
+    SHEET_NAME: 'Enablement Briefs',
+    LEDGER_SHEET_NAME: 'Enablement Ledger',
+
+    promptFile: 'OPERATIONS_ENABLEMENT_WORKER.md',
+    temperature: 0.4,
+
+    provider: null,   // null inherits AI_PROVIDER
+    model: null,
+
+    // The knowledge file is passed per run and is the operational source of
+    // truth. These four are the standing context: what the ecosystem is, how it
+    // speaks, what it promises platform-wide, and where the pages sit.
+    //
+    // Deliberately NOT here: INSAN_VISUAL_LANGUAGE_SPEC. This worker writes the
+    // behaviour; the slide renderer downstream is what needs the visual spec,
+    // and a worker reads the document it is judged against.
+    docs: [
+      'MASTER_BRAND_ARCHITECTURE.md',
+      'AI_CREATIVE_CONSTITUTION.md',
+      'PLATFORM_KNOWLEDGE_BASE.md',
+      'PROJECT_STRUCTURE.md'
+    ],
+
+    // ---------------------------------------------------------- the filters
+
+    // FILTER 1 — collapse the pages. One calendar row becomes one Content
+    // Pipeline row per publishing page, so the same campaign and the same
+    // Content Angle appearing on INSAN, Future and Delta is one message to the
+    // team, not three. Free: it is a grouping key, not a judgement.
+    GROUP_BY: ['Campaign Name', 'Content Angle'],
+
+    // FILTER 2 is the model call, one per campaign per cycle. See _buildPrompt.
+
+    // FILTER 3 — the ledger. A behaviour already sent is not sent again.
+    //
+    // ⚠️ NOT A BLOCK, A PROMPT. After this many months the operator is asked
+    // rather than obeyed: staff turn over, and a team that joined in March has
+    // never seen what went out in January. Four months by the brand owner's
+    // decision, 2026-08-07.
+    RESTATE_AFTER_MONTHS: 4,
+
+    // How many pieces may reach the channel in a rolling week. This is a
+    // quality instrument as much as a cost one: the operator's stated goal is
+    // to wake a quiet internal team up, and twenty mediocre videos say the
+    // opposite of what two good ones say. Excess is queued, never dropped.
+    MAX_PER_WEEK: 2,
+
+    // A knowledge file still carrying an unresolved gap marker cannot produce
+    // operational instructions. This is stricter than the campaign side and
+    // deliberately so: unverified copy in an advert is a marketing risk, and
+    // unverified copy in a staff instruction is a hospital following a policy
+    // nobody approved.
+    REFUSE_ON_KNOWLEDGE_GAPS: true,
+
+    STATUS: {
+      DRAFT: 'Draft',
+      APPROVED: 'Approved',
+      QUEUED: 'Queued',
+      SENT: 'Sent',
+      SKIPPED: 'Skipped (already covered)',
+      RESTATE: 'Restate?'
+    },
+
+    COLUMNS: [
+      'Brief ID', 'Campaign Name', 'Behaviour Slug', 'Headline',
+      'Patient Expects', 'Team Must Do', 'Trust Builder', 'Trust Breaker',
+      'Source Content IDs', 'Publishing Pages', 'Cycle Start',
+      'Status', 'Previously Sent', 'Slide URLs', 'Telegram Message ID',
+      'Sent At', 'Notes'
+    ],
+
+    // The model proposes the content; the operator owns whether it ships.
+    OUTPUT_FIELDS: {
+      'Headline': 'free',
+      'Patient Expects': 'free',
+      'Team Must Do': 'free',
+      'Trust Builder': 'free',
+      'Trust Breaker': 'free',
+      'Behaviour Slug': 'free'
+    },
+
+    OPERATOR_OWNED: ['Status', 'Notes'],
+
+    // The ledger is the system's memory of what the team has already been told.
+    // Keyed by campaign + behaviour slug, which survives a rewording of the
+    // headline — the same operational ask phrased differently is the same ask.
+    LEDGER_COLUMNS: [
+      'Fingerprint', 'Campaign Name', 'Behaviour Slug', 'Headline',
+      'First Sent', 'Last Sent', 'Times Sent', 'Telegram Message ID'
+    ],
+
+    // ---------------------------------------------------------------- slides
+
+    // 1080 x 1920, the same vertical template the Story/Reel overlay uses.
+    //
+    // ⚠️ ARABIC IS SET AS REAL TYPE, NEVER GENERATED. See TEXT_OVERLAY below
+    // for the evidence: an image model cannot shape or order Arabic, and this
+    // is the same defect by a different route. The artwork carries no text.
+    SLIDE_WIDTH_PX: 1080,
+    SLIDE_HEIGHT_PX: 1920,
+    MAX_SLIDES_PER_BRIEF: 6,
+
+    // -------------------------------------------------------------- telegram
+
+    // Bot token and channel come from Script Properties, never from here — this
+    // file is committed to a public repository. ConfigResolver overwrites both
+    // at run time; the empty strings are the shape, not the value.
+    TELEGRAM: {
+      BOT_TOKEN: '',
+      CHANNEL_ID: '',
+      API_BASE: 'https://api.telegram.org/bot'
+    }
+  },
+
+  // ================================
   // VISUAL ASSET FOLDER CONFIG
   // ================================
 
@@ -1642,7 +1788,14 @@ var ConfigResolver = {
     'VISUAL_ASSETS_PUBLISHED':   'VISUAL_ASSETS.published',
     'VISUAL_ASSETS_ARCHIVE':     'VISUAL_ASSETS.archive',
     'OVERLAY_TEMPLATE_1_1':      'TEXT_OVERLAY.TEMPLATES.1:1',
-    'OVERLAY_TEMPLATE_9_16':     'TEXT_OVERLAY.TEMPLATES.9:16'
+    'OVERLAY_TEMPLATE_9_16':     'TEXT_OVERLAY.TEMPLATES.9:16',
+
+    // Enablement's Telegram credentials. A bot token is a live credential and
+    // this repository is public, so these have no value in CONFIG at all — the
+    // property is the only place they exist.
+    'TELEGRAM_BOT_TOKEN':        'ENABLEMENT.TELEGRAM.BOT_TOKEN',
+    'TELEGRAM_CHANNEL_ID':       'ENABLEMENT.TELEGRAM.CHANNEL_ID',
+    'ENABLEMENT_PROMPTS_FOLDER_ID': 'ENABLEMENT_PROMPTS_FOLDER_ID'
   },
 
   // The page list is not an identifier but it is brand-specific in the same

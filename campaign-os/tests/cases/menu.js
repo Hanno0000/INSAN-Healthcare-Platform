@@ -129,6 +129,7 @@ module.exports = {
       'runVisualPlannerWorker', 'runMediaGenerationService', 'runVisualQAWorker',
       'reuseApprovedAsset', 'runFullVisualPipeline',
       'runPublishingWorker', 'runPaidAdsWorker',
+      'runEnablementWorker', 'sendEnablementBriefs',
       'resumeLastRun', 'stopCurrentRun', 'refreshCache', 'systemStatus',
       'preflightCheck', 'checkProjectAssets', 'checkVisualAssetFolders',
       'createManagedColumns', 'syncVocabularyFromConfig', 'relaxDataValidation',
