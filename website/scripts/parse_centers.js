@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const arabicTranslations = require('./arabic_translations.js');
 
 const KNOWLEDGE_DIR = 'J:/My Drive/Insan/business/knowledge';
 const SEED_FILE = 'J:/My Drive/Insan/website/apps/api/prisma/seed-data.json';
@@ -141,11 +142,11 @@ function parseCenter(filePath) {
     },
     shortDescription: {
       en: shortDescEn,
-      ar: shortDescEn  // Will need Arabic content later
+      ar: (arabicTranslations[registryId] && arabicTranslations[registryId].short) ? arabicTranslations[registryId].short : shortDescEn
     },
     description: {
       en: descEn,
-      ar: descEn  // Will need Arabic content later
+      ar: (arabicTranslations[registryId] && arabicTranslations[registryId].desc) ? arabicTranslations[registryId].desc : descEn
     },
     isFeatured: false,
     features,
