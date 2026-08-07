@@ -158,7 +158,10 @@ function parseCenter(filePath) {
     features,
     clinics,
     schedule: scheduleText || null,
-    services: null,
+    services: clinics.map(c => ({
+      name: c.name,
+      description: null
+    })),
     bookingQuestions: []
   };
 }

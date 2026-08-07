@@ -368,36 +368,36 @@
       },
       "shortDescription": {
         "en": "The center is the definitive destination for any patient experiencing acute pains related to Internal Medicine, Cardiac, Chest, or Neurological conditions, offering an immediate, high-standard medical response.",
-        "ar": "The center is the definitive destination for any patient experiencing acute pains related to Internal Medicine, Cardiac, Chest, or Neurological conditions, offering an immediate, high-standard medical response."
+        "ar": "الوجهة النهائية لأي مريض يعاني من آلام حادة متعلقة بأمراض الباطنة، القلب، الصدر، أو الأعصاب، مع تقديم استجابة طبية فورية وعالية المستوى."
       },
       "description": {
         "en": "The Cardiac & Internal Medicine Center is a comprehensive, multidisciplinary hub at INSAN designed to manage complex internal medicine cases, cardiac emergencies, and critical care referrals. Operating across Future Specialized Hospital and Delta International Hospital, it provides a seamless continuum of care from outpatient clinics to highly specialized intensive care units.\n\nThe center is the definitive destination for any patient experiencing acute pains related to Internal Medicine, Cardiac, Chest, or Neurological conditions, offering an immediate, high-standard medical response.",
-        "ar": "The Cardiac & Internal Medicine Center is a comprehensive, multidisciplinary hub at INSAN designed to manage complex internal medicine cases, cardiac emergencies, and critical care referrals. Operating across Future Specialized Hospital and Delta International Hospital, it provides a seamless continuum of care from outpatient clinics to highly specialized intensive care units.\n\nThe center is the definitive destination for any patient experiencing acute pains related to Internal Medicine, Cardiac, Chest, or Neurological conditions, offering an immediate, high-standard medical response."
+        "ar": "مركز أمراض القلب والباطنة هو صرح طبي شامل متعدد التخصصات في منظومة إنسان، مصمم لإدارة حالات الباطنة المعقدة، وطوارئ القلب، وإحالة الرعايات الحرجة. يعمل المركز عبر مستشفى المستقبل التخصصي ومستشفى الدلتا الدولي، ويوفر سلسلة متصلة من الرعاية تبدأ من العيادات الخارجية وحتى وحدات العناية المركزة عالية التخصص.\n\nالوجهة النهائية لأي مريض يعاني من آلام حادة متعلقة بأمراض الباطنة، القلب، الصدر، أو الأعصاب، مع تقديم استجابة طبية فورية وعالية المستوى."
       },
       "isFeatured": false,
       "features": [
         {
           "title": {
             "en": "Comprehensive Clinics: Covering all major internal medicine sub-specialties.",
-            "ar": "Comprehensive Clinics: Covering all major internal medicine sub-specialties."
+            "ar": "عيادات شاملة: تغطي كافة التخصصات الدقيقة للباطنة العامة."
           }
         },
         {
           "title": {
             "en": "Advanced Diagnostics: Ultrasound, Echocardiography, Stress Echo, CT (Future, soon at Delta).",
-            "ar": "Advanced Diagnostics: Ultrasound, Echocardiography, Stress Echo, CT (Future, soon at Delta)."
+            "ar": "تشخيص متقدم: موجات صوتية، إيكو، إيكو بالمجهود، والأشعة المقطعية."
           }
         },
         {
           "title": {
             "en": "ICU Life Support: Patient monitors, CRRT (Continuous Renal Replacement Therapy), Infusion pumps, Ventilators, CPAP for respiratory failure, and Dialysis.",
-            "ar": "ICU Life Support: Patient monitors, CRRT (Continuous Renal Replacement Therapy), Infusion pumps, Ventilators, CPAP for respiratory failure, and Dialysis."
+            "ar": "دعم الحياة بالعناية المركزة: أجهزة تنفس صناعي، غسيل كلوي مستمر، ومضخات حقن."
           }
         },
         {
           "title": {
             "en": "Logistics: 24/7 Emergency Room, Home visits, and Ambulance (at Future).",
-            "ar": "Logistics: 24/7 Emergency Room, Home visits, and Ambulance (at Future)."
+            "ar": "خدمات لوجستية متكاملة: طوارئ 24/7، زيارات منزلية، وإسعاف."
           }
         }
       ],
@@ -474,7 +474,57 @@
         }
       ],
       "schedule": "Delta International Hospital: 9:00 AM to 3:00 PM, daily except Friday. | Future Specialized Hospital: 11:00 AM to 3:00 PM, daily except Friday. | Emergency & Beds: Operating 24/7 at both locations.",
-      "services": null,
+      "services": [
+        {
+          "name": {
+            "en": "General Internal Medicine",
+            "ar": "الباطنة العامة"
+          },
+          "description": null
+        },
+        {
+          "name": {
+            "en": "Hepatology",
+            "ar": "الباطنة والكبد"
+          },
+          "description": null
+        },
+        {
+          "name": {
+            "en": "Endocrinology",
+            "ar": "الباطنة والغدد الصماء"
+          },
+          "description": null
+        },
+        {
+          "name": {
+            "en": "Nephrology",
+            "ar": "الباطنة والكلى"
+          },
+          "description": null
+        },
+        {
+          "name": {
+            "en": "Pulmonology",
+            "ar": "الباطنة والصدر"
+          },
+          "description": null
+        },
+        {
+          "name": {
+            "en": "Neurology",
+            "ar": "مخ وأعصاب"
+          },
+          "description": null
+        },
+        {
+          "name": {
+            "en": "Geriatrics",
+            "ar": "طب مسنين"
+          },
+          "description": null
+        }
+      ],
       "bookingQuestions": []
     },
     {
@@ -486,42 +536,42 @@
       },
       "shortDescription": {
         "en": "The ultimate safe haven for women's health, characterized by the slogan: \"A safe birth journey... and a beautiful memory starting from the first moment\" (رحلة ولادة آمنة... وذكرى جميلة تبدأ من أول لحظة).",
-        "ar": "The ultimate safe haven for women's health, characterized by the slogan: \"A safe birth journey... and a beautiful memory starting from the first moment\" (رحلة ولادة آمنة... وذكرى جميلة تبدأ من أول لحظة)."
+        "ar": "الملاذ الآمن والأمثل لصحة المرأة، تحت شعار: \"رحلة ولادة آمنة... وذكرى جميلة تبدأ من أول لحظة\"."
       },
       "description": {
         "en": "The Women's & Children's Health Center at Delta International Hospital is a specialized, comprehensive hub providing integrated care for women across all stages of life. From normal and high-risk pregnancy follow-ups to complex gynecological surgeries, the center offers a seamless continuum of care under the supervision of university professors and PhD-holding consultants.\n\nThe ultimate safe haven for women's health, characterized by the slogan: \"A safe birth journey... and a beautiful memory starting from the first moment\" (رحلة ولادة آمنة... وذكرى جميلة تبدأ من أول لحظة).",
-        "ar": "The Women's & Children's Health Center at Delta International Hospital is a specialized, comprehensive hub providing integrated care for women across all stages of life. From normal and high-risk pregnancy follow-ups to complex gynecological surgeries, the center offers a seamless continuum of care under the supervision of university professors and PhD-holding consultants.\n\nThe ultimate safe haven for women's health, characterized by the slogan: \"A safe birth journey... and a beautiful memory starting from the first moment\" (رحلة ولادة آمنة... وذكرى جميلة تبدأ من أول لحظة)."
+        "ar": "مركز صحة المرأة بمستشفى الدلتا الدولي هو مركز متخصص وشامل يقدم رعاية متكاملة للمرأة في جميع مراحل حياتها. من متابعة الحمل الطبيعي وعالي الخطورة إلى العمليات الجراحية النسائية المعقدة، يقدم المركز رعاية متصلة تحت إشراف نخبة من أساتذة الجامعات والاستشاريين.\n\nالملاذ الآمن والأمثل لصحة المرأة، تحت شعار: \"رحلة ولادة آمنة... وذكرى جميلة تبدأ من أول لحظة\"."
       },
       "isFeatured": false,
       "features": [
         {
           "title": {
             "en": "Exclusive Tech: The first machine in the hospital to simultaneously monitor maternal and fetal pulses.",
-            "ar": "Exclusive Tech: The first machine in the hospital to simultaneously monitor maternal and fetal pulses."
+            "ar": "تكنولوجيا حصرية: أحدث الأجهزة لمراقبة نبض الأم والجنين في آن واحد."
           }
         },
         {
           "title": {
             "en": "Expert Team: Professors and consultants from various Egyptian universities.",
-            "ar": "Expert Team: Professors and consultants from various Egyptian universities."
+            "ar": "فريق من الخبراء: أساتذة واستشاريون من مختلف الجامعات المصرية."
           }
         },
         {
           "title": {
             "en": "Infrastructure: Fully equipped delivery rooms, surgical theaters, and neonatal incubators.",
-            "ar": "Infrastructure: Fully equipped delivery rooms, surgical theaters, and neonatal incubators."
+            "ar": "بنية تحتية متطورة: غرف ولادة وعمليات وحضانات مجهزة بالكامل."
           }
         },
         {
           "title": {
             "en": "Support: 24/7 anesthesia and emergency departments, with instant access to Internal Medicine, Cardiology, and ICU.",
-            "ar": "Support: 24/7 anesthesia and emergency departments, with instant access to Internal Medicine, Cardiology, and ICU."
+            "ar": "دعم مستمر: تخدير وطوارئ 24/7 مع وصول فوري للرعاية الحرجة."
           }
         },
         {
           "title": {
             "en": "Open Access: The unique ability for a patient to bring her own external doctor to perform the delivery, utilizing the hospital's premium facilities.",
-            "ar": "Open Access: The unique ability for a patient to bring her own external doctor to perform the delivery, utilizing the hospital's premium facilities."
+            "ar": "نظام مفتوح: إمكانية إحضار طبيبك الخاص لإجراء الولادة مستفيداً من تجهيزاتنا الطبية."
           }
         }
       ],
@@ -578,7 +628,43 @@
         }
       ],
       "schedule": null,
-      "services": null,
+      "services": [
+        {
+          "name": {
+            "en": "Obstetrics & Gynecology",
+            "ar": "Obstetrics & Gynecology"
+          },
+          "description": null
+        },
+        {
+          "name": {
+            "en": "Pregnancy Follow-up",
+            "ar": "Normal & High-Risk"
+          },
+          "description": null
+        },
+        {
+          "name": {
+            "en": "Delayed Conception",
+            "ar": "تأخر الإنجاب"
+          },
+          "description": null
+        },
+        {
+          "name": {
+            "en": "Gynecological Endoscopy",
+            "ar": "Gynecological Endoscopy"
+          },
+          "description": null
+        },
+        {
+          "name": {
+            "en": "Gynecological Oncology",
+            "ar": "Gynecological Oncology"
+          },
+          "description": null
+        }
+      ],
       "bookingQuestions": []
     },
     {
@@ -590,42 +676,42 @@
       },
       "shortDescription": {
         "en": "The ultimate destination for advanced, minimally invasive urological and andrological care, relying on university-level expertise and state-of-the-art laser/endoscopy technology.",
-        "ar": "The ultimate destination for advanced, minimally invasive urological and andrological care, relying on university-level expertise and state-of-the-art laser/endoscopy technology."
+        "ar": "الوجهة الأمثل للرعاية المتقدمة في جراحات المسالك البولية وأمراض الذكورة، بالاعتماد على الخبرات الجامعية وأحدث تقنيات الليزر والمناظير."
       },
       "description": {
         "en": "The Urology & Andrology Surgery Center provides comprehensive diagnostic and therapeutic services for all diseases affecting the kidneys, ureters, bladder, prostate, and urethra. It also specializes in andrology and male infertility surgeries, offering medical, endoscopic, laser, and traditional surgical treatments based on individualized patient assessment.\n\nThe ultimate destination for advanced, minimally invasive urological and andrological care, relying on university-level expertise and state-of-the-art laser/endoscopy technology.",
-        "ar": "The Urology & Andrology Surgery Center provides comprehensive diagnostic and therapeutic services for all diseases affecting the kidneys, ureters, bladder, prostate, and urethra. It also specializes in andrology and male infertility surgeries, offering medical, endoscopic, laser, and traditional surgical treatments based on individualized patient assessment.\n\nThe ultimate destination for advanced, minimally invasive urological and andrological care, relying on university-level expertise and state-of-the-art laser/endoscopy technology."
+        "ar": "يقدم مركز جراحات المسالك البولية وأمراض الذكورة خدمات تشخيصية وعلاجية شاملة لجميع الأمراض التي تصيب الكلى والحالب والمثانة والبروستاتا ومجرى البول. كما يتخصص المركز في أمراض الذكورة وجراحات العقم لدى الرجال، ويقدم العلاجات الطبية ومناظير الليزر والجراحات التقليدية بناءً على التقييم الفردي لكل مريض.\n\nالوجهة الأمثل للرعاية المتقدمة في جراحات المسالك البولية وأمراض الذكورة، بالاعتماد على الخبرات الجامعية وأحدث تقنيات الليزر والمناظير."
       },
       "isFeatured": false,
       "features": [
         {
           "title": {
             "en": "Advanced Tech: Laser and Endoscopy for stones and prostate.",
-            "ar": "Advanced Tech: Laser and Endoscopy for stones and prostate."
+            "ar": "تقنيات متقدمة: الليزر والمناظير لعلاج الحصوات ومشاكل البروستاتا."
           }
         },
         {
           "title": {
             "en": "24/7 ER: Fully equipped emergency department to handle acute retention, renal colic, trauma, and bleeding.",
-            "ar": "24/7 ER: Fully equipped emergency department to handle acute retention, renal colic, trauma, and bleeding."
+            "ar": "طوارئ 24/7: قسم طوارئ مجهز للتعامل مع الاحتباس البولي والمغص الكلوي."
           }
         },
         {
           "title": {
             "en": "All-inclusive Diagnostics: All necessary labs and imaging can be done inside the hospital prior to surgery.",
-            "ar": "All-inclusive Diagnostics: All necessary labs and imaging can be done inside the hospital prior to surgery."
+            "ar": "تشخيص شامل: جميع التحاليل والأشعة اللازمة متوفرة داخل المستشفى."
           }
         },
         {
           "title": {
             "en": "Multidisciplinary Readiness: Ability to prep and operate on high-risk patients (elderly, diabetics) after careful medical optimization.",
-            "ar": "Multidisciplinary Readiness: Ability to prep and operate on high-risk patients (elderly, diabetics) after careful medical optimization."
+            "ar": "جاهزية متعددة التخصصات: القدرة على تحضير وإجراء جراحات للحالات عالية الخطورة بأمان."
           }
         }
       ],
       "clinics": [],
       "schedule": null,
-      "services": null,
+      "services": [],
       "bookingQuestions": []
     },
     {
@@ -637,48 +723,48 @@
       },
       "shortDescription": {
         "en": "The ultimate, safe, and complete medical home for your child—from the first cry in the delivery room through every stage of their childhood and adolescence, backed by an economic pricing model that makes premium care accessible to all families.",
-        "ar": "The ultimate, safe, and complete medical home for your child—from the first cry in the delivery room through every stage of their childhood and adolescence, backed by an economic pricing model that makes premium care accessible to all families."
+        "ar": "المنزل الطبي الكامل والآمن لطفلك — من الصرخة الأولى في غرفة الولادة وحتى كل مراحل طفولته ومراهقته، مدعوماً بنموذج تسعير اقتصادي يجعل الرعاية المتميزة في متناول جميع الأسر."
       },
       "description": {
         "en": "The Pediatrics & Neonatology Center at Delta International Hospital provides comprehensive, integrated healthcare for children from birth through adolescence. Featuring 11 specialized pediatric clinics, 12 fully equipped incubators, and a 24/7 pediatric emergency department, it stands as a massive, all-inclusive hub for child health, growth monitoring, and urgent care.\n\nThe ultimate, safe, and complete medical home for your child—from the first cry in the delivery room through every stage of their childhood and adolescence, backed by an economic pricing model that makes premium care accessible to all families.",
-        "ar": "The Pediatrics & Neonatology Center at Delta International Hospital provides comprehensive, integrated healthcare for children from birth through adolescence. Featuring 11 specialized pediatric clinics, 12 fully equipped incubators, and a 24/7 pediatric emergency department, it stands as a massive, all-inclusive hub for child health, growth monitoring, and urgent care.\n\nThe ultimate, safe, and complete medical home for your child—from the first cry in the delivery room through every stage of their childhood and adolescence, backed by an economic pricing model that makes premium care accessible to all families."
+        "ar": "يقدم مركز طب الأطفال وحديثي الولادة بمستشفى الدلتا الدولي رعاية صحية شاملة ومتكاملة للأطفال من الولادة وحتى المراهقة. يضم المركز 11 عيادة متخصصة للأطفال، و12 حضّانة مجهزة بالكامل، وقسماً لطوارئ الأطفال يعمل على مدار الساعة، ليمثل صرحاً شاملاً لصحة الطفل ومتابعة نموه والرعاية العاجلة.\n\nالمنزل الطبي الكامل والآمن لطفلك — من الصرخة الأولى في غرفة الولادة وحتى كل مراحل طفولته ومراهقته، مدعوماً بنموذج تسعير اقتصادي يجعل الرعاية المتميزة في متناول جميع الأسر."
       },
       "isFeatured": false,
       "features": [
         {
           "title": {
             "en": "12 Equipped Incubators: Ready for premature babies, jaundice, and critical neonatal care.",
-            "ar": "12 Equipped Incubators: Ready for premature babies, jaundice, and critical neonatal care."
+            "ar": "12 حضانة مجهزة: جاهزة للتعامل مع الأطفال المبتسرين والحالات الحرجة."
           }
         },
         {
           "title": {
             "en": "24/7 Pediatric ER: Always staffed by trained pediatricians.",
-            "ar": "24/7 Pediatric ER: Always staffed by trained pediatricians."
+            "ar": "طوارئ أطفال 24/7: أطباء أطفال متواجدون على مدار الساعة."
           }
         },
         {
           "title": {
             "en": "11 Sub-specialty Clinics: Covering every system in the child's body.",
-            "ar": "11 Sub-specialty Clinics: Covering every system in the child's body."
+            "ar": "11 عيادة تخصصية: لتغطية كافة التخصصات الدقيقة لطب الأطفال."
           }
         },
         {
           "title": {
             "en": "Economic Pricing: High-quality care at a fair, accessible price point.",
-            "ar": "Economic Pricing: High-quality care at a fair, accessible price point."
+            "ar": "تسعير اقتصادي: رعاية متميزة بأسعار في متناول جميع الأسر."
           }
         },
         {
           "title": {
             "en": "All-in-One: Labs and X-rays are available in the same building.",
-            "ar": "All-in-One: Labs and X-rays are available in the same building."
+            "ar": "خدمات متكاملة: المعامل والأشعة متوفرة في نفس المبنى."
           }
         }
       ],
       "clinics": [],
       "schedule": null,
-      "services": null,
+      "services": [],
       "bookingQuestions": []
     },
     {
@@ -690,42 +776,42 @@
       },
       "shortDescription": {
         "en": "One of the strongest and most advanced ENT units in the region, bringing the academic excellence of university professors into a premium, fully equipped private hospital setting.",
-        "ar": "One of the strongest and most advanced ENT units in the region, bringing the academic excellence of university professors into a premium, fully equipped private hospital setting."
+        "ar": "واحدة من أقوى وحدات الأنف والأذن والحنجرة وأكثرها تطوراً في المنطقة، والتي تجمع بين التميز الأكاديمي لأساتذة الجامعات والبيئة المجهزة لمستشفى خاص متميز."
       },
       "description": {
         "en": "The ENT & Head and Neck Surgery Center is a comprehensive, highly specialized unit providing elite diagnostic, therapeutic, and surgical services for both adults and children. It operates under the strict supervision of university professors and PhD-holding consultants, utilizing the latest endoscopy and diagnostic technology in the region.\n\nOne of the strongest and most advanced ENT units in the region, bringing the academic excellence of university professors into a premium, fully equipped private hospital setting.",
-        "ar": "The ENT & Head and Neck Surgery Center is a comprehensive, highly specialized unit providing elite diagnostic, therapeutic, and surgical services for both adults and children. It operates under the strict supervision of university professors and PhD-holding consultants, utilizing the latest endoscopy and diagnostic technology in the region.\n\nOne of the strongest and most advanced ENT units in the region, bringing the academic excellence of university professors into a premium, fully equipped private hospital setting."
+        "ar": "مركز جراحات الأنف والأذن والحنجرة وجراحات الرأس والرقبة هو وحدة شاملة عالية التخصص تقدم نخبة من الخدمات التشخيصية والعلاجية والجراحية للبالغين والأطفال. يعمل المركز تحت الإشراف الدقيق لأساتذة الجامعات والاستشاريين، باستخدام أحدث تقنيات المناظير والتشخيص في المنطقة.\n\nواحدة من أقوى وحدات الأنف والأذن والحنجرة وأكثرها تطوراً في المنطقة، والتي تجمع بين التميز الأكاديمي لأساتذة الجامعات والبيئة المجهزة لمستشفى خاص متميز."
       },
       "isFeatured": false,
       "features": [
         {
           "title": {
             "en": "Academic Elite: Staffed by university professors and consultants.",
-            "ar": "Academic Elite: Staffed by university professors and consultants."
+            "ar": "نخبة أكاديمية: تحت إشراف أساتذة جامعيين واستشاريين."
           }
         },
         {
           "title": {
             "en": "Advanced Diagnostics: State-of-the-art ENT units with full endoscopic capabilities.",
-            "ar": "Advanced Diagnostics: State-of-the-art ENT units with full endoscopic capabilities."
+            "ar": "تشخيص متقدم: أحدث وحدات الأنف والأذن مزودة بكافة المناظير."
           }
         },
         {
           "title": {
             "en": "Fully Equipped ORs: Designed for delicate microscopic ear surgeries and endoscopic sinus surgeries.",
-            "ar": "Fully Equipped ORs: Designed for delicate microscopic ear surgeries and endoscopic sinus surgeries."
+            "ar": "غرف عمليات مجهزة: مصممة لجراحات الأذن الميكروسكوبية الدقيقة ومناظير الجيوب الأنفية."
           }
         },
         {
           "title": {
             "en": "All-in-One Facility: Diagnostics, labs, radiology, surgery, and follow-up are all conducted within the hospital.",
-            "ar": "All-in-One Facility: Diagnostics, labs, radiology, surgery, and follow-up are all conducted within the hospital."
+            "ar": "مرفق متكامل: التشخيص والمعمل والأشعة والجراحة تتم جميعها داخل المستشفى."
           }
         }
       ],
       "clinics": [],
       "schedule": null,
-      "services": null,
+      "services": [],
       "bookingQuestions": []
     },
     {
@@ -737,42 +823,42 @@
       },
       "shortDescription": {
         "en": "The safest surgical choice. Led by University Professors who prioritize the patient's wellbeing over performing an operation.",
-        "ar": "The safest surgical choice. Led by University Professors who prioritize the patient's wellbeing over performing an operation."
+        "ar": "الخيار الجراحي الأكثر أماناً. بقيادة أساتذة جامعيين يضعون مصلحة المريض وصحته فوق مجرد إجراء العملية."
       },
       "description": {
         "en": "An integrated program for diagnosing and treating all conditions requiring surgical intervention. It is not just a place to \"perform operations,\" but a center dedicated to reaching the correct diagnosis and selecting the most appropriate treatment method (medical, endoscopic, laser, or open surgery) based strictly on the patient's medical condition.\n\nThe safest surgical choice. Led by University Professors who prioritize the patient's wellbeing over performing an operation.",
-        "ar": "An integrated program for diagnosing and treating all conditions requiring surgical intervention. It is not just a place to \"perform operations,\" but a center dedicated to reaching the correct diagnosis and selecting the most appropriate treatment method (medical, endoscopic, laser, or open surgery) based strictly on the patient's medical condition.\n\nThe safest surgical choice. Led by University Professors who prioritize the patient's wellbeing over performing an operation."
+        "ar": "برنامج متكامل لتشخيص وعلاج كافة الحالات التي تتطلب تدخلاً جراحياً. إنه ليس مجرد مكان \"لإجراء العمليات\"، بل مركز مكرس للوصول إلى التشخيص الصحيح واختيار طريقة العلاج الأنسب (دوائي، منظار، ليزر، أو جراحة مفتوحة) بناءً على الحالة الطبية للمريض بدقة.\n\nالخيار الجراحي الأكثر أماناً. بقيادة أساتذة جامعيين يضعون مصلحة المريض وصحته فوق مجرد إجراء العملية."
       },
       "isFeatured": false,
       "features": [
         {
           "title": {
             "en": "Consultants and Professors from Egyptian Universities (all hold PhDs).",
-            "ar": "Consultants and Professors from Egyptian Universities (all hold PhDs)."
+            "ar": "استشاريون وأساتذة من الجامعات المصرية يحملون درجة الدكتوراه."
           }
         },
         {
           "title": {
             "en": "High-end Laparoscopic towers.",
-            "ar": "High-end Laparoscopic towers."
+            "ar": "أبراج مناظير جراحية متطورة."
           }
         },
         {
           "title": {
             "en": "Fully equipped ORs and adult ICUs.",
-            "ar": "Fully equipped ORs and adult ICUs."
+            "ar": "غرف عمليات متقدمة ورعاية مركزة مجهزة للبالغين."
           }
         },
         {
           "title": {
             "en": "Comprehensive in-house diagnostics (Labs, Radiology).",
-            "ar": "Comprehensive in-house diagnostics (Labs, Radiology)."
+            "ar": "خدمات تشخيصية متكاملة داخل المستشفى (معامل وأشعة)."
           }
         }
       ],
       "clinics": [],
       "schedule": null,
-      "services": null,
+      "services": [],
       "bookingQuestions": []
     },
     {
@@ -784,42 +870,42 @@
       },
       "shortDescription": {
         "en": "\"خبرة الجامعات المصرية... ورعاية متكاملة في مكان واحد.\" (Egyptian Universities' expertise... and integrated care in one place.)",
-        "ar": "\"خبرة الجامعات المصرية... ورعاية متكاملة في مكان واحد.\" (Egyptian Universities' expertise... and integrated care in one place.)"
+        "ar": "\"خبرة الجامعات المصرية... ورعاية متكاملة في مكان واحد.\""
       },
       "description": {
         "en": "A highly specialized center dedicated to the diagnosis and treatment of lower gastrointestinal issues, including hemorrhoids, anal fissures, fistulas, pilonidal cysts, and colorectal tumors.\n\n\"خبرة الجامعات المصرية... ورعاية متكاملة في مكان واحد.\" (Egyptian Universities' expertise... and integrated care in one place.)",
-        "ar": "A highly specialized center dedicated to the diagnosis and treatment of lower gastrointestinal issues, including hemorrhoids, anal fissures, fistulas, pilonidal cysts, and colorectal tumors.\n\n\"خبرة الجامعات المصرية... ورعاية متكاملة في مكان واحد.\" (Egyptian Universities' expertise... and integrated care in one place.)"
+        "ar": "مركز عالي التخصص مكرس لتشخيص وعلاج مشاكل الجهاز الهضمي السفلي، بما في ذلك البواسير، والشقوق الشرجية، والنواسير، والخراج العصعصي، وأورام القولون والمستقيم.\n\n\"خبرة الجامعات المصرية... ورعاية متكاملة في مكان واحد.\""
       },
       "isFeatured": false,
       "features": [
         {
           "title": {
             "en": "University Professors specializing in Colorectal surgery.",
-            "ar": "University Professors specializing in Colorectal surgery."
+            "ar": "أساتذة جامعيون متخصصون في جراحات القولون والمستقيم."
           }
         },
         {
           "title": {
             "en": "Latest Laser technologies.",
-            "ar": "Latest Laser technologies."
+            "ar": "أحدث تقنيات الليزر الجراحية."
           }
         },
         {
           "title": {
             "en": "Fully equipped ORs for advanced tumor excisions.",
-            "ar": "Fully equipped ORs for advanced tumor excisions."
+            "ar": "غرف عمليات مجهزة لاستئصال الأورام المتقدمة."
           }
         },
         {
           "title": {
             "en": "In-house colonoscopy capabilities.",
-            "ar": "In-house colonoscopy capabilities."
+            "ar": "تجهيزات متكاملة لإجراء مناظير القولون."
           }
         }
       ],
       "clinics": [],
       "schedule": null,
-      "services": null,
+      "services": [],
       "bookingQuestions": []
     },
     {
@@ -831,42 +917,42 @@
       },
       "shortDescription": {
         "en": "\"علاج متكامل وليس مجرد إجراء عملية.\" (An integrated treatment, not just a surgical procedure.)",
-        "ar": "\"علاج متكامل وليس مجرد إجراء عملية.\" (An integrated treatment, not just a surgical procedure.)"
+        "ar": "\"علاج متكامل وليس مجرد إجراء عملية.\""
       },
       "description": {
         "en": "A highly specialized center providing comprehensive, long-term solutions for obesity and metabolic diseases (like Type 2 Diabetes). It is deliberately named the \"Bariatric & Metabolic Surgeries Center\" rather than a \"Sleeve Center\" to emphasize that it provides integrated health solutions, not just a single surgical procedure.\n\n\"علاج متكامل وليس مجرد إجراء عملية.\" (An integrated treatment, not just a surgical procedure.)",
-        "ar": "A highly specialized center providing comprehensive, long-term solutions for obesity and metabolic diseases (like Type 2 Diabetes). It is deliberately named the \"Bariatric & Metabolic Surgeries Center\" rather than a \"Sleeve Center\" to emphasize that it provides integrated health solutions, not just a single surgical procedure.\n\n\"علاج متكامل وليس مجرد إجراء عملية.\" (An integrated treatment, not just a surgical procedure.)"
+        "ar": "مركز عالي التخصص يقدم حلولاً شاملة وطويلة الأمد للسمنة والأمراض الأيضية (مثل السكري من النوع الثاني). سُمّي عمداً بـ \"مركز جراحات السمنة والأيض\" وليس \"مركز التكميم\" للتأكيد على أنه يقدم حلولاً صحية متكاملة، وليس مجرد إجراء جراحي واحد.\n\n\"علاج متكامل وليس مجرد إجراء عملية.\""
       },
       "isFeatured": false,
       "features": [
         {
           "title": {
             "en": "University Professors and Consultants.",
-            "ar": "University Professors and Consultants."
+            "ar": "أساتذة جامعيون واستشاريون خبراء."
           }
         },
         {
           "title": {
             "en": "Modern Laparoscopic techniques (minimal incisions).",
-            "ar": "Modern Laparoscopic techniques (minimal incisions)."
+            "ar": "تقنيات المنظار الحديثة (بأصغر جروح ممكنة)."
           }
         },
         {
           "title": {
             "en": "Equipped ORs and ICUs specifically for bariatric patients.",
-            "ar": "Equipped ORs and ICUs specifically for bariatric patients."
+            "ar": "غرف عمليات وعناية مركزة مجهزة خصيصاً لمرضى السمنة."
           }
         },
         {
           "title": {
             "en": "Dedicated Clinical Nutritionists.",
-            "ar": "Dedicated Clinical Nutritionists."
+            "ar": "أطباء تغذية إكلينيكية متخصصون للمتابعة."
           }
         }
       ],
       "clinics": [],
       "schedule": null,
-      "services": null,
+      "services": [],
       "bookingQuestions": []
     },
     {
@@ -878,17 +964,17 @@
       },
       "shortDescription": {
         "en": "",
-        "ar": ""
+        "ar": "مركز الجراحات العامة والعيادات التخصصية يقدم رعاية جراحية وطبية متميزة."
       },
       "description": {
         "en": "",
-        "ar": ""
+        "ar": "مركز الجراحات العامة والعيادات التخصصية هو صرح طبي يجمع بين العمليات الجراحية الدقيقة ومتابعة المرضى في العيادات التخصصية الملحقة."
       },
       "isFeatured": false,
       "features": [],
       "clinics": [],
       "schedule": null,
-      "services": null,
+      "services": [],
       "bookingQuestions": []
     },
     {
@@ -900,17 +986,17 @@
       },
       "shortDescription": {
         "en": "The Outpatient Clinics serve as the primary gateway for elective and non-emergency medical care at INSAN.",
-        "ar": "The Outpatient Clinics serve as the primary gateway for elective and non-emergency medical care at INSAN."
+        "ar": "العيادات الخارجية هي البوابة الأساسية للرعاية الطبية غير الطارئة والمجدولة في منظومة إنسان."
       },
       "description": {
         "en": "The Outpatient Clinics serve as the primary gateway for elective and non-emergency medical care at INSAN. More than just a traditional hospital department, it operates as a comprehensive diagnostic and consultation platform hosting multiple specialized programs.",
-        "ar": "The Outpatient Clinics serve as the primary gateway for elective and non-emergency medical care at INSAN. More than just a traditional hospital department, it operates as a comprehensive diagnostic and consultation platform hosting multiple specialized programs."
+        "ar": "العيادات الخارجية هي البوابة الأساسية للرعاية الطبية غير الطارئة والمجدولة في منظومة إنسان. لا تقتصر على كونها مجرد قسم مستشفى تقليدي، بل تعمل كمنصة شاملة للتشخيص والاستشارة تضم برامج تخصصية متعددة."
       },
       "isFeatured": false,
       "features": [],
       "clinics": [],
       "schedule": null,
-      "services": null,
+      "services": [],
       "bookingQuestions": []
     },
     {
@@ -918,46 +1004,46 @@
       "slug": "emergency-department",
       "name": {
         "en": "Emergency Department (Rapid Response Center)",
-        "ar": "قسم الطوارئ (مركز الاستجابة السريعة)"
+        "ar": "مركز الاستجابة السريعة (الطوارئ)"
       },
       "shortDescription": {
         "en": "\"The gateway to the entire hospital.\" We are not just one doctor on shift; we are an entire medical ecosystem moving for the patient from the first minute.",
-        "ar": "\"The gateway to the entire hospital.\" We are not just one doctor on shift; we are an entire medical ecosystem moving for the patient from the first minute."
+        "ar": "\"البوابة لكل المستشفى.\" نحن لسنا مجرد طبيب في نوبطجية؛ نحن منظومة طبية كاملة تتحرك لإنقاذ المريض من الدقيقة الأولى."
       },
       "description": {
         "en": "The Rapid Response Center is a 24/7, fully integrated life-saving ecosystem. We are actively shifting the brand perception from a standard \"Emergency Room\" to a \"Rapid Response Center,\" emphasizing that the entire hospital's capabilities (all specialties, labs, imaging, ORs, ICUs, and incubators) mobilize from the first minute of the patient's arrival.\n\n\"The gateway to the entire hospital.\" We are not just one doctor on shift; we are an entire medical ecosystem moving for the patient from the first minute.",
-        "ar": "The Rapid Response Center is a 24/7, fully integrated life-saving ecosystem. We are actively shifting the brand perception from a standard \"Emergency Room\" to a \"Rapid Response Center,\" emphasizing that the entire hospital's capabilities (all specialties, labs, imaging, ORs, ICUs, and incubators) mobilize from the first minute of the patient's arrival.\n\n\"The gateway to the entire hospital.\" We are not just one doctor on shift; we are an entire medical ecosystem moving for the patient from the first minute."
+        "ar": "مركز الاستجابة السريعة هو منظومة متكاملة لإنقاذ الحياة تعمل على مدار الساعة. نحن نعمل بشكل فعال على تغيير المفهوم السائد عن \"غرفة الطوارئ\" التقليدية إلى \"مركز الاستجابة السريعة\"، للتأكيد على أن إمكانيات المستشفى بالكامل (من التخصصات، والمعامل، والأشعة، وغرف العمليات، والعناية المركزة، والحضّانات) تُستنفر من الدقيقة الأولى لوصول المريض.\n\n\"البوابة لكل المستشفى.\" نحن لسنا مجرد طبيب في نوبطجية؛ نحن منظومة طبية كاملة تتحرك لإنقاذ المريض من الدقيقة الأولى."
       },
       "isFeatured": false,
       "features": [
         {
           "title": {
             "en": "Immediate Triage: Service starts the moment the patient arrives.",
-            "ar": "Immediate Triage: Service starts the moment the patient arrives."
+            "ar": "فرز فوري: الخدمة تبدأ من اللحظة الأولى لوصول المريض."
           }
         },
         {
           "title": {
             "en": "24/7 Availability: All specialties, labs, and radiology are operational around the clock.",
-            "ar": "24/7 Availability: All specialties, labs, and radiology are operational around the clock."
+            "ar": "جاهزية 24/7: كافة التخصصات والمعامل والأشعة تعمل على مدار الساعة."
           }
         },
         {
           "title": {
             "en": "High-Acuity Readiness: Adult ICU, Pediatric ICU, Incubators, and ORs are always on standby.",
-            "ar": "High-Acuity Readiness: Adult ICU, Pediatric ICU, Incubators, and ORs are always on standby."
+            "ar": "استعداد للحالات الحرجة: العناية المركزة، وحضانات الأطفال، وغرف العمليات على أهبة الاستعداد."
           }
         },
         {
           "title": {
             "en": "Electronic Medical Records: Creating a medical file from the first visit for continuity of care.",
-            "ar": "Electronic Medical Records: Creating a medical file from the first visit for continuity of care."
+            "ar": "سجلات طبية إلكترونية: إنشاء ملف طبي للمريض من الزيارة الأولى لضمان استمرارية الرعاية."
           }
         }
       ],
       "clinics": [],
       "schedule": null,
-      "services": null,
+      "services": [],
       "bookingQuestions": []
     },
     {
@@ -968,43 +1054,18 @@
         "ar": "وحدة العناية المركزة (مركز الرعاية الشاملة للحالات الحرجة)"
       },
       "shortDescription": {
-        "en": "\"الثقة قبل العلاج.\" (Trust before treatment.) We are a comprehensive critical care ecosystem that treats the family's fear as rigorously as the patient's illness.",
-        "ar": "\"الثقة قبل العلاج.\" (Trust before treatment.) We are a comprehensive critical care ecosystem that treats the family's fear as rigorously as the patient's illness."
+        "en": "",
+        "ar": "\"الثقة قبل العلاج.\" نحن منظومة رعاية حرجة متكاملة تعالج خوف الأسرة بنفس الدقة التي نعالج بها مرض المريض."
       },
       "description": {
-        "en": "The Intensive Care Unit is not marketed as a traditional hospital department filled with beds and monitors. It is positioned as an independent, integrated entity—\"مركز الرعاية الشاملة للحالات الحرجة\" (Comprehensive Critical Care Center). It is a system that fights to save lives while deeply respecting the human dignity of the patient and their family in every step.\n\n\"الثقة قبل العلاج.\" (Trust before treatment.) We are a comprehensive critical care ecosystem that treats the family's fear as rigorously as the patient's illness.",
-        "ar": "The Intensive Care Unit is not marketed as a traditional hospital department filled with beds and monitors. It is positioned as an independent, integrated entity—\"مركز الرعاية الشاملة للحالات الحرجة\" (Comprehensive Critical Care Center). It is a system that fights to save lives while deeply respecting the human dignity of the patient and their family in every step.\n\n\"الثقة قبل العلاج.\" (Trust before treatment.) We are a comprehensive critical care ecosystem that treats the family's fear as rigorously as the patient's illness."
+        "en": "",
+        "ar": "وحدة العناية المركزة لا تُسوق كقسم مستشفى تقليدي مليء بالأسرة وأجهزة المراقبة. بل تُقدم ككيان مستقل ومتكامل — \"مركز الرعاية الشاملة للحالات الحرجة\". إنها منظومة تقاتل من أجل إنقاذ الأرواح مع الاحترام العميق للكرامة الإنسانية للمريض وأسرته في كل خطوة.\n\n\"الثقة قبل العلاج.\" نحن منظومة رعاية حرجة متكاملة تعالج خوف الأسرة بنفس الدقة التي نعالج بها مرض المريض."
       },
       "isFeatured": false,
-      "features": [
-        {
-          "title": {
-            "en": "24/7 Intensivists and specialized ICU nursing.",
-            "ar": "24/7 Intensivists and specialized ICU nursing."
-          }
-        },
-        {
-          "title": {
-            "en": "Immediate access to all sub-specialties (Cardiology, Neuro, Surgery).",
-            "ar": "Immediate access to all sub-specialties (Cardiology, Neuro, Surgery)."
-          }
-        },
-        {
-          "title": {
-            "en": "In-house Lab and Radiology.",
-            "ar": "In-house Lab and Radiology."
-          }
-        },
-        {
-          "title": {
-            "en": "Strict Infection Control and Quality protocols.",
-            "ar": "Strict Infection Control and Quality protocols."
-          }
-        }
-      ],
+      "features": [],
       "clinics": [],
       "schedule": null,
-      "services": null,
+      "services": [],
       "bookingQuestions": []
     },
     {
@@ -1016,17 +1077,17 @@
       },
       "shortDescription": {
         "en": "",
-        "ar": ""
+        "ar": "برنامج طبي خيري ومجتمعي يقدم رعاية صحية لغير القادرين."
       },
       "description": {
         "en": "",
-        "ar": ""
+        "ar": "برنامج كبرونا هو مبادرة طبية وخيرية ضمن منظومة إنسان، مكرس لتقديم الرعاية الصحية الأساسية والمتخصصة لغير القادرين، انطلاقاً من المسؤولية المجتمعية للمنظومة."
       },
       "isFeatured": false,
       "features": [],
       "clinics": [],
       "schedule": null,
-      "services": null,
+      "services": [],
       "bookingQuestions": []
     }
   ],
