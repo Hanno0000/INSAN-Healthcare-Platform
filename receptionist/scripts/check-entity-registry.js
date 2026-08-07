@@ -49,6 +49,37 @@ const seed = JSON.parse(fs.readFileSync(SEED_DATA, 'utf8'));
 
 const registeredCenters = registry.filter((r) => r.level === 'CENTER');
 
+// ─── Name agreement ──────────────────────────────────────────────────
+// Checking that the id EXISTS is not enough. Content joined to the WRONG
+// id is invisible to an existence check and still seeds a real page: the
+// seeder takes the NAME from the registry and the DESCRIPTION from this
+// content, so a mis-join publishes one centre's name over another
+// centre's text. Compare the content slug against the registry's English
+// name and require at least one meaningful shared word.
+const STOP = new Set([
+  'center', 'centre', 'centers', 'centres', 'surgery', 'surgeries',
+  'department', 'departments', 'program', 'programs', 'unit', 'units',
+  'clinic', 'clinics', 'medical', 'and', 'the', 'of', 'for',
+]);
+
+function tokens(s) {
+  return new Set(
+    String(s || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ')
+      .split(/\s+/)
+      .filter((t) => t.length > 1 && !STOP.has(t)),
+  );
+}
+
+function sharesAnyToken(slug, nameEn) {
+  const a = tokens(slug);
+  const b = tokens(nameEn);
+  if (!a.size || !b.size) return true; // nothing to compare — never invent a finding
+  for (const t of a) if (b.has(t)) return true;
+  return false;
+}
+
 /**
  * Since 2026-08-03 the seeder reads ENTITY_REGISTRY.md directly, so identity —
  * which centres exist and at which hospitals — cannot drift. seed-data.json now
@@ -72,8 +103,18 @@ for (const c of contentEntries) {
     note('high', 'content entry has no registryId', `${c.slug} — it will never be applied to any centre`);
     continue;
   }
-  if (!registeredCenters.some((r) => r.id === c.registryId)) {
+  const entry = registry.find((r) => r.id === c.registryId);
+  if (!entry) {
     note('high', 'content points at an unknown registry id', `${c.slug} → ${c.registryId}`);
+    continue;
+  }
+  if (!sharesAnyToken(c.slug, entry.nameEn)) {
+    note(
+      'high',
+      'content is joined to a registry id that means something else',
+      `${c.registryId} is "${entry.nameEn}" (${entry.nameAr})\n` +
+        `        but the content joined to it is "${c.slug}"`,
+    );
   }
 }
 
