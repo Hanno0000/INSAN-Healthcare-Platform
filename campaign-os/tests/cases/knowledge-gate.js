@@ -98,6 +98,8 @@ module.exports = {
     const ready = [];
     const blocked = [];
     const broken = [];
+    const byCampaign = {};
+    const byEntityId = {};
 
     for (const rel of listKnowledgeFiles()) {
       const content = fx.repoFile(rel);
@@ -107,7 +109,45 @@ module.exports = {
       if (result.problems.length) broken.push(name + ': ' + result.problems[0]);
       else if (result.gaps.length) blocked.push(name);
       else ready.push(name);
+
+      const front = CardBuilder.parseFrontMatter(content);
+      const campaign = CardBuilder.campaignNameFor(front);
+      if (campaign) (byCampaign[campaign] = byCampaign[campaign] || []).push(name);
+      if (front.entity_id) {
+        (byEntityId[front.entity_id] = byEntityId[front.entity_id] || []).push(name);
+      }
     }
+
+    // --- one campaign_name, one file ---
+    //
+    // campaign_name is the join key the whole pipeline turns on: the card is
+    // filed under it and Transfer looks the campaign up by it once per
+    // scheduled post. Two files claiming one key is not a naming untidiness —
+    // it means whichever builds SECOND overwrites the first's card, and both
+    // builds report success. Nothing downstream can see that it happened.
+    //
+    // This is not hypothetical. MEDICAL_CENTER_GENERAL_SURGERY.md (CEN-004) and
+    // MEDICAL_SERVICE_GENERAL_SURGERY.md (MED-007) both declared
+    // `General Surgery Center` until 2026-08-07, and it was found by reading the
+    // files rather than by anything failing.
+    const dupCampaigns = Object.entries(byCampaign)
+      .filter(([, files]) => files.length > 1)
+      .map(([campaign, files]) => `${campaign} <- ${files.sort().join(' + ')}`);
+
+    t.is(dupCampaigns.sort(), [],
+      'no two knowledge files claim the same campaign_name — it is the pipeline ' +
+      'join key, so a duplicate means one card silently overwrites the other ' +
+      'and both builds report success');
+
+    // Same rule for entity_id, which is the registry's join key rather than the
+    // sheet's. A file carrying an id that belongs to a different entity joins
+    // this file's content to that entity everywhere the registry is consulted.
+    const dupIds = Object.entries(byEntityId)
+      .filter(([, files]) => files.length > 1)
+      .map(([id, files]) => `${id} <- ${files.sort().join(' + ')}`);
+
+    t.is(dupIds.sort(), [],
+      'and no two claim the same entity_id — the registry\'s join key');
 
     // Files known to be deliberately incomplete — waiting on facts only the
     // operator has, marked rather than invented. Adding a new one here is
@@ -118,10 +158,16 @@ module.exports = {
     // 2026-08-06: eight MEDICAL_CENTER_* files added, ICU and Emergency renamed
     // to MEDICAL_DEPARTMENT_*, Internal Medicine & Cardiology folded into
     // MEDICAL_CENTER_CARDIAC_INTERNAL_MEDICINE.md.
+    // MEDICAL_SERVICE_GENERAL_SURGERY.md was on this list until 2026-08-07 and
+    // no longer exists. It declared `campaign_name: General Surgery Center` —
+    // the same join key as MEDICAL_CENTER_GENERAL_SURGERY.md — so whichever of
+    // the two built second silently overwrote the other's card. The brand owner
+    // ruled the entity is a Center; the file was merged into CEN-004's and
+    // deleted. `identifiers.js` holds the rule that no two files may share a
+    // campaign_name, so this cannot recur silently.
     const KNOWN_BLOCKED = [
       'HOSPITAL_DELTA.md',
       'MEDICAL_DEPARTMENT_ER.md',
-      'MEDICAL_SERVICE_GENERAL_SURGERY.md',
 
       // The eight centers added 2026-08-06. Every one is a real, deliberate
       // gap — several are nearly empty skeletons (Urology 20 markers,

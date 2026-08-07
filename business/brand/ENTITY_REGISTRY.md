@@ -62,11 +62,11 @@ that difference is deliberate and is recorded in the knowledge file's
 | ID | Entity (EN) | Entity (AR) | Level | Campaign Name | Hospitals |
 |---|---|---|---|---|---|
 | MED-001 | Intensive Care Unit | وحدة العناية المركزة | DEPARTMENT | Critical Care Center | Future, Delta |
-| MED-002 | Emergency Department | قسم الطوارئ | DEPARTMENT | Emergency Center | Future, Delta |
+| MED-002 | Emergency Department | قسم الطوارئ | DEPARTMENT | Rapid Response Center | Future, Delta |
 | MED-003 | Operating Rooms | غرف العمليات | DEPARTMENT | — | Future, Delta |
 | MED-004 | Radiology & Imaging | الأشعة والتصوير | DEPARTMENT | — | Future, Delta |
 | MED-005 | Laboratory | المعمل | DEPARTMENT | — | Future, Delta |
-| MED-006 | Outpatient Clinics | العيادات الخارجية | DEPARTMENT | — | Future, Delta |
+| MED-006 | Outpatient Clinics | العيادات الخارجية | DEPARTMENT | Outpatient Clinics | Future, Delta |
 | CEN-001 | Cardiac & Internal Medicine Center | مركز القلب والباطنة وإحالة الرعايات الحرجة | CENTER | Cardiac Center | Future, Delta |
 | CEN-002 | Urology & Laser Surgery Center | مركز جراحات المسالك والليزر | CENTER | Urology Center | Future, Delta |
 | CEN-003 | Digestive & Liver Endoscopy Center | مركز مناظير الجهاز الهضمي والكبد | CENTER | Digestive Center | Future, Delta |
@@ -75,7 +75,7 @@ that difference is deliberate and is recorded in the knowledge file's
 | CEN-006 | Pain Management Center | مركز علاج الألم والتدخلات المحدودة | CENTER | Pain Management Center | Delta |
 | CEN-007 | Women's Health Center | مركز صحة المرأة | CENTER | Women's Health Center | Delta |
 | CEN-008 | Dental Center | مركز الأسنان للكبار والأطفال وذوي الهمم | CENTER | Dental Center | Delta |
-| CEN-009 | ENT & Head/Neck Surgery Center | مركز الأنف والأذن وجراحات الرقبة والرأس | CENTER | ENT Center | Delta |
+| CEN-009 | ENT & Head/Neck Surgery Center | مركز الأنف والأذن وجراحات الرقبة والرأس | CENTER | ENT Center | Future, Delta |
 | CEN-010 | Orthopedic & Sports Injury Center | مركز العظام وإصابات الملاعب | CENTER | Orthopedic Center | Delta |
 | CEN-011 | Chest & Sleep Disorders Center | مركز الصدر واضطرابات النوم | CENTER | Chest & Sleep Center | Delta |
 | CEN-012 | Senior Health & Screening Center | مركز صحة كبار السن والفحص الشامل | CENTER | — | Delta |
@@ -94,8 +94,30 @@ A `—` in Campaign Name means the entity is registered and real, and no campaig
 currently scheduled for it. That is a legitimate state: the registry describes the
 business, not the plan.
 
-**Centers 5–12 and 15 operate at Delta only**, per `PLATFORM_KNOWLEDGE_BASE.md` §2.2.
-Centers 1–4, 13, 14 and 16 operate at both hospitals.
+**Centers 5–8, 10–12 and 15 operate at Delta only**, per
+`PLATFORM_KNOWLEDGE_BASE.md` §2.2. Centers 1–4, 9, 13, 14 and 16 operate at both
+hospitals.
+
+**CEN-009 moved to both hospitals on 2026-08-07.** The registry had it at Delta
+only while its knowledge file stated `hospitals: [Future, Delta]`; the brand owner
+confirmed the file was right. This is the kind of divergence that reaches a reader
+as a service advertised on the wrong page, so it is recorded rather than quietly
+corrected.
+
+**MED-002's campaign was renamed `Emergency Center` → `Rapid Response Center`** on
+2026-08-07, to match its knowledge file. ⚠️ Renaming a campaign is a **three-place**
+change — knowledge file, this registry, and **every existing Content Calendar
+row**. Two are done. The live sheet is the operator's to change, and until it is,
+cards built under the new name join to nothing.
+
+**MED-006 gained a campaign name on 2026-08-07.** Outpatient Clinics is a
+department that carries its own campaigns, which the `—` had denied.
+
+**There is no MED-007.** A knowledge file existed under that id claiming
+`campaign_name: General Surgery Center` — the same join key as CEN-004 — which
+meant whichever built second silently overwrote the other's card. The brand owner
+ruled the entity is a Center, and the file was merged into `CEN-004`'s and
+deleted on 2026-08-07. The id is retired, not reusable.
 
 ### The surgical family
 
