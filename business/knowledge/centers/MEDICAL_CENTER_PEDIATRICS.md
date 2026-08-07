@@ -35,26 +35,28 @@ A specialized, multi-disciplinary center offering diagnostic, therapeutic, and e
 
 ### 1.3 Vision
 
-### 1.3 Mission
-[TBD]
-<!-- NEEDS-OPERATOR: Missing exact Vision & Mission for the Pediatric Center -->
+<!-- NEEDS-OPERATOR: Missing Vision for the Pediatric Center. -->
 
-### 1.4 Why This Service Exists
+### 1.4 Mission
+
+<!-- NEEDS-OPERATOR: Missing Mission for the Pediatric Center. -->
+
+### 1.5 Why This Service Exists
 Parents often struggle to find specialized pediatric sub-specialties (like pediatric cardiology, neurology, or endocrinology) in one place, or face the panic of nighttime emergencies without a dedicated pediatric ER. This center exists to eliminate that fragmentation by housing every pediatric sub-specialty, 24/7 emergency care, labs, imaging, and incubators under one roof at an affordable price.
 
-### 1.5 Business Objectives
+### 1.6 Business Objectives
 <!-- NEEDS-OPERATOR: Missing exact Business Objectives -->
 
-### 1.6 Marketing Objectives
+### 1.7 Marketing Objectives
 <!-- NEEDS-OPERATOR: Missing Marketing Objectives -->
 
-### 1.7 Positioning
+### 1.8 Positioning
 The ultimate, safe, and complete medical home for your child—from the first cry in the delivery room through every stage of their childhood and adolescence, backed by an economic pricing model that makes premium care accessible to all families.
 
-### 1.8 Brand Philosophy
+### 1.9 Brand Philosophy
 Every child deserves expert, university-level care without placing a crushing financial burden on the family. We prioritize accurate diagnosis over unnecessary medication (e.g., avoiding antibiotics for viral fevers) and ensure parents are educated and reassured at every step.
 
-### 1.9 Core Promise
+### 1.10 Core Promise
 <!-- NEEDS-OPERATOR: Missing the one-sentence Core Promise -->
 
 ---

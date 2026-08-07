@@ -38,26 +38,28 @@ A specialized surgical and medical center handling:
 
 ### 1.3 Vision
 
-### 1.3 Mission
-[TBD]
-<!-- NEEDS-OPERATOR: Missing Vision & Mission for the Urology Center -->
+<!-- NEEDS-OPERATOR: Missing Vision for the Urology Center. -->
 
-### 1.4 Why This Service Exists
+### 1.4 Mission
+
+<!-- NEEDS-OPERATOR: Missing Mission for the Urology Center. -->
+
+### 1.5 Why This Service Exists
 To provide a highly specialized, technology-driven environment (Laser and Endoscopy) for urological and andrological conditions, ensuring patients receive the most appropriate, least invasive treatment tailored to their specific case rather than a one-size-fits-all approach.
 
-### 1.5 Business Objectives
+### 1.6 Business Objectives
 <!-- NEEDS-OPERATOR: Missing exact Business Objectives (e.g., target number of surgeries/visits per month) -->
 
-### 1.6 Marketing Objectives
+### 1.7 Marketing Objectives
 <!-- NEEDS-OPERATOR: Missing Marketing Objectives -->
 
-### 1.7 Positioning
+### 1.8 Positioning
 The ultimate destination for advanced, minimally invasive urological and andrological care, relying on university-level expertise and state-of-the-art laser/endoscopy technology.
 
-### 1.8 Brand Philosophy
+### 1.9 Brand Philosophy
 We choose the most appropriate and medically sound treatment for every patient, not the most expensive one. Every case is evaluated individually, and the optimal technique (whether medical, endoscopic, laser, or traditional surgery) is selected to ensure the best outcome and quality of life.
 
-### 1.9 Core Promise
+### 1.10 Core Promise
 <!-- NEEDS-OPERATOR: Missing the one-sentence Core Promise -->
 
 ---

@@ -38,26 +38,27 @@ An integrated women's healthcare platform offering diagnostic, therapeutic, and 
 
 ### 1.3 Vision
 
-### 1.3 Mission
-[TBD]
+<!-- NEEDS-OPERATOR: Missing Vision for the Women's Health Center. -->
+
+### 1.4 Mission
 To be the premier reference for women's health in the region by delivering integrated, university-level medical expertise, rapid response, and advanced technology while maintaining the highest standards of safety.
 
-### 1.4 Why This Service Exists
+### 1.5 Why This Service Exists
 Many women struggle to find a single, reliable location that combines diagnosis, pregnancy follow-up, delivery, surgery, and postpartum care. The center eliminates the need to jump between multiple hospitals by unifying all these services—plus all supporting medical specialties (Cardiology, Surgery, ICU)—under one roof for maximum safety.
 
-### 1.5 Business Objectives
+### 1.6 Business Objectives
 To establish Delta International Hospital as the primary destination for maternal and women's health, focusing on long-term relationships where a woman begins her pregnancy journey with us and stays through delivery and postpartum care.
 
-### 1.6 Marketing Objectives
+### 1.7 Marketing Objectives
 To position the center as a sanctuary of safety, respect, and comprehensive care. The core message revolves around the "Complete Journey": from the first consultation through delivery to neonatal care, all within a single, highly equipped hospital.
 
-### 1.7 Positioning
+### 1.8 Positioning
 The ultimate safe haven for women's health, characterized by the slogan: "A safe birth journey... and a beautiful memory starting from the first moment" (رحلة ولادة آمنة... وذكرى جميلة تبدأ من أول لحظة).
 
-### 1.8 Brand Philosophy
+### 1.9 Brand Philosophy
 Respect for the human being begins with listening. The center involves the mother and her family in every decision, explaining options simply, respecting her privacy, and prioritizing natural birth whenever medically safe.
 
-### 1.9 Core Promise
+### 1.10 Core Promise
 Your safety and your baby's safety come first. We guarantee a premium, safe, and comfortable journey from pregnancy to birth, wrapped in absolute respect and humanity.
 
 ---

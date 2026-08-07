@@ -35,26 +35,27 @@ An integrated center handling:
 
 ### 1.3 Vision
 
-### 1.3 Mission
-[TBD]
+<!-- NEEDS-OPERATOR: Missing Vision for the ENT Center. -->
+
+### 1.4 Mission
 Our mission is to provide specialized, safe medical care based on accurate diagnosis, the latest technologies, and the expertise of senior professors and consultants, while respecting the patient and delivering a medical service worthy of their trust.
 
-### 1.4 Why This Service Exists
+### 1.5 Why This Service Exists
 To provide a definitive, one-stop destination for complex ENT issues that require highly specialized academic expertise and advanced diagnostic tools (like rigid and flexible endoscopes, and audiology labs), eliminating the need for patients to travel to the capital for major head and neck surgeries.
 
-### 1.5 Business Objectives
+### 1.6 Business Objectives
 <!-- NEEDS-OPERATOR: Missing exact Business Objectives -->
 
-### 1.6 Marketing Objectives
+### 1.7 Marketing Objectives
 <!-- NEEDS-OPERATOR: Missing Marketing Objectives -->
 
-### 1.7 Positioning
+### 1.8 Positioning
 One of the strongest and most advanced ENT units in the region, bringing the academic excellence of university professors into a premium, fully equipped private hospital setting.
 
-### 1.8 Brand Philosophy
+### 1.9 Brand Philosophy
 Accurate diagnosis precedes any intervention. We do not rush to surgery; we exhaust medical treatments first (e.g., for sinusitis or hearing loss) and only recommend surgery when it is the scientifically proven best option for the patient's quality of life.
 
-### 1.9 Core Promise
+### 1.10 Core Promise
 <!-- NEEDS-OPERATOR: Missing the one-sentence Core Promise -->
 
 ---

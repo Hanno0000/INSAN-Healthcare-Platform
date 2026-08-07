@@ -149,6 +149,39 @@ module.exports = {
     t.is(dupIds.sort(), [],
       'and no two claim the same entity_id — the registry\'s join key');
 
+    // --- one number, one heading ---
+    //
+    // A script that adds missing sections in bulk cannot see that the number it
+    // writes is already taken. Commit 333c090 inserted an empty `### 1.3 Vision`
+    // directly above the existing `### 1.3 Mission` in eight files at once, so
+    // two headings carried one number, Vision read as empty everywhere, and a
+    // bare [TBD] sat above real mission text.
+    //
+    // The gate did not catch it because CardBuilder matches headings by TEXT,
+    // not by number — so nothing failed while eight files the operator is about
+    // to fill in by hand carried a mangled outline. This is the check that would
+    // have caught it, and it costs nothing to keep.
+    const misnumbered = [];
+
+    for (const rel of listKnowledgeFiles()) {
+      const seen = {};
+      for (const line of fx.repoFile(rel).split(/\r?\n/)) {
+        const m = /^#{2,4}\s+(\d+\.\d+)\s+(\S.*)$/.exec(line);
+        if (!m) continue;
+        (seen[m[1]] = seen[m[1]] || []).push(m[2].trim());
+      }
+      for (const [num, titles] of Object.entries(seen)) {
+        if (titles.length > 1) {
+          misnumbered.push(`${rel.split('/').pop()} §${num}: ${titles.join(' / ')}`);
+        }
+      }
+    }
+
+    t.is(misnumbered.sort(), [],
+      'no knowledge file gives one section number to two headings — bulk ' +
+      'section-insertion cannot see the number it writes is taken, and headings ' +
+      'match by text so nothing else would fail');
+
     // Files known to be deliberately incomplete — waiting on facts only the
     // operator has, marked rather than invented. Adding a new one here is
     // adding a name to this list, not a defect in the file: the whole point of

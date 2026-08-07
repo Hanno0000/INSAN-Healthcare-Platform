@@ -35,27 +35,27 @@ A multidisciplinary program encompassing:
 
 ### 1.3 Vision
 
-### 1.3 Mission
-[TBD]
-**Mission:** We do not just treat excess weight; we help patients eliminate obesity-related diseases and improve their quality of life through an integrated medical team and a treatment plan that starts before surgery and continues long after.
-**Vision:** To be the premier destination for metabolic transformation, recognized for rigorous pre-op evaluation and unmatched post-op support.
+To be the premier destination for metabolic transformation, recognized for rigorous pre-op evaluation and unmatched post-op support.
 
-### 1.4 Why This Service Exists
+### 1.4 Mission
+**Mission:** We do not just treat excess weight; we help patients eliminate obesity-related diseases and improve their quality of life through an integrated medical team and a treatment plan that starts before surgery and continues long after.
+
+### 1.5 Why This Service Exists
 Because obesity is a complex metabolic disease linked to severe health risks (Diabetes, Hypertension, Sleep Apnea, Joint damage). Patients need a medical intervention when diets fail, supported by lifelong lifestyle changes.
 
-### 1.5 Business Objectives
+### 1.6 Business Objectives
 <!-- NEEDS-OPERATOR: Missing specific Business Objectives -->
 
-### 1.6 Marketing Objectives
+### 1.7 Marketing Objectives
 To shift the narrative from "quick cosmetic weight loss" to "comprehensive health restoration," establishing trust through intense post-op care and transparent medical selection criteria.
 
-### 1.7 Positioning
+### 1.8 Positioning
 "علاج متكامل وليس مجرد إجراء عملية." (An integrated treatment, not just a surgical procedure.)
 
-### 1.8 Brand Philosophy
+### 1.9 Brand Philosophy
 Bariatric surgery is a powerful medical tool for eligible patients after comprehensive evaluation, not a substitute for a healthy lifestyle. Success depends on Surgery + Nutrition + Follow-up.
 
-### 1.9 Core Promise
+### 1.10 Core Promise
 "رحلة إلى صحة أفضل... تبدأ بقرار، وتكتمل برعاية متخصصة." (A journey to better health... begins with a decision, and is completed with specialized care.)
 
 ---

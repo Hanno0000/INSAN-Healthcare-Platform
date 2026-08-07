@@ -35,27 +35,28 @@ The center integrates several interconnected medical functions:
 
 ### 1.3 Vision
 
-### 1.3 Mission
-[TBD]
+<!-- NEEDS-OPERATOR: Missing Vision for the Cardiac & Internal Medicine Center. -->
+
+### 1.4 Mission
 To be the ultimate safety net for patients facing acute and chronic internal or cardiac conditions, providing immediate, precise, and human-centric medical intervention that prevents deterioration and saves lives.
 
-### 1.4 Why This Service Exists
+### 1.5 Why This Service Exists
 The center exists to save lives around the clock. It acts as a definitive firewall against the deterioration of chronic conditions (like diabetes and hypertension) and acute events (like sudden strokes or clots). By enforcing strict medical follow-up, the center aims to prevent repeated, unpredictable ICU admissions—a cycle that deeply exhausts families both physically and financially. 
 
-### 1.5 Business Objectives
+### 1.6 Business Objectives
 *   To reach a sustained volume of 350-450 visits per day across the Kabarona clinics.
 *   To secure advance bookings for the Comprehensive Checkup Programs.
 
-### 1.6 Marketing Objectives
+### 1.7 Marketing Objectives
 To educate the public about the critical importance of early intervention and regular follow-up, positioning the center as the ultimate destination for preventing catastrophic health events and managing complex diseases.
 
-### 1.7 Positioning
+### 1.8 Positioning
 The center is the definitive destination for any patient experiencing acute pains related to Internal Medicine, Cardiac, Chest, or Neurological conditions, offering an immediate, high-standard medical response.
 
-### 1.8 Brand Philosophy
+### 1.9 Brand Philosophy
 "Respect for the human being is the foundation of medical service." (احترام الإنسان هو أساس الخدمة الطبية). Every medical action, diagnostic test, and care plan is driven by this core philosophy, addressing the bad experiences and mistreatment patients often face elsewhere.
 
-### 1.9 Core Promise
+### 1.10 Core Promise
 <!-- NEEDS-OPERATOR: Q21 (Core Promise) was skipped in the briefing. Please define the one-sentence core promise we make to the patient. -->
 
 ---

@@ -36,26 +36,27 @@ A 24/7 rapid medical intervention center offering:
 
 ### 1.3 Vision
 
-### 1.3 Mission
-[TBD]
+<!-- NEEDS-OPERATOR: Missing Vision for the Emergency Department. The text below under Mission is the mission; the vision was never recorded. -->
+
+### 1.4 Mission
 To be the absolute first name that comes to mind when any medical emergency strikes, known not just for medical excellence, but for unparalleled speed, safety, and human empathy in moments of severe crisis.
 
-### 1.4 Why This Service Exists
+### 1.5 Why This Service Exists
 Because in emergencies, every minute makes a difference ("كل دقيقة تصنع فرقًا"). Patients need a single trusted location where diagnosis, intervention, surgery, and intensive care are all instantly available, rather than wasting precious time navigating fragmented medical systems.
 
-### 1.5 Business Objectives
+### 1.6 Business Objectives
 <!-- NEEDS-OPERATOR: Missing specific Business Objectives (e.g., target volume of ER admissions, conversion rate from ER to inpatient/surgery) -->
 
-### 1.6 Marketing Objectives
+### 1.7 Marketing Objectives
 To transform the mental image of the ER from a chaotic "reception" area into a highly orchestrated "Rapid Response Center." To educate the public on when *not* to wait, thereby increasing early interventions, saving lives, and establishing profound brand trust.
 
-### 1.7 Positioning
+### 1.8 Positioning
 "The gateway to the entire hospital." We are not just one doctor on shift; we are an entire medical ecosystem moving for the patient from the first minute. 
 
-### 1.8 Brand Philosophy
+### 1.9 Brand Philosophy
 "أساس الخدمة الطبية... احترام الإنسان." (The foundation of medical service is respect for the human). We do not treat by guessing; we diagnose accurately first. We respect the terrified family/companion by explaining every step, and we respectfully guide trauma patients through financial solutions without making false promises.
 
-### 1.9 Core Promise
+### 1.10 Core Promise
 "مركز الاستجابة السريعة... أنت لا تُقدَّر بثمن. كل الإمكانيات... في أول استجابة." (Rapid Response Center... You are priceless. All capabilities... in the first response.)
 
 ---
