@@ -77,6 +77,11 @@ export class CreateHospitalDto {
   heroImage?: string;
 
   @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  heroImages?: string[];
+
+  @IsOptional()
   @IsString()
   @Matches(/^#[0-9A-Fa-f]{6}$/, { message: 'brandColor must be a valid hex color' })
   brandColor?: string;

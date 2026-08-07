@@ -11,12 +11,13 @@ export const metadata: Metadata = {
   description: 'استكشف المراكز الطبية المتخصصة في منظومة إنسان',
 };
 
-interface Props { searchParams: { page?: string; search?: string } }
+interface Props { searchParams: { page?: string; search?: string; hospitalId?: string } }
 
 export default async function MedicalCentersPage({ searchParams }: Props) {
   const page = Number(searchParams.page) || 1;
   const search = searchParams.search || undefined;
-  const result = await getMedicalCenters({ page, pageSize: 12, search });
+  const hospitalId = searchParams.hospitalId || undefined;
+  const result = await getMedicalCenters({ page, pageSize: 12, search, hospitalId });
 
   return (
     <PublicLayout>
@@ -54,7 +55,7 @@ export default async function MedicalCentersPage({ searchParams }: Props) {
               </div>
               <Pagination
                 page={page} totalPages={result.meta.totalPages}
-                buildHref={p => `/medical-centers?page=${p}${search ? `&search=${encodeURIComponent(search)}` : ''}`}
+                buildHref={p => `/medical-centers?page=${p}${search ? `&search=${encodeURIComponent(search)}` : ''}${hospitalId ? `&hospitalId=${hospitalId}` : ''}`}
               />
             </>
           ) : (

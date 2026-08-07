@@ -126,6 +126,49 @@ export default async function MedicalCenterDetailPage({ params }: Props) {
               </Link>
             </div>
           )}
+
+          {c.equipment && Array.isArray(c.equipment) && c.equipment.length > 0 && (
+            <div className="mt-12">
+              <h2 className="text-xl font-bold text-primary-900 mb-4">التجهيزات والأجهزة الطبية</h2>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {c.equipment.map((item: any, i: number) => (
+                  <li key={i} className="flex gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100 items-start">
+                    {item.image && (
+                      <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0">
+                         <img src={item.image} alt="" className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    <div>
+                      <h3 className="text-gray-800 font-bold mb-1">{t(item.title || item.name || item)}</h3>
+                      {item.description && <p className="text-gray-600 text-sm">{t(item.description)}</p>}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {c.videoUrl && (
+            <div className="mt-12">
+              <h2 className="text-xl font-bold text-primary-900 mb-4">فيديو تعريفي</h2>
+              <div className="aspect-video w-full rounded-2xl overflow-hidden shadow-sm border border-gray-200">
+                <iframe src={c.videoUrl} className="w-full h-full" allowFullScreen></iframe>
+              </div>
+            </div>
+          )}
+
+          {c.images && Array.isArray(c.images) && c.images.length > 0 && (
+            <div className="mt-12">
+              <h2 className="text-xl font-bold text-primary-900 mb-4">معرض الصور</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {c.images.map((img: string, i: number) => (
+                  <div key={i} className="aspect-square rounded-xl overflow-hidden shadow-sm">
+                    <img src={img} alt="" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
     </PublicLayout>

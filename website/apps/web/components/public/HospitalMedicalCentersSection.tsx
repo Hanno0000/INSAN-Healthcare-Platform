@@ -7,10 +7,11 @@ import { HeartPulse } from 'lucide-react';
 interface Props {
   hospitalName: Bilingual;
   hospitalImage?: string;
+  hospitalId: string;
   centers: MedicalCenter[];
 }
 
-export default function HospitalMedicalCentersSection({ hospitalName, hospitalImage, centers }: Props) {
+export default function HospitalMedicalCentersSection({ hospitalName, hospitalImage, hospitalId, centers }: Props) {
   if (!centers || centers.length === 0) return null;
 
   return (
@@ -50,6 +51,17 @@ export default function HospitalMedicalCentersSection({ hospitalName, hospitalIm
             {centers.slice(0, 4).map((center) => (
               <MedicalCenterCard key={center.id} center={center} />
             ))}
+
+            {centers.length > 4 && (
+              <div className="mt-4 flex justify-center">
+                <a
+                  href={`/medical-centers?hospitalId=${hospitalId}`}
+                  className="btn btn-outline-primary border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-pill font-cairo font-semibold transition-all w-full text-center"
+                >
+                  تصفح جميع المراكز
+                </a>
+              </div>
+            )}
           </div>
 
         </div>

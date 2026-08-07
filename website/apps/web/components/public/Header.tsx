@@ -36,6 +36,7 @@ export default function Header({ navItems, settings = [] }: Props) {
 
   const contactEmail = getSetting('contact_email', 'info@insan-platform.com');
   const contactPhone = getSetting('contact_phone', '+20 000 000 000');
+  const emergencyPhone = getSetting('emergency_phone', '+20 000 000 000');
   const whatsappUrl = getSetting('whatsapp_url', 'https://wa.me/200000000');
   const facebookUrl = getSetting('facebook_url', '#');
   const twitterUrl = getSetting('twitter_url', '#');
@@ -70,7 +71,7 @@ export default function Header({ navItems, settings = [] }: Props) {
         
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
-          <img src="/media/brand/logo-color.png" alt="منظومة إنسان - INSAN Ecosystem" className="h-10 w-auto object-contain" />
+          <img src={getSetting('logo_light', '/logos/insan-logo-color.png')} alt="منظومة إنسان - INSAN Ecosystem" className="h-14 md:h-16 w-auto object-contain" />
         </Link>
 
         {/* Desktop Nav */}
@@ -89,7 +90,7 @@ export default function Header({ navItems, settings = [] }: Props) {
         {/* CTA & Mobile Toggle */}
         <div className="flex items-center gap-3">
           {/* Emergency */}
-          <a href={`tel:${contactPhone.replace(/[\s-]/g, '')}`} className="hidden lg:inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold px-5 py-2.5 rounded-pill shadow-sm transition-all duration-300 font-cairo">
+          <a href={`tel:${emergencyPhone.replace(/[\s-]/g, '')}`} className="hidden lg:inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold px-5 py-2.5 rounded-pill shadow-sm transition-all duration-300 font-cairo">
             <Phone className="w-4 h-4" /> للطوارئ
           </a>
           

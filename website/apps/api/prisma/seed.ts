@@ -193,11 +193,11 @@ async function seedSettings() {
       },
     },
     // Contact
-    { key: 'contact_email', group: 'contact', value: 'info@insan-platform.com' },
-    { key: 'contact_phone', group: 'contact', value: '+20-XXX-XXX-XXXX' },
+    { key: 'contact_email', group: 'contact', value: 'info@lavenir-medical.com' },
+    { key: 'contact_phone', group: 'contact', value: '0403315000' },
     { key: 'contact_address', group: 'contact', value: { ar: 'القاهرة، مصر', en: 'Cairo, Egypt' } },
-    { key: 'whatsapp_number', group: 'contact', value: '+20-XXX-XXX-XXXX' },
-    { key: 'emergency_phone', group: 'contact', value: '+20-XXX-XXX-XXXX' },
+    { key: 'whatsapp_number', group: 'contact', value: '01100002154' },
+    { key: 'emergency_phone', group: 'contact', value: '0403315000' },
     
     // Social
     { key: 'social_facebook', group: 'social', value: 'https://facebook.com/insan' },
@@ -211,8 +211,8 @@ async function seedSettings() {
     { key: 'primary_color', group: 'appearance', value: '#0B1F3A' },
     { key: 'secondary_color', group: 'appearance', value: '#0E7C86' },
     { key: 'accent_color', group: 'appearance', value: '#0B5FFF' },
-    { key: 'logo_light', group: 'appearance', value: '/logos/insan-logo-light.png' },
-    { key: 'logo_dark', group: 'appearance', value: '/logos/insan-logo-dark.png' },
+    { key: 'logo_light', group: 'appearance', value: '/logos/insan-logo-color.png' },
+    { key: 'logo_dark', group: 'appearance', value: '/logos/insan-logo-white.png' },
     { key: 'favicon', group: 'appearance', value: '/favicon.ico' },
     
     // SEO

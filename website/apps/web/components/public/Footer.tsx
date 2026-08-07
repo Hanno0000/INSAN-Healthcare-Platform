@@ -35,7 +35,7 @@ export default function Footer({ navItems, settings = [] }: Props) {
             {/* Brand Column */}
             <div className="footer-about">
               <Link href="/" className="flex items-center gap-2 mb-6">
-                <img src="/media/brand/logo-white.png" alt="منظومة إنسان - INSAN Ecosystem" className="h-12 w-auto object-contain" />
+                <img src={getSetting('logo_dark', '/logos/insan-logo-white.png')} alt="منظومة إنسان - INSAN Ecosystem" className="h-12 w-auto object-contain" />
               </Link>
               <p className="text-sm leading-relaxed mb-6 font-cairo">
                 المنظومة الصحية المتكاملة — نربط المرضى بأفضل الكفاءات الطبية في مصر من خلال مستشفياتنا المتخصصة ومراكزنا الطبية المتميزة.

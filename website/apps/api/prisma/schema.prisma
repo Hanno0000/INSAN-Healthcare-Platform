@@ -187,6 +187,7 @@ model Hospital {
   description      Json?
   logoUrl          String?
   heroImage        String?
+  heroImages       Json?    @default("[]")
   brandColor       String?
   googleMapsUrl    String?
   // ─── حقول صفحة المستشفى الجديدة (6) ───
@@ -230,6 +231,9 @@ model MedicalCenter {
   type            CenterType              @default(CENTER)
   features        Json?
   services        Json?
+  equipment       Json?
+  images          Json?
+  videoUrl        String?
   logoUrl         String?
   heroImage       String?
   brandColor      String?

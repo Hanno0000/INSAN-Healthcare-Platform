@@ -66,12 +66,12 @@ export default async function HospitalDetailPage({ params }: Props) {
         ]}
       />
 
-      {/* 1 */}
       <HospitalHeroSection
         name={h.name}
         tagline={h.heroTagline}
         stats={h.heroStats}
         heroImage={h.heroImage}
+        heroImages={h.heroImages}
         hospitalId={h.id}
         departments={h.departments}
       />
@@ -87,6 +87,7 @@ export default async function HospitalDetailPage({ params }: Props) {
         hospitalName={h.name}
         hospitalImage={h.heroImage}
         centers={centers as any}
+        hospitalId={h.id}
       />
 
       {/* 5 */}

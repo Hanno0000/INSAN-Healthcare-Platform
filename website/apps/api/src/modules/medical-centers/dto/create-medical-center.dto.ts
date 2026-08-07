@@ -70,6 +70,18 @@ export class CreateMedicalCenterDto {
   services?: any;
 
   @IsOptional()
+  equipment?: any;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  images?: string[];
+
+  @IsOptional()
+  @IsString()
+  videoUrl?: string;
+
+  @IsOptional()
   @ValidateNested()
   @Type(() => BilingualDto)
   shortDescription?: BilingualDto;

@@ -35,6 +35,9 @@ export class MedicalCentersService {
         { name: { path: ['en'], string_contains: query.search } },
       ];
     }
+    if (query.hospitalId) {
+      where.hospitals = { some: { hospitalId: query.hospitalId } };
+    }
 
     const [data, total] = await Promise.all([
       this.prisma.medicalCenter.findMany({

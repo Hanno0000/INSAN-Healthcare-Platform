@@ -16,14 +16,15 @@ interface Props {
   tagline?: Bilingual;
   stats?: HeroStat[];
   heroImage?: string;
+  heroImages?: string[];
   hospitalId: string;
   departments?: any[];
 }
 
-export default function HospitalHeroSection({ name, tagline, stats, heroImage, hospitalId, departments = [] }: Props) {
+export default function HospitalHeroSection({ name, tagline, stats, heroImage, heroImages = [], hospitalId, departments = [] }: Props) {
   // Collect images for the slideshow
-  const slideImages = [];
-  if (heroImage) slideImages.push(heroImage);
+  const slideImages = [...(heroImages || [])];
+  if (heroImage && !slideImages.includes(heroImage)) slideImages.push(heroImage);
   departments.forEach(d => {
     if (d.image && !slideImages.includes(d.image)) slideImages.push(d.image);
   });

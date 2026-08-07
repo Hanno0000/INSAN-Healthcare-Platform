@@ -71,6 +71,12 @@ export interface JourneyStep {
 export interface Hospital {
   id: string; slug: string; name: Bilingual;
   shortDescription: Bilingual; description: Bilingual;
+  features?: { title: Bilingual; items: Bilingual[] }[];
+  services?: { title: Bilingual; description: Bilingual; icon?: string }[];
+  equipment?: { title: Bilingual; description?: Bilingual; image?: string }[];
+  images?: string[];
+  heroImages?: string[];
+  videoUrl?: string;
   logoUrl?: string; heroImage?: string; brandColor?: string;
   metaTitle?: Bilingual; metaDescription?: Bilingual;
   status: string; customFields?: Record<string, any>;
@@ -99,9 +105,14 @@ export interface Hospital {
   }[];
 }
 export interface MedicalCenter {
-  id: string; slug: string; name: Bilingual;
+  id: string; slug: string; name: Bilingual; type?: string;
   shortDescription?: Bilingual; description?: Bilingual;
   logoUrl?: string; heroImage?: string; brandColor?: string;
+  features?: { title: Bilingual; items: Bilingual[] }[];
+  services?: { title: Bilingual; description: Bilingual; icon?: string }[];
+  equipment?: { title: Bilingual; description?: Bilingual; image?: string }[];
+  images?: string[];
+  videoUrl?: string;
   metaTitle?: Bilingual; metaDescription?: Bilingual;
   status: string; hospitals?: Hospital[];
 }
@@ -161,7 +172,7 @@ export async function getHospital(slug: string) {
   return pub<SingleResponse<Hospital>>(`/hospitals/${slug}`);
 }
 
-export async function getMedicalCenters(params?: { page?: number; pageSize?: number; search?: string; type?: string }) {
+export async function getMedicalCenters(params?: { page?: number; pageSize?: number; search?: string; type?: string; hospitalId?: string }) {
   const mergedParams = { type: 'CENTER', ...params };
   return pub<PaginatedResponse<MedicalCenter>>('/medical-centers', mergedParams, !!mergedParams.search);
 }
