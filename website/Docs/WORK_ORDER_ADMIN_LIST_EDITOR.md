@@ -1,6 +1,6 @@
 # أمر شغل — نشر محرّر القوائم الجديد في لوحة التحكم
 
-**الكوميتات المطلوب نشرها:** `5b35d94` و `bfda130` (الاتنين موجودين على `main`)
+**الكوميتات المطلوب نشرها:** `5b35d94` · `bfda130` · `ffcfaf2` (الثلاثة موجودين على `main`)
 
 **اقرأ المهام بالترتيب. لا تبدأ مهمة قبل ما تخلّص اللي قبلها وتلصق مخرجاتها.**
 
@@ -29,17 +29,31 @@
 
 ## المهمة 1 — النشر
 
-سكربت النشر اتصلح (كان بيروح على `/app` و `/root/website` وهما مش موجودين).
+**⚠️ تحديث — الجولة اللي فاتت فشلت بـ `no configuration file provided: not found`
+لأن أمر الشغل ده نفسه كان فيه غلطة مني. اتصلحت في commit `ffcfaf2`. اسحب
+آخر تحديث قبل ما تنفّذ أي حاجة تحت دي:**
+
+```bash
+cd /root/INSAN-Healthcare-Platform && git pull origin main
+```
+
 **استخدم السكربت اللي في الريبو، متكتبش سكربت مخصص:**
 
 ```bash
 pwsh website/deploy-to-contabo.ps1
 ```
 
-لو مش شغّال عندك PowerShell، نفّذ نفس الخطوات يدوياً على السيرفر:
+**السبب في فشل المرة اللي فاتت (عشان تفهم مش تحفظ):** ملف `docker-compose.prod.yml`
+والـ `Dockerfile` وفولدر `infra/` كلهم جوّه `website/` مش في جذر الريبو. وكمان
+`docker compose` من غير `-f` بيدوّر بس على ملف اسمه بالظبط `docker-compose.yml`
+— أي اسم تاني زي `docker-compose.prod.yml` لازم `-f` صريحة. السكربت المُصلَح
+بيعمل الاتنين صح تلقائيًا.
+
+لو مش شغّال عندك PowerShell، نفّذ نفس الخطوات يدوياً على السيرفر (لاحظ `cd .../website`
+والـ `-f` في كل أمر compose):
 
 ```bash
-cd /root/INSAN-Healthcare-Platform && git checkout main && git pull origin main && git rev-parse --short HEAD && docker compose down && docker compose up -d --build
+cd /root/INSAN-Healthcare-Platform && git checkout main && git pull origin main && git rev-parse --short HEAD && cd website && docker compose --env-file .env.production -f docker-compose.prod.yml down && docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
 ```
 
 **⚠️ مهم:** الـ build المحلي عندي بيفشل بسبب مشكلة نظام ملفات في جوجل درايف
@@ -49,13 +63,13 @@ cd /root/INSAN-Healthcare-Platform && git checkout main && git pull origin main 
 **الصق مخرجات هذا الأمر:**
 
 ```bash
-cd /root/INSAN-Healthcare-Platform && git rev-parse --short HEAD && docker compose ps
+cd /root/INSAN-Healthcare-Platform && git rev-parse --short HEAD && cd website && docker compose -f docker-compose.prod.yml ps
 ```
 
-**شرط النجاح:** الـ commit يساوي `bfda130` وكل الحاويات حالتها `running` أو `healthy`.
+**شرط النجاح:** الـ commit يساوي `ffcfaf2` وكل الحاويات حالتها `running` أو `healthy`.
 
-**لو الـ build فشل:** الصق آخر 40 سطر من مخرجات الـ build كما هي. **ما تحاولش
-تصلح بنفسك وما ترجّعش الكوميت.**
+**لو الـ build فشل تاني بعد الإصلاح ده:** الصق آخر 40 سطر من مخرجات الـ build كما
+هي. **ما تحاولش تصلح بنفسك وما ترجّعش الكوميت.**
 
 ---
 
@@ -135,7 +149,7 @@ JSON.stringify([...document.querySelectorAll('h2,h3')]
 
 | المهمة | الشرط |
 |---|---|
-| 1 | commit = `bfda130` وكل الحاويات شغّالة |
+| 1 | commit = `ffcfaf2` وكل الحاويات شغّالة |
 | 2 | الصفوف بتظهر مليانة، وبعد الحفظ `empty = 0` والعدد 5 و 7 |
 | 3 | صف جديد يظهر على الصفحة، وبعد حذفه العدد يرجع 5 |
 | 4 | خانة اللصق تفتح وتقفل من غير ما تمسح حاجة |
