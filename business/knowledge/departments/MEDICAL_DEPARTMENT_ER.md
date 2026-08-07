@@ -34,9 +34,16 @@ A 24/7 rapid medical intervention center offering:
 *   Round-the-clock Diagnostics (Labs and Radiology).
 *   Direct access to Adult ICU, Pediatric ICU, Incubators, and fully equipped Operating Rooms.
 
-### 1.3 Vision
+### 1.3 Vision ✍️
 
-<!-- NEEDS-OPERATOR: Missing Vision for the Emergency Department. The text below under Mission is the mission; the vision was never recorded. -->
+To be known across this region not as an emergency room but as a **rapid response
+centre** — the gateway through which the whole hospital moves for one patient
+from the first minute.
+
+*Derived from §1.1 (the deliberate shift in perception from "Emergency Room" to
+"Rapid Response Center", with every specialty, lab, theatre and intensive care
+unit mobilising on arrival), §1.8 ("the gateway to the entire hospital") and §1.5
+("every minute makes a difference").*
 
 ### 1.4 Mission
 To be the absolute first name that comes to mind when any medical emergency strikes, known not just for medical excellence, but for unparalleled speed, safety, and human empathy in moments of severe crisis.

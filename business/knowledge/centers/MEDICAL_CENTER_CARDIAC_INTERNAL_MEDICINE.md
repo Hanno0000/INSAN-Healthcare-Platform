@@ -33,9 +33,15 @@ The center integrates several interconnected medical functions:
 *   **Emergency & Mobile Care:** 24/7 Emergency response, Home Medical Services, and fully equipped Ambulance services (currently based at Future).
 *   **External Network:** While Cath Labs (diagnostic, therapeutic, and cerebral) are not physically inside the hospitals yet, the center maintains direct, 24/7 contracts with premier specialized centers. Professors and consultants are available around the clock for both elective procedures and emergency interventions.
 
-### 1.3 Vision
+### 1.3 Vision ✍️
 
-<!-- NEEDS-OPERATOR: Missing Vision for the Cardiac & Internal Medicine Center. -->
+To be the region's continuous guardian of the chronically and critically ill —
+where a condition is caught and controlled *before* it becomes an emergency, and
+a family stops living from one intensive-care admission to the next.
+
+*Derived from §1.1 (a continuum from outpatient clinic to intensive care across
+both hospitals) and §1.5 (a firewall against deterioration, ending the cycle of
+repeated ICU admissions that exhausts families physically and financially).*
 
 ### 1.4 Mission
 To be the ultimate safety net for patients facing acute and chronic internal or cardiac conditions, providing immediate, precise, and human-centric medical intervention that prevents deterioration and saves lives.
@@ -56,8 +62,18 @@ The center is the definitive destination for any patient experiencing acute pain
 ### 1.9 Brand Philosophy
 "Respect for the human being is the foundation of medical service." (احترام الإنسان هو أساس الخدمة الطبية). Every medical action, diagnostic test, and care plan is driven by this core philosophy, addressing the bad experiences and mistreatment patients often face elsewhere.
 
-### 1.10 Core Promise
-<!-- NEEDS-OPERATOR: Q21 (Core Promise) was skipped in the briefing. Please define the one-sentence core promise we make to the patient. -->
+### 1.10 Core Promise ✍️
+
+**We will not wait for your condition to become an emergency.** Accurate
+diagnosis, follow-up that continues between visits, and full life-support
+capability ready the moment it is needed — with your dignity intact throughout.
+
+Bounded deliberately by §7.4, which is unusually clear: *healing is not ours to
+promise.* So this commits to **vigilance and capability**, which the center
+controls, and not to an outcome, which it does not.
+
+*Derived from §1.5 Why This Service Exists, §1.9 Brand Philosophy and §3.4 Core
+Features, bounded by §7.4 Never Promise.*
 
 ---
 
@@ -249,8 +265,27 @@ Accuracy is paramount. Never downplay the severity of symptoms like chest pain o
 ### 7.4 Never Promise
 **Never promise healing or a cure.** Healing is in the hands of God alone. We only promise to provide complete, uncompromising medical and hotel care, and absolute respect for the patient's humanity.
 
-### 7.5 Can Promise
-<!-- NEEDS-OPERATOR: Q28 (Can Promise) was skipped. Please define the explicit guarantees we can make. -->
+### 7.5 Can Promise ✍️
+
+§7.4 already names the answer in its own second sentence — *"We only promise to
+provide complete, uncompromising medical and hotel care, and absolute respect for
+the patient's humanity."* Stated here as the explicit list:
+
+*   **An accurate diagnosis before any treatment decision**, and no downplaying
+    of chest pain or neurological symptoms (§7.3).
+*   **Complete medical and hotel care**, without compromise on either.
+*   **Absolute respect for the patient's humanity** — the center's stated answer
+    to the mistreatment patients meet elsewhere (§7.8).
+*   **Full life support available when it is needed** — monitoring, ventilation,
+    CRRT, dialysis, infusion (§3.4).
+*   **Follow-up that continues between visits**, which is how the cycle of repeat
+    admissions is broken (§1.5).
+*   **Fair pricing**, held to despite the standard of service (§3.5).
+
+Every one of these is a **process the center controls**. Not one is an outcome.
+That is the line §7.4 draws, and this section stays on the same side of it.
+
+*Derived from §7.4 Never Promise, §7.3, §7.8, §3.4, §3.5 and §1.5.*
 
 ### 7.6 Brand Perception
 The center should be perceived as the ultimate, reliable guardian of the family's health—a place where competence meets profound empathy.

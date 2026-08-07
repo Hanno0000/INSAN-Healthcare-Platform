@@ -28,9 +28,16 @@ A highly specialized center dedicated to the diagnosis and treatment of lower ga
 ### 1.2 Definition
 Provides comprehensive care through specialized clinics (Hemorrhoids, Fissure, Fistula, Pilonidal Cyst, Colorectal Tumors, Chronic Constipation/Incontinence) and advanced surgical interventions (Laser and Traditional Surgery).
 
-### 1.3 Vision
+### 1.3 Vision ✍️
 
-<!-- NEEDS-OPERATOR: Missing Vision for the Proctology Center. -->
+To be the place where patients stop suffering in silence — where an embarrassing
+condition can be named without shame, and treated by the method the case actually
+calls for rather than the one that markets best.
+
+*Derived from §1.5 (patients suffering in silence out of embarrassment, fear of
+pain and fear of cost), §1.8 (Egyptian universities' expertise with integrated
+care in one place) and §1.9 (we do not sell laser as a cure-all; we sell the
+correct decision for the patient's grade).*
 
 ### 1.4 Mission
 To provide world-class, highly private, and dignified care for proctology patients, utilizing the expertise of university professors to determine the absolute best medical or surgical path for each individual.

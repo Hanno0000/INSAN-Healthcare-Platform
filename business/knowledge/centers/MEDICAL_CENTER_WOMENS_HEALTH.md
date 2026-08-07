@@ -36,9 +36,15 @@ An integrated women's healthcare platform offering diagnostic, therapeutic, and 
 *   Postpartum care and family planning clinics.
 *   Neonatal incubators and care.
 
-### 1.3 Vision
+### 1.3 Vision ✍️
 
-<!-- NEEDS-OPERATOR: Missing Vision for the Women's Health Center. -->
+To be the one place a woman never has to leave — from the first pregnancy visit
+through delivery, surgery and recovery — so that what she remembers of it is a
+good memory rather than a series of waiting rooms.
+
+*Derived from §1.5 (unifying diagnosis, follow-up, delivery, surgery and
+postpartum care under one roof, ending the need to move between hospitals) and
+§1.8, whose slogan is "رحلة ولادة آمنة... وذكرى جميلة تبدأ من أول لحظة".*
 
 ### 1.4 Mission
 To be the premier reference for women's health in the region by delivering integrated, university-level medical expertise, rapid response, and advanced technology while maintaining the highest standards of safety.
