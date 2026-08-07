@@ -101,15 +101,21 @@ function parseCenter(filePath) {
 
   // Features from 3.4 bullets
   const featureBullets = extractBullets(featuresBlock);
-  const features = featureBullets.map(f => ({
-    title: { en: cleanText(f), ar: cleanText(f) }
-  }));
+  const features = featureBullets.map(f => {
+    const enText = cleanText(f);
+    const tr = arabicTranslations[registryId];
+    return {
+      title: { en: enText, ar: (tr && tr.features && tr.features[enText]) ? tr.features[enText] : enText }
+    };
+  });
 
   // Differentiators as extra features if not many
   if (features.length < 3) {
     const diffBullets = extractBullets(diffBlock);
     diffBullets.forEach(d => {
-      features.push({ title: { en: cleanText(d), ar: cleanText(d) } });
+      const enText = cleanText(d);
+      const tr = arabicTranslations[registryId];
+      features.push({ title: { en: enText, ar: (tr && tr.features && tr.features[enText]) ? tr.features[enText] : enText } });
     });
   }
 
