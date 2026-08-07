@@ -8,6 +8,7 @@ import { useToast } from '@/components/admin/ui/Toast';
 import Modal from '@/components/admin/ui/Modal';
 import FormField, { inputCls, textareaCls, selectCls } from '@/components/admin/ui/FormField';
 import BilingualInput from '@/components/admin/ui/BilingualInput';
+import BilingualListInput from '@/components/admin/ui/BilingualListInput';
 import ImageUpload from '@/components/admin/ui/ImageUpload';
 import { Plus, Trash2 } from 'lucide-react';
 
@@ -61,6 +62,32 @@ const DEFAULT_VALUES = {
   googleMapsUrl: '',
   locations: [] as any[],
 };
+
+/**
+ * يوحّد قوائم الأجهزة/الخدمات/المميزات القادمة من الـ API إلى صفوف { ar, en }.
+ *
+ * يتحمّل ثلاثة أشكال: الشكل الصحيح { ar, en }، ونصاً مفرداً من بيانات قديمة،
+ * والعناصر الفارغة [] التي خلّفها عطل implicit-conversion السابق — فتظهر
+ * كصفوف فارغة يملؤها المحرِّر بدلاً من أن تكسر النموذج.
+ */
+function toBilingualList(v: any): { ar: string; en: string }[] {
+  if (!Array.isArray(v)) return [];
+  return v.map((item: any) => {
+    if (typeof item === 'string') return { ar: item, en: '' };
+    if (item && typeof item === 'object' && !Array.isArray(item)) {
+      return { ar: item.ar ?? '', en: item.en ?? '' };
+    }
+    return { ar: '', en: '' };
+  });
+}
+
+/** يحذف الصفوف الفارغة ويرسل { ar, en } فقط — لا مفاتيح إضافية من واجهة التحرير */
+function cleanBilingualList(v: any): { ar: string; en: string }[] {
+  if (!Array.isArray(v)) return [];
+  return v
+    .map((item: any) => ({ ar: (item?.ar ?? '').trim(), en: (item?.en ?? '').trim() }))
+    .filter((item) => item.ar || item.en);
+}
 
 /** يحذف الحقول الفارغة قبل الإرسال حتى لا يفشل تحقّق الـ API (hex/regex) على قيم فارغة */
 function clean(obj: any): any {
@@ -124,9 +151,9 @@ export default function HospitalModal({ open, onClose, editing, onSaved }: Props
         heroStats: editing.heroStats?.length ? editing.heroStats : DEFAULT_VALUES.heroStats,
         departments: (editing.departments ?? []).map((d: any) => ({
           ...d,
-          equipment: d.equipment ? JSON.stringify(d.equipment, null, 2) : '',
-          services: d.services ? JSON.stringify(d.services, null, 2) : '',
-          features: d.features ? JSON.stringify(d.features, null, 2) : '',
+          equipment: toBilingualList(d.equipment),
+          services: toBilingualList(d.services),
+          features: toBilingualList(d.features),
           images: Array.isArray(d.images) ? d.images.join(', ') : '',
         })),
         journeySteps: editing.journeySteps?.length === 4 ? editing.journeySteps : DEFAULT_VALUES.journeySteps,
@@ -158,18 +185,19 @@ export default function HospitalModal({ open, onClose, editing, onSaved }: Props
     payload.departments = rawDepts.filter((dept: any) => {
       return dept && (dept.slug?.trim() || dept.name?.ar?.trim() || dept.name?.en?.trim());
     }).map((dept: any) => {
-      let equipment = dept.equipment;
-      let services = dept.services;
-      let features = dept.features;
       let images = dept.images;
-      
-      try { if (typeof equipment === 'string') equipment = JSON.parse(equipment); } catch(e){}
-      try { if (typeof services === 'string') services = JSON.parse(services); } catch(e){}
-      try { if (typeof features === 'string') features = JSON.parse(features); } catch(e){}
       if (typeof images === 'string') {
         images = images.split(',').map((u: string) => u.trim()).filter((u: string) => u);
       }
-      return { ...dept, equipment, services, features, images };
+      // الأجهزة/الخدمات/المميزات تصل الآن كمصفوفات { ar, en } من محرّر الصفوف —
+      // لا JSON.parse بعد اليوم، فلا يمكن أن يفشل التحويل بصمت ويُرسل نصاً خاماً.
+      return {
+        ...dept,
+        equipment: cleanBilingualList(dept.equipment),
+        services: cleanBilingualList(dept.services),
+        features: cleanBilingualList(dept.features),
+        images,
+      };
     });
 
     const rawLocs = (d.locations?.length ? d.locations : editing?.locations) || [];
@@ -317,7 +345,7 @@ export default function HospitalModal({ open, onClose, editing, onSaved }: Props
             <p className="text-sm font-medium text-gray-700">أقسام المستشفى</p>
             <button
               type="button"
-              onClick={() => appendDept({ slug: '', name: { ...EMPTY_BILINGUAL }, shortDescription: { ...EMPTY_BILINGUAL }, description: { ...EMPTY_BILINGUAL }, image: '', doctorIds: [] })}
+              onClick={() => appendDept({ slug: '', name: { ...EMPTY_BILINGUAL }, shortDescription: { ...EMPTY_BILINGUAL }, description: { ...EMPTY_BILINGUAL }, image: '', doctorIds: [], features: [], services: [], equipment: [], images: '' })}
               className="text-xs font-bold text-[#0E7C86] flex items-center gap-1 hover:underline"
             >
               <Plus size={14} /> إضافة قسم
@@ -367,15 +395,26 @@ export default function HospitalModal({ open, onClose, editing, onSaved }: Props
                   <FormField label="رابط فيديو تعريفي">
                     <input {...register(`departments.${i}.videoUrl`)} dir="ltr" className={inputCls} placeholder="https://youtube.com/..." />
                   </FormField>
-                  <FormField label="الأجهزة (JSON Array)">
-                    <textarea {...register(`departments.${i}.equipment`)} dir="ltr" className={textareaCls} rows={2} placeholder='[{"ar":"جهاز","en":"device"}]'></textarea>
-                  </FormField>
-                  <FormField label="الخدمات (JSON Array)">
-                    <textarea {...register(`departments.${i}.services`)} dir="ltr" className={textareaCls} rows={2} placeholder='[{"ar":"خدمة","en":"service"}]'></textarea>
-                  </FormField>
-                  <FormField label="المميزات (JSON Array)">
-                    <textarea {...register(`departments.${i}.features`)} dir="ltr" className={textareaCls} rows={2} placeholder='[{"ar":"ميزة","en":"feature"}]'></textarea>
-                  </FormField>
+                  <BilingualListInput
+                    control={control} register={register}
+                    name={`departments.${i}.features`}
+                    label="مميزات القسم" addLabel="إضافة ميزة"
+                    hint="تظهر في قسم «مميزات القسم» بصفحة القسم"
+                    placeholder={{ ar: 'عمل متواصل 24 ساعة', en: '24/7 operation' }}
+                  />
+                  <BilingualListInput
+                    control={control} register={register}
+                    name={`departments.${i}.services`}
+                    label="الخدمات الطبية" addLabel="إضافة خدمة"
+                    hint="تظهر في قسم «الخدمات الطبية» بصفحة القسم"
+                    placeholder={{ ar: 'الفرز الفوري والإنعاش', en: 'Triage and resuscitation' }}
+                  />
+                  <BilingualListInput
+                    control={control} register={register}
+                    name={`departments.${i}.equipment`}
+                    label="الأجهزة الطبية" addLabel="إضافة جهاز"
+                    placeholder={{ ar: 'جهاز أشعة مقطعية', en: 'CT scanner' }}
+                  />
                   <FormField label="روابط صور إضافية (مفصولة بفاصلة)">
                     <textarea {...register(`departments.${i}.images`)} dir="ltr" className={textareaCls} rows={2} placeholder="https://img1.jpg, https://img2.jpg"></textarea>
                   </FormField>
