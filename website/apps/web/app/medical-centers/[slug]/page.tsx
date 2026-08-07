@@ -94,14 +94,19 @@ export default async function MedicalCenterDetailPage({ params }: Props) {
             </div>
           )}
 
-          {c.clinics && c.clinics.length > 0 ? (
+          {c.services && c.services.length > 0 ? (
             <div className="mt-8 p-6 bg-gray-50 rounded-2xl border border-gray-100">
               <h2 className="text-xl font-bold text-primary-900 mb-4">العيادات والتخصصات</h2>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {c.clinics.map((clinic: any, i: number) => (
-                  <li key={clinic.id || i} className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm border border-gray-50">
-                     <div className="w-2 h-2 rounded-full bg-secondary-500"></div>
-                     <span className="text-gray-800 font-medium">{t(clinic.name)}</span>
+                {c.services.map((service: any, i: number) => (
+                  <li key={service.id || i} className="flex flex-col gap-1 p-3 bg-white rounded-lg shadow-sm border border-gray-50">
+                    <div className="flex items-center gap-3">
+                       <div className="w-2 h-2 rounded-full bg-secondary-500"></div>
+                       <span className="text-gray-800 font-medium">{t(service.name)}</span>
+                    </div>
+                    {service.description && (
+                       <span className="text-gray-500 text-sm mr-5">{t(service.description)}</span>
+                    )}
                   </li>
                 ))}
               </ul>
