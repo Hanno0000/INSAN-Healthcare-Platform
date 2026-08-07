@@ -160,8 +160,19 @@ Bring previous medical files, vaccination records, and any recent lab work.
 *   **Clinic Booking:** Cough, runny nose, allergies, weight/height follow-up, vaccinations, chronic diseases, general consultations.
 
 ### 4.4 Booking Methods
-<!-- NEEDS-OPERATOR: Missing exact phone numbers/links for booking -->
-Booking is highly recommended for clinics to reduce waiting times; ER is walk-in 24/7.
+
+**الحجز عن طريق الخط الساخن للمستشفى، مش رقم خاص بالمركز.**
+
+| المستشفى | الخط الساخن | واتساب |
+|---|---|---|
+| الدلتا الدولي | `01217778869` · `01500668657` | `01217778869` |
+| منصة إنسان | `01500668657` · `01100755556` | `01500668657` |
+
+المركز ده بيشتغل في الدلتا بس — راجع `ENTITY_REGISTRY.md` وقاعدة المستقبل.
+
+⚠️ مصدر الأرقام دي هو `business/brand/CONTACT_DIRECTORY.md`. أي تعديل يتعمل
+هناك الأول، و`contact-directory.js` بيقع لو نسخة اتخالفت. وماتكتبش لينك
+واتساب بإيدك — الكود بيولّده، والصفر اللي في أول الرقم بيتشال.
 
 ### 4.5 FAQ
 *   *Does every fever need an antibiotic?* No, many are viral. Doctor determines treatment.

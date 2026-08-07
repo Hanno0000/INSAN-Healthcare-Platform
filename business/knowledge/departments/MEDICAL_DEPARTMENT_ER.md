@@ -147,7 +147,18 @@ N/A (Emergency context).
     *   **OB/GYN:** Heavy bleeding, severe sudden pelvic pain, water breaking, decreased fetal movement, regular premature contractions, severe high BP with headache/blurriness, abnormal fever/discharge.
 
 ### 4.4 Booking Methods
-No booking required. Walk-in 24/7. <!-- NEEDS-OPERATOR: Include emergency hotline numbers if applicable -->
+
+**الحجز عن طريق الخط الساخن للمستشفى، مش رقم خاص بالمركز.**
+
+| المستشفى | الخط الساخن | واتساب |
+|---|---|---|
+| المستقبل التخصصي | `01122224352` · `01151001177` | `01151001177` |
+| الدلتا الدولي | `01217778869` · `01500668657` | `01217778869` |
+| منصة إنسان | `01500668657` · `01100755556` | `01500668657` |
+
+⚠️ مصدر الأرقام دي هو `business/brand/CONTACT_DIRECTORY.md`. أي تعديل يتعمل
+هناك الأول، و`contact-directory.js` بيقع لو نسخة اتخالفت. وماتكتبش لينك
+واتساب بإيدك — الكود بيولّده، والصفر اللي في أول الرقم بيتشال.
 
 ### 4.5 FAQ
 *   *Is the ER consultation really free?* Yes, the doctor's assessment is free for those over 55, children under 10, and for everyone after 12 AM. (Labs, meds, and procedures are charged normally).

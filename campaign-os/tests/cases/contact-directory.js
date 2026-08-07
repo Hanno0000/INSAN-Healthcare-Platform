@@ -68,6 +68,31 @@ module.exports = {
     t.is(unusedInDoc, [],
       'and every number in the directory is one some page actually publishes');
 
+    // --- the knowledge files are a third copy, held to the same source ---
+    //
+    // The booking sections carried a gap marker until 2026-08-08, when the
+    // operator pointed out there had never been a question: booking is the
+    // hospital hotline, not a per-centre number, and those were already written
+    // down. So the numbers were filled from this directory into seven knowledge
+    // files — which the receptionist reads directly.
+    //
+    // Seven more copies is seven more chances to drift, and drift here reaches a
+    // patient as a dead number. Same rule as Core.gs: a copy, not an opinion.
+    const strays = [];
+
+    for (const rel of knowledgeFiles()) {
+      const content = fx.repoFile(rel);
+      const name = rel.split('/').pop();
+
+      for (const number of new Set(content.match(/01\d{9}/g) || [])) {
+        if (inDoc.indexOf(number) === -1) strays.push(`${name} → ${number}`);
+      }
+    }
+
+    t.is(strays.sort(), [],
+      'no knowledge file states a phone number the contact directory does not — ' +
+      'the receptionist reads these files and hands the number to a patient');
+
     // --- the wa.me rule ---
     //
     // The failure that made this worth checking: a wa.me link is NOT the phone
@@ -116,3 +141,23 @@ module.exports = {
       'rather than one side quietly winning');
   }
 };
+
+// Every knowledge file, by path relative to the repo root.
+function knowledgeFiles() {
+  const fs = require('fs');
+  const path = require('path');
+  const rel = 'business/knowledge/';
+  const root = path.join(__dirname, '..', '..', '..', rel);
+  const out = [];
+
+  for (const dir of fs.readdirSync(root)) {
+    const full = path.join(root, dir);
+    if (!fs.statSync(full).isDirectory()) continue;
+
+    for (const file of fs.readdirSync(full)) {
+      if (file.endsWith('.md')) out.push(rel + dir + '/' + file);
+    }
+  }
+
+  return out.sort();
+}

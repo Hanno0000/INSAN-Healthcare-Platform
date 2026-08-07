@@ -376,27 +376,78 @@ to accelerate it by making the claim louder moves it backwards.
 - Delta International Hospital operates under the INSAN Healthcare Platform as a
   Sub-Brand.
 - It is managed by **L'Avenir Medical**.
-- It operates **all twelve Medical Centers** — the only site in the ecosystem that
-  does. Future Specialized Hospital operates four.
-- Those twelve are: Cardiac & Internal Medicine · Urology & Laser Surgery ·
-  Digestive & Liver Endoscopy · General Surgery & Endoscopy · Diabetic Foot &
-  Vascular · Pain Management · Women's & Children's Health · Dental · ENT &
-  Head/Neck Surgery · Orthopedic & Sports Injury · Chest & Sleep Disorders · Senior
-  Health & Screening. *(`MASTER_BRAND_ARCHITECTURE.md` §5 — authoritative.)*
+- It operates **every Medical Center in the ecosystem** — the only site that does.
+  Future Specialized Hospital operates a named, closed subset.
+- **`ENTITY_REGISTRY.md` is authoritative for that list, not this file.** The
+  registry holds sixteen registered centres and `future-rule.js` enforces which
+  of them run at Future. Any count written into prose here goes stale — it has
+  already moved from twelve to fourteen to sixteen — so it is deliberately not
+  repeated. *(`MASTER_BRAND_ARCHITECTURE.md` §5 still says twelve; that
+  disagreement is recorded in the registry and pinned by `entity-registry.js`.)*
+- **The Future rule, stated by the brand owner 2026-08-08:** Future runs Cardiac
+  & Internal Medicine, Urology & Laser Surgery, General Surgery & Endoscopy,
+  Orthopedic & Sports Injury, and Bariatric & Metabolic Surgeries. Everything
+  else is Delta only, and every centre at Future also runs at Delta.
 - It operates hospital-wide departments including Emergency, Intensive Care,
   Operating Rooms, Radiology and Laboratory.
 - Its brand attributes, per `AI_CREATIVE_CONSTITUTION.md` §19, are **Restore Trust,
   Transformation, Development, Human Experience**.
 
-> ⚠️ **The institutional facts below are not established in any committed document
-> and no campaign card can be built from this file until they are.**
+### Capability on record
+
+Source: **`business/knowledge/hospitals/وصف مستشفي  الدلتا.pdf`** — the hospital's
+own description document, and **the brand owner, 2026-08-08**.
+
+**Ownership and history**
+
+- The hospital has been operating **for many years**. The brand owner did not
+  give an exact founding year, and one is not invented here.
+- It came under **INSAN / L'Avenir management about two years ago**, so
+  approximately **2024**. Treat this as "about two years", not as a date — a
+  campaign may say *"تحت إدارة إنسان من حوالي سنتين"* and may not print a year.
+
+**Hours**
+
+- **Specialised outpatient clinics: 10:00 ص – 10:00 م.**
+- **Emergency: 24 hours**, receiving critical cases, road-traffic injuries and
+  accidents.
+- **Laboratory: 24 hours.**
+
+**Units**
+
+Intensive care · inpatient hotel rooms, graded from standard first class up to
+premium suites · neonatal and premature baby unit · paediatric care unit ·
+emergency renal dialysis unit · comprehensive check-up department · gastro,
+colon and biliary-duct endoscopy unit.
+
+**Diagnostics**
+
+- **Laboratory**, 24 hours: haematology and immunology, virology, hormones, all
+  chemistry panels and cultures, histopathology and cytology.
+- **Radiology**, integrated: plain X-ray, Doppler, echo, ultrasound, CT.
+
+**Operating theatres** cover general surgery, oncological surgery, laparoscopic
+surgery, obstetrics & gynaecology, orthopaedics & sports injuries, maxillofacial,
+neurosurgery, ENT, hand surgery, plastic and reconstructive surgery, vascular,
+thoracic, gastrointestinal and urological surgery. Specialised dental surgery for
+children and adults.
+
+⚠️ **Theatre capability is not the same as a Centre.** The list above says the
+hospital can perform these operations. Which of them is a Signature Brand with
+its own campaign is decided by `ENTITY_REGISTRY.md`, and a post must not imply a
+centre exists because a theatre specialty is named here.
+
+**Staffing, as stated**: medical service delivered by professors and consultants
+across all specialties, drawn from various Egyptian universities.
+
+> ⚠️ **What is still missing, and why the card is still blocked.**
 >
-> `Template.md` requires this section to carry concrete, specific capability. What
-> is above is structural — it comes from the brand architecture. What a campaign
-> writer actually needs in order to write eight posts about this hospital is the
-> institution itself, and that is not derivable from anything in the repository.
+> The description document is a capability list. It does not carry the
+> institutional facts a campaign writer needs, and the most important of them is
+> the fourth below: **demonstrable change under INSAN management is this brand's
+> entire proposition**, and nothing in the repository evidences it.
 >
-> <!-- NEEDS-OPERATOR: Delta institutional facts — (1) when the hospital was founded and when it came under INSAN/L'Avenir management; (2) bed capacity, and capacity by area; (3) which of the twelve centers are fully operational today versus planned, and on what timeline; (4) what has concretely changed under INSAN management — infrastructure, equipment, staffing, protocols, accreditation — with dates, since demonstrable change is this brand's entire proposition; (5) any accreditation or certification held or being pursued; (6) the catchment area and the population it serves; (7) what Delta offers that Future does not, beyond the eight additional centers; (8) the clinical leadership structure. -->
+> <!-- NEEDS-OPERATOR: Delta institutional facts still missing after the description PDF and the 2026-08-08 answers — (1) bed capacity in total and by area; the PDF names the units but gives no numbers, unlike Future's document which states 25 ICU beds; (2) which registered centres are fully operational today versus planned, and on what timeline; (3) what has concretely changed under INSAN management since roughly 2024 — infrastructure, equipment, staffing, protocols — with dates, since demonstrable change is what "Restore Trust" rests on; (4) any accreditation or certification held or being pursued; (5) the catchment area and the population served; (6) the clinical leadership structure. The exact founding year is NOT being asked for again — the brand owner said "many years" and that is enough for copy. -->
 
 > ⚠️ **A second question that changes the strategy, not just the copy.**
 >

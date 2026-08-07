@@ -155,8 +155,18 @@ Patients are heavily encouraged to bring ALL previous X-rays, ultrasounds, and l
 *   **Elective:** Infertility, non-painful varicocele, mild prostate enlargement managed medically.
 
 ### 4.4 Booking Methods
-<!-- NEEDS-OPERATOR: Missing exact phone numbers/links for booking -->
-(Can be booked immediately after clinical evaluation if investigations are complete).
+
+**الحجز عن طريق الخط الساخن للمستشفى، مش رقم خاص بالمركز.**
+
+| المستشفى | الخط الساخن | واتساب |
+|---|---|---|
+| المستقبل التخصصي | `01122224352` · `01151001177` | `01151001177` |
+| الدلتا الدولي | `01217778869` · `01500668657` | `01217778869` |
+| منصة إنسان | `01500668657` · `01100755556` | `01500668657` |
+
+⚠️ مصدر الأرقام دي هو `business/brand/CONTACT_DIRECTORY.md`. أي تعديل يتعمل
+هناك الأول، و`contact-directory.js` بيقع لو نسخة اتخالفت. وماتكتبش لينك
+واتساب بإيدك — الكود بيولّده، والصفر اللي في أول الرقم بيتشال.
 
 ### 4.5 FAQ
 This center handles a massive volume of specific clinical FAQs, mapped entirely to the provided Q&A document:

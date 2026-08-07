@@ -76,7 +76,7 @@ that difference is deliberate and is recorded in the knowledge file's
 | CEN-007 | Women's Health Center | مركز صحة المرأة | CENTER | Women's Health Center | Delta |
 | CEN-008 | Dental Center | مركز الأسنان للكبار والأطفال وذوي الهمم | CENTER | Dental Center | Delta |
 | CEN-009 | ENT & Head/Neck Surgery Center | مركز الأنف والأذن وجراحات الرقبة والرأس | CENTER | ENT Center | Future, Delta |
-| CEN-010 | Orthopedic & Sports Injury Center | مركز العظام وإصابات الملاعب | CENTER | Orthopedic Center | Delta |
+| CEN-010 | Orthopedic & Sports Injury Center | مركز العظام وإصابات الملاعب | CENTER | Orthopedic Center | Future, Delta |
 | CEN-011 | Chest & Sleep Disorders Center | مركز الصدر واضطرابات النوم | CENTER | Chest & Sleep Center | Delta |
 | CEN-012 | Senior Health & Screening Center | مركز صحة كبار السن والفحص الشامل | CENTER | — | Delta |
 | CEN-013 | Bariatric & Metabolic Surgeries Center | مركز جراحات السمنة والتمثيل الغذائي | CENTER | Bariatric Center | Future, Delta |
@@ -94,15 +94,44 @@ A `—` in Campaign Name means the entity is registered and real, and no campaig
 currently scheduled for it. That is a legitimate state: the registry describes the
 business, not the plan.
 
-**Centers 5–8, 10–12 and 15 operate at Delta only**, per
-`PLATFORM_KNOWLEDGE_BASE.md` §2.2. Centers 1–4, 9, 13, 14 and 16 operate at both
-hospitals.
+### ⚠️ The Future rule — read this before writing a Hospitals cell
 
-**CEN-009 moved to both hospitals on 2026-08-07.** The registry had it at Delta
-only while its knowledge file stated `hospitals: [Future, Delta]`; the brand owner
-confirmed the file was right. This is the kind of divergence that reaches a reader
-as a service advertised on the wrong page, so it is recorded rather than quietly
-corrected.
+**Stated by the brand owner, 2026-08-08, as a standing rule rather than a
+one-time correction.** It replaces reasoning case by case about which hospital
+runs what.
+
+> **Future runs a named, closed list of centres. Delta runs everything.**
+
+| At **both** hospitals | |
+|---|---|
+| `CEN-001` | مركز الباطنة والقلب وإحالة الرعايات الحرجة والمتوسطة |
+| `CEN-010` | مركز العظام وإصابات الملاعب |
+| `CEN-004` | مركز الجراحات العامة — and the surgical centres branching from it |
+| `CEN-013` | مركز جراحات السمنة والتمثيل الغذائي |
+| `CEN-002` | مركز جراحات المسالك والليزر |
+
+**Every other centre is Delta only.**
+
+Two consequences that are part of the rule, not inferences from it:
+
+1. **Future ⊆ Delta.** A centre at Future is *always* also at Delta. There is no
+   centre Future has and Delta does not. `future-rule.js` enforces this.
+2. **A new centre is Delta-only by default.** When one is added, the brand owner
+   says explicitly whether it is also at Future. Nobody derives it from the
+   centre's specialty, because the list is a business decision about where the
+   group invested, not a clinical one.
+
+⚠️ **The two hospital-description PDFs do not contradict this and must not be
+read as if they did.** `وصف مستشفى المستقبل.pdf` lists ENT, dental, neurosurgery
+and plastic surgery among Future's operating-theatre specialties. That is
+**theatre capability** — the hospital can perform the operation. A **Centre** is
+a Signature Brand with its own campaign and its own knowledge file. Future
+operating on an ear does not make Future the home of the ENT Center.
+
+<!-- NEEDS-OPERATOR: three centres the Future rule does not settle. (1) CEN-009 ENT — the rule excludes it from Future, but on 2026-08-07 the brand owner explicitly moved it TO Future+Delta to match its knowledge file. Which ruling stands? (2) "الهضمي" was named as a Future surgical centre, but there are two candidates and neither has a knowledge file: CEN-003 مركز مناظير الجهاز الهضمي والكبد, and CEN-016 مركز جراحات الجهاز الهضمي والأورام. Which one? (3) CEN-014 Proctology is a surgical centre in CEN-004's family and was not named — is it at Future or Delta only? Until these are answered, CEN-009, CEN-003, CEN-014 and CEN-016 keep the value they already had. -->
+
+**CEN-010 moved to both hospitals on 2026-08-08**, applying the rule above. It
+was the only registry row the rule changed outright.
 
 **MED-002's campaign was renamed `Emergency Center` → `Rapid Response Center`** on
 2026-08-07, to match its knowledge file. ⚠️ Renaming a campaign is a **three-place**

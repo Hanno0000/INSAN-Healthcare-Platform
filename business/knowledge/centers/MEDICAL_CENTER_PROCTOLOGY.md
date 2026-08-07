@@ -138,7 +138,18 @@ Specific bowel prep may be required depending on the procedure (e.g., colonoscop
 Severe rectal bleeding or acute abscesses require rapid intervention.
 
 ### 4.4 Booking Methods
-<!-- NEEDS-OPERATOR: Missing booking methods -->
+
+**الحجز عن طريق الخط الساخن للمستشفى، مش رقم خاص بالمركز.**
+
+| المستشفى | الخط الساخن | واتساب |
+|---|---|---|
+| المستقبل التخصصي | `01122224352` · `01151001177` | `01151001177` |
+| الدلتا الدولي | `01217778869` · `01500668657` | `01217778869` |
+| منصة إنسان | `01500668657` · `01100755556` | `01500668657` |
+
+⚠️ مصدر الأرقام دي هو `business/brand/CONTACT_DIRECTORY.md`. أي تعديل يتعمل
+هناك الأول، و`contact-directory.js` بيقع لو نسخة اتخالفت. وماتكتبش لينك
+واتساب بإيدك — الكود بيولّده، والصفر اللي في أول الرقم بيتشال.
 
 ### 4.5 FAQ
 *   *I want Laser for my hemorrhoids, is that possible?* Only if your medical evaluation shows it is the best option for your specific grade. If you have Grade 3/4, traditional surgery might be safer and prevent recurrence.

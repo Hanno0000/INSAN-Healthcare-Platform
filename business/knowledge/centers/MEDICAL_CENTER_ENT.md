@@ -155,7 +155,18 @@ Patients should bring all previous audiograms, CT scans of the sinuses/neck, and
 *   **Clinic:** Chronic snoring, chronic sinusitis, gradual hearing loss, tinnitus, neck masses.
 
 ### 4.4 Booking Methods
-<!-- NEEDS-OPERATOR: Missing exact phone numbers/links for booking -->
+
+**الحجز عن طريق الخط الساخن للمستشفى، مش رقم خاص بالمركز.**
+
+| المستشفى | الخط الساخن | واتساب |
+|---|---|---|
+| المستقبل التخصصي | `01122224352` · `01151001177` | `01151001177` |
+| الدلتا الدولي | `01217778869` · `01500668657` | `01217778869` |
+| منصة إنسان | `01500668657` · `01100755556` | `01500668657` |
+
+⚠️ مصدر الأرقام دي هو `business/brand/CONTACT_DIRECTORY.md`. أي تعديل يتعمل
+هناك الأول، و`contact-directory.js` بيقع لو نسخة اتخالفت. وماتكتبش لينك
+واتساب بإيدك — الكود بيولّده، والصفر اللي في أول الرقم بيتشال.
 
 ### 4.5 FAQ
 *   *Do all sinus cases need surgery?* No, many resolve with medication. Surgery is for resistant or specific anatomical cases.
