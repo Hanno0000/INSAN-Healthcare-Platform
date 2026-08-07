@@ -49,17 +49,25 @@ export class HospitalDepartmentDto {
   @IsString({ each: true })
   images?: string[];
 
+  // These hold arrays of bilingual objects — { ar, en }.
+  //
+  // They are deliberately typed `any`, not `any[]`. The global ValidationPipe
+  // runs with `enableImplicitConversion`, which reads the reflected design
+  // type: an `any[]` property reflects as `Array`, so class-transformer
+  // coerces every *element* to an array too and each { ar, en } arrives as [].
+  // Typing them `any` reflects as `Object` and leaves the payload untouched —
+  // this is why the equivalent fields on CreateMedicalCenterDto never broke.
   @IsOptional()
   @IsArray()
-  equipment?: any[];
+  equipment?: any;
 
   @IsOptional()
   @IsArray()
-  services?: any[];
+  services?: any;
 
   @IsOptional()
   @IsArray()
-  features?: any[];
+  features?: any;
 
   @IsOptional()
   @IsString()
@@ -140,10 +148,12 @@ export class CreateHospitalDto {
   @Type(() => BilingualDto)
   heroTagline?: BilingualDto;
 
+  // `any`, not `any[]` — see the note on equipment/services/features below.
+  // An `any[]` here would flatten every { value, suffix, label } stat to [].
   @IsOptional()
   @IsArray()
   @ArrayMaxSize(3)
-  heroStats?: any[];
+  heroStats?: any;
 
   @IsOptional()
   @IsArray()
@@ -152,17 +162,19 @@ export class CreateHospitalDto {
   @Type(() => HospitalDepartmentDto)
   departments?: HospitalDepartmentDto[];
 
+  // `any`, not `any[]` — each { name, mapsUrl } would otherwise arrive as [].
   @IsOptional()
   @IsArray()
   @ArrayMaxSize(20)
-  locations?: any[];
+  locations?: any;
 
   @IsOptional()
   @IsObject()
   contactInfo?: Record<string, any>;
 
+  // `any`, not `any[]` — each { icon, title, desc } would otherwise arrive as [].
   @IsOptional()
   @IsArray()
   @ArrayMaxSize(4)
-  journeySteps?: any[];
+  journeySteps?: any;
 }
