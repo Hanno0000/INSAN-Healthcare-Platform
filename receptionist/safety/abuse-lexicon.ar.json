@@ -28,8 +28,23 @@
     "policy": {
       "firstOffense": "WARN_ONCE",
       "secondOffense": "END_POLITELY",
+      "thirdOffense": "HANDOFF_TO_HUMAN",
       "neverEscalate": true,
-      "$comment": "Frustration directed at a situation ('المستشفى دي وحشة') is not abuse. Only abuse directed at a person triggers this."
+      "$comment": [
+        "Frustration directed at a situation ('المستشفى دي وحشة') is not abuse. Only abuse directed at a person triggers this.",
+        "",
+        "⚠️ thirdOffense IS NOT IMPLEMENTED. Operator decision, 2026-08-07: a person",
+        "who keeps going after the polite close should be blocked or passed to a human.",
+        "The code has two abuse actions only — WARN_ABUSE and END_ABUSE — so this key",
+        "currently describes an intention, not a behaviour. Do not read it as live.",
+        "",
+        "What actually happens today, and why the third step is needed: END_ABUSE sets",
+        "endedAt on the conversation, and loadContext only ever looks for a conversation",
+        "with endedAt: null. So the abuser's next message opens a FRESH conversation with",
+        "empty history, alreadyWarned reads false, and they are warned again. The loop",
+        "warn → close → warn → close runs forever. Implementing this means counting abuse",
+        "per VISITOR across conversations, not per conversation."
+      ]
     }
   },
 

@@ -207,7 +207,7 @@
       "severity": "high",
       "subject": "Delta CT scanner",
       "detail": "DLT-SVC lists CT as an available service; DLT-BLD marks it 'تحت التجهيز'.",
-      "resolution": "OPERATOR — is the CT operating today?",
+      "resolution": "RULE GIVEN, NOT YET APPLIED. Operator, 2026-08-07: 'whichever document is newer wins'. Neither PDF carries a date inside it, so the rule cannot be applied without being told which of the two is the later document — and guessing here sends a patient for a scan that may not exist. Still WITHHELD.",
       "status": "open"
     },
     {
@@ -215,8 +215,8 @@
       "severity": "high",
       "subject": "Delta — twelve centers vs nine clinic rooms",
       "detail": "ENTITY_REGISTRY registers 12 centers at Delta; the building has 9 clinic rooms (3 fixed, 6 rotating).",
-      "resolution": "OPERATOR — which centers hold a scheduled clinic, and on which days? Until answered the receptionist answers from clinic schedules and never confirms a center is running.",
-      "status": "open"
+      "resolution": "NOT A CONFLICT. Operator, 2026-08-07: centres do not each own a room. A room carries one centre's sign today and another's tomorrow — a centre may run five clinics one day, six the next, at different times. Room count therefore places no ceiling on centre count. The receptionist still answers from clinic SCHEDULES, never from centre count, so behaviour is unchanged; what changes is that this stopped being a contradiction to resolve.",
+      "status": "resolved"
     },
     {
       "id": "CONF-04",
@@ -231,16 +231,16 @@
       "severity": "medium",
       "subject": "Future phone numbers",
       "detail": "Footer shows two 9-digit numbers; Cairo landlines are 8 digits plus area code.",
-      "resolution": "OPERATOR — confirm the dialable numbers.",
-      "status": "open"
+      "resolution": "SUPERSEDED, 2026-08-07. business/brand/CONTACT_DIRECTORY.md is the confirmed source of truth for every number a patient is given, and it lists Future's hotline as 01122224352 · 01151001177. The PDF footer numbers are not the numbers to serve, whatever they turn out to be, so the OCR question no longer gates anything. The contact directory — not this file — is what the receptionist reads for contact details.",
+      "status": "resolved"
     },
     {
       "id": "CONF-06",
       "severity": "medium",
       "subject": "Future outpatient capacity",
       "detail": "FUT-SVC describes specialized outpatient clinics across many specialties; FUT-BLD lists 2 outpatient clinic rooms on the ground floor.",
-      "resolution": "OPERATOR — how many clinic rooms does Future actually run, and on what rotation?",
-      "status": "open"
+      "resolution": "NOT A CONFLICT — same rotation principle as CONF-03. Operator, 2026-08-07: two rooms can host ten clinics across different days and hours. A room is a place, not a specialty. The receptionist must therefore never infer 'this specialty is unavailable' from room count; availability comes from the clinic schedule only.",
+      "status": "resolved"
     }
   ]
 }
