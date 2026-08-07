@@ -73,7 +73,7 @@ that difference is deliberate and is recorded in the knowledge file's
 | CEN-004 | General Surgery & Endoscopy Center | مركز الجراحات العامة والمناظير | CENTER | General Surgery Center | Future, Delta |
 | CEN-005 | Diabetic Foot & Vascular Center | مركز القدم السكري والأوعية الدموية | CENTER | Diabetic Foot Center | Delta |
 | CEN-006 | Pain Management Center | مركز علاج الألم والتدخلات المحدودة | CENTER | Pain Management Center | Delta |
-| CEN-007 | Women's & Children's Health Center | مركز صحة المرأة والطفل | CENTER | Women's Health Center | Delta |
+| CEN-007 | Women's Health Center | مركز صحة المرأة | CENTER | Women's Health Center | Delta |
 | CEN-008 | Dental Center | مركز الأسنان للكبار والأطفال وذوي الهمم | CENTER | Dental Center | Delta |
 | CEN-009 | ENT & Head/Neck Surgery Center | مركز الأنف والأذن وجراحات الرقبة والرأس | CENTER | ENT Center | Delta |
 | CEN-010 | Orthopedic & Sports Injury Center | مركز العظام وإصابات الملاعب | CENTER | Orthopedic Center | Delta |
@@ -81,6 +81,7 @@ that difference is deliberate and is recorded in the knowledge file's
 | CEN-012 | Senior Health & Screening Center | مركز صحة كبار السن والفحص الشامل | CENTER | — | Delta |
 | CEN-013 | Bariatric & Metabolic Surgeries Center | مركز جراحات السمنة والتمثيل الغذائي | CENTER | Bariatric Center | Future, Delta |
 | CEN-014 | Colorectal & Anal Surgeries Center | مركز جراحات المستقيم والشرج | CENTER | Proctology Center | Future, Delta |
+| CEN-015 | Pediatrics & Neonatology Center | مركز طب الأطفال وحديثي الولادة | CENTER | Pediatric Center | Delta |
 | HOSP-001 | Future Specialized Hospital | مستشفى المستقبل التخصصي | HOSPITAL | — | Future |
 | HOSP-002 | Delta International Hospital | مستشفى الدلتا الدولي | HOSPITAL | Delta Restore Trust | Delta |
 | PROG-001 | Kabarona Program | برنامج كبارنا | PROGRAM | Kabarona Continuous Care Program | Future, Delta |
@@ -92,8 +93,12 @@ A `—` in Campaign Name means the entity is registered and real, and no campaig
 currently scheduled for it. That is a legitimate state: the registry describes the
 business, not the plan.
 
-**Centers 5–12 operate at Delta only**, per `PLATFORM_KNOWLEDGE_BASE.md` §2.2.
-Centers 1–4 operate at both hospitals.
+**Centers 5–12 and 15 operate at Delta only**, per `PLATFORM_KNOWLEDGE_BASE.md` §2.2.
+Centers 1–4, 13 and 14 operate at both hospitals.
+
+**CEN-007 was "Women's & Children's Health Center" until 2026-08-07.** The brand
+owner retired the combined entity: women's health and paediatrics are now two
+centres, CEN-007 and CEN-015. Anything still naming a combined centre is stale.
 
 ---
 
