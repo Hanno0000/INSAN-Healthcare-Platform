@@ -12,6 +12,12 @@ version:        2.0
 last_updated:   2026-08-06
 ---
 
+# Purpose
+[TBD]
+
+# Document Philosophy
+[TBD]
+
 # General Surgery & Endoscopy Center (مركز الجراحات العامة والمناظير)
 
 ## 1. Foundation
@@ -29,7 +35,10 @@ A comprehensive surgical hub covering:
 *   24/7 Surgical Emergencies.
 *(Note: Excludes Cardio, Neuro, Ortho, Uro, OB/GYN, and pure Plastic surgeries, which are referred to their specific departments).*
 
-### 1.3 Vision & Mission
+### 1.3 Vision
+
+### 1.3 Mission
+[TBD]
 **Mission:** To ensure every patient receives the correct diagnosis and appropriate surgery with the highest degree of safety, the least possible pain, and the fastest return to normal life.
 **Vision:** To become the ultimate integrated reference for general surgery in the region, relying on academic expertise, modern techniques, and profound respect for the patient.
 
@@ -121,6 +130,13 @@ General Surgery, GI Surgery, Breast, Thyroid.
 <!-- NEEDS-OPERATOR: Missing schedule -->
 
 ---
+
+
+### Center Features
+[TBD]
+
+### Center Services
+[TBD]
 
 ## 4. Operations
 
@@ -251,3 +267,25 @@ Marketing Team, Customer Service, Surgical Coordinators.
 *   **Created/Updated:** 2026-08-06
 *   **Author:** AI Agent (Antigravity)
 *   **Source:** Stakeholder Voice Transcription
+
+
+### Relationship With Campaign Cards
+[TBD]
+
+### Relationship With Other Documentation
+[TBD]
+
+### Maintenance Policy
+[TBD]
+
+### Versioning Philosophy
+[TBD]
+
+### Future Expansion Areas
+[TBD]
+
+### Final Strategic Reminder
+[TBD]
+
+### Related Knowledge
+[TBD]

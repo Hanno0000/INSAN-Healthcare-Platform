@@ -1,7 +1,7 @@
 ---
 entity_id:      MED-002
 entity_name_en: Emergency Department (Rapid Response Center)
-entity_name_ar: قسم الطوارئ (مركز الاستجابة السريعة)
+entity_name_ar: مركز الاستجابة السريعة (الطوارئ)
 campaign_name:  Rapid Response Center
 service_level:  DEPARTMENT
 campaign_type:  Medical Services
@@ -11,6 +11,12 @@ status:         Active
 version:        2.0
 last_updated:   2026-08-06
 ---
+
+# Purpose
+[TBD]
+
+# Document Philosophy
+[TBD]
 
 # Rapid Response Center / ER (مركز الاستجابة السريعة)
 
@@ -28,7 +34,10 @@ A 24/7 rapid medical intervention center offering:
 *   Round-the-clock Diagnostics (Labs and Radiology).
 *   Direct access to Adult ICU, Pediatric ICU, Incubators, and fully equipped Operating Rooms.
 
-### 1.3 Vision & Mission
+### 1.3 Vision
+
+### 1.3 Mission
+[TBD]
 To be the absolute first name that comes to mind when any medical emergency strikes, known not just for medical excellence, but for unparalleled speed, safety, and human empathy in moments of severe crisis.
 
 ### 1.4 Why This Service Exists
@@ -267,3 +276,25 @@ AI copywriters MUST use the "دقيقة أمان" (A Minute of Safety) theme. Cr
 *   **Created/Updated:** 2026-08-06
 *   **Author:** AI Agent (Antigravity)
 *   **Source:** Stakeholder Voice Transcription
+
+
+### Relationship With Campaign Cards
+[TBD]
+
+### Relationship With Other Documentation
+[TBD]
+
+### Maintenance Policy
+[TBD]
+
+### Versioning Philosophy
+[TBD]
+
+### Future Expansion Areas
+[TBD]
+
+### Final Strategic Reminder
+[TBD]
+
+### Related Knowledge
+[TBD]

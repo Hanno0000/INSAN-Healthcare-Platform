@@ -12,6 +12,12 @@ version:        2.0
 last_updated:   2026-08-06
 ---
 
+# Purpose
+[TBD]
+
+# Document Philosophy
+[TBD]
+
 # Urology & Andrology Surgery Center (مركز جراحات المسالك البولية والذكورة)
 
 ## 1. Foundation
@@ -30,7 +36,10 @@ A specialized surgical and medical center handling:
 *   Urinary incontinence surgeries.
 *   Pediatric urology (undescended testicles, complicated circumcision, urethral stricture, urinary reflux, congenital defects).
 
-### 1.3 Vision & Mission
+### 1.3 Vision
+
+### 1.3 Mission
+[TBD]
 <!-- NEEDS-OPERATOR: Missing Vision & Mission for the Urology Center -->
 
 ### 1.4 Why This Service Exists
@@ -122,6 +131,13 @@ The integration of 24/7 emergency response for excruciating pain (renal colic) w
 <!-- NEEDS-OPERATOR: Missing the operational days/hours for the Urology clinics -->
 
 ---
+
+
+### Center Features
+[TBD]
+
+### Center Services
+[TBD]
 
 ## 4. Operations
 
@@ -259,3 +275,25 @@ AI workers should leverage the extensive FAQ section to generate educational con
 *   **Created/Updated:** 2026-08-06
 *   **Author:** AI Agent (Antigravity)
 *   **Source:** Stakeholder Voice Transcription
+
+
+### Relationship With Campaign Cards
+[TBD]
+
+### Relationship With Other Documentation
+[TBD]
+
+### Maintenance Policy
+[TBD]
+
+### Versioning Philosophy
+[TBD]
+
+### Future Expansion Areas
+[TBD]
+
+### Final Strategic Reminder
+[TBD]
+
+### Related Knowledge
+[TBD]

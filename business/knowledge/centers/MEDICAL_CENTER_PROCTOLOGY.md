@@ -12,6 +12,12 @@ version:        2.0
 last_updated:   2026-08-06
 ---
 
+# Purpose
+[TBD]
+
+# Document Philosophy
+[TBD]
+
 # Colorectal & Anal Surgeries Center (مركز جراحات المستقيم والشرج)
 
 ## 1. Foundation
@@ -22,7 +28,10 @@ A highly specialized center dedicated to the diagnosis and treatment of lower ga
 ### 1.2 Definition
 Provides comprehensive care through specialized clinics (Hemorrhoids, Fissure, Fistula, Pilonidal Cyst, Colorectal Tumors, Chronic Constipation/Incontinence) and advanced surgical interventions (Laser and Traditional Surgery).
 
-### 1.3 Vision & Mission
+### 1.3 Vision
+
+### 1.3 Mission
+[TBD]
 To provide world-class, highly private, and dignified care for proctology patients, utilizing the expertise of university professors to determine the absolute best medical or surgical path for each individual.
 
 ### 1.4 Why This Service Exists
@@ -108,6 +117,13 @@ Hemorrhoids, Anal Fissure, Anal Fistula, Pilonidal Cyst, Colorectal Diseases, Co
 <!-- NEEDS-OPERATOR: Missing schedule -->
 
 ---
+
+
+### Center Features
+[TBD]
+
+### Center Services
+[TBD]
 
 ## 4. Operations
 
@@ -236,3 +252,25 @@ Marketing, Call Center, General Surgery Coordinators.
 *   **Created/Updated:** 2026-08-06
 *   **Author:** AI Agent (Antigravity)
 *   **Source:** Stakeholder Voice Transcription
+
+
+### Relationship With Campaign Cards
+[TBD]
+
+### Relationship With Other Documentation
+[TBD]
+
+### Maintenance Policy
+[TBD]
+
+### Versioning Philosophy
+[TBD]
+
+### Future Expansion Areas
+[TBD]
+
+### Final Strategic Reminder
+[TBD]
+
+### Related Knowledge
+[TBD]

@@ -12,6 +12,12 @@ version:        2.0
 last_updated:   2026-08-06
 ---
 
+# Purpose
+[TBD]
+
+# Document Philosophy
+[TBD]
+
 # Pediatrics & Neonatology Center (مركز طب الأطفال وحديثي الولادة)
 
 ## 1. Foundation
@@ -27,7 +33,10 @@ A specialized, multi-disciplinary center offering diagnostic, therapeutic, and e
 *   Vaccination services according to approved schedules.
 *   Growth, nutrition, and development monitoring.
 
-### 1.3 Vision & Mission
+### 1.3 Vision
+
+### 1.3 Mission
+[TBD]
 <!-- NEEDS-OPERATOR: Missing exact Vision & Mission for the Pediatric Center -->
 
 ### 1.4 Why This Service Exists
@@ -128,6 +137,13 @@ The center boasts a massive array of 11 sub-specialties:
 <!-- NEEDS-OPERATOR: Missing exact operational days/hours for all 11 clinics -->
 
 ---
+
+
+### Center Features
+[TBD]
+
+### Center Services
+[TBD]
 
 ## 4. Operations
 
@@ -260,3 +276,25 @@ AI workers should aggressively utilize the educational FAQs provided to create h
 *   **Created/Updated:** 2026-08-06
 *   **Author:** AI Agent (Antigravity)
 *   **Source:** Stakeholder Voice Transcription
+
+
+### Relationship With Campaign Cards
+[TBD]
+
+### Relationship With Other Documentation
+[TBD]
+
+### Maintenance Policy
+[TBD]
+
+### Versioning Philosophy
+[TBD]
+
+### Future Expansion Areas
+[TBD]
+
+### Final Strategic Reminder
+[TBD]
+
+### Related Knowledge
+[TBD]

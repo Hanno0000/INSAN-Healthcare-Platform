@@ -12,6 +12,12 @@ version:        2.0
 last_updated:   2026-08-06
 ---
 
+# Purpose
+[TBD]
+
+# Document Philosophy
+[TBD]
+
 # ENT & Head and Neck Surgery Center (مركز الأنف والأذن والحنجرة وجراحات الرأس والرقبة)
 
 ## 1. Foundation
@@ -27,7 +33,10 @@ An integrated center handling:
 *   Head and Neck Surgeries (Tumor excision, Salivary glands, Neck cysts/masses).
 *   Pediatric ENT.
 
-### 1.3 Vision & Mission
+### 1.3 Vision
+
+### 1.3 Mission
+[TBD]
 Our mission is to provide specialized, safe medical care based on accurate diagnosis, the latest technologies, and the expertise of senior professors and consultants, while respecting the patient and delivering a medical service worthy of their trust.
 
 ### 1.4 Why This Service Exists
@@ -124,6 +133,13 @@ The availability of highly specialized sub-clinics (like Voice/Larynx, Balance/V
 <!-- NEEDS-OPERATOR: Missing exact operational days/hours for all ENT clinics -->
 
 ---
+
+
+### Center Features
+[TBD]
+
+### Center Services
+[TBD]
 
 ## 4. Operations
 
@@ -257,3 +273,25 @@ AI workers must lean heavily into the "University Professors" and "Advanced Endo
 *   **Created/Updated:** 2026-08-06
 *   **Author:** AI Agent (Antigravity)
 *   **Source:** Stakeholder Voice Transcription
+
+
+### Relationship With Campaign Cards
+[TBD]
+
+### Relationship With Other Documentation
+[TBD]
+
+### Maintenance Policy
+[TBD]
+
+### Versioning Philosophy
+[TBD]
+
+### Future Expansion Areas
+[TBD]
+
+### Final Strategic Reminder
+[TBD]
+
+### Related Knowledge
+[TBD]

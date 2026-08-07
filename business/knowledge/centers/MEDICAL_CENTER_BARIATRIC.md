@@ -12,6 +12,12 @@ version:        2.0
 last_updated:   2026-08-06
 ---
 
+# Purpose
+[TBD]
+
+# Document Philosophy
+[TBD]
+
 # Bariatric & Metabolic Surgeries Center (مركز جراحات السمنة والتمثيل الغذائي)
 
 ## 1. Foundation
@@ -27,7 +33,10 @@ A multidisciplinary program encompassing:
 *   Post-Op Clinical Nutrition.
 *   Long-term Post-Op Follow-up (Weight loss, labs, vitamins).
 
-### 1.3 Vision & Mission
+### 1.3 Vision
+
+### 1.3 Mission
+[TBD]
 **Mission:** We do not just treat excess weight; we help patients eliminate obesity-related diseases and improve their quality of life through an integrated medical team and a treatment plan that starts before surgery and continues long after.
 **Vision:** To be the premier destination for metabolic transformation, recognized for rigorous pre-op evaluation and unmatched post-op support.
 
@@ -121,6 +130,13 @@ The emphasis on the "After." Many centers perform the surgery and abandon the pa
 <!-- NEEDS-OPERATOR: Missing schedule -->
 
 ---
+
+
+### Center Features
+[TBD]
+
+### Center Services
+[TBD]
 
 ## 4. Operations
 
@@ -264,3 +280,25 @@ Call Center, Customer Service, Marketing Team, Clinical Nutritionists.
 
 *(Due to length, AI agents should refer to the original transcription or the internal database for the full text of the 80 questions covering: Eligibility, Sleeve vs Bypass, Anesthesia, Pain, Recovery, Diet, Vitamins, Diabetes, Pregnancy, Smoking, Cost, Follow-up, and Revisional Surgery).*
 <!-- Note for operators: The full 80 Q&A is preserved in the project's foundational transcripts and should be used to train customer service. -->
+
+
+### Relationship With Campaign Cards
+[TBD]
+
+### Relationship With Other Documentation
+[TBD]
+
+### Maintenance Policy
+[TBD]
+
+### Versioning Philosophy
+[TBD]
+
+### Future Expansion Areas
+[TBD]
+
+### Final Strategic Reminder
+[TBD]
+
+### Related Knowledge
+[TBD]

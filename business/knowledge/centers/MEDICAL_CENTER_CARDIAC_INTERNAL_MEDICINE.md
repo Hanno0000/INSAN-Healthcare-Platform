@@ -12,6 +12,12 @@ version:        2.0
 last_updated:   2026-08-06
 ---
 
+# Purpose
+[TBD]
+
+# Document Philosophy
+[TBD]
+
 # Cardiac & Internal Medicine Center (مركز الباطنة والقلب وإحالة الرعايات الحرجة والمتوسطة)
 
 ## 1. Foundation
@@ -27,7 +33,10 @@ The center integrates several interconnected medical functions:
 *   **Emergency & Mobile Care:** 24/7 Emergency response, Home Medical Services, and fully equipped Ambulance services (currently based at Future).
 *   **External Network:** While Cath Labs (diagnostic, therapeutic, and cerebral) are not physically inside the hospitals yet, the center maintains direct, 24/7 contracts with premier specialized centers. Professors and consultants are available around the clock for both elective procedures and emergency interventions.
 
-### 1.3 Vision & Mission
+### 1.3 Vision
+
+### 1.3 Mission
+[TBD]
 To be the ultimate safety net for patients facing acute and chronic internal or cardiac conditions, providing immediate, precise, and human-centric medical intervention that prevents deterioration and saves lives.
 
 ### 1.4 Why This Service Exists
@@ -121,6 +130,13 @@ The integration of preventative follow-up post-discharge. The center doesn't jus
 *   **Emergency & Beds:** Operating 24/7 at both locations.
 
 ---
+
+
+### Center Features
+[TBD]
+
+### Center Services
+[TBD]
 
 ## 4. Operations
 
