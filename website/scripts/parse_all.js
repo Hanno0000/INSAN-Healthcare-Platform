@@ -62,7 +62,12 @@ function main() {
       const { frontmatter, body } = parseFrontmatter(content);
       if (!frontmatter.entity_id) continue;
       
-      const slug = slugify(frontmatter.entity_name_en);
+      const HOSPITAL_SLUG_MAP = {
+        'HOSP-001': 'future-hospital',
+        'HOSP-002': 'delta-hospital',
+      };
+      
+      const slug = HOSPITAL_SLUG_MAP[frontmatter.entity_id] || slugify(frontmatter.entity_name_en);
       let hospital = seedData.hospitals.find(h => h.slug === slug);
       if (!hospital) {
         hospital = { slug, departments: [] };

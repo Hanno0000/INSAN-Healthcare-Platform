@@ -272,9 +272,10 @@ model Clinic {
   medicalCenter   MedicalCenter? @relation(fields: [medicalCenterId], references: [id], onDelete: SetNull)
   appointments    AppointmentRequest[]
 
+  @@index([status])
   @@index([hospitalId])
-  @@index([medicalCenterId])
 }
+
 
 model Doctor {
   id           String                @id @default(cuid())

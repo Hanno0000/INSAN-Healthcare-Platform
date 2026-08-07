@@ -178,9 +178,14 @@ function main() {
     const files = fs.readdirSync(dirPath).filter(f => f.endsWith('.md'));
     
     for (const file of files) {
-      console.log('Parsing:', file);
+      console.log('Parsing:', file, 'as', dir);
       const result = parseCenter(path.join(dirPath, file));
       if (result) {
+        // Set type based on directory
+        if (dir === 'centers') result.type = 'CENTER';
+        else if (dir === 'departments') result.type = 'DEPARTMENT';
+        else if (dir === 'programs') result.type = 'PROGRAM';
+        
         parsed.push(result);
         console.log('  ✓', result.slug, '| features:', result.features.length, '| clinics:', result.clinics.length);
       }
