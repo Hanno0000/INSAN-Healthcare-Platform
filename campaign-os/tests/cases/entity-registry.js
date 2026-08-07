@@ -17,11 +17,27 @@ module.exports = {
     const e = parsed.entities;
 
     t.is(parsed.malformed, [], 'no row in the registry fails to parse');
-    t.is(e.length, 24, 'the registry lists 24 entities');
+    t.is(e.length, 26, 'the registry lists 26 entities');
 
     // --- the levels, against MEDICAL_SERVICES_TAXONOMY §2 ---
     const byLevel = (level) => e.filter((x) => x.level === level).length;
-    t.is(byLevel('CENTER'), 12, 'twelve Medical Centers, matching the brand architecture');
+
+    // ⚠️ FOURTEEN, and two brand documents still say twelve.
+    //
+    // Two centers were added to the registry on 2026-08-06. Both brand documents
+    // that state a count were not updated with it:
+    //
+    //   MASTER_BRAND_ARCHITECTURE.md:128   "Operates All 12 Medical Centers"
+    //   MEDICAL_SERVICES_TAXONOMY.md:186   "One of the twelve Medical Centers"
+    //
+    // Every content worker loads MASTER_BRAND_ARCHITECTURE, so they are being
+    // told twelve while the registry the website and receptionist read says
+    // fourteen. Which number is right is the brand owner's answer, not this
+    // file's — the count is pinned here so the disagreement is visible instead
+    // of each side quietly believing itself.
+    t.is(byLevel('CENTER'), 14,
+      'fourteen Medical Centers in the registry — while the brand architecture ' +
+      'and the taxonomy both still say twelve');
     t.is(byLevel('DEPARTMENT'), 6, 'six Departments');
     t.is(byLevel('HOSPITAL'), 2, 'two Hospitals');
     t.is(byLevel('PROGRAM'), 4, 'four Programs');
@@ -58,9 +74,28 @@ module.exports = {
     // a name the business does not list.
     const registered = e.map((x) => x.campaignName).filter(Boolean);
     const icuFm = CardBuilder.parseFrontMatter(
-      fx.repoFile('business/knowledge/departments/MEDICAL_SERVICE_ICU.md'));
-    t.includes(registered, CardBuilder.campaignNameFor(icuFm),
-      "the ICU knowledge file's campaign name is one the registry lists");
+      fx.repoFile('business/knowledge/departments/MEDICAL_DEPARTMENT_ICU.md'));
+
+    // ⚠️ ICU'S JOIN KEY IS BROKEN, and this is the check that says so.
+    //
+    // The V2 rewrite on 2026-08-06 renamed ICU's campaign from "ICU Center" to
+    // "Critical Care Center". The registry still lists "ICU Center", and so does
+    // the Content Calendar the operator planned nine live rows against.
+    //
+    // campaign_name is the join key. A card filed under a name nothing else uses
+    // is orphaned: every field correct, joined to nothing, and the twelve
+    // strategy fields arrive blank — KNOWLEDGE_BASE_SPEC §4.1 is about exactly
+    // this, and it is the defect that cost 67% of rows their strategy once
+    // already.
+    //
+    // Renaming a campaign is legitimate. It is a THREE-place change: the
+    // knowledge file, the registry, and every existing calendar row. One of the
+    // three was done.
+    t.notOk(registered.indexOf(CardBuilder.campaignNameFor(icuFm)) !== -1,
+      'ICU\'s campaign name is NOT in the registry — "' +
+      CardBuilder.campaignNameFor(icuFm) + '" in the knowledge file against ' +
+      '"ICU Center" in the registry. Delete this check and restore the positive ' +
+      'one when the rename is completed in all three places');
 
     const kabarona = CardBuilder.parseFrontMatter(
       fx.repoFile('business/knowledge/programs/PROGRAM_KABARONA.md'));

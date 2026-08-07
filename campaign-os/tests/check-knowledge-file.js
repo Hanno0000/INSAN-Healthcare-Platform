@@ -2,7 +2,7 @@
 //
 // Check a knowledge file the way the Campaign Card Builder will, without a sheet.
 //
-//   node campaign-os/tests/check-knowledge-file.js business/knowledge/departments/MEDICAL_SERVICE_ICU.md
+//   node campaign-os/tests/check-knowledge-file.js business/knowledge/departments/MEDICAL_DEPARTMENT_ICU.md
 //   node campaign-os/tests/check-knowledge-file.js --all
 //
 // WHY THIS EXISTS

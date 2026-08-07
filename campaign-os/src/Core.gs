@@ -183,9 +183,24 @@ var CONFIG = {
   BRANDING: {
     ENABLED: true,
 
-    // Drive: My Drive / Insan / business / Media / Brand Identity / Png
+    // Drive: My Drive / Insan / business / Media / Future / Brand Identity / Png
     // Resolved from PROJECT_ASSETS.FOLDER_ID, so only one id is configured.
-    LOGO_FOLDER: 'Brand Identity/Png',
+    //
+    // ⚠️ Repathed 2026-08-07. `business/Media` was reorganised per hospital on
+    // 2026-08-06 — Insan/, Future/, Delta/ — and the whole Brand Identity tree
+    // moved under Future/. Every logo lookup was resolving to nothing, which does
+    // not throw: Branding places the marks it can find and logs the rest, so
+    // artwork would have come out unbranded with one line in the log. The same
+    // failure mode as a blank Hospital Brand, arriving from a different
+    // direction.
+    //
+    // ⚠️ AND THE PATH IS ODD. These are SHARED brand assets — INSAN's own
+    // Color.png, Delta.png, lvenir.png, the Wedge marks — sitting inside the
+    // FUTURE hospital's folder, which is where the reorganisation left them.
+    // Delta/Brand Identity exists and is empty. It works, and it will confuse the
+    // next person: a shared-assets folder alongside the three hospitals would be
+    // the honest structure. Operator's call.
+    LOGO_FOLDER: 'Future/Brand Identity/Png',
 
     // The `* Transparent.png` set only. Every one is verified RGBA.
     // The `* White.png` files have NO alpha channel — placing one composites a
@@ -223,8 +238,9 @@ var CONFIG = {
 
     // Optional. Missing icons degrade to the label alone rather than failing —
     // a post without a small glyph is fine, a post that never shipped is not.
-    // These sit one level above the logos, in Brand Identity itself.
-    ICON_FOLDER: 'Brand Identity',
+    // One level above the logos, in Brand Identity itself. Repathed with
+    // LOGO_FOLDER above; see the note there.
+    ICON_FOLDER: 'Future/Brand Identity',
     ICONS: {
       WHATSAPP: 'icon-whatsapp.png',
       PHONE:    'icon-phone.png'

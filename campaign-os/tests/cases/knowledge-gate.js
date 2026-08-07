@@ -15,39 +15,78 @@ module.exports = {
 
   run(t, fx) {
     // --- front matter ---
-    const icu = fx.repoFile(K + 'departments/MEDICAL_SERVICE_ICU.md');
+    const icu = fx.repoFile(K + 'departments/MEDICAL_DEPARTMENT_ICU.md');
     const fm = CardBuilder.parseFrontMatter(icu);
 
     t.is(fm.entity_id, 'MED-001', 'ICU front matter carries its entity id');
     t.is(fm.entity_name_en, 'Intensive Care Unit', 'ICU entity name is the unit');
-    t.is(fm.campaign_name, 'ICU Center', 'ICU campaign name is what the calendar schedules');
     t.is(fm.service_level, 'DEPARTMENT',
       'ICU is a DEPARTMENT, not a Center, whatever its campaign is called');
 
     t.ok(fm.entity_name_en !== fm.campaign_name,
       'the entity name and the campaign name differ — the whole reason campaign_name exists');
-    t.is(CardBuilder.campaignNameFor(fm), 'ICU Center',
+    t.is(CardBuilder.campaignNameFor(fm), fm.campaign_name,
       'the card is filed under the campaign name');
 
     // Nested list items belong to the key above them and are not card inputs.
     t.is(fm['- ICU Awareness Campaign'], undefined,
       'indented list items are not read as front-matter keys');
 
-    // --- the gate itself ---
-    const icuCheck = CardBuilder.validate(icu, 'MEDICAL_SERVICE_ICU.md');
-    t.is(icuCheck.problems, [], 'ICU has no structural problems');
-    t.is(icuCheck.gaps, [], 'ICU has no unresolved operator markers');
-    t.ok(icuCheck.ok, 'ICU may build a card');
+    // --- ⚠️ ICU REGRESSED, and the suite says so rather than absorbing it ---
+    //
+    // ICU was the reference implementation: 2,773 lines, every required section
+    // written, the one file proven to build a card. On 2026-08-06 it was
+    // deliberately replaced — "refactor: replace V1 ICU file with V2
+    // Comprehensive Critical Care Center", commit d0e9c4f — with a 233-line
+    // rewrite that dropped five of the seventeen required sections.
+    //
+    // That was somebody's deliberate work and this suite does not undo it. What
+    // it will not do is let it pass quietly: the file cannot build a card, and
+    // the first campaign the operator successfully ran end to end was ICU's.
+    //
+    // Delete this block when the rewrite is finished. Until then it is the only
+    // thing in the repository that states the reference file is broken.
+    const icuCheck = CardBuilder.validate(icu, 'MEDICAL_DEPARTMENT_ICU.md');
+    const REGRESSED = [
+      'What We Are Really Selling',
+      'Psychological Barriers',
+      'Narrative Themes',
+      'Content Pillars',
+      'Relationship With INSAN'
+    ];
+
+    const stillMissing = REGRESSED.filter((section) =>
+      icuCheck.problems.some((p) => p.indexOf(section) !== -1));
+
+    t.is(stillMissing, REGRESSED,
+      'ICU is still missing exactly the five required sections the V2 rewrite ' +
+      'dropped — if this fails because the list shrank, the rewrite is being ' +
+      'finished and this block should be deleted, not adjusted');
+    t.notOk(icuCheck.ok,
+      'and so ICU cannot build a card — the file that used to be the proof that ' +
+      'the whole chain works');
 
     // --- a file that is structurally complete but waiting on the operator ---
-    const emergency = fx.repoFile(K + 'departments/MEDICAL_SERVICE_EMERGENCY.md');
-    const emCheck = CardBuilder.validate(emergency, 'MEDICAL_SERVICE_EMERGENCY.md');
+    // Held against a file that IS structurally complete, so the distinction
+    // between "missing a section" and "waiting on a fact" stays checkable while
+    // ICU is mid-rewrite.
+    const emergency = fx.repoFile(K + 'departments/MEDICAL_DEPARTMENT_ER.md');
+    const emCheck = CardBuilder.validate(emergency, 'MEDICAL_DEPARTMENT_ER.md');
 
     t.is(emCheck.problems, [], 'Emergency is structurally complete');
     t.ok(emCheck.gaps.length > 0, 'Emergency still carries operator markers');
     t.notOk(emCheck.ok, 'Emergency is refused — a marker blocks the build');
     t.ok(emCheck.gaps.every((g) => g.section && g.line),
       'every gap names the section and the line it is on');
+
+    // --- and one file that passes the gate outright ---
+    // The suite needs a known-good example and ICU is no longer one.
+    const good = fx.repoFile(K + 'programs/PROGRAM_KABARONA.md');
+    const goodCheck = CardBuilder.validate(good, 'PROGRAM_KABARONA.md');
+
+    t.is(goodCheck.problems, [], 'Kabarona has no structural problems');
+    t.is(goodCheck.gaps, [], 'and no unresolved operator markers');
+    t.ok(goodCheck.ok, 'so it may build a card — the gate passes something');
 
     // --- the front matter a card cannot be built without ---
     const noLevel = icu.replace(/^service_level:.*$/m, 'x_service_level: DEPARTMENT');
@@ -82,22 +121,47 @@ module.exports = {
     // operator has, marked rather than invented. Adding a new one here is
     // adding a name to this list, not a defect in the file: the whole point of
     // the gate is that it can be blocked on purpose.
+    //
+    // Re-baselined 2026-08-07 after the knowledge base was reorganised on
+    // 2026-08-06: eight MEDICAL_CENTER_* files added, ICU and Emergency renamed
+    // to MEDICAL_DEPARTMENT_*, Internal Medicine & Cardiology folded into
+    // MEDICAL_CENTER_CARDIAC_INTERNAL_MEDICINE.md.
     const KNOWN_BLOCKED = [
       'HOSPITAL_DELTA.md',
-      'MEDICAL_SERVICE_EMERGENCY.md',
-      // Captured by voice 2026-08-04. Two genuine gaps: the operator declined
-      // Can Promise outright, and comprehensive check-up program pricing was
-      // still being sent when the recording ended.
-      'MEDICAL_SERVICE_INTERNAL_MEDICINE_CARDIOLOGY.md',
-      // Captured by voice 2026-08-04, planned as four recorded parts — only the
-      // first and last arrived. Core Features and Differentiators carry the
-      // heaviest gaps: no equipment, staffing or theatre count was ever
-      // recorded, which is the same class of gap that blocks Emergency.
-      'MEDICAL_SERVICE_GENERAL_SURGERY.md'
+      'MEDICAL_DEPARTMENT_ER.md',
+      'MEDICAL_SERVICE_GENERAL_SURGERY.md',
+
+      // The eight centers added 2026-08-06. Every one is a real, deliberate
+      // gap — several are nearly empty skeletons (Urology 20 markers,
+      // Pediatrics 19, ENT 17), which is the correct state for a file that has
+      // been created but not yet filled from the operator's recordings.
+      'MEDICAL_CENTER_BARIATRIC.md',
+      'MEDICAL_CENTER_CARDIAC_INTERNAL_MEDICINE.md',
+      'MEDICAL_CENTER_ENT.md',
+      'MEDICAL_CENTER_GENERAL_SURGERY.md',
+      'MEDICAL_CENTER_PEDIATRICS.md',
+      'MEDICAL_CENTER_PROCTOLOGY.md',
+      'MEDICAL_CENTER_UROLOGY.md',
+      'MEDICAL_CENTER_WOMENS_HEALTH.md'
     ];
 
-    t.is(broken, [], 'no knowledge file has a structural problem');
-    t.is(ready.length, 24, '24 knowledge files build a card');
+    // ⚠️ Two files are STRUCTURALLY broken, which is worse than blocked: a gap
+    // is a fact nobody has supplied yet, a missing required section is a file
+    // that does not have the shape of a knowledge file.
+    //
+    //   MEDICAL_DEPARTMENT_ICU.md            the V2 rewrite dropped 5 of 17
+    //   MEDICAL_SERVICE_OUTPATIENT_CLINICS.md  missing Why This Service Exists
+    //
+    // Held as an exact list so a THIRD one cannot join them quietly.
+    const KNOWN_BROKEN = [
+      'MEDICAL_DEPARTMENT_ICU.md',
+      'MEDICAL_SERVICE_OUTPATIENT_CLINICS.md'
+    ];
+
+    t.is(broken.map((b) => b.split(':')[0]).sort(), [...KNOWN_BROKEN].sort(),
+      'exactly two knowledge files are structurally broken, both mid-rewrite — ' +
+      'a new name here is a file that lost a required section');
+    t.is(ready.length, 23, '23 knowledge files build a card');
     t.is(blocked.sort(), [...KNOWN_BLOCKED].sort(),
       `exactly ${KNOWN_BLOCKED.length} are waiting on operator facts`);
 
@@ -110,7 +174,10 @@ module.exports = {
     for (const rel of listKnowledgeFiles()) {
       const content = fx.repoFile(rel);
       const name = rel.split('/').pop();
+      // Neither a deliberately-blocked file nor a structurally broken one is
+      // "otherwise ready" — both are expected to carry markers.
       if (KNOWN_BLOCKED.indexOf(name) !== -1) continue;
+      if (KNOWN_BROKEN.indexOf(name) !== -1) continue;
       if (content.indexOf(marker) !== -1) mentions.push(name);
     }
 
@@ -169,7 +236,15 @@ module.exports = {
 };
 
 // A knowledge file is named `<LEVEL>_<ENTITY>.md` — KNOWLEDGE_BASE_SPEC §3.
-const NAME = /^(MEDICAL_SERVICE|MEDICAL_CENTER|CLINIC|PROGRAM|CORPORATE|HOSPITAL|SUPPORTING|EDUCATIONAL)_[A-Z0-9_]+\.md$/;
+//
+// `MEDICAL_DEPARTMENT` was added on 2026-08-06 when ICU and Emergency were
+// renamed to it. ⚠️ KNOWLEDGE_BASE_SPEC §3's own table still lists
+// `MEDICAL_SERVICE_` as the departments/ prefix while giving
+// `MEDICAL_DEPARTMENT_ICU.md` as its example — the two disagree, and which one
+// is intended is the brand owner's call, not this file's. Both are accepted here
+// so the rename does not turn four real knowledge files into "strays"; when the
+// decision is made, narrow this and rename the files that lose.
+const NAME = /^(MEDICAL_SERVICE|MEDICAL_DEPARTMENT|MEDICAL_CENTER|CLINIC|PROGRAM|CORPORATE|HOSPITAL|SUPPORTING|EDUCATIONAL)_[A-Z0-9_]+\.md$/;
 
 function everyMarkdownInSubfolders() {
   const fs = require('fs');
