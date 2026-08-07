@@ -1,0 +1,1 @@
+ALTER TABLE "MedicalCenter" ADD COLUMN IF NOT EXISTS "equipment" JSONB;
