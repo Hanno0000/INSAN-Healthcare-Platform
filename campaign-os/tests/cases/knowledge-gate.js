@@ -100,7 +100,26 @@ module.exports = {
     const broken = [];
     const byCampaign = {};
     const byEntityId = {};
+    const misnumbered = [];
 
+    // Sections that are a way of SAYING something already in the file, rather
+    // than a fact only the hospital owner holds. Used for the questions
+    // document's split, below.
+    const WRITTEN_BY_US = [
+      'vision', 'mission', 'marketing objectives', 'core promise',
+      'human insight', 'emotional strategy', 'audience psychology',
+      'narrative themes', 'content pillars', 'storytelling opportunities',
+      'call to action', 'offer rules', 'can promise', 'brand perception',
+      'relationship with insan', 'specialized clinics'
+    ];
+
+    let gapTotal = 0;
+    let gapOurs = 0;
+    const gapFiles = new Set();
+
+    // ONE pass over the knowledge base. These files live on a Google Drive
+    // mount where a read is a network round trip — four separate loops over
+    // forty files took the suite from 4 seconds to 340.
     for (const rel of listKnowledgeFiles()) {
       const content = fx.repoFile(rel);
       const name = rel.split('/').pop();
@@ -115,6 +134,27 @@ module.exports = {
       if (campaign) (byCampaign[campaign] = byCampaign[campaign] || []).push(name);
       if (front.entity_id) {
         (byEntityId[front.entity_id] = byEntityId[front.entity_id] || []).push(name);
+      }
+
+      const numbered = {};
+      let heading = '';
+
+      for (const line of content.split(/\r?\n/)) {
+        const h = /^#{1,6}\s+(.+)/.exec(line);
+        if (h) {
+          heading = h[1].trim().replace(/^[\d.]+\s*/, '');
+          const n = /^#{2,4}\s+(\d+\.\d+)\s+(\S.*)$/.exec(line);
+          if (n) (numbered[n[1]] = numbered[n[1]] || []).push(n[2].trim());
+        }
+
+        if (line.indexOf('NEEDS-OPERATOR') === -1) continue;
+        gapTotal++;
+        gapFiles.add(rel);
+        if (WRITTEN_BY_US.indexOf(heading.toLowerCase()) !== -1) gapOurs++;
+      }
+
+      for (const [num, titles] of Object.entries(numbered)) {
+        if (titles.length > 1) misnumbered.push(`${name} §${num}: ${titles.join(' / ')}`);
       }
     }
 
@@ -161,26 +201,36 @@ module.exports = {
     // not by number — so nothing failed while eight files the operator is about
     // to fill in by hand carried a mangled outline. This is the check that would
     // have caught it, and it costs nothing to keep.
-    const misnumbered = [];
-
-    for (const rel of listKnowledgeFiles()) {
-      const seen = {};
-      for (const line of fx.repoFile(rel).split(/\r?\n/)) {
-        const m = /^#{2,4}\s+(\d+\.\d+)\s+(\S.*)$/.exec(line);
-        if (!m) continue;
-        (seen[m[1]] = seen[m[1]] || []).push(m[2].trim());
-      }
-      for (const [num, titles] of Object.entries(seen)) {
-        if (titles.length > 1) {
-          misnumbered.push(`${rel.split('/').pop()} §${num}: ${titles.join(' / ')}`);
-        }
-      }
-    }
-
     t.is(misnumbered.sort(), [],
       'no knowledge file gives one section number to two headings — bulk ' +
       'section-insertion cannot see the number it writes is taken, and headings ' +
       'match by text so nothing else would fail');
+
+    // --- the questions document counts what is actually missing ---
+    //
+    // NEEDS_OPERATOR_QUESTIONS.md is worked from by a real person: the operator
+    // sends its batches to the hospital owner over WhatsApp and files the
+    // answers back. It opens by stating how many gaps there are and how they
+    // split between "only he knows" and "we write this ourselves".
+    //
+    // Those numbers go stale the moment a gap is filled, and a stale number in
+    // a document someone is working from is worse than no number — it is the
+    // one thing in the file nobody re-derives. So they are counted here.
+    //
+    const questions = fx.repoFile('business/knowledge/NEEDS_OPERATOR_QUESTIONS.md');
+    const stated = (label) => {
+      const m = new RegExp(label + '[^0-9]{0,40}(\\d+)').exec(questions);
+      return m ? Number(m[1]) : null;
+    };
+
+    t.is(stated('الإجمالي'), gapTotal,
+      `the questions document states the real gap total (${gapTotal})`);
+    t.is(stated('منهم للمالك'), gapTotal - gapOurs,
+      `and the real number only the hospital owner can answer (${gapTotal - gapOurs})`);
+    t.is(stated('والباقي'), gapOurs,
+      `and the real number we write ourselves (${gapOurs})`);
+    t.is(stated('فجوة في'), gapFiles.size,
+      `and the number of files carrying a gap (${gapFiles.size})`);
 
     // Files known to be deliberately incomplete — waiting on facts only the
     // operator has, marked rather than invented. Adding a new one here is
