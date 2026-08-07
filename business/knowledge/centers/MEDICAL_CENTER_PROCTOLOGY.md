@@ -5,8 +5,8 @@ entity_name_ar: مركز جراحات المستقيم والبواسير
 campaign_name:  Proctology Center
 service_level:  CENTER
 campaign_type:  Medical Services
-parent:         CEN-004
-hospitals:      [Future, Delta]
+parent:         null
+hospitals:      [Delta]
 status:         Active
 version:        2.0
 last_updated:   2026-08-06

@@ -117,6 +117,8 @@ module.exports = {
     let gapOurs = 0;
     const gapFiles = new Set();
 
+    const encodingDamage = [];
+
     // ONE pass over the knowledge base. These files live on a Google Drive
     // mount where a read is a network round trip — four separate loops over
     // forty files took the suite from 4 seconds to 340.
@@ -124,6 +126,33 @@ module.exports = {
       const content = fx.repoFile(rel);
       const name = rel.split('/').pop();
       const result = CardBuilder.validate(content, name);
+
+      // --- encoding damage ---
+      //
+      // A BOM sits BEFORE the opening `---`, so parseFrontMatter's ^--- never
+      // matches and the file silently yields no entity_id, no campaign_name and
+      // no service_level. Every worker downstream gets nothing, and the file
+      // still looks perfectly normal in an editor.
+      //
+      // This happened on 2026-08-08. Editing two files with PowerShell's
+      // Get-Content -Raw read them as the system ANSI codepage, so the Arabic
+      // came back misinterpreted; Set-Content -Encoding utf8 then wrote it out
+      // double-encoded and added a BOM. Both files were corrupt and every other
+      // check in this suite passed.
+      const bytes = fx.repoBytes(rel);
+      if (bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF) {
+        encodingDamage.push(name + ': UTF-8 BOM before the front matter');
+      }
+
+      // Double-encoded Arabic. Arabic sits in UTF-8 as a lead byte D8–DB
+      // followed by a continuation byte 80–BF; misread as Latin-1 those become
+      // Ø-Û followed by a C1 control character, so the giveaway is that PAIR
+      // repeating. The first version of this looked for adjacent Ø/Ù and could
+      // not fail — the lead bytes never adjoin, they alternate with the
+      // continuation byte between them.
+      if (/(?:[Ø-Û][-¿]){3,}/.test(content)) {
+        encodingDamage.push(name + ': Arabic appears double-encoded');
+      }
 
       if (result.problems.length) broken.push(name + ': ' + result.problems[0]);
       else if (result.gaps.length) blocked.push(name);
@@ -157,6 +186,11 @@ module.exports = {
         if (titles.length > 1) misnumbered.push(`${name} §${num}: ${titles.join(' / ')}`);
       }
     }
+
+    t.is(encodingDamage.sort(), [],
+      'no knowledge file is encoding-damaged — a BOM lands before the opening ' +
+      '--- so the front matter stops parsing, and the file looks fine in an ' +
+      'editor while every worker downstream gets no entity_id at all');
 
     // --- one campaign_name, one file ---
     //

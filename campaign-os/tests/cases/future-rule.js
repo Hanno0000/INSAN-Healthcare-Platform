@@ -21,22 +21,26 @@ const AT_FUTURE = [
   'CEN-002',   // مركز جراحات المسالك والليزر
   'CEN-004',   // مركز الجراحات العامة والمناظير — parent of the surgical family
   'CEN-010',   // مركز العظام وإصابات الملاعب
-  'CEN-013'    // مركز جراحات السمنة والتمثيل الغذائي
+  'CEN-013',   // مركز جراحات السمنة والتمثيل الغذائي
+  'CEN-016'    // مركز جراحات الجهاز الهضمي والأورام — the "الهضمي" of the rule
 ];
 
-// Centres the rule does not settle, recorded as an open question in the
-// registry rather than decided here. Each keeps whatever value it already had,
-// and each is listed so the exemption is visible instead of implied.
+// Centres the rule does not settle. EMPTY as of 2026-08-08 — the brand owner
+// answered all four:
 //
-//   CEN-009  the rule excludes ENT from Future; the brand owner explicitly
-//            moved it TO Future on 2026-08-07. Two rulings, one row.
-//   CEN-003  } "الهضمي" was named as a Future surgical centre and there are two
-//   CEN-016  } candidates. Neither has a knowledge file yet.
-//   CEN-014  Proctology is in CEN-004's surgical family and was not named.
+//   CEN-016  is "الهضمي". It stays at Future and takes CEN-003's campaign name.
+//   CEN-003  is RETIRED and merged into CEN-016. No row, so nothing to decide.
+//   CEN-009  ENT is Delta only, reversing the 2026-08-07 exception.
+//   CEN-014  Proctology stands alone, outside the surgical family, Delta only.
 //
-// A name leaving this list means the brand owner answered. A name JOINING it
-// should be argued for — it is how a rule becomes a suggestion.
-const UNDECIDED = ['CEN-003', 'CEN-009', 'CEN-014', 'CEN-016'];
+// Keeping the mechanism with an empty list is deliberate. The next centre the
+// brand owner adds arrives undecided, and this is where it waits — visibly,
+// with the registry marking it — rather than being given a plausible value by
+// whoever happens to be editing the row.
+//
+// A name JOINING this list should be argued for. It is how a rule becomes a
+// suggestion.
+const UNDECIDED = [];
 
 module.exports = {
   name: 'future rule',
@@ -98,17 +102,39 @@ module.exports = {
     t.ok(/Future ⊆ Delta|Future ⊂ Delta/.test(registry),
       'including the subset invariant');
 
-    // --- 5. the open questions stay open ---
-    // The danger with an exemption list is that it quietly becomes permanent.
-    // This ties it to a marker the gate reports, so the four are visible as
-    // unfinished rather than as settled-by-omission.
-    t.ok(registry.indexOf('NEEDS-OPERATOR') !== -1,
-      'and the unsettled centres are marked as an open question, not left to ' +
-      'look decided because nothing complains about them');
+    // --- 5. an undecided centre is marked, not silently exempted ---
+    //
+    // The danger with an exemption list is that it quietly becomes permanent: a
+    // row nothing complains about reads as a row somebody decided. So whenever
+    // the list has anything in it, the registry has to say so in the open.
+    //
+    // The list is empty today. This check costs nothing while it stays empty
+    // and starts working the moment it does not.
+    if (UNDECIDED.length) {
+      t.ok(registry.indexOf('NEEDS-OPERATOR') !== -1,
+        'the unsettled centres are marked as an open question, not left to ' +
+        'look decided because nothing complains about them');
 
-    for (const id of UNDECIDED) {
+      for (const id of UNDECIDED) {
+        t.includes(registry, id,
+          `${id} is named in the registry's open question`);
+      }
+    } else {
+      t.ok(true, 'no centre is exempt from the rule — all four were answered ' +
+        'on 2026-08-08, and the mechanism stays for the next one');
+    }
+
+    // --- 5b. a retired id is not reused ---
+    //
+    // CEN-003 was retired into CEN-016 and MED-007 into CEN-004. Reusing either
+    // number would silently attach one entity's history to another — the
+    // registry is the join key two other systems read.
+    for (const id of ['CEN-003', 'MED-007']) {
+      const live = rows.filter((r) => r.id === id && r.level !== '—');
+      t.is(live.length, 0,
+        `${id} is retired and no live row claims it`);
       t.includes(registry, id,
-        `${id} is named in the registry's open question`);
+        'and the retirement is recorded, so the number is not quietly free');
     }
 
     // --- 6. the knowledge files agree with the registry ---

@@ -17,17 +17,18 @@ module.exports = {
     const e = parsed.entities;
 
     t.is(parsed.malformed, [], 'no row in the registry fails to parse');
-    t.is(e.length, 28, 'the registry lists 28 entities');
+    t.is(e.length, 27, 'the registry lists 27 entities');
 
     // --- the levels, against MEDICAL_SERVICES_TAXONOMY §2 ---
     const byLevel = (level) => e.filter((x) => x.level === level).length;
 
-    // ⚠️ SIXTEEN, and two brand documents still say twelve.
+    // ⚠️ FIFTEEN, and two brand documents still say twelve.
     //
-    // The count has moved three times — twelve, then fourteen on 2026-08-06,
-    // then sixteen on 2026-08-07 when Women's & Children's Health was split and
-    // a fourth surgical centre registered. Both brand documents that state a
-    // count have never been updated:
+    // The count has now moved four times — twelve, fourteen on 2026-08-06,
+    // sixteen on 2026-08-07 when Women's & Children's Health was split and a
+    // fourth surgical centre registered, and fifteen on 2026-08-08 when CEN-003
+    // was retired into CEN-016. It has gone both up and down. Both brand
+    // documents that state a count have never been updated:
     //
     //   MASTER_BRAND_ARCHITECTURE.md:128   "Operates All 12 Medical Centers"
     //   MEDICAL_SERVICES_TAXONOMY.md:186   "One of the twelve Medical Centers"
@@ -40,8 +41,8 @@ module.exports = {
     //
     // That it has drifted twice more since being pinned is the argument for
     // pinning it: each move was made in one system without the others.
-    t.is(byLevel('CENTER'), 16,
-      'sixteen Medical Centers in the registry — while the brand architecture ' +
+    t.is(byLevel('CENTER'), 15,
+      'fifteen Medical Centers in the registry — while the brand architecture ' +
       'and the taxonomy both still say twelve');
     t.is(byLevel('DEPARTMENT'), 6, 'six Departments');
     t.is(byLevel('HOSPITAL'), 2, 'two Hospitals');

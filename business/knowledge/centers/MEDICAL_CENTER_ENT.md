@@ -6,7 +6,7 @@ campaign_name:  ENT Center
 service_level:  CENTER
 campaign_type:  Medical Services
 parent:         null
-hospitals:      [Future, Delta]
+hospitals:      [Delta]
 status:         Active
 version:        3.0
 last_updated:   2026-08-08

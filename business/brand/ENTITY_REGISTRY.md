@@ -69,20 +69,20 @@ that difference is deliberate and is recorded in the knowledge file's
 | MED-006 | Outpatient Clinics | العيادات الخارجية | DEPARTMENT | Outpatient Clinics | Future, Delta |
 | CEN-001 | Cardiac & Internal Medicine Center | مركز القلب والباطنة وإحالة الرعايات الحرجة | CENTER | Cardiac Center | Future, Delta |
 | CEN-002 | Urology & Laser Surgery Center | مركز جراحات المسالك والليزر | CENTER | Urology Center | Future, Delta |
-| CEN-003 | Digestive & Liver Endoscopy Center | مركز مناظير الجهاز الهضمي والكبد | CENTER | Digestive Center | Future, Delta |
+| ~~CEN-003~~ | *retired 2026-08-08 — merged into CEN-016* | — | — | — | — |
 | CEN-004 | General Surgery & Endoscopy Center | مركز الجراحات العامة والمناظير | CENTER | General Surgery Center | Future, Delta |
 | CEN-005 | Diabetic Foot & Vascular Center | مركز القدم السكري والأوعية الدموية | CENTER | Diabetic Foot Center | Delta |
 | CEN-006 | Pain Management Center | مركز علاج الألم والتدخلات المحدودة | CENTER | Pain Management Center | Delta |
 | CEN-007 | Women's Health Center | مركز صحة المرأة | CENTER | Women's Health Center | Delta |
 | CEN-008 | Dental Center | مركز الأسنان للكبار والأطفال وذوي الهمم | CENTER | Dental Center | Delta |
-| CEN-009 | ENT & Head/Neck Surgery Center | مركز الأنف والأذن وجراحات الرقبة والرأس | CENTER | ENT Center | Future, Delta |
+| CEN-009 | ENT & Head/Neck Surgery Center | مركز الأنف والأذن وجراحات الرقبة والرأس | CENTER | ENT Center | Delta |
 | CEN-010 | Orthopedic & Sports Injury Center | مركز العظام وإصابات الملاعب | CENTER | Orthopedic Center | Future, Delta |
 | CEN-011 | Chest & Sleep Disorders Center | مركز الصدر واضطرابات النوم | CENTER | Chest & Sleep Center | Delta |
 | CEN-012 | Senior Health & Screening Center | مركز صحة كبار السن والفحص الشامل | CENTER | — | Delta |
 | CEN-013 | Bariatric & Metabolic Surgeries Center | مركز جراحات السمنة والتمثيل الغذائي | CENTER | Bariatric Center | Future, Delta |
-| CEN-014 | Colorectal & Hemorrhoid Surgeries Center | مركز جراحات المستقيم والبواسير | CENTER | Proctology Center | Future, Delta |
+| CEN-014 | Colorectal & Hemorrhoid Surgeries Center | مركز جراحات المستقيم والبواسير | CENTER | Proctology Center | Delta |
 | CEN-015 | Pediatrics & Neonatology Center | مركز طب الأطفال وحديثي الولادة | CENTER | Pediatric Center | Delta |
-| CEN-016 | Digestive & Oncology Surgery Center | مركز جراحات الجهاز الهضمي والأورام | CENTER | — | Future, Delta |
+| CEN-016 | Digestive & Oncology Surgery Center | مركز جراحات الجهاز الهضمي والأورام | CENTER | Digestive Center | Future, Delta |
 | HOSP-001 | Future Specialized Hospital | مستشفى المستقبل التخصصي | HOSPITAL | — | Future |
 | HOSP-002 | Delta International Hospital | مستشفى الدلتا الدولي | HOSPITAL | Delta Restore Trust | Delta |
 | PROG-001 | Kabarona Program | برنامج كبارنا | PROGRAM | Kabarona Continuous Care Program | Future, Delta |
@@ -128,10 +128,24 @@ and plastic surgery among Future's operating-theatre specialties. That is
 a Signature Brand with its own campaign and its own knowledge file. Future
 operating on an ear does not make Future the home of the ENT Center.
 
-<!-- NEEDS-OPERATOR: three centres the Future rule does not settle. (1) CEN-009 ENT — the rule excludes it from Future, but on 2026-08-07 the brand owner explicitly moved it TO Future+Delta to match its knowledge file. Which ruling stands? (2) "الهضمي" was named as a Future surgical centre, but there are two candidates and neither has a knowledge file: CEN-003 مركز مناظير الجهاز الهضمي والكبد, and CEN-016 مركز جراحات الجهاز الهضمي والأورام. Which one? (3) CEN-014 Proctology is a surgical centre in CEN-004's family and was not named — is it at Future or Delta only? Until these are answered, CEN-009, CEN-003, CEN-014 and CEN-016 keep the value they already had. -->
+**All three open questions were answered by the brand owner on 2026-08-08**, and
+the rule is now complete. What each answer changed:
 
-**CEN-010 moved to both hospitals on 2026-08-08**, applying the rule above. It
-was the only registry row the rule changed outright.
+| Centre | Ruling | Row |
+|---|---|---|
+| `CEN-010` Orthopaedics | on the Future list | Delta → **Future, Delta** |
+| `CEN-016` Digestive & Oncology Surgery | this is *"الهضمي"* | keeps Future, Delta; **gains the campaign name `Digestive Center`** |
+| `CEN-009` ENT | **Delta only** | Future, Delta → **Delta** |
+| `CEN-014` Proctology | stands alone, outside the surgical family | Future, Delta → **Delta** |
+| `CEN-003` GI & Liver Endoscopy | **retired**, merged into CEN-016 | row removed |
+
+⚠️ **CEN-009 reverses a ruling made the day before.** On 2026-08-07 the brand
+owner moved ENT to Future+Delta to match its knowledge file. On 2026-08-08 they
+placed it at Delta only. The later ruling stands, and the reversal is recorded
+rather than overwritten because the file's own copy had been evidence for it all
+along: `MEDICAL_CENTER_ENT.md` §5.7 reads *"all under one roof at Delta
+Hospital"* and §9.1 writes Future as a parenthetical. The knowledge file was
+never really claiming Future.
 
 **MED-002's campaign was renamed `Emergency Center` → `Rapid Response Center`** on
 2026-08-07, to match its knowledge file. ⚠️ Renaming a campaign is a **three-place**
@@ -157,15 +171,53 @@ states the group is four centres in total (2026-08-07):
 |---|---|
 | parent | `CEN-004` مركز الجراحات العامة والمناظير |
 | branch | `CEN-013` مركز جراحات السمنة والتمثيل الغذائي |
-| branch | `CEN-014` مركز جراحات المستقيم والبواسير |
 | branch | `CEN-016` مركز جراحات الجهاز الهضمي والأورام |
 
 The parent/child link is recorded in each knowledge file's `parent:` front matter.
 **`MedicalCenter` has no `parentId` column**, so the hierarchy is documentation
-only — the database and the website treat all four as sibling centres.
+only — the database and the website treat them as sibling centres.
 
-`CEN-003` (مركز مناظير الجهاز الهضمي والكبد) is a separate endoscopy centre and is
-**not** part of this family, per the brand owner on 2026-08-07.
+⚠️ **The family is three, not four.** On 2026-08-07 the brand owner said four and
+`CEN-014` was one of them. On 2026-08-08 they ruled that Proctology *"ملوش علاقة
+بيهم"* — it stands alone. Its `parent:` front matter is cleared and it is Delta
+only. The earlier count is left visible here rather than quietly corrected,
+because a stated number that changes is worth seeing change.
+
+### CEN-003 is retired
+
+`CEN-003` (مركز مناظير الجهاز الهضمي والكبد — Digestive & Liver Endoscopy Center)
+**no longer exists as an entity.** The brand owner retired it on 2026-08-08 and
+folded it into `CEN-016`.
+
+What moved across:
+
+*   **The campaign name `Digestive Center`** — CEN-016 had none, so this is now
+    the join key the Content Calendar schedules for digestive work.
+*   **The scope** — diagnostic and therapeutic endoscopy of the digestive system
+    and liver is inside CEN-016's remit, alongside its surgical and oncological
+    work.
+*   **Both hospitals** — CEN-016 already ran at Future and Delta, matching what
+    CEN-003 had.
+
+⚠️ **The id is retired, not reusable** — same rule as MED-007.
+
+<!-- NEEDS-OPERATOR: CEN-016 is registered as "مركز جراحات الجهاز الهضمي والأورام / Digestive & Oncology Surgery Center", and it has now absorbed endoscopy of the digestive system and liver. The registered name says surgery and says nothing about endoscopy. Should the entity name widen to cover both, or does "جراحات" already read as covering the scopes it treats? Renaming is a three-place change (registry, knowledge file, live Content Calendar) so it is not being done on inference. The CAMPAIGN name Digestive Center is unaffected either way. -->
+
+⚠️ **CEN-003 is referenced by two systems this repository does not own**, and
+retiring it here does not retire it there. Recorded so it is not discovered later
+as a website advertising a centre that no longer exists:
+
+| System | File | What it holds |
+|---|---|---|
+| Receptionist | `receptionist/data/hospitals.json` | `CEN-003` in both hospitals' `centerIds` |
+| Receptionist | `receptionist/scripts/test-database.mjs` | asserts Future gets `CEN-001..004` |
+| Website | `website/Docs/insan-content-data.json` | slug `digestive-liver`, featured, both hospitals |
+| Website | `website/Docs/ingestion-state.json` | three references |
+
+Both also need `CEN-009` and `CEN-014` moved off Future, and `CEN-010` moved onto
+it. **The receptionist test asserting Future gets CEN-001..004 is now wrong in
+three separate ways** and will keep passing against stale data until someone
+updates it.
 
 **CEN-007 was "Women's & Children's Health Center" until 2026-08-07.** The brand
 owner retired the combined entity: women's health and paediatrics are now two
