@@ -98,8 +98,32 @@ check('repeat flood is spam', action('اهلا', ['اهلا', 'اهلا', 'اه�
 check('a normal repeat is not spam', action('اهلا', ['اهلا']), 'PROCEED');
 
 // ─── The operator gates ──────────────────────────────────────────────
-check('emergency reply is withheld until the operator supplies wording', gate.emergencyReply(null), null);
-check('emergency reply is withheld per hospital too', gate.emergencyReply('delta-hospital'), null);
+// The medical-emergency template was filled 2026-08-08 with operator-approved
+// wording and per-hospital hotlines (business/brand/CONTACT_DIRECTORY.md).
+// emergencyNumberNational stays null on purpose — no hospital is known yet
+// on INSAN before scope resolves, and the code must not guess one — so an
+// unresolved-scope emergency still renders with a blank number. That gap is
+// tracked in NEEDS_OPERATOR.md §4, not silently patched here.
+check(
+  'emergency reply fills the Delta hotline once scope is resolved',
+  gate.emergencyReply('delta-hospital')?.includes('01217778869'),
+  true,
+);
+check(
+  'emergency reply fills the Future hotline once scope is resolved',
+  gate.emergencyReply('future-hospital')?.includes('01122224352'),
+  true,
+);
+check(
+  'emergency reply with no resolved hospital still renders, with a blank number (tracked gap)',
+  gate.emergencyReply(null)?.includes('اتصل فورًا على'),
+  true,
+);
+check(
+  'self-harm reply is still withheld — a clinician has not written it',
+  gate.selfHarmReply(),
+  null,
+);
 check('self-harm reply is withheld until a clinician supplies wording', gate.selfHarmReply(), null);
 
 // ─── The two crisis paths must stay separate ─────────────────────────

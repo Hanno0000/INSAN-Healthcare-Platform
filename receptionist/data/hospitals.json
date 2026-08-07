@@ -177,9 +177,10 @@
         "radiology": {
           "value": ["أشعة عادية", "دوبلر", "إيكو", "سونار"],
           "ctScan": {
-            "confidence": "conflict",
-            "note": "DLT-SVC lists 'أشعة مقطعية' as available. DLT-BLD says 'المقطعية تحت التجهيز' — under installation. WITHHELD until confirmed: telling a patient to come for a CT that is not installed is a wasted journey.",
-            "sourceRef": "DLT-SVC vs DLT-BLD"
+            "value": false,
+            "confidence": "confirmed",
+            "note": "Operator, 2026-08-07: the CT scanner at Delta is still under installation — DLT-BLD is correct, DLT-SVC is not. Not available; do not tell a patient to come in for one.",
+            "sourceRef": "OPERATOR overrides DLT-SVC vs DLT-BLD"
           }
         }
       },
@@ -207,8 +208,8 @@
       "severity": "high",
       "subject": "Delta CT scanner",
       "detail": "DLT-SVC lists CT as an available service; DLT-BLD marks it 'تحت التجهيز'.",
-      "resolution": "RULE GIVEN, NOT YET APPLIED. Operator, 2026-08-07: 'whichever document is newer wins'. Neither PDF carries a date inside it, so the rule cannot be applied without being told which of the two is the later document — and guessing here sends a patient for a scan that may not exist. Still WITHHELD.",
-      "status": "open"
+      "resolution": "RESOLVED, 2026-08-08. Operator confirms directly: the Delta CT scanner is not installed yet. DLT-BLD was correct. The receptionist must say Delta has no CT scan available; Future's CT scan is available and unaffected by this.",
+      "status": "resolved"
     },
     {
       "id": "CONF-03",
