@@ -82,6 +82,7 @@ that difference is deliberate and is recorded in the knowledge file's
 | CEN-013 | Bariatric & Metabolic Surgeries Center | مركز جراحات السمنة والتمثيل الغذائي | CENTER | Bariatric Center | Future, Delta |
 | CEN-014 | Colorectal & Anal Surgeries Center | مركز جراحات المستقيم والشرج | CENTER | Proctology Center | Future, Delta |
 | CEN-015 | Pediatrics & Neonatology Center | مركز طب الأطفال وحديثي الولادة | CENTER | Pediatric Center | Delta |
+| CEN-016 | Digestive & Oncology Surgery Center | مركز جراحات الجهاز الهضمي والأورام | CENTER | — | Future, Delta |
 | HOSP-001 | Future Specialized Hospital | مستشفى المستقبل التخصصي | HOSPITAL | — | Future |
 | HOSP-002 | Delta International Hospital | مستشفى الدلتا الدولي | HOSPITAL | Delta Restore Trust | Delta |
 | PROG-001 | Kabarona Program | برنامج كبارنا | PROGRAM | Kabarona Continuous Care Program | Future, Delta |
@@ -94,7 +95,26 @@ currently scheduled for it. That is a legitimate state: the registry describes t
 business, not the plan.
 
 **Centers 5–12 and 15 operate at Delta only**, per `PLATFORM_KNOWLEDGE_BASE.md` §2.2.
-Centers 1–4, 13 and 14 operate at both hospitals.
+Centers 1–4, 13, 14 and 16 operate at both hospitals.
+
+### The surgical family
+
+`CEN-004` is the parent centre. Three centres branch from it, and the brand owner
+states the group is four centres in total (2026-08-07):
+
+| | Centre |
+|---|---|
+| parent | `CEN-004` مركز الجراحات العامة والمناظير |
+| branch | `CEN-013` مركز جراحات السمنة والتمثيل الغذائي |
+| branch | `CEN-014` مركز جراحات المستقيم والشرج |
+| branch | `CEN-016` مركز جراحات الجهاز الهضمي والأورام |
+
+The parent/child link is recorded in each knowledge file's `parent:` front matter.
+**`MedicalCenter` has no `parentId` column**, so the hierarchy is documentation
+only — the database and the website treat all four as sibling centres.
+
+`CEN-003` (مركز مناظير الجهاز الهضمي والكبد) is a separate endoscopy centre and is
+**not** part of this family, per the brand owner on 2026-08-07.
 
 **CEN-007 was "Women's & Children's Health Center" until 2026-08-07.** The brand
 owner retired the combined entity: women's health and paediatrics are now two
