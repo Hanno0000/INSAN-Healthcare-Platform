@@ -391,7 +391,8 @@
         }
       ],
       "bookingQuestions": [],
-      "type": "CENTER"
+      "type": "CENTER",
+      "heroImage": "https://images.unsplash.com/photo-1628348070889-cb656235b4eb?q=80&w=1200&auto=format&fit=crop"
     },
     {
       "registryId": "CEN-007",
@@ -532,7 +533,8 @@
         }
       ],
       "bookingQuestions": [],
-      "type": "CENTER"
+      "type": "CENTER",
+      "heroImage": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1200&auto=format&fit=crop"
     },
     {
       "registryId": "CEN-002",
@@ -580,7 +582,8 @@
       "schedule": null,
       "services": [],
       "bookingQuestions": [],
-      "type": "CENTER"
+      "type": "CENTER",
+      "heroImage": "https://images.unsplash.com/photo-1551076805-e1869043e560?q=80&w=1200&auto=format&fit=crop"
     },
     {
       "registryId": "CEN-006",
@@ -634,7 +637,8 @@
       "schedule": null,
       "services": [],
       "bookingQuestions": [],
-      "type": "CENTER"
+      "type": "CENTER",
+      "heroImage": "https://images.unsplash.com/photo-1519689680058-324335c77eba?q=80&w=1200&auto=format&fit=crop"
     },
     {
       "registryId": "CEN-005",
@@ -682,7 +686,8 @@
       "schedule": null,
       "services": [],
       "bookingQuestions": [],
-      "type": "CENTER"
+      "type": "CENTER",
+      "heroImage": "https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=1200&auto=format&fit=crop"
     },
     {
       "registryId": "CEN-004",
@@ -730,7 +735,8 @@
       "schedule": null,
       "services": [],
       "bookingQuestions": [],
-      "type": "CENTER"
+      "type": "CENTER",
+      "heroImage": "https://images.unsplash.com/photo-1581594693702-fbdc51b2763b?q=80&w=1200&auto=format&fit=crop"
     },
     {
       "registryId": "CEN-014",
@@ -778,7 +784,8 @@
       "schedule": null,
       "services": [],
       "bookingQuestions": [],
-      "type": "CENTER"
+      "type": "CENTER",
+      "heroImage": "https://images.unsplash.com/photo-1551076805-e1869043e560?q=80&w=1200&auto=format&fit=crop"
     },
     {
       "registryId": "CEN-013",
@@ -826,7 +833,8 @@
       "schedule": null,
       "services": [],
       "bookingQuestions": [],
-      "type": "CENTER"
+      "type": "CENTER",
+      "heroImage": "https://images.unsplash.com/photo-1530497610245-94d3c16cda28?q=80&w=1200&auto=format&fit=crop"
     },
     {
       "registryId": "MED-007",
@@ -849,7 +857,8 @@
       "schedule": null,
       "services": [],
       "bookingQuestions": [],
-      "type": "DEPARTMENT"
+      "type": "DEPARTMENT",
+      "heroImage": "https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=1200&auto=format&fit=crop"
     },
     {
       "registryId": "MED-006",
@@ -872,7 +881,8 @@
       "schedule": null,
       "services": [],
       "bookingQuestions": [],
-      "type": "DEPARTMENT"
+      "type": "DEPARTMENT",
+      "heroImage": "https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=1200&auto=format&fit=crop"
     },
     {
       "registryId": "MED-002",
@@ -920,7 +930,8 @@
       "schedule": null,
       "services": [],
       "bookingQuestions": [],
-      "type": "DEPARTMENT"
+      "type": "DEPARTMENT",
+      "heroImage": "https://images.unsplash.com/photo-1587559070757-f72a388edbba?q=80&w=1200&auto=format&fit=crop"
     },
     {
       "registryId": "MED-001",
@@ -943,7 +954,8 @@
       "schedule": null,
       "services": [],
       "bookingQuestions": [],
-      "type": "DEPARTMENT"
+      "type": "DEPARTMENT",
+      "heroImage": "https://images.unsplash.com/photo-1516549655169-df83a0774514?q=80&w=1200&auto=format&fit=crop"
     },
     {
       "registryId": "PROG-001",
@@ -966,7 +978,8 @@
       "schedule": null,
       "services": [],
       "bookingQuestions": [],
-      "type": "PROGRAM"
+      "type": "PROGRAM",
+      "heroImage": "https://images.unsplash.com/photo-1573497620053-ea5300f94f21?q=80&w=1200&auto=format&fit=crop"
     }
   ],
   "doctors": [

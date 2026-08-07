@@ -4,6 +4,7 @@ import HeroSection from '@/components/public/HeroSection';
 import WhyChooseUsSection from '@/components/public/WhyChooseUsSection';
 import HospitalsSection from '@/components/public/HospitalsSection';
 import FeaturedServicesSection from '@/components/public/FeaturedServicesSection';
+import ProgramsSection from '@/components/public/ProgramsSection';
 import DoctorsSection from '@/components/public/DoctorsSection';
 import PatientJourneySection from '@/components/public/PatientJourneySection';
 import LatestNewsSection from '@/components/public/LatestNewsSection';
@@ -19,9 +20,10 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [hospitals, centers, doctors, news] = await Promise.all([
+  const [hospitals, centers, programs, doctors, news] = await Promise.all([
     getHospitals({ pageSize: 4 }),
     getMedicalCenters({ pageSize: 6 }),
+    getMedicalCenters({ pageSize: 6, type: 'PROGRAM' }),
     getDoctors({ pageSize: 6 }),
     getNewsPosts({ pageSize: 4 }),
   ]);
@@ -32,6 +34,7 @@ export default async function HomePage() {
       <WhyChooseUsSection />
       <HospitalsSection hospitals={hospitals?.data || []} />
       <FeaturedServicesSection centers={centers?.data || []} />
+      <ProgramsSection programs={programs?.data || []} />
       <DoctorsSection doctors={doctors?.data || []} />
       <PatientJourneySection />
       <LatestNewsSection news={news?.data || []} />

@@ -3,7 +3,7 @@ import type { MedicalCenter } from '@/lib/public-api';
 import { t, truncate } from '@/lib/utils';
 import { Activity, ArrowRight } from 'lucide-react';
 
-export default function MedicalCenterCard({ center }: { center: MedicalCenter }) {
+export default function MedicalCenterCard({ center, hrefPrefix = '/medical-centers' }: { center: MedicalCenter, hrefPrefix?: string }) {
   const color = center.brandColor || '#0E7C86'; // secondary color
   
   return (
@@ -20,7 +20,7 @@ export default function MedicalCenterCard({ center }: { center: MedicalCenter })
         <p className="text-default font-cairo text-sm leading-relaxed mb-3">
           {truncate(t(center.shortDescription), 80)}
         </p>
-        <Link href={`/medical-centers/${center.slug}`} className="service-link inline-flex items-center gap-1 text-sm font-bold text-heading hover:text-accent-500 transition-colors font-cairo">
+        <Link href={`${hrefPrefix}/${center.slug}`} className="service-link inline-flex items-center gap-1 text-sm font-bold text-heading hover:text-accent-500 transition-colors font-cairo">
           اعرف المزيد <ArrowRight className="w-3 h-3 rtl:rotate-180" />
         </Link>
       </div>

@@ -523,8 +523,9 @@ async function seedNavigation() {
     { label: { ar: 'عن المجموعة', en: 'About' }, target: '/about', location: 'header', order: 2, isVisible: true },
     { label: { ar: 'مستشفياتنا', en: 'Our Hospitals' }, target: '/hospitals', location: 'header', order: 3, isVisible: true },
     { label: { ar: 'مراكزنا الطبية', en: 'Our Medical Centers' }, target: '/medical-centers', location: 'header', order: 4, isVisible: true },
-    { label: { ar: 'الأخبار والأنشطة', en: 'News & Media' }, target: '/news', location: 'header', order: 5, isVisible: true },
-    { label: { ar: 'تواصل معنا', en: 'Contact Us' }, target: '/contact', location: 'header', order: 6, isVisible: true },
+    { label: { ar: 'برامجنا', en: 'Our Programs' }, target: '/programs', location: 'header', order: 5, isVisible: true },
+    { label: { ar: 'الأخبار والأنشطة', en: 'News & Media' }, target: '/news', location: 'header', order: 6, isVisible: true },
+    { label: { ar: 'تواصل معنا', en: 'Contact Us' }, target: '/contact', location: 'header', order: 7, isVisible: true },
   ];
 
   const footerNav = [
@@ -532,10 +533,11 @@ async function seedNavigation() {
     { label: { ar: 'عن المجموعة', en: 'About' }, target: '/about', location: 'footer', order: 2, isVisible: true },
     { label: { ar: 'مستشفياتنا', en: 'Our Hospitals' }, target: '/hospitals', location: 'footer', order: 3, isVisible: true },
     { label: { ar: 'مراكزنا الطبية', en: 'Our Medical Centers' }, target: '/medical-centers', location: 'footer', order: 4, isVisible: true },
-    { label: { ar: 'الأخبار', en: 'News' }, target: '/news', location: 'footer', order: 5, isVisible: true },
-    { label: { ar: 'تواصل معنا', en: 'Contact Us' }, target: '/contact', location: 'footer', order: 6, isVisible: true },
-    { label: { ar: 'سياسة الخصوصية', en: 'Privacy Policy' }, target: '/privacy', location: 'footer', order: 7, isVisible: true },
-    { label: { ar: 'شروط الاستخدام', en: 'Terms of Use' }, target: '/terms', location: 'footer', order: 8, isVisible: true },
+    { label: { ar: 'برامجنا', en: 'Our Programs' }, target: '/programs', location: 'footer', order: 5, isVisible: true },
+    { label: { ar: 'الأخبار', en: 'News' }, target: '/news', location: 'footer', order: 6, isVisible: true },
+    { label: { ar: 'تواصل معنا', en: 'Contact Us' }, target: '/contact', location: 'footer', order: 7, isVisible: true },
+    { label: { ar: 'سياسة الخصوصية', en: 'Privacy Policy' }, target: '/privacy', location: 'footer', order: 8, isVisible: true },
+    { label: { ar: 'شروط الاستخدام', en: 'Terms of Use' }, target: '/terms', location: 'footer', order: 9, isVisible: true },
   ];
 
   for (const item of [...headerNav, ...footerNav]) {
