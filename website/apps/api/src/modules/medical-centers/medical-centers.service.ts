@@ -26,6 +26,7 @@ export class MedicalCentersService {
     const where: any = {};
     if (!isAdmin) where.status = 'PUBLISHED';
     if (isAdmin && statuses?.length) where.status = { in: statuses };
+    if (query.type) where.type = query.type;
     if (query.isFeatured === 'true') where.isFeatured = true;
     if (query.search) {
       where.OR = [

@@ -3,7 +3,7 @@ const { Client } = require('ssh2');
 const conn = new Client();
 conn.on('ready', () => {
   console.log('Client :: ready');
-  conn.exec(`cd /root/INSAN-Healthcare-Platform/website && git pull origin main && docker compose -f docker-compose.prod.yml build api web && docker compose -f docker-compose.prod.yml up -d api web && docker exec insan-api npm run db:seed`, (err, stream) => {
+  conn.exec(`cd /root/INSAN-Healthcare-Platform/website && git pull origin main && docker compose -f docker-compose.prod.yml build api web && docker compose -f docker-compose.prod.yml up -d api web && docker exec insan-api npx prisma migrate deploy && docker exec insan-api npm run db:seed`, (err, stream) => {
     if (err) throw err;
     stream.on('close', (code, signal) => {
       console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);

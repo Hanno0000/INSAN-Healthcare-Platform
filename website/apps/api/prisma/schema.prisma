@@ -214,12 +214,20 @@ model Hospital {
   @@index([status])
 }
 
+enum CenterType {
+  CENTER
+  DEPARTMENT
+  PROGRAM
+}
+
 model MedicalCenter {
   id              String                  @id @default(cuid())
+  registryId      String?                 @unique
   slug            String                  @unique
   name            Json
   shortDescription Json?
   description     Json?
+  type            CenterType              @default(CENTER)
   features        Json?
   services        Json?
   logoUrl         String?

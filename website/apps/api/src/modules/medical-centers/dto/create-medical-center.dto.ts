@@ -9,9 +9,17 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { BilingualDto } from '../../../common/dto/bilingual.dto';
-import { ContentStatus } from '@prisma/client';
+import { ContentStatus, CenterType } from '@prisma/client';
 
 export class CreateMedicalCenterDto {
+  @IsOptional()
+  @IsString()
+  registryId?: string;
+
+  @IsOptional()
+  @IsEnum(CenterType)
+  type?: CenterType;
+
   @IsString()
   @Matches(/^[a-z0-9-]+$/, { message: 'slug must be lowercase letters, numbers, and hyphens only' })
   slug: string;

@@ -161,8 +161,9 @@ export async function getHospital(slug: string) {
   return pub<SingleResponse<Hospital>>(`/hospitals/${slug}`);
 }
 
-export async function getMedicalCenters(params?: { page?: number; pageSize?: number; search?: string }) {
-  return pub<PaginatedResponse<MedicalCenter>>('/medical-centers', params, !!params?.search);
+export async function getMedicalCenters(params?: { page?: number; pageSize?: number; search?: string; type?: string }) {
+  const mergedParams = { type: 'CENTER', ...params };
+  return pub<PaginatedResponse<MedicalCenter>>('/medical-centers', mergedParams, !!mergedParams.search);
 }
 export async function getMedicalCenter(slug: string) {
   return pub<SingleResponse<MedicalCenter>>(`/medical-centers/${slug}`);
