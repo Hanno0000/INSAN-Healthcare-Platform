@@ -80,7 +80,7 @@ that difference is deliberate and is recorded in the knowledge file's
 | CEN-011 | Chest & Sleep Disorders Center | مركز الصدر واضطرابات النوم | CENTER | Chest & Sleep Center | Delta |
 | CEN-012 | Senior Health & Screening Center | مركز صحة كبار السن والفحص الشامل | CENTER | — | Delta |
 | CEN-013 | Bariatric & Metabolic Surgeries Center | مركز جراحات السمنة والتمثيل الغذائي | CENTER | Bariatric Center | Future, Delta |
-| CEN-014 | Colorectal & Anal Surgeries Center | مركز جراحات المستقيم والشرج | CENTER | Proctology Center | Future, Delta |
+| CEN-014 | Colorectal & Hemorrhoid Surgeries Center | مركز جراحات المستقيم والبواسير | CENTER | Proctology Center | Future, Delta |
 | CEN-015 | Pediatrics & Neonatology Center | مركز طب الأطفال وحديثي الولادة | CENTER | Pediatric Center | Delta |
 | CEN-016 | Digestive & Oncology Surgery Center | مركز جراحات الجهاز الهضمي والأورام | CENTER | — | Future, Delta |
 | HOSP-001 | Future Specialized Hospital | مستشفى المستقبل التخصصي | HOSPITAL | — | Future |
@@ -106,7 +106,7 @@ states the group is four centres in total (2026-08-07):
 |---|---|
 | parent | `CEN-004` مركز الجراحات العامة والمناظير |
 | branch | `CEN-013` مركز جراحات السمنة والتمثيل الغذائي |
-| branch | `CEN-014` مركز جراحات المستقيم والشرج |
+| branch | `CEN-014` مركز جراحات المستقيم والبواسير |
 | branch | `CEN-016` مركز جراحات الجهاز الهضمي والأورام |
 
 The parent/child link is recorded in each knowledge file's `parent:` front matter.

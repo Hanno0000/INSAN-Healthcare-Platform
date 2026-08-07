@@ -1,7 +1,7 @@
 ---
 entity_id:      CEN-014
-entity_name_en: Colorectal & Anal Surgeries Center
-entity_name_ar: مركز جراحات المستقيم والشرج
+entity_name_en: Colorectal & Hemorrhoid Surgeries Center
+entity_name_ar: مركز جراحات المستقيم والبواسير
 campaign_name:  Proctology Center
 service_level:  CENTER
 campaign_type:  Medical Services
@@ -18,7 +18,7 @@ last_updated:   2026-08-06
 # Document Philosophy
 [TBD]
 
-# Colorectal & Anal Surgeries Center (مركز جراحات المستقيم والشرج)
+# Colorectal & Hemorrhoid Surgeries Center (مركز جراحات المستقيم والبواسير)
 
 ## 1. Foundation
 
