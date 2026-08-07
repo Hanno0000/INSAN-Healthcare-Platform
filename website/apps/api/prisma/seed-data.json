@@ -980,6 +980,54 @@
       "bookingQuestions": [],
       "type": "PROGRAM",
       "heroImage": "https://images.unsplash.com/photo-1573497620053-ea5300f94f21?q=80&w=1200&auto=format&fit=crop"
+    },
+    {
+      "registryId": "MED-003",
+      "slug": "operating-rooms",
+      "description": {
+        "en": "Modern, fully equipped operating theaters adhering to the highest international standards to ensure patient safety and surgical success.",
+        "ar": "غرف عمليات حديثة ومجهزة بالكامل وفقاً لأعلى المعايير العالمية لضمان سلامة المرضى ونجاح العمليات الجراحية."
+      }
+    },
+    {
+      "registryId": "MED-004",
+      "slug": "radiology-imaging",
+      "description": {
+        "en": "An integrated department providing the most accurate diagnostic medical imaging services using the latest technological equipment.",
+        "ar": "قسم متكامل يوفر أدق خدمات التصوير الطبي التشخيصي باستخدام أحدث الأجهزة التكنولوجية."
+      }
+    },
+    {
+      "registryId": "MED-005",
+      "slug": "laboratory",
+      "description": {
+        "en": "Medical laboratories equipped with the latest technologies to ensure accurate and fast medical test results.",
+        "ar": "مختبرات طبية مجهزة بأحدث التقنيات لضمان دقة وسرعة نتائج التحاليل الطبية."
+      }
+    },
+    {
+      "registryId": "PROG-002",
+      "slug": "senior-care-program",
+      "description": {
+        "en": "An integrated program providing specialized and continuous medical care for seniors to ensure their quality of life.",
+        "ar": "برنامج متكامل يهدف إلى تقديم رعاية طبية متخصصة ومستمرة لكبار السن لضمان جودة حياتهم."
+      }
+    },
+    {
+      "registryId": "PROG-003",
+      "slug": "check-up-programs",
+      "description": {
+        "en": "Comprehensive check-up programs designed to meet your needs and accurately assess your health periodically.",
+        "ar": "برامج فحص شاملة مصممة لتلبية احتياجاتك وتقييم حالتك الصحية بدقة وبشكل دوري."
+      }
+    },
+    {
+      "registryId": "PROG-004",
+      "slug": "prevention-programs",
+      "description": {
+        "en": "Programs aimed at early detection and prevention of diseases before they occur to maintain your overall health.",
+        "ar": "برامج تهدف إلى الكشف المبكر والوقاية من الأمراض قبل حدوثها للحفاظ على صحتك العامة."
+      }
     }
   ],
   "doctors": [

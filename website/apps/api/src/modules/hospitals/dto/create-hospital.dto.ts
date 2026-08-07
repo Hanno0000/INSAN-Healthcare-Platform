@@ -45,6 +45,27 @@ export class HospitalDepartmentDto {
   doctorIds?: string[];
 
   @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  images?: string[];
+
+  @IsOptional()
+  @IsArray()
+  equipment?: any[];
+
+  @IsOptional()
+  @IsArray()
+  services?: any[];
+
+  @IsOptional()
+  @IsArray()
+  features?: any[];
+
+  @IsOptional()
+  @IsString()
+  videoUrl?: string;
+
+  @IsOptional()
   @IsObject()
   customFields?: Record<string, any>;
 }

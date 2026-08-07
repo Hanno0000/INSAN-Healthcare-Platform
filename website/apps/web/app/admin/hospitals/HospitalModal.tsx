@@ -122,7 +122,13 @@ export default function HospitalModal({ open, onClose, editing, onSaved }: Props
         description: editing.description ?? { ...EMPTY_BILINGUAL },
         heroTagline: editing.heroTagline ?? { ...EMPTY_BILINGUAL },
         heroStats: editing.heroStats?.length ? editing.heroStats : DEFAULT_VALUES.heroStats,
-        departments: editing.departments ?? [],
+        departments: (editing.departments ?? []).map((d: any) => ({
+          ...d,
+          equipment: d.equipment ? JSON.stringify(d.equipment, null, 2) : '',
+          services: d.services ? JSON.stringify(d.services, null, 2) : '',
+          features: d.features ? JSON.stringify(d.features, null, 2) : '',
+          images: Array.isArray(d.images) ? d.images.join(', ') : '',
+        })),
         journeySteps: editing.journeySteps?.length === 4 ? editing.journeySteps : DEFAULT_VALUES.journeySteps,
         contactInfo: {
           phone: editing.contactInfo?.phone ?? '',
@@ -151,6 +157,19 @@ export default function HospitalModal({ open, onClose, editing, onSaved }: Props
     const rawDepts = (d.departments?.length ? d.departments : editing?.departments) || [];
     payload.departments = rawDepts.filter((dept: any) => {
       return dept && (dept.slug?.trim() || dept.name?.ar?.trim() || dept.name?.en?.trim());
+    }).map((dept: any) => {
+      let equipment = dept.equipment;
+      let services = dept.services;
+      let features = dept.features;
+      let images = dept.images;
+      
+      try { if (typeof equipment === 'string') equipment = JSON.parse(equipment); } catch(e){}
+      try { if (typeof services === 'string') services = JSON.parse(services); } catch(e){}
+      try { if (typeof features === 'string') features = JSON.parse(features); } catch(e){}
+      if (typeof images === 'string') {
+        images = images.split(',').map((u: string) => u.trim()).filter((u: string) => u);
+      }
+      return { ...dept, equipment, services, features, images };
     });
 
     const rawLocs = (d.locations?.length ? d.locations : editing?.locations) || [];
@@ -345,6 +364,21 @@ export default function HospitalModal({ open, onClose, editing, onSaved }: Props
                   </FormField>
 
                   <ImageUpload label="رابط صورة القسم" value={watch(`departments.${i}.image`) || ''} onChange={(url) => setValue(`departments.${i}.image`, url)} />
+                  <FormField label="رابط فيديو تعريفي">
+                    <input {...register(`departments.${i}.videoUrl`)} dir="ltr" className={inputCls} placeholder="https://youtube.com/..." />
+                  </FormField>
+                  <FormField label="الأجهزة (JSON Array)">
+                    <textarea {...register(`departments.${i}.equipment`)} dir="ltr" className={textareaCls} rows={2} placeholder='[{"ar":"جهاز","en":"device"}]'></textarea>
+                  </FormField>
+                  <FormField label="الخدمات (JSON Array)">
+                    <textarea {...register(`departments.${i}.services`)} dir="ltr" className={textareaCls} rows={2} placeholder='[{"ar":"خدمة","en":"service"}]'></textarea>
+                  </FormField>
+                  <FormField label="المميزات (JSON Array)">
+                    <textarea {...register(`departments.${i}.features`)} dir="ltr" className={textareaCls} rows={2} placeholder='[{"ar":"ميزة","en":"feature"}]'></textarea>
+                  </FormField>
+                  <FormField label="روابط صور إضافية (مفصولة بفاصلة)">
+                    <textarea {...register(`departments.${i}.images`)} dir="ltr" className={textareaCls} rows={2} placeholder="https://img1.jpg, https://img2.jpg"></textarea>
+                  </FormField>
 
                   <FormField label="أطباء القسم">
                     <div className="max-h-40 overflow-y-auto border border-gray-100 rounded-xl p-2 space-y-1 bg-gray-50">
