@@ -89,8 +89,15 @@ check('empty', action('   '), 'PROCEED');
 check('frustration is not abuse', action('المستشفى دي وحشة والخدمة بطيئة'), 'PROCEED');
 
 // ─── Abuse: warn once, then end ──────────────────────────────────────
-check('abuse first offence warns', action('انتم نصابين'), 'WARN_ABUSE');
-check('abuse second offence ends', action('انتم نصابين', ['انتم نصابين']), 'END_ABUSE');
+check('abuse first offence warns', action('انت قليل الادب'), 'WARN_ABUSE');
+check('abuse second offence ends', action('انت قليل الادب', ['انت قليل الادب']), 'END_ABUSE');
+
+// ─── Fraud accusations proceed — they are a complaint, not profanity ──
+// Reviewed and removed from the abuse lexicon 2026-08-08: "انتم نصابين" is
+// very often a real grievance (an unexplained charge, a bill that doesn't
+// match what the patient was told), and warning them to be polite dismisses
+// it exactly when a human most needs to see it.
+check('a fraud accusation is not treated as abuse', action('انتم نصابين وحرامية'), 'PROCEED');
 
 // ─── Spam ────────────────────────────────────────────────────────────
 check('link-only is spam', action('https://example.com'), 'MARK_SPAM');

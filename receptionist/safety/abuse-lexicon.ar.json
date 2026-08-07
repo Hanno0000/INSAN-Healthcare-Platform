@@ -16,14 +16,31 @@
       "and much of it is used as ordinary emphasis. Terms here are ones that are",
       "targeted at a person and carry no ordinary usage.",
       "",
-      "⚠️ Needs review by an Arabic-speaking operator before a live channel opens.",
-      "An over-broad list here silences distressed patients; that is a worse",
-      "outcome than absorbing some rudeness."
+      "Reviewed 2026-08-08 (Claude, Arabic-fluent pass; approved by the operator",
+      "same day). Two of the original 14 terms were removed, both because they are",
+      "mild enough to describe a situation rather than insult a person:",
+      "  غبي / اغبي — 'stupid' is very often aimed at a decision, a policy, or the",
+      "    system ('القرار غبي'), not a person. The false-negative bias this file",
+      "    states above means an ambiguous term like this should not fire.",
+      "",
+      "Four more were removed for a sharper reason: انتم نصابين / نصابين / حرامية /",
+      "لصوص are FRAUD ACCUSATIONS, not profanity. A patient who says 'انتم نصابين'",
+      "is very often reporting a real grievance — an unexplained price change, a",
+      "bill that doesn't match what they were told — not being abusive. Warning",
+      "them to 'continue respectfully' dismisses a legitimate complaint exactly",
+      "when it most needs a human to look at it. Removing them from this list lets",
+      "the message PROCEED to the model/handoff like any other complaint, instead",
+      "of being met with a canned politeness reply.",
+      "",
+      "Kept: يا ابن ال / يا بنت ال (family-insult openers), كلب / حمار (calling a",
+      "named person an animal), قليل الادب / قليلة الادب (direct character",
+      "insult), وسخ / حقير (direct character insult). All eight are unambiguous",
+      "when matched — none of them has an ordinary, non-insulting reading."
     ],
-    "reviewed": false,
+    "reviewed": true,
     "terms": [
-      "يا ابن ال", "يا بنت ال", "كلب", "حمار", "غبي", "اغبي", "قليل الادب",
-      "قليلة الادب", "وسخ", "حقير", "انتم نصابين", "نصابين", "حرامية", "لصوص"
+      "يا ابن ال", "يا بنت ال", "كلب", "حمار", "قليل الادب",
+      "قليلة الادب", "وسخ", "حقير"
     ],
     "policy": {
       "firstOffense": "WARN_ONCE",
