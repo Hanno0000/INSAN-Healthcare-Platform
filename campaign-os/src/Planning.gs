@@ -443,9 +443,19 @@ var CardBuilder = {
       );
     }
 
+    // W1 is the worker every other worker inherits from: the card it writes is
+    // the strategy for every post about this entity for as long as the card
+    // stands. It was reading the two brand documents and nothing else, while
+    // writing `Master Brand`, `Sub-Brand`, `Medical Center` and `Service Level`
+    // — four columns about where this entity sits in the ecosystem — from a
+    // knowledge file that describes the entity and not the ecosystem around it.
     var brand = DriveLoader.loadMarkdown('MASTER_BRAND_ARCHITECTURE.md',
       CONFIG.DOCS_FOLDER_ID) || '[not loaded]';
     var constitution = DriveLoader.loadMarkdown('AI_CREATIVE_CONSTITUTION.md',
+      CONFIG.DOCS_FOLDER_ID) || '[not loaded]';
+    var structure = DriveLoader.loadMarkdown('PROJECT_STRUCTURE.md',
+      CONFIG.DOCS_FOLDER_ID) || '[not loaded]';
+    var platform = DriveLoader.loadMarkdown('PLATFORM_KNOWLEDGE_BASE.md',
       CONFIG.DOCS_FOLDER_ID) || '[not loaded]';
 
     var schemaLines = [];
@@ -484,6 +494,12 @@ var CardBuilder = {
       '=== PROJECT DOCUMENT: AI_CREATIVE_CONSTITUTION.md ===',
       constitution,
       '',
+      '=== PROJECT DOCUMENT: PROJECT_STRUCTURE.md ===',
+      structure,
+      '',
+      '=== PROJECT DOCUMENT: PLATFORM_KNOWLEDGE_BASE.md ===',
+      platform,
+      '',
       '=== CONTROLLED VOCABULARY (USE EXACT VALUES) ===',
       '',
       vocabulary.join('\n\n'),
@@ -496,6 +512,16 @@ var CardBuilder = {
       '',
       'Everything you write must be traceable to a line in this file.',
       'service_level: ' + frontMatter.service_level,
+
+      // Every knowledge file states which hospitals run the entity, and until
+      // now that line reached nothing: _buildPrompt passed entity_name_en and
+      // service_level only. So W1 wrote `Sub-Brand` — which hospital this
+      // campaign belongs to — by reading it out of the prose, and W2 then read
+      // that guess off the card and scheduled the campaign on a page. Nine
+      // centres run at Delta alone; nothing downstream could tell.
+      'hospitals: ' + (String(frontMatter.hospitals || '').trim() ||
+        '[not stated — do not guess; if Sub-Brand does not follow from the ' +
+        'file, return INSUFFICIENT]'),
       '',
       knowledge,
       '',
@@ -1039,6 +1065,15 @@ var PlannerRunner = {
     var structure = DriveLoader.loadMarkdown('PROJECT_STRUCTURE.md',
       CONFIG.DOCS_FOLDER_ID) || '[not loaded]';
 
+    // The registry's Hospitals column is the only place that states which
+    // hospital actually runs each entity, and this worker decides which page
+    // every post lands on. Nine centres operate at Delta alone; the card's
+    // Sub-Brand is the planner's only other signal and it is written by a model
+    // from prose. Putting a Delta-only centre on the Future page advertises a
+    // service that hospital does not have, and nothing downstream re-checks it.
+    var registry = DriveLoader.loadMarkdown('ENTITY_REGISTRY.md',
+      CONFIG.DOCS_FOLDER_ID) || '[not loaded]';
+
     var staticPart = [
       'You are executing inside the INSAN Healthcare AI Operating System.',
       'Worker: ' + this.WORKER_NAME,
@@ -1058,6 +1093,12 @@ var PlannerRunner = {
       '',
       '=== PROJECT DOCUMENT: PROJECT_STRUCTURE.md ===',
       structure,
+      '',
+      '=== PROJECT DOCUMENT: ENTITY_REGISTRY.md ===',
+      registry,
+      '',
+      'The registry\'s Hospitals column is binding. Never schedule a campaign',
+      'on a hospital page the registry does not list for that entity.',
       '',
       '=== END OF PROJECT DOCUMENTATION ==='
     ].join('\n');
@@ -1738,9 +1779,25 @@ var PortfolioCritic = {
   },
 
   _buildPrompt: function(digest) {
+    // This worker loaded no document of any kind — its whole prompt was the
+    // literal below. That was survivable while it only counted repetition, and
+    // it is not survivable for the judgement it is actually asked to make:
+    // "INSAN, Future and Delta build one brand together" appears in its own
+    // instructions, and nothing told it what that sentence means.
+    var brand = DriveLoader.loadMarkdown('MASTER_BRAND_ARCHITECTURE.md',
+      CONFIG.DOCS_FOLDER_ID) || '[not loaded]';
+    var structure = DriveLoader.loadMarkdown('PROJECT_STRUCTURE.md',
+      CONFIG.DOCS_FOLDER_ID) || '[not loaded]';
+
     var staticPart = [
       'You are executing inside the INSAN Healthcare AI Operating System.',
       'Worker: ' + this.WORKER_NAME,
+      '',
+      '=== PROJECT DOCUMENT: MASTER_BRAND_ARCHITECTURE.md ===',
+      brand,
+      '',
+      '=== PROJECT DOCUMENT: PROJECT_STRUCTURE.md ===',
+      structure,
       '',
       'You are the only worker that sees the whole plan.',
       '',

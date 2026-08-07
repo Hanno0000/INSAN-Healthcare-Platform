@@ -950,6 +950,14 @@ var CONFIG = {
         'PROJECT_STRUCTURE.md',
         'PROJECT_DECISIONS.md',
         'PLATFORM_KNOWLEDGE_BASE.md',
+
+        // W3 writes nine visual columns — Visual Concept, Visual Elements,
+        // Do NOT Show, Design Notes and Text On Design are free text, and they
+        // are the ones W5 and the Media Designer inherit. It was writing them
+        // against no statement of what this brand's artwork looks like, while
+        // the spec that says so (Style Ratio, Strictly Prohibited Styles) was
+        // loaded only by workers downstream of the decision.
+        'INSAN_VISUAL_LANGUAGE_SPEC.md',
         'SYSTEM_CONSTANTS.md'
       ],
       temperature: 0.7,
@@ -1182,6 +1190,14 @@ var CONFIG = {
       docs: [
         'MASTER_BRAND_ARCHITECTURE.md',
         'AI_CREATIVE_CONSTITUTION.md',
+
+        // This is the worker that scores artwork and decides Approved /
+        // Revision Required / Rejected. The spec holds the criteria it is
+        // judging against — Style Ratio, Strictly Prohibited Styles, Quality
+        // Criteria. The Creative Director loaded it and the Media Designer
+        // loaded it; the only worker that passes or fails the result did not.
+        // A gate that has not read the standard approves what it should stop.
+        'INSAN_VISUAL_LANGUAGE_SPEC.md',
         'SYSTEM_CONSTANTS.md'
       ],
       temperature: 0.3,
@@ -1242,7 +1258,17 @@ var CONFIG = {
         // Every doc added here is paid on every row and comes out of the same
         // six-minute execution budget. Add on evidence that the designer needs
         // it, not in case it might.
-        docs: ['INSAN_VISUAL_LANGUAGE_SPEC.md']
+        //
+        // MASTER_BRAND_ARCHITECTURE is here on that evidence. `Hospital Brand`
+        // reaches this service as a bare string — "Future" — and the designer
+        // composes an image around a corner reserved for that hospital's brand
+        // marks, with nothing telling it what Future is, that it operates under
+        // INSAN, or what the two look like beside each other. It was rendering
+        // a hospital it had never been introduced to.
+        docs: [
+          'MASTER_BRAND_ARCHITECTURE.md',
+          'INSAN_VISUAL_LANGUAGE_SPEC.md'
+        ]
       },
 
       readColumns: [
@@ -1383,10 +1409,23 @@ var CONFIG = {
     provider: null,   // null inherits AI_PROVIDER
     model: null,
 
+    // W10 does not decorate a decision someone else made. It proposes the
+    // objective, the audience, the age range, the interests and the placements
+    // — the whole targeting of a paid campaign — from one Visual Pipeline row.
+    // That is strategic work of the same kind W3 and W4 do, and it was the only
+    // content-producing worker reading a shorter list than they do.
+    //
+    // PLATFORM_KNOWLEDGE_BASE is the substance of the argument: §3 patient
+    // experience advantages and §4 competitive advantages are what a paid ad
+    // claims. PROJECT_STRUCTURE says which pages exist and how they relate.
+    // SYSTEM_CONSTANTS carries the vocabulary Objective and Gender come from.
     docs: [
       'MASTER_BRAND_ARCHITECTURE.md',
       'AI_CREATIVE_CONSTITUTION.md',
-      'PROJECT_DECISIONS.md'
+      'PROJECT_STRUCTURE.md',
+      'PROJECT_DECISIONS.md',
+      'PLATFORM_KNOWLEDGE_BASE.md',
+      'SYSTEM_CONSTANTS.md'
     ],
 
     // Created by ensureAdsPipelineSheet() on first run. Content ID is the join
@@ -3282,11 +3321,14 @@ var DriveLoader = {
     }
 
     // Brand documents the planning workers name inline rather than through a
-    // docs array — CardBuilder loads the first two, PlannerRunner the last two.
-    // If a call site there starts reading a different document, add it here.
+    // docs array. If a call site there starts reading a different document, add
+    // it here — a doc loaded inline and absent from this list stays cached for
+    // six hours after the operator edits it, which reads as "my change did
+    // nothing" rather than as a stale cache.
     var planningDocs = [
       'MASTER_BRAND_ARCHITECTURE.md', 'AI_CREATIVE_CONSTITUTION.md',
-      'PROJECT_DECISIONS.md', 'PROJECT_STRUCTURE.md'
+      'PROJECT_DECISIONS.md', 'PROJECT_STRUCTURE.md',
+      'PLATFORM_KNOWLEDGE_BASE.md', 'ENTITY_REGISTRY.md'
     ];
 
     for (var b = 0; b < planningDocs.length; b++) {
@@ -3300,6 +3342,7 @@ var DriveLoader = {
 
       for (var name in registry) {
         var entry = registry[name] || {};
+
         var docNames = entry.docs || [];
 
         for (var i = 0; i < docNames.length; i++) {
