@@ -37,6 +37,17 @@ reasons — but this document is what they are copies *of*, and
 | **Hotline** | `01500668657` · `01100755556` |
 | **WhatsApp** | `01500668657` |
 | **WhatsApp link** | https://wa.me/201500668657 |
+| **Email** | `info@insan-eg.com` |
+| **Website** | https://insan-eg.com |
+
+⚠️ **The email and domain were confirmed by the operator on 2026-08-08**, when
+the domain was registered and pointed at the server.
+
+Until that day the website was publishing **`info@lavenir-medical.com`** — the
+management company's address, not the platform's — and a Tanta landline this
+file had explicitly *not* cleared for publication. Both were live on the
+production site. If you find either in any file, it is stale: replace it with
+the row above rather than treating it as a second opinion.
 
 ### Future Specialized Hospital
 

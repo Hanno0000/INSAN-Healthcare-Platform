@@ -32,7 +32,7 @@ export default function Header({ navItems, settings = [] }: Props) {
     return s ? s.value : fallback;
   };
 
-  const contactEmail = getSetting('contact_email', 'info@insan-platform.com');
+  const contactEmail = getSetting('contact_email', 'info@insan-eg.com');
   const contactPhone = getSetting('contact_phone', '+20 000 000 000');
   const emergencyPhone = getSetting('emergency_phone', '+20 000 000 000');
   // Derived, never hand-written: a wa.me link is the phone number with its

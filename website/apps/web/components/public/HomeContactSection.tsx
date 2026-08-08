@@ -12,7 +12,7 @@ export default async function HomeContactSection() {
     return s ? s.value : fallback;
   };
 
-  const contactEmail = getSetting('contact_email', 'info@insan-platform.com');
+  const contactEmail = getSetting('contact_email', 'info@insan-eg.com');
   const contactPhone = getSetting('contact_phone', '01234567890');
   const contactAddress = getSetting('contact_address', 'القاهرة - مصر');
 

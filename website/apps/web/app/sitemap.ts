@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { getHospitals, getMedicalCenters, getDoctors, getNewsPosts } from '@/lib/public-api';
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://insan-platform.com';
+const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://insan-eg.com';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [hospitals, centers, doctors, news] = await Promise.all([
