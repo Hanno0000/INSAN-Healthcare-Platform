@@ -213,3 +213,16 @@ This document covers the general operational and marketing scope of the Outpatie
 
 ### Related Knowledge
 [TBD]
+
+---
+
+## Clinic Schedule
+
+⚠️ **Clinic days and times are maintained in
+`business/knowledge/hospitals/CLINIC_SCHEDULES.md`, not here.** That file is the
+source of truth for both hospitals and for the Kabarona programme, which runs the
+same clinics — the brand owner confirmed that on 2026-08-08. It also carries the
+receptionist's operating rules, including that a Delta doctor's name may not be
+given until the typed schedule arrives.
+
+**When a clinic moves, it moves there — once.**

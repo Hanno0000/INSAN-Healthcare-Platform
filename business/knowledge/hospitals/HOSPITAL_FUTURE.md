@@ -86,17 +86,19 @@ and they override the PDFs where the two differ.
 ⚠️ **Both figures disagree with a committed source, and the disagreement is left
 visible rather than resolved by arithmetic.**
 
-*   `وصف مستشفى المستقبل.pdf` states **25 intensive-care beds**. The brand owner
-    says **9**. That is not a rounding difference — one of the two documents is
-    describing something else, and until someone says which, **9 is what may be
-    published.**
+*   ✅ **RESOLVED 2026-08-08.** `وصف مستشفى المستقبل.pdf` states **25
+    intensive-care beds**. The brand owner confirmed, when asked directly, that
+    **9 is correct and 26 inpatient is correct**. The PDF's 25 is wrong and is
+    not to be used. It is left named here so that anyone who reads that document
+    later knows it has already been checked and rejected, rather than
+    rediscovering it as new information.
 *   `الوصف الإنشائي لمستشفى المستقبل التخصصي.pdf` counts inpatient beds floor by
     floor: **12 on the third floor and 7 on the fourth**, which is 19, plus
     **4 patient rooms on the second floor** whose bed count it does not give. The
     brand owner's 26 is consistent with those four rooms holding seven beds, but
     that reconciliation is a guess and is not asserted here.
 
-<!-- NEEDS-OPERATOR: two capacity conflicts at Future. (1) Intensive care: the hospital description PDF says 25 beds, the brand owner said 9 on 2026-08-08. Which is right, and is the 25 perhaps a different unit or a planned figure? (2) Inpatient: the structural PDF counts 12 beds on floor 3 and 7 on floor 4, plus 4 rooms on floor 2 with no bed count; the brand owner said 26 in total. Does that mean the four second-floor rooms hold 7 beds? -->
+<!-- NEEDS-OPERATOR: one capacity question remains at Future. The intensive-care figure was settled on 2026-08-08 — 9 beds, and the description PDF's 25 is wrong. Still open: the structural PDF counts 12 inpatient beds on floor 3 and 7 on floor 4, plus 4 rooms on floor 2 whose bed count it does not give, against a confirmed total of 26. Do those four second-floor rooms hold the remaining 7 beds? -->
 
 ### 1.4 The building, floor by floor
 
