@@ -216,6 +216,21 @@ This document covers the general operational and marketing scope of the Outpatie
 
 ---
 
+## أسعار الكشف
+
+**Stated by the brand owner, 2026-08-08.** Maintained in
+`CLINIC_SCHEDULES.md` §3.
+
+| الكشف | الدلتا | المستقبل |
+|---|---:|---:|
+| **الكشف العادي** (الباطنة / عيادات كبارنا) | **٤٠ جنيه** | **١٠٠ جنيه** |
+| المسالك | ٢٠٠ جنيه | ٣٠٠ جنيه |
+| الأنف والأذن | ٢٠٠ جنيه | ٣٠٠ جنيه |
+
+**Tests and imaging** — Delta follows the published **مؤسسة العلاجية 2023**
+tariff; Future prices privately but economically. Neither list is in this
+repository yet.
+
 ## Clinic Schedule
 
 ⚠️ **Clinic days and times are maintained in

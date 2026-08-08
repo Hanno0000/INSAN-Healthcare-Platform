@@ -115,7 +115,11 @@ module.exports = {
         'Delta\'s schedule is confirmed from a typed table, so its names may ' +
         'now be given');
 
-      t.ok(/eight of twelve/i.test(s),
+      // The count grew from eight of twelve to nine of thirteen when the brand
+      // owner corrected the HOURS too — the handwritten header was read as
+      // ٢½ظ and is actually ١:٣٠م. Every correction that has arrived from that
+      // page has been a correction; not one confirmed the reading.
+      t.ok(/nine of thirteen/i.test(s),
         'and the file keeps what the handwriting transcription got wrong — the ' +
         'evidence for withholding an unverified name, which is otherwise a ' +
         'principle nobody can weigh');

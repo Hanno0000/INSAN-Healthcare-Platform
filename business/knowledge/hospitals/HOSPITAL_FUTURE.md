@@ -195,7 +195,18 @@ specialties, drawn from various Egyptian universities**.
 
 <!-- NEEDS-OPERATOR: no headcount anywhere — how many resident physicians, how many nurses, whether a consultant is on site overnight or on call. This is the same gap recorded in MEDICAL_CENTER_GENERAL_SURGERY.md §3.4 and it blocks any staffing claim at either hospital. -->
 
-### 1.10 Contact
+### 1.10 Pricing regime
+
+**Future's prices are its own — أسعار خاصة — positioned as economic.** They are
+not bound to any external tariff, which is the opposite of Delta's arrangement
+*(brand owner, 2026-08-08)*.
+
+Known consultation fees: **الكشف العادي ١٠٠ جنيه** · **المسالك ٣٠٠ جنيه** ·
+**الأنف والأذن ٣٠٠ جنيه**. Maintained in `CLINIC_SCHEDULES.md` §3.
+
+<!-- NEEDS-OPERATOR: Future's laboratory and imaging price list. Delta's follows a published tariff and is therefore knowable; Future's is internal and exists only inside the hospital. Without it the receptionist cannot answer "التحليل بكام؟" for Future at all. -->
+
+### 1.11 Contact
 
 Per `business/brand/CONTACT_DIRECTORY.md`, which is the source of truth for every
 number this ecosystem publishes:

@@ -410,7 +410,23 @@ Professional, empathetic, breaking down medical jargon into clear, comforting fa
 ## 6. Offers
 
 ### 6.1 Current Offers
-<!-- NEEDS-OPERATOR: Missing exact pricing and current offers/packages for Urology surgeries -->
+
+**سعر الكشف** *(brand owner, 2026-08-08)*:
+
+| | الدلتا | المستقبل |
+|---|---:|---:|
+| كشف المسالك | **٢٠٠ جنيه** | **٣٠٠ جنيه** |
+
+Tests and imaging are billed separately and price differently at the two
+hospitals — Delta follows the published **مؤسسة العلاجية 2023** tariff, Future
+prices privately. See `CLINIC_SCHEDULES.md` §3, which is where consultation
+prices are maintained.
+
+⚠️ **This is a consultation fee, not a treatment price.** §6.2 forbids quoting an
+operation before evaluation, and that is unchanged: the fee above buys the
+examination that decides what is needed.
+
+<!-- NEEDS-OPERATOR: still missing for Urology — the price of the procedures themselves (endoscopic and laser lithotripsy, prostate surgery, varicocele), and whether any package or offer is currently running. The consultation fee is now known; nothing beyond it is. -->
 
 ### 6.2 Offer Rules ✍️
 

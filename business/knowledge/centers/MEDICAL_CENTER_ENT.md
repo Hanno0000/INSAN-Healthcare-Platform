@@ -380,7 +380,26 @@ Like a senior professor explaining a complex condition to a worried patient with
 ## 6. Offers
 
 ### 6.1 Current Offers
-<!-- NEEDS-OPERATOR: Missing exact pricing, packages, or offers -->
+
+**سعر الكشف** *(brand owner, 2026-08-08)*:
+
+| | الدلتا | المستقبل |
+|---|---:|---:|
+| كشف الأنف والأذن | **٢٠٠ جنيه** | **٣٠٠ جنيه** |
+
+Tests and imaging are billed separately. See `CLINIC_SCHEDULES.md` §3, where
+consultation prices are maintained.
+
+⚠️ **A Future price for ENT is worth pausing on.** This centre is registered
+**Delta only** under the Future rule of 2026-08-08, and the brand owner has now
+quoted an ENT consultation fee at Future. Both can be true — Future's operating
+theatres cover ENT and it can run an ENT clinic without the *Signature Brand
+centre* living there, which is the distinction `HOSPITAL_FUTURE.md` §1.7 exists
+to make. But it is the kind of thing that looks like a contradiction later.
+
+<!-- NEEDS-OPERATOR: CEN-009 is registered Delta-only, and an ENT consultation at Future now has a price. Confirm the reading: Future runs an ENT CLINIC, while the ENT CENTRE — the campaign, the branding, the sub-clinics — is Delta's. If that is right, nothing changes. If ENT should in fact be a Future centre too, the registry and the Future rule both need correcting, and this file's §5.7 and §9.1 do as well. -->
+
+<!-- NEEDS-OPERATOR: still missing for ENT — the price of the procedures (FESS, tonsillectomy, tympanoplasty), and whether any package or offer is currently running. -->
 
 ### 6.2 Offer Rules ✍️
 

@@ -522,6 +522,19 @@ hospital can perform these operations. Which of them is a Signature Brand with
 its own campaign is decided by `ENTITY_REGISTRY.md`, and a post must not imply a
 centre exists because a theatre specialty is named here.
 
+**Pricing regime** *(brand owner, 2026-08-08)*: **laboratory and imaging prices
+follow the published مؤسسة العلاجية tariff of 2023.** That is an externally set,
+public schedule — not a hospital decision — and it is why Delta's diagnostic
+prices are both lower than Future's and quotable with confidence.
+
+Known consultation fees: **الكشف العادي ٤٠ جنيه** · **المسالك ٢٠٠ جنيه** ·
+**الأنف والأذن ٢٠٠ جنيه**. Maintained in `CLINIC_SCHEDULES.md` §3.
+
+⚠️ **Worth saying publicly, and almost nobody does.** "Our test prices are set by
+the 2023 state tariff, not by us" answers the suspicion that a hospital prices to
+profit from a frightened family — with a verifiable fact rather than a
+reassurance.
+
 **Staffing, as stated**: medical service delivered by professors and consultants
 across all specialties, drawn from various Egyptian universities.
 

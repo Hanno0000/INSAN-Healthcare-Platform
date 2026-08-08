@@ -73,20 +73,26 @@ range, and the two mean completely different things to a patient.
 
 **Specialties currently covered at Future:** جهاز هضمي · باطنة وقلب · صدر · كلى ·
 مخ وأعصاب. **That is five.** Every other specialty at Future has no published
-time yet — see §3.
+time yet — see §4.
 
 ---
 
 # 2. Delta International Hospital
 
-**Source:** the brand owner's typed table, 2026-08-08 — which replaced a
-photograph of a handwritten page supplied earlier the same day. **The ١١ ص – ٢½
-ظهر window comes from the handwritten header and is not in the typed table.**
+**Source:** the brand owner's typed table, 2026-08-08, with the hours confirmed
+separately the same day.
+
+> ✅ **الجدول كله من ١١:٠٠ صباحًا إلى ١:٣٠ ظهرًا** — every clinic in the table,
+> every day. *(Brand owner, 2026-08-08.)*
+>
+> ⚠️ That also corrects the handwritten header, which was read here as **٢½ ظهر**
+> and is actually **١:٣٠**. It is the ninth error from that page — see the
+> comparison below.
 
 > ✅ **CONFIRMED by the brand owner, 2026-08-08.** The table below is the typed
 > schedule, not the transcription. **Names may now be given.**
 >
-> ⚠️ **The handwriting transcription was wrong in eight of twelve entries** — it
+> ⚠️ **The handwriting transcription was wrong in nine of thirteen entries** — it
 > is recorded at the foot of this section, because it is the clearest evidence in
 > this repository for why an unverified name is withheld rather than published.
 
@@ -111,7 +117,7 @@ subspecialty**, which is the shape of the department rather than a coincidence.
 <details>
 <summary><strong>⚠️ What the handwriting transcription got wrong — kept as evidence</strong></summary>
 
-Eight of twelve entries were wrong. Recorded because the argument for withholding
+Nine of thirteen entries were wrong, counting the hours. Recorded because the argument for withholding
 an unverified name is otherwise abstract, and this makes it concrete.
 
 | | Read from handwriting | Actually |
@@ -124,6 +130,7 @@ an unverified name is otherwise abstract, and this makes it concrete.
 | الأربعاء ١ | لبنى الشريف — باطنة | لبنى الشريف — باطنة **وغدد** |
 | الخميس ١ | إسلام **حنيش** — باطنة | إسلام **حشيش** — باطنة **وكلى** |
 | الخميس ٢ | لبنى **عبد…** — قلب | لبنى **حمد** — قلب |
+| الميعاد | من العنوان: **١١ص – ٢½ظ** | **١١ص – ١:٣٠م** |
 
 **The dangerous one is الاثنين ٢.** Read as *جراحة/أوعية*, actually **مخ
 وأعصاب**. A patient with a neurological complaint would have been directed to a
@@ -133,26 +140,88 @@ vascular surgeon — not a misspelling, a wrong department.
 **رحاب وحيد**, a woman's. A patient arriving asking for "دكتور وهاب" would have
 been asking for somebody who does not work there.
 
-Only four entries were right outright.
+Only four were right outright.
 </details>
 
 <!-- NEEDS-OPERATOR: the confirmed Delta table gives days, doctors and specialties but NO TIMES. The 11ص–2:30م window comes from the header of the handwritten page. Does it apply to every clinic in the table, or only to some? The receptionist is currently giving that window for all of them, and it is the one part of Delta's schedule still resting on the handwriting. Also: the handwritten page had a starred line at its foot reading roughly "الخميس ١٥/١٢" with a title like "أ.م.د" — it is absent from the typed table, so is it cancelled, or a separate clinic that was left out? -->
 
-⚠️ **Note the window is much shorter than Future's.** Delta's page says
-**١١ص – ٢½ظ**, while `HOSPITAL_DELTA.md` records the outpatient department as
-running **١٠ص – ١٠م** from the hospital's description PDF. Both can be true — the
-department opens longer than these particular clinics — but a receptionist
-answering "متى تفتح العيادات؟" would give a different answer from each. The
-specific clinic times in this table are the ones to give.
+⚠️ **The window is much shorter than Future's — two and a half hours against
+twelve.** `HOSPITAL_DELTA.md` records the outpatient *department* as running
+**١٠ص – ١٠م** from the hospital's description PDF, while these named clinics run
+**١١ص – ١:٣٠م**.
+
+Both can be true: the department is open longer than any individual consultant
+sits. But a receptionist answering *"العيادات بتفتح امتى؟"* would give a
+different answer from each, so the rule is: **give the clinic's time, not the
+department's.** A patient arriving at 4pm for د. جهاد صبري finds the hospital
+open and the clinic finished.
 
 ---
 
-# 3. ⚠️ Instructions for the receptionist
+
+---
+
+# 3. أسعار الكشف
+
+**Stated by the brand owner, 2026-08-08.** These are consultation fees only —
+laboratory work, imaging and procedures are billed separately.
+
+| الكشف | الدلتا | المستقبل |
+|---|---:|---:|
+| **الكشف العادي** — عيادات كبارنا / الباطنة | **٤٠ جنيه** | **١٠٠ جنيه** |
+| **المسالك** | **٢٠٠ جنيه** | **٣٠٠ جنيه** |
+| **الأنف والأذن** | **٢٠٠ جنيه** | **٣٠٠ جنيه** |
+
+**Delta is consistently cheaper**, and by a wide margin at the general clinic —
+forty pounds against a hundred. That is not a discount, it is the two hospitals'
+different pricing regimes; see §3.1.
+
+⚠️ **The forty and the hundred are the Kabarona clinic consultation**, which is
+the same clinic as the outpatient consultation — the brand owner confirmed on
+2026-08-08 that these are one and the same. A Kabarona member and a walk-in are
+paying the same fee for the same seat.
+
+<!-- NEEDS-OPERATOR: consultation prices exist for three clinic types — general, urology, ENT. What about the rest? Delta's table alone runs صدر, عظام, مخ وأعصاب, قلب, and the باطنة subspecialties غدد, حميات, كلى. Is 200 the standard Delta specialty fee and 300 the standard Future one, or are those two figures specific to urology and ENT? The receptionist is asked the price on nearly every call and currently can answer for three clinics out of nine. -->
+
+### 3.1 Why the two hospitals price differently
+
+**Delta** — laboratory and imaging prices **follow the published
+مؤسسة العلاجية tariff of 2023**. That is a public, externally set schedule, not a
+hospital decision, and it is the reason Delta's prices are both lower and
+quotable with confidence.
+
+**Future** — prices are **private (أسعار خاصة)** but positioned as **economic**.
+They are the hospital's own and are not bound to the tariff.
+
+⚠️ **This is a genuinely useful thing to say publicly**, and almost nobody does:
+Delta's diagnostic pricing is set by an external schedule rather than by the
+hospital. It answers the suspicion recorded in
+`MEDICAL_CENTER_PEDIATRICS.md` §5.6 — that a hospital prices to profit from a
+frightened family — with a fact rather than a reassurance.
+
+<!-- NEEDS-OPERATOR: the مؤسسة العلاجية 2023 tariff is public and the brand owner suggested downloading it. It is deliberately NOT copied into this repository from a web search: a price quoted to a patient must come from a copy the hospital itself stands behind, and a scraped table that is out of date, regionally different or simply the wrong document would be worse than having no prices at all. Please supply the hospital's own price list — the one the accounts desk works from — and it goes in here as a table. -->
+
+### 3.2 What the receptionist may say about price
+
+*   **The three consultation fees above may be given directly.** They are
+    confirmed.
+*   **For any other clinic**, say the fee is confirmed on booking and take the
+    patient's number. Do not extrapolate from 200 or 300 — that is exactly what
+    §3's marker is asking about.
+*   **For tests and imaging at Delta**, it is honest and reassuring to say the
+    prices follow the **published 2023 مؤسسة العلاجية tariff**. Do not quote a
+    figure from it until the hospital supplies its own list.
+*   **For tests and imaging at Future**, say they are the hospital's own
+    economic pricing and will be confirmed. Do not guess.
+*   **Never quote a check-up programme price** — none exists. See
+    `PROGRAM_CHECKUP.md` §6.1.
+
+# 4. ⚠️ Instructions for the receptionist
 
 **This section is written for the worker that answers patients on the page. It
 is the operating rule, not background.**
 
-### 3.1 When a patient asks about a clinic that IS in this file
+### 4.1 When a patient asks about a clinic that IS in this file
 
 Give **the day, the time, and the specialty**, from the table for the hospital
 they are asking about.
@@ -169,7 +238,7 @@ header. Give it as the usual window, not as a guarantee:
 
 > «العيادة عادة من ١١ الصبح لحد ٢ ونص، بس خليني أأكدلك الميعاد قبل ما تيجي.»
 
-### 3.2 When a patient asks about a clinic that is NOT in this file
+### 4.2 When a patient asks about a clinic that is NOT in this file
 
 **Do not say the clinic does not exist, and do not invent a time.** Most of the
 hospital's specialties are simply not in this table yet.
@@ -185,7 +254,7 @@ appointment with them.** That is the brand owner's instruction of 2026-08-08.
 Then capture what is needed to make the call happen — the patient's name, their
 number, the specialty they want, and the hospital.
 
-### 3.3 What must never happen
+### 4.3 What must never happen
 
 *   **Never invent a clinic time.** Not "probably mornings", not "usually
     Sunday". A patient who travels on a guess arrives to a closed door.
@@ -199,14 +268,14 @@ number, the specialty they want, and the hospital.
 
 ---
 
-# 4. Kabarona
+# 5. Kabarona
 
 The brand owner confirmed on 2026-08-08 that **the Kabarona programme's clinics
 at each hospital are these same clinics** — same doctors, same days, same
 sessions.
 
 So a Kabarona enquiry is answered from §1 or §2 exactly as an outpatient enquiry
-is, under the same rules in §3.
+is, under the same rules in §4.
 
 ⚠️ **What is NOT established** is whether a Kabarona patient gets anything
 different inside the same session — priority booking, a different fee, a longer
@@ -217,26 +286,26 @@ only when the clinic runs.
 
 ---
 
-# 5. AI & Documentation
+# 6. AI & Documentation
 
-### 5.1 Knowledge Scope
+### 6.1 Knowledge Scope
 
 **When outpatient clinics run, and who staffs them**, at both hospitals.
 
 **Not covered:** prices, booking channel (see `CONTACT_DIRECTORY.md`), the
 clinical content of any specialty, or the Kabarona programme's own strategy.
 
-### 5.2 Intended Consumers
+### 6.2 Intended Consumers
 
 | Consumer | Reads it for |
 |---|---|
-| **The receptionist** | §1, §2 and above all §3 |
+| **The receptionist** | §1, §2, §3 and above all §4 |
 | **`MEDICAL_SERVICE_OUTPATIENT_CLINICS.md`** | the department's schedule |
 | **`PROGRAM_KABARONA.md`** | the programme's clinics |
 | **Campaign workers** | may state a clinic day; may not state a Delta doctor |
 | **The website** | the clinics page |
 
-### 5.3 Relationship With Other Documentation
+### 6.3 Relationship With Other Documentation
 
 *   `HOSPITAL_FUTURE.md` §1.5 and `HOSPITAL_DELTA.md` — the departments' opening
     hours, which are wider than these clinic windows.
@@ -244,7 +313,7 @@ clinical content of any specialty, or the Kabarona programme's own strategy.
 *   `ENTITY_REGISTRY.md` — which centres exist at which hospital. A specialty
     having a clinic here does **not** make it a registered Centre.
 
-### 5.4 Maintenance Policy
+### 6.4 Maintenance Policy
 
 **Update the moment a clinic is added, moved or cancelled.** This is the file
 that changes most often in the entire knowledge base, because a schedule is a
@@ -253,12 +322,12 @@ living thing and a wrong one is worse than none.
 Update also when Delta's typed schedule arrives (§2), when the two Future
 ambiguities are cleared (§1), and when the Kabarona question is answered (§4).
 
-### 5.5 Versioning Philosophy
+### 6.5 Versioning Philosophy
 
 *   **v1.0** — 2026-08-08. Future from `جدول عيادات.xlsx`; Delta transcribed from
     a photograph of a handwritten page and marked unverified.
 
-### 5.6 Document Metadata
+### 6.6 Document Metadata
 
 | | |
 |---|---|
