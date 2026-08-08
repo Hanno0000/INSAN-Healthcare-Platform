@@ -66,9 +66,18 @@ export default function WhyChooseUsSection() {
               </div>
             </div>
             
-            <div className="experience-badge absolute top-10 -left-10 bg-primary text-white w-32 h-32 rounded-full flex flex-col items-center justify-center text-center shadow-floating z-20 border-4 border-white font-montserrat">
-              <span className="text-3xl font-bold block mb-1">إنسان</span>
-              <span className="text-xs font-cairo font-semibold px-2">الإنسان قبل التكنولوجيا</span>
+            {/* Cropped to just the shield mark: the source PNG is a wide
+                4267×1916 lockup (icon + "إنسان" + English tagline), so a
+                fixed-height image wider than this circle, left-aligned and
+                clipped by overflow-hidden, shows only the icon on the left —
+                explicit `left-0` rather than relying on default alignment,
+                since that would flip under the site's RTL direction. */}
+            <div className="experience-badge absolute top-10 -left-10 overflow-hidden bg-white w-32 h-32 rounded-full shadow-floating z-20 border-4 border-white">
+              <img
+                src="/logos/insan-logo-color.png"
+                alt="إنسان"
+                className="absolute left-0 top-1/2 -translate-y-1/2 h-24 w-auto max-w-none object-contain"
+              />
             </div>
 
             {/* Background elements */}

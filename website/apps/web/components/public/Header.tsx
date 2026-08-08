@@ -5,8 +5,6 @@ import Link from 'next/link';
 import type { NavItem } from '@/lib/public-api';
 import { useT } from '@/components/LocaleProvider';
 import { Mail, Phone, Menu, X, ChevronDown } from 'lucide-react';
-// Social icons can be used from lucide-react as well, or we can just use normal text/icons
-import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 import LanguageSwitcher from './LanguageSwitcher';
 
 interface Props { 
@@ -37,11 +35,11 @@ export default function Header({ navItems, settings = [] }: Props) {
   const contactEmail = getSetting('contact_email', 'info@insan-platform.com');
   const contactPhone = getSetting('contact_phone', '+20 000 000 000');
   const emergencyPhone = getSetting('emergency_phone', '+20 000 000 000');
-  const whatsappUrl = getSetting('whatsapp_url', 'https://wa.me/200000000');
-  const facebookUrl = getSetting('facebook_url', '#');
-  const twitterUrl = getSetting('twitter_url', '#');
-  const instagramUrl = getSetting('instagram_url', '#');
-  const linkedinUrl = getSetting('linkedin_url', '#');
+  // Derived, never hand-written: a wa.me link is the phone number with its
+  // leading zero dropped and 20 prepended, not the digits glued on as-is —
+  // see business/brand/CONTACT_DIRECTORY.md §2.
+  const whatsappNumber = getSetting('whatsapp_number', '01500668657').replace(/[\s-]/g, '');
+  const whatsappUrl = `https://wa.me/20${whatsappNumber.replace(/^0/, '')}`;
 
   return (
     <header id="header" className={`fixed top-0 w-full z-50 transition-all duration-300 bg-white shadow-sm`}>
@@ -57,11 +55,6 @@ export default function Header({ navItems, settings = [] }: Props) {
             </a>
           </div>
           <div className="flex gap-3 items-center">
-            <a href={twitterUrl} className="hover:text-accent-500 transition-colors"><Twitter className="w-3.5 h-3.5" /></a>
-            <a href={facebookUrl} className="hover:text-accent-500 transition-colors"><Facebook className="w-3.5 h-3.5" /></a>
-            <a href={instagramUrl} className="hover:text-accent-500 transition-colors"><Instagram className="w-3.5 h-3.5" /></a>
-            <a href={linkedinUrl} className="hover:text-accent-500 transition-colors"><Linkedin className="w-3.5 h-3.5" /></a>
-            <div className="w-px h-3 bg-white/20 mx-1"></div>
             <LanguageSwitcher />
           </div>
         </div>
@@ -69,9 +62,13 @@ export default function Header({ navItems, settings = [] }: Props) {
 
       <div className={`branding flex items-center justify-between px-4 md:px-8 mx-auto max-w-7xl transition-all duration-300 ${scrolled ? 'py-3' : 'py-4'}`}>
         
-        {/* Logo */}
+        {/* Logo — the "Egyptian Healthcare Platform" tagline is baked into this
+            PNG as small type (the file is a wide 4267×1916 lockup). Below
+            ~h-20 that caption shrinks to a couple of pixels tall and becomes
+            unreadable, which is why it looked "missing" — it was never
+            actually a rendering bug, just too small to read. */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
-          <img src={getSetting('logo_light', '/logos/insan-logo-color.png')} alt="منظومة إنسان - INSAN Ecosystem" className="h-14 md:h-16 w-auto object-contain" />
+          <img src={getSetting('logo_light', '/logos/insan-logo-color.png')} alt="منظومة إنسان - Egyptian Healthcare Platform" className="h-16 md:h-20 w-auto object-contain" />
         </Link>
 
         {/* Desktop Nav */}

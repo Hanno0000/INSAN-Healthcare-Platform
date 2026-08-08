@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { NavItem } from '@/lib/public-api';
 import { t } from '@/lib/utils';
-import { Facebook, Twitter, Instagram, Linkedin, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 interface Props { 
   navItems: NavItem[];
@@ -17,10 +17,6 @@ export default function Footer({ navItems, settings = [] }: Props) {
   const contactEmail = getSetting('contact_email', 'info@insan-platform.com');
   const contactPhone = getSetting('contact_phone', '+20 000 000 000');
   const contactAddress = getSetting('contact_address', 'القاهرة، مصر');
-  const facebookUrl = getSetting('facebook_url', '#');
-  const twitterUrl = getSetting('twitter_url', '#');
-  const instagramUrl = getSetting('instagram_url', '#');
-  const linkedinUrl = getSetting('linkedin_url', '#');
 
   const visible = navItems.filter(n => n.isVisible).sort((a, b) => a.order - b.order);
   const year = new Date().getFullYear();
@@ -35,17 +31,11 @@ export default function Footer({ navItems, settings = [] }: Props) {
             {/* Brand Column */}
             <div className="footer-about">
               <Link href="/" className="flex items-center gap-2 mb-6">
-                <img src={getSetting('logo_dark', '/logos/insan-logo-white.png')} alt="منظومة إنسان - INSAN Ecosystem" className="h-12 w-auto object-contain" />
+                <img src={getSetting('logo_dark', '/logos/insan-logo-white.png')} alt="منظومة إنسان - Egyptian Healthcare Platform" className="h-16 w-auto object-contain" />
               </Link>
               <p className="text-sm leading-relaxed mb-6 font-cairo">
                 المنظومة الصحية المتكاملة — نربط المرضى بأفضل الكفاءات الطبية في مصر من خلال مستشفياتنا المتخصصة ومراكزنا الطبية المتميزة.
               </p>
-              <div className="social-links flex gap-3">
-                <a href={twitterUrl} className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-accent-500 hover:text-white transition-all"><Twitter className="w-4 h-4" /></a>
-                <a href={facebookUrl} className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-accent-500 hover:text-white transition-all"><Facebook className="w-4 h-4" /></a>
-                <a href={instagramUrl} className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-accent-500 hover:text-white transition-all"><Instagram className="w-4 h-4" /></a>
-                <a href={linkedinUrl} className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-accent-500 hover:text-white transition-all"><Linkedin className="w-4 h-4" /></a>
-              </div>
             </div>
 
             {/* Quick Links Column */}
@@ -130,8 +120,10 @@ export default function Footer({ navItems, settings = [] }: Props) {
             <p>© {year} <span className="font-semibold text-white">منظومة إنسان للرعاية الصحية</span>. جميع الحقوق محفوظة.</p>
           </div>
           <div className="legal-links flex gap-6">
-            <Link href="/privacy" className="hover:text-white transition-colors">سياسة الخصوصية</Link>
-            <Link href="/terms" className="hover:text-white transition-colors">شروط الاستخدام</Link>
+            {/* /privacy and /terms removed 2026-08-08 — both routes existed
+                but rendered an empty page (no privacy policy or terms of
+                service content exists yet). Re-add once real legal copy
+                exists for those pages. */}
             <Link href="/investors" className="hover:text-white transition-colors">بوابة المستثمرين</Link>
           </div>
         </div>
