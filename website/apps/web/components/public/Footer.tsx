@@ -50,25 +50,31 @@ export default function Footer({ navItems, settings = [] }: Props) {
               </nav>
             </div>
 
-            {/* Resources Column */}
+            {/* Departments Column
+                Points at the real registry entities under /medical-centers,
+                not the parallel hardcoded /services/[slug] pages. Those
+                duplicated the same five subjects with content baked into the
+                component, so the admin panel could not edit a word of them —
+                and they drifted from the database records covering the same
+                departments. These six targets are MED-001 through MED-006 in
+                ENTITY_REGISTRY.md, and each one is admin-editable.
+                "الأشعة والمعامل" was one link covering two separate registry
+                entities (MED-004 Radiology, MED-005 Laboratory); split. */}
             <div className="nav-column">
-              <h6 className="text-white font-semibold mb-6 uppercase tracking-wider font-montserrat text-sm">خدماتنا</h6>
+              <h6 className="text-white font-semibold mb-6 uppercase tracking-wider font-montserrat text-sm">أقسامنا</h6>
               <nav className="flex flex-col gap-3 font-cairo text-sm">
-                <Link href="/services/outpatient" className="flex items-center gap-2 hover:text-accent-500 transition-colors">
-                  <ArrowRight className="w-3 h-3 rtl:rotate-180" /> العيادات الخارجية
-                </Link>
-                <Link href="/services/emergency" className="flex items-center gap-2 hover:text-accent-500 transition-colors">
-                  <ArrowRight className="w-3 h-3 rtl:rotate-180" /> الطوارئ
-                </Link>
-                <Link href="/services/icu" className="flex items-center gap-2 hover:text-accent-500 transition-colors">
-                  <ArrowRight className="w-3 h-3 rtl:rotate-180" /> الرعاية المركزة
-                </Link>
-                <Link href="/services/surgeries" className="flex items-center gap-2 hover:text-accent-500 transition-colors">
-                  <ArrowRight className="w-3 h-3 rtl:rotate-180" /> العمليات الجراحية
-                </Link>
-                <Link href="/services/radiology" className="flex items-center gap-2 hover:text-accent-500 transition-colors">
-                  <ArrowRight className="w-3 h-3 rtl:rotate-180" /> الأشعة والمعامل
-                </Link>
+                {[
+                  { slug: 'outpatient-clinics',   label: 'العيادات الخارجية' },
+                  { slug: 'emergency-department', label: 'الطوارئ' },
+                  { slug: 'intensive-care-unit',  label: 'الرعاية المركزة' },
+                  { slug: 'operating-rooms',      label: 'غرف العمليات' },
+                  { slug: 'radiology-imaging',    label: 'الأشعة والتصوير' },
+                  { slug: 'laboratory',           label: 'المعمل' },
+                ].map(d => (
+                  <Link key={d.slug} href={`/medical-centers/${d.slug}`} className="flex items-center gap-2 hover:text-accent-500 transition-colors">
+                    <ArrowRight className="w-3 h-3 rtl:rotate-180" /> {d.label}
+                  </Link>
+                ))}
               </nav>
             </div>
 
