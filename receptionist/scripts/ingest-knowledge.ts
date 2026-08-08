@@ -33,13 +33,53 @@
  * around a hole it cannot see.
  */
 
-// Relative, not '@prisma/client'. This script lives outside website/, so Node
-// resolves node_modules upward from receptionist/scripts/ and never reaches
-// website/node_modules — it is a sibling, not a parent. The other scripts in
-// this folder reach into the api source tree the same way.
-import { PrismaClient } from '../../website/node_modules/@prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
+
+/**
+ * Locating @prisma/client is genuinely awkward here, and a plain import does
+ * not work in either place this script has to run.
+ *
+ * Node resolves node_modules by walking UP from the importing file. This file
+ * lives in receptionist/scripts/, so in the repo it walks to the repo root and
+ * never sees website/node_modules — a sibling, not a parent. And in the
+ * production container it is worse: the image flattens everything to /app and
+ * mounts this folder at /receptionist, so a path relative to the repo layout
+ * points at nothing at all.
+ *
+ * So the candidates are tried in order and the first that loads wins. Getting
+ * this wrong fails at import time with a module-not-found that says nothing
+ * useful about which of the two environments went wrong, hence the explicit
+ * error listing everything tried.
+ */
+function loadPrismaClient(): { PrismaClient: new () => any } {
+  const candidates = [
+    // Production container: api-production copies the whole workspace
+    // node_modules to /app, so this is where it lives once deployed.
+    '/app/node_modules/@prisma/client',
+    // Local checkout: receptionist/ and website/ are siblings in the repo.
+    path.resolve(__dirname, '..', '..', 'website', 'node_modules', '@prisma', 'client'),
+    // Anywhere normal resolution already works.
+    '@prisma/client',
+  ];
+
+  for (const candidate of candidates) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      return require(candidate);
+    } catch {
+      /* try the next one */
+    }
+  }
+
+  throw new Error(
+    'Cannot locate @prisma/client. Tried:\n  ' +
+      candidates.join('\n  ') +
+      '\nRun this from a place that has the workspace dependencies installed.',
+  );
+}
+
+const { PrismaClient } = loadPrismaClient();
 
 const prisma = new PrismaClient();
 const DRY_RUN = process.argv.includes('--dry-run');
@@ -309,7 +349,7 @@ async function check(): Promise<void> {
   let ok = true;
 
   // 1 — the migration
-  const cols = await prisma.$queryRawUnsafe<Array<{ column_name: string }>>(
+  const cols: Array<{ column_name: string }> = await prisma.$queryRawUnsafe(
     `SELECT column_name FROM information_schema.columns
       WHERE table_name = 'AiKnowledgeBase'
         AND column_name IN ('embedding','hospitals','sourceRef')`,
@@ -329,7 +369,9 @@ async function check(): Promise<void> {
     where: { name: { contains: 'gemini', mode: 'insensitive' }, isActive: true },
   });
   if (!provider) {
-    const all = await prisma.aiProvider.findMany({ select: { name: true, isActive: true } });
+    const all: Array<{ name: string; isActive: boolean }> = await prisma.aiProvider.findMany({
+      select: { name: true, isActive: true },
+    });
     console.log('  ✗ no ACTIVE provider whose name contains "gemini"');
     console.log(
       `      providers present: ${all.map((p) => `${p.name}${p.isActive ? '' : ' (inactive)'}`).join(', ') || '(none)'}`,
