@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { NavItem } from '@/lib/public-api';
 import { t } from '@/lib/utils';
 import { ArrowRight } from 'lucide-react';
+import { parsePhones, telHref } from '@/lib/contact';
 
 interface Props { 
   navItems: NavItem[];
@@ -15,8 +16,12 @@ export default function Footer({ navItems, settings = [] }: Props) {
   };
 
   const contactEmail = getSetting('contact_email', 'info@insan-eg.com');
-  const contactPhone = getSetting('contact_phone', '+20 000 000 000');
-  const contactAddress = getSetting('contact_address', 'القاهرة، مصر');
+  const phones = parsePhones(getSetting('contact_phone', '01500668657,01100755556'));
+  // No default: no address is recorded in CONTACT_DIRECTORY.md, and the two
+  // hospital files disagree about the governorate. An unset value hides the
+  // block rather than publishing a guess.
+  const contactAddress = getSetting('contact_address', '');
+  const addressText = typeof contactAddress === 'string' ? contactAddress : t(contactAddress as any);
 
   const visible = navItems.filter(n => n.isVisible).sort((a, b) => a.order - b.order);
   const year = new Date().getFullYear();
@@ -82,13 +87,17 @@ export default function Footer({ navItems, settings = [] }: Props) {
             <div className="nav-column">
               <h6 className="text-white font-semibold mb-6 uppercase tracking-wider font-montserrat text-sm">تواصل معنا</h6>
               <div className="flex flex-col gap-4 font-cairo text-sm">
+                {addressText && (
+                  <p>
+                    <strong>العنوان:</strong><br />
+                    {addressText}
+                  </p>
+                )}
                 <p>
-                  <strong>العنوان:</strong><br />
-                  {t(contactAddress as any)}
-                </p>
-                <p>
-                  <strong>هاتف:</strong><br />
-                  <a href={`tel:${contactPhone.replace(/[\s-]/g, '')}`} className="hover:text-accent-500 transition-colors">{contactPhone}</a>
+                  <strong>الخط الساخن:</strong><br />
+                  {phones.map((p) => (
+                    <a key={p} href={telHref(p)} className="block hover:text-accent-500 transition-colors" dir="ltr">{p}</a>
+                  ))}
                 </p>
                 <p>
                   <strong>البريد الإلكتروني:</strong><br />

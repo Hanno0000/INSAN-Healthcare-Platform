@@ -97,7 +97,7 @@ export default function AboutPage() {
               <p className="text-default font-cairo leading-relaxed mb-6">
                 رمز القيادة والابتكار، توفر رعاية متقدمة عبر أحدث التقنيات الطبية وأفضل الكوادر.
               </p>
-              <Link href="/hospitals/future" className="inline-flex items-center text-accent-500 font-bold font-cairo group-hover:text-accent-600">
+              <Link href="/hospitals/future-hospital" className="inline-flex items-center text-accent-500 font-bold font-cairo group-hover:text-accent-600">
                 المزيد <ChevronRight className="w-4 h-4 mr-1" />
               </Link>
             </div>
@@ -110,7 +110,7 @@ export default function AboutPage() {
               <p className="text-default font-cairo leading-relaxed mb-6">
                 إعادة بناء الثقة، من خلال تقديم خدمات طبية موثوقة وآمنة تناسب احتياجات المجتمع.
               </p>
-              <Link href="/hospitals/delta" className="inline-flex items-center text-accent-500 font-bold font-cairo group-hover:text-accent-600">
+              <Link href="/hospitals/delta-hospital" className="inline-flex items-center text-accent-500 font-bold font-cairo group-hover:text-accent-600">
                 المزيد <ChevronRight className="w-4 h-4 mr-1" />
               </Link>
             </div>

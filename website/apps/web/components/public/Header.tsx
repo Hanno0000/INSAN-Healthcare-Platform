@@ -6,6 +6,7 @@ import type { NavItem } from '@/lib/public-api';
 import { useT } from '@/components/LocaleProvider';
 import { Mail, Phone, Menu, X, ChevronDown } from 'lucide-react';
 import LanguageSwitcher from './LanguageSwitcher';
+import { parsePhones, telHref, whatsappUrl } from '@/lib/contact';
 
 interface Props { 
   navItems: NavItem[];
@@ -33,13 +34,13 @@ export default function Header({ navItems, settings = [] }: Props) {
   };
 
   const contactEmail = getSetting('contact_email', 'info@insan-eg.com');
-  const contactPhone = getSetting('contact_phone', '+20 000 000 000');
-  const emergencyPhone = getSetting('emergency_phone', '+20 000 000 000');
-  // Derived, never hand-written: a wa.me link is the phone number with its
-  // leading zero dropped and 20 prepended, not the digits glued on as-is —
-  // see business/brand/CONTACT_DIRECTORY.md §2.
-  const whatsappNumber = getSetting('whatsapp_number', '01500668657').replace(/[\s-]/g, '');
-  const whatsappUrl = `https://wa.me/20${whatsappNumber.replace(/^0/, '')}`;
+  // INSAN publishes two hotlines — CONTACT_DIRECTORY.md. Show both.
+  const phones = parsePhones(getSetting('contact_phone', '01500668657,01100755556'));
+  // No dedicated emergency line is recorded anywhere; the hotline is the
+  // documented way to reach INSAN, so fall back to it rather than to a number
+  // nobody confirmed.
+  const emergencyPhone = getSetting('emergency_phone', '') || phones[0] || '';
+  const waUrl = whatsappUrl(getSetting('whatsapp_number', '01500668657'));
 
   return (
     <header id="header" className={`fixed top-0 w-full z-50 transition-all duration-300 bg-white shadow-sm`}>
@@ -50,9 +51,12 @@ export default function Header({ navItems, settings = [] }: Props) {
             <a href={`mailto:${contactEmail}`} className="flex items-center gap-1.5 hover:text-white transition-colors">
               <Mail className="w-3.5 h-3.5" /> {contactEmail}
             </a>
-            <a href={`tel:${contactPhone.replace(/[\s-]/g, '')}`} className="flex items-center gap-1.5 hover:text-white transition-colors">
-              <Phone className="w-3.5 h-3.5" /> {contactPhone}
-            </a>
+            {phones.map((p, i) => (
+              <a key={p} href={telHref(p)} className="flex items-center gap-1.5 hover:text-white transition-colors">
+                {i === 0 && <Phone className="w-3.5 h-3.5" />}
+                <span dir="ltr">{p}</span>
+              </a>
+            ))}
           </div>
           <div className="flex gap-3 items-center">
             <LanguageSwitcher />
@@ -87,7 +91,7 @@ export default function Header({ navItems, settings = [] }: Props) {
         {/* CTA & Mobile Toggle */}
         <div className="flex items-center gap-3">
           {/* Emergency */}
-          <a href={`tel:${emergencyPhone.replace(/[\s-]/g, '')}`} className="hidden lg:inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold px-5 py-2.5 rounded-pill shadow-sm transition-all duration-300 font-cairo">
+          <a href={telHref(emergencyPhone)} className="hidden lg:inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold px-5 py-2.5 rounded-pill shadow-sm transition-all duration-300 font-cairo">
             <Phone className="w-4 h-4" /> للطوارئ
           </a>
           
@@ -97,7 +101,7 @@ export default function Header({ navItems, settings = [] }: Props) {
           </Link>
           
           {/* WhatsApp */}
-          <a href={whatsappUrl} target="_blank" rel="noreferrer" className="hidden lg:inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white text-sm font-bold px-5 py-2.5 rounded-pill shadow-sm transition-all duration-300 font-cairo">
+          <a href={waUrl} target="_blank" rel="noreferrer" className="hidden lg:inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white text-sm font-bold px-5 py-2.5 rounded-pill shadow-sm transition-all duration-300 font-cairo">
             <Phone className="w-4 h-4" /> واتساب
           </a>
           

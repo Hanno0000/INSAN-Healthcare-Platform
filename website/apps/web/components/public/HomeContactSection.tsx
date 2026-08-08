@@ -4,6 +4,7 @@ import { Phone, Mail, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import { getPublicSettings } from '@/lib/public-api';
 import { t } from '@/lib/utils';
+import { parsePhones, telHref } from '@/lib/contact';
 
 export default async function HomeContactSection() {
   const settings = await getPublicSettings();
@@ -13,8 +14,11 @@ export default async function HomeContactSection() {
   };
 
   const contactEmail = getSetting('contact_email', 'info@insan-eg.com');
-  const contactPhone = getSetting('contact_phone', '01234567890');
-  const contactAddress = getSetting('contact_address', 'القاهرة - مصر');
+  const phones = parsePhones(getSetting('contact_phone', '01500668657,01100755556'));
+  // No default — see the note in Footer.tsx. An unset address hides the block
+  // instead of publishing an unsourced location.
+  const contactAddress = getSetting('contact_address', '');
+  const addressText = typeof contactAddress === 'string' ? contactAddress : t(contactAddress as any);
 
   return (
     <section id="contact-section" className="py-20 bg-light-bg">
@@ -37,8 +41,10 @@ export default async function HomeContactSection() {
                   <Phone className="w-5 h-5 text-accent-500" />
                 </div>
                 <div>
-                  <p className="text-sm text-white/60 mb-1">الرقم الموحد</p>
-                  <a href={`tel:${contactPhone.replace(/[\s-]/g, '')}`} className="text-lg font-bold hover:text-accent-500 transition-colors" dir="ltr">{contactPhone}</a>
+                  <p className="text-sm text-white/60 mb-1">الخط الساخن</p>
+                  {phones.map((p) => (
+                    <a key={p} href={telHref(p)} className="block text-lg font-bold hover:text-accent-500 transition-colors" dir="ltr">{p}</a>
+                  ))}
                 </div>
               </div>
               
@@ -52,15 +58,17 @@ export default async function HomeContactSection() {
                 </div>
               </div>
               
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                  <MapPin className="w-5 h-5 text-accent-500" />
+              {addressText && (
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                    <MapPin className="w-5 h-5 text-accent-500" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-white/60 mb-1">المقر الرئيسي</p>
+                    <p className="text-lg font-bold">{addressText}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm text-white/60 mb-1">المقر الرئيسي</p>
-                  <p className="text-lg font-bold">{t(contactAddress as any)}</p>
-                </div>
-              </div>
+              )}
             </div>
             
             <div className="mt-12 pt-8 border-t border-white/10">
