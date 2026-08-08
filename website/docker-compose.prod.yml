@@ -68,6 +68,15 @@ services:
           memory: 256M
           cpus: "0.5"
 
+  # ⚠️ After editing infra/nginx.conf or infra/proxy-locations.conf ONLY
+  # (no change to this file's volumes list), `docker compose up -d --no-deps
+  # nginx` decides the service is unchanged and skips recreation — the
+  # container keeps its bind mount attached to the pre-`git pull` inode, and
+  # even `nginx -s reload` re-reads that same stale file. Confirmed live on
+  # 2026-08-08: a redirect added to nginx.conf silently didn't apply through
+  # two rounds of `up -d` and a reload, and only took effect after
+  # `up -d --no-deps --force-recreate nginx`. Use --force-recreate for any
+  # nginx-config-only change; --no-deps alone is not enough.
   nginx:
     image: nginx:alpine
     container_name: insan-nginx
