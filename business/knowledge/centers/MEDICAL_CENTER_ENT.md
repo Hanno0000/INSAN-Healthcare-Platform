@@ -307,7 +307,10 @@ Fear of surgery on delicate areas (vocal cords, middle ear). Fear that sinus sur
 ### 5.7 Core Messaging Framework
 "The region's most powerful ENT unit: University expertise, advanced endoscopy, and complete surgical safety—all under one roof at Delta Hospital."
 
-<!-- NEEDS-OPERATOR: this line names Delta only, and §9.1 writes Future as a parenthetical — while the registry lists this centre at both hospitals and the Future rule of 2026-08-08 does not name it. The file's own copy is evidence for the open question in ENTITY_REGISTRY.md about whether CEN-009 runs at Future. Confirm, then correct whichever is wrong. -->
+✅ **RESOLVED, 2026-08-08.** The centre is Delta only. Future runs an ENT
+*clinic* — it has its own consultation fee and will get its own row in
+`CLINIC_SCHEDULES.md` once scheduled — but the *Signature Brand*, the campaign
+and this file belong to Delta. See §9.1.
 
 ### 5.8 Narrative Themes ✍️
 
@@ -390,14 +393,10 @@ Like a senior professor explaining a complex condition to a worried patient with
 Tests and imaging are billed separately. See `CLINIC_SCHEDULES.md` §3, where
 consultation prices are maintained.
 
-⚠️ **A Future price for ENT is worth pausing on.** This centre is registered
-**Delta only** under the Future rule of 2026-08-08, and the brand owner has now
-quoted an ENT consultation fee at Future. Both can be true — Future's operating
-theatres cover ENT and it can run an ENT clinic without the *Signature Brand
-centre* living there, which is the distinction `HOSPITAL_FUTURE.md` §1.7 exists
-to make. But it is the kind of thing that looks like a contradiction later.
-
-<!-- NEEDS-OPERATOR: CEN-009 is registered Delta-only, and an ENT consultation at Future now has a price. Confirm the reading: Future runs an ENT CLINIC, while the ENT CENTRE — the campaign, the branding, the sub-clinics — is Delta's. If that is right, nothing changes. If ENT should in fact be a Future centre too, the registry and the Future rule both need correcting, and this file's §5.7 and §9.1 do as well. -->
+✅ **RESOLVED, 2026-08-08.** Future runs an ENT **clinic**, priced above. The ENT
+**Centre** — this file, the campaign, the sub-clinics in §3.8 — is Delta's. A
+Future post may mention the clinic and its consultation fee; it may not carry
+this centre's branding or campaign name.
 
 <!-- NEEDS-OPERATOR: still missing for ENT — the price of the procedures (FESS, tonsillectomy, tympanoplasty), and whether any package or offer is currently running. -->
 

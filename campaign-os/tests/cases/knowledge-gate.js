@@ -303,7 +303,13 @@ module.exports = {
       // Programs campaign from the beginning with no file behind it. All
       // seventeen required sections pass; it is blocked on prices, which do not
       // exist for any of the four programmes.
-      'PROGRAM_CHECKUP.md'
+      'PROGRAM_CHECKUP.md',
+
+      // CEN-016's endoscopy scope, created 2026-08-08 from the material folded
+      // in when CEN-003 was retired. All seventeen sections pass; blocked on
+      // confirming which capabilities (ERCP, a pathology lab, emergency
+      // linkage) actually exist here versus in the clinical brief alone.
+      'MEDICAL_CENTER_DIGESTIVE.md'
     ];
 
     // ⚠️ STRUCTURALLY broken is worse than blocked: a gap is a fact nobody has
