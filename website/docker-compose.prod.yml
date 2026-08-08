@@ -28,6 +28,12 @@ services:
     volumes:
       - uploads_data:/app/uploads
       - ../receptionist:/receptionist:ro
+      # The knowledge-ingest script reads business/knowledge/**.md, resolving it
+      # as __dirname/../.. — which inside the container is /business, since the
+      # script is mounted at /receptionist/scripts. Without this it lands on a
+      # path that does not exist and collects zero sections. Read-only: the
+      # container consumes this content, it never writes it.
+      - ../business:/business:ro
     depends_on:
       - db
     healthcheck:
