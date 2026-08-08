@@ -66,6 +66,17 @@ docker compose -f "$ComposeFile" ps
 echo 'Cleaning up dangling images to save space...'
 docker image prune -f
 
+# Build cache is the real disk hog on this host, not images or volumes —
+# confirmed 2026-08-08: `docker system df` showed 75GB of build cache eating
+# 80% of the disk while images (2.6GB) and volumes (52MB, i.e. the actual
+# database and uploads) were fine. `docker image prune` above does not touch
+# this. Keep a week of cache for faster incremental builds; drop the rest.
+echo 'Cleaning up build cache older than 7 days...'
+docker builder prune -af --filter until=168h
+
+echo 'Disk usage after cleanup:'
+df -h / | tail -n 1
+
 echo '--- Deployment Completed Successfully! ---'
 "@
 
