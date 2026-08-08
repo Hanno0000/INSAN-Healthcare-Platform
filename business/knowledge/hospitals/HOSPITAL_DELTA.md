@@ -413,18 +413,103 @@ own description document, and **the brand owner, 2026-08-08**.
   accidents.
 - **Laboratory: 24 hours.**
 
+### ⚠️ Capacity — the numbers, and where they are maintained
+
+**This section is the source of truth for Delta's physical capacity.** When a
+bed is added, a device installed or a floor opened, it changes HERE first. The
+twin of this section is `HOSPITAL_FUTURE.md` §1.3, and
+`hospital-capacity.js` fails if any other file drifts from either.
+
+**Stated by the brand owner on 2026-08-08**, and — unusually — **confirmed
+independently** by `وصف المستشفى 2.pdf`, which counts them room by room.
+
+| | Beds | Confirmed by the structural document |
+|---|---:|---|
+| **Inpatient (داخلي)** | **58** | rooms counted, beds not — see below |
+| **Intensive care** | **19** | ✅ exactly, room by room |
+| **Paediatric care (رعاية أطفال)** | **11** | ✅ exactly, 5 + 6 across two units |
+| **Neonatal incubators (حضانات)** | **12** | ✅ exactly |
+
+**The intensive care unit, bed by bed:**
+
+| Room | Beds | |
+|---|---:|---|
+| 201 | 6 | plus **2 dialysis machines** |
+| 202 | 2 | |
+| 203 | 2 | |
+| 204 | 2 | |
+| 205 | 2 | **isolation room** |
+| 206 | 1 | private room |
+| 207 | 4 | |
+| **Total** | **19** | across 7 rooms |
+
+**The paediatric care unit** — unit 1 holds **5 beds**, unit 2 holds **6**.
+
+⚠️ **Inpatient is the one figure not directly confirmed.** The structural
+document counts **16 rooms on the third floor** (one suite, four premium, seven
+first-class deluxe, four first class) and **16 more on the fourth floor, under
+preparation**. It gives rooms, not beds. The brand owner's **58** is
+authoritative; whether it includes the fourth floor is not stated.
+
+<!-- NEEDS-OPERATOR: does Delta's 58 inpatient beds include the sixteen fourth-floor rooms the structural document lists as "تحت التجهيز" (under preparation)? If those are not yet open, the publishable figure today is lower than 58, and an advertisement quoting 58 would be describing a floor that has not opened. -->
+
+### The building, floor by floor
+
+Source: `وصف المستشفى 2.pdf`.
+
+**Basement** — radiology (plain X-ray; **CT under preparation**) · medical gas ·
+changing rooms · mortuary refrigeration · medical waste · stores · **medical
+records**.
+
+**Ground floor** — security · **2 emergency examination rooms** · **cardiac
+resuscitation room** · reception.
+
+**First floor** — medical and administrative directors' offices · **pharmacy** ·
+accounts · **2 emergency observation rooms** · **9 clinics: 6 rotating and 3
+fixed (dental, orthopaedics, ENT)** · **ultrasound and echocardiography clinic** ·
+injection room · cafeteria · reception.
+
+**Second floor** — *surgical:* doctors' and nurses' changing rooms · **4
+operating theatres** · recovery · patient preparation · theatre pharmacy store.
+*Critical:* **the intensive care unit — 7 rooms, 19 beds**.
+
+**Third floor — inpatient.** **16 patient rooms**: suite (308) · premium (305,
+306, 307, 310) · first-class deluxe (301, 302, 311, 313, 314, 315, 316) · first
+class (303, 304, 312, 317).
+
+**Fourth floor — inpatient, 16 rooms under preparation.**
+
+**Sixth floor — children.** Paediatric care: **unit 1 with 5 beds, unit 2 with
+6**. Incubators: **12, plus a breastfeeding room**.
+
+**Seventh floor** — chairman's office. **Tenth** — **blood bank** · maintenance ·
+rooms under renovation. **Eleventh** — **central sterilisation** · kitchen.
+
+⚠️ **Floors five, eight and nine are not described in the source document.** That
+is a gap in the document, not a statement that they are empty.
+
 **Units**
 
 Intensive care · inpatient hotel rooms, graded from standard first class up to
 premium suites · neonatal and premature baby unit · paediatric care unit ·
 emergency renal dialysis unit · comprehensive check-up department · gastro,
-colon and biliary-duct endoscopy unit.
+colon and biliary-duct endoscopy unit · **blood bank** · **central
+sterilisation** · **medical records**.
 
 **Diagnostics**
 
 - **Laboratory**, 24 hours: haematology and immunology, virology, hormones, all
   chemistry panels and cultures, histopathology and cytology.
-- **Radiology**, integrated: plain X-ray, Doppler, echo, ultrasound, CT.
+- **Radiology**: plain X-ray, Doppler, echo, ultrasound.
+
+⚠️ **CT is contested and must not be advertised at Delta.**
+`وصف مستشفي  الدلتا.pdf` lists *أشعة مقطعية* among the department's
+capabilities. `وصف المستشفى 2.pdf` places CT in the basement marked
+**تحت التجهيز — under preparation**. The structural document is the more
+specific of the two, so the claim is withheld until settled. **Future's CT is
+not disputed**, so a post about imaging must name the hospital.
+
+<!-- NEEDS-OPERATOR: is CT operational at Delta today? One PDF lists it as a capability, the other marks it under preparation. -->
 
 **Operating theatres** cover general surgery, oncological surgery, laparoscopic
 surgery, obstetrics & gynaecology, orthopaedics & sports injuries, maxillofacial,
@@ -440,6 +525,12 @@ centre exists because a theatre specialty is named here.
 **Staffing, as stated**: medical service delivered by professors and consultants
 across all specialties, drawn from various Egyptian universities.
 
+**Contact** — per `business/brand/CONTACT_DIRECTORY.md`, which is the source of
+truth for every number this ecosystem publishes: hotline `01217778869` ·
+`01500668657`, WhatsApp `01217778869`.
+
+<!-- NEEDS-OPERATOR: the letterhead of وصف المستشفى 2.pdf carries five landlines — 040 331 5000 through 5003 and 040 332 1774 — and a mobile WhatsApp line written there as 0110 000 2154, which appears in no other document in this repository. It is deliberately NOT written here in publishable form, because it is unconfirmed and contact-directory.js treats that form as a number the ecosystem stands behind. Two questions: is that WhatsApp line real, and if so why does the directory list 01217778869 instead? A patient given the wrong one reaches nobody. -->
+
 > ⚠️ **What is still missing, and why the card is still blocked.**
 >
 > The description document is a capability list. It does not carry the
@@ -447,7 +538,7 @@ across all specialties, drawn from various Egyptian universities.
 > the fourth below: **demonstrable change under INSAN management is this brand's
 > entire proposition**, and nothing in the repository evidences it.
 >
-> <!-- NEEDS-OPERATOR: Delta institutional facts still missing after the description PDF and the 2026-08-08 answers — (1) bed capacity in total and by area; the PDF names the units but gives no numbers, unlike Future's document which states 25 ICU beds; (2) which registered centres are fully operational today versus planned, and on what timeline; (3) what has concretely changed under INSAN management since roughly 2024 — infrastructure, equipment, staffing, protocols — with dates, since demonstrable change is what "Restore Trust" rests on; (4) any accreditation or certification held or being pursued; (5) the catchment area and the population served; (6) the clinical leadership structure. The exact founding year is NOT being asked for again — the brand owner said "many years" and that is enough for copy. -->
+> <!-- NEEDS-OPERATOR: Delta institutional facts still missing. Bed capacity was ANSWERED on 2026-08-08 and is now in the capacity section above. Still open — (1) which registered centres are fully operational today versus planned, and on what timeline; (2) what has concretely changed under INSAN management since roughly 2024 — infrastructure, equipment, staffing, protocols — with dates, since demonstrable change is what "Restore Trust" rests on; (3) any accreditation or certification held or being pursued; (4) the catchment area and the population served; (5) the clinical leadership structure and a staffing headcount. The exact founding year is NOT being asked for again — "many years" is enough for copy. -->
 
 > ⚠️ **A second question that changes the strategy, not just the copy.**
 >

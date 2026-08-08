@@ -419,10 +419,34 @@ function everyMarkdownInSubfolders() {
   return out.sort();
 }
 
+// Files that declare `builds_card: false` are REFERENCE documents, not sources
+// for a campaign card, and the gate does not judge them by Template.md's
+// seventeen sections.
+//
+// HOSPITAL_FUTURE.md is the case this exists for. It holds Future's floors,
+// capacity, equipment and hours — the brand owner asked on 2026-08-08 for one
+// place to change when a bed is added — and the registry lists NO campaign for
+// HOSP-001. Demanding a Human Insight and a Psychological Transformation of a
+// floor plan would have produced seventeen invented sections to satisfy a gate,
+// which is the opposite of what the gate is for.
+//
+// The declaration is checked, not trusted: `reference-documents.js` requires
+// that a file claiming it has no campaign in ENTITY_REGISTRY. A file with a live
+// campaign cannot opt out of the gate by adding a line to its front matter.
+function isReferenceDocument(rel) {
+  const fs = require('fs');
+  const path = require('path');
+  const full = path.join(__dirname, '..', '..', '..', rel);
+  const m = /^---\s*\r?\n([\s\S]*?)\r?\n---/.exec(fs.readFileSync(full, 'utf8'));
+
+  return !!m && /^builds_card:\s*false\s*$/m.test(m[1]);
+}
+
 function listKnowledgeFiles() {
   return everyMarkdownInSubfolders()
     .filter((rel) => NAME.test(rel.split('/').pop()))
-    .map((rel) => K + rel);
+    .map((rel) => K + rel)
+    .filter((rel) => !isReferenceDocument(rel));
 }
 
 function strays() {

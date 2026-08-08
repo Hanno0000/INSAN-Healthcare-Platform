@@ -112,6 +112,21 @@ Speed of response, multidisciplinary teamwork ("We are a team, not one doctor"),
 *   **Immediate Triage:** Service starts the moment the patient arrives.
 *   **24/7 Availability:** All specialties, labs, and radiology are operational around the clock.
 *   **High-Acuity Readiness:** Adult ICU, Pediatric ICU, Incubators, and ORs are always on standby.
+
+    What that means in beds, per hospital *(brand owner 2026-08-08; maintained in
+    `HOSPITAL_FUTURE.md` §1.3 and `HOSPITAL_DELTA_FACILITY.md` §1.3)*:
+
+    | | Future | Delta |
+    |---|---:|---:|
+    | Intensive care | 9 | 19 |
+    | Inpatient | 26 | 58 |
+    | Paediatric care | — | 11 |
+    | Incubators | 5 | 12 |
+    | Operating theatres | 3 | 4 |
+
+    ⚠️ **This department runs at both hospitals and they are not the same size.**
+    A readiness claim that does not name the hospital is describing whichever one
+    the reader assumes.
 *   **Electronic Medical Records:** Creating a medical file from the first visit for continuity of care.
 
 ### 3.5 Differentiators

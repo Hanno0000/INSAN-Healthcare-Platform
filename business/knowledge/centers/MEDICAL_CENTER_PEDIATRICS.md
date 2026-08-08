@@ -192,6 +192,15 @@ The mother is almost always the primary decision-maker and the one who monitors 
 ### 3.1 Service Boundaries
 *   **Included:** 24/7 ER, Incubators (NICU), 11 specialized outpatient clinics, vaccinations, on-site labs and radiology.
 
+⚠️ **Capacity numbers are maintained in `HOSPITAL_DELTA_FACILITY.md` §1.3, not
+here.** This centre holds **12 incubators and 11 paediatric care beds**, on the
+sixth floor. If those change, they change there first — `hospital-capacity.js`
+fails if this file drifts from it.
+
+⚠️ Do not confuse **11 clinics** (§3.8) with **11 paediatric care beds**. They
+are different elevens and a post conflating them would be claiming a bed per
+specialty.
+
 ### 3.2 Medical Philosophy
 Evidence-based pediatrics. We strictly advise against the random use of antibiotics for viral fevers and dose medications precisely by weight, not just age. Admission to incubators is strictly based on medical necessity, not standard routine.
 
@@ -200,6 +209,9 @@ Immediate response in emergencies, comprehensive sub-specialty care, continuity 
 
 ### 3.4 Core Features
 *   **12 Equipped Incubators:** Ready for premature babies, jaundice, and critical neonatal care.
+*   **11 Paediatric Care Beds:** Across two units — 5 and 6 — separate from the
+    incubators *(brand owner 2026-08-08, confirmed room by room in Delta's
+    structural document)*.
 *   **24/7 Pediatric ER:** Always staffed by trained pediatricians.
 *   **11 Sub-specialty Clinics:** Covering every system in the child's body.
 *   **Economic Pricing:** High-quality care at a fair, accessible price point.
