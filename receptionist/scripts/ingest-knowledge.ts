@@ -43,6 +43,17 @@ import * as path from 'path';
 
 const prisma = new PrismaClient();
 const DRY_RUN = process.argv.includes('--dry-run');
+/**
+ * --check verifies the two things that must be true before a real run, and
+ * changes nothing: that a Gemini provider is configured and its key actually
+ * works, and that the migration adding the vector column has been applied.
+ *
+ * It exists because neither is observable from outside. A chat request that
+ * finds no knowledge looks identical whether the key is wrong, the column is
+ * missing, or the table is simply empty — SemanticSource swallows its own
+ * errors by design so a failing search cannot take down a conversation.
+ */
+const CHECK = process.argv.includes('--check');
 
 const REPO = path.resolve(__dirname, '..', '..');
 const KNOWLEDGE_DIR = path.join(REPO, 'business', 'knowledge');
@@ -292,7 +303,62 @@ async function embed(text: string, apiKey: string): Promise<number[]> {
   return v;
 }
 
+/** Verify the prerequisites without writing anything. */
+async function check(): Promise<void> {
+  console.log('\nChecking ingestion prerequisites\n');
+  let ok = true;
+
+  // 1 — the migration
+  const cols = await prisma.$queryRawUnsafe<Array<{ column_name: string }>>(
+    `SELECT column_name FROM information_schema.columns
+      WHERE table_name = 'AiKnowledgeBase'
+        AND column_name IN ('embedding','hospitals','sourceRef')`,
+  );
+  const present = new Set(cols.map((c) => c.column_name));
+  for (const c of ['embedding', 'hospitals', 'sourceRef']) {
+    if (present.has(c)) {
+      console.log(`  ✓ column "${c}" exists`);
+    } else {
+      console.log(`  ✗ column "${c}" MISSING — apply migration 20260808120000_knowledge_embeddings`);
+      ok = false;
+    }
+  }
+
+  // 2 — the provider row
+  const provider = await prisma.aiProvider.findFirst({
+    where: { name: { contains: 'gemini', mode: 'insensitive' }, isActive: true },
+  });
+  if (!provider) {
+    const all = await prisma.aiProvider.findMany({ select: { name: true, isActive: true } });
+    console.log('  ✗ no ACTIVE provider whose name contains "gemini"');
+    console.log(
+      `      providers present: ${all.map((p) => `${p.name}${p.isActive ? '' : ' (inactive)'}`).join(', ') || '(none)'}`,
+    );
+    console.log('      the lookup is literal — a provider named "Google AI" will not be found');
+    ok = false;
+  } else if (!provider.apiKey) {
+    console.log(`  ✗ provider "${provider.name}" has no API key stored`);
+    ok = false;
+  } else {
+    console.log(`  ✓ provider "${provider.name}" is active and has a key`);
+
+    // 3 — the key actually works, and returns the dimension the column expects
+    try {
+      const v = await embed('اختبار', provider.apiKey);
+      console.log(`  ✓ Gemini responded — ${v.length} dimensions`);
+    } catch (e) {
+      console.log(`  ✗ Gemini call FAILED — ${(e as Error).message}`);
+      ok = false;
+    }
+  }
+
+  console.log(ok ? '\n✓ ready to ingest\n' : '\n✗ not ready — fix the above first\n');
+  if (!ok) process.exitCode = 1;
+}
+
 async function main(): Promise<void> {
+  if (CHECK) return check();
+
   console.log(`\nIngesting business/knowledge → AiKnowledgeBase${DRY_RUN ? '  (DRY RUN)' : ''}\n`);
 
   const chunks = collect();
