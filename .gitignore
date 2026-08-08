@@ -6,6 +6,13 @@
 node_modules
 .cache
 
+# Local working directory. Work orders drafted here routinely carry live tokens
+# and secrets in plaintext before they are handed to an operator — e.g. the
+# Messenger verify token in WORK_ORDER_MESSENGER_GO_LIVE.md. This repository is
+# public, so an untracked scratch/ was one `git add -A` away from publishing
+# them.
+scratch/
+
 # Binaries
 *.xlsx
 *.gsheet
