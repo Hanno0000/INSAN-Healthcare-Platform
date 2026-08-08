@@ -75,25 +75,53 @@ curl -s https://insan-eg.com/robots.txt | tail -2
 
 ---
 
-# المهمة 2 — الإيميل الرسمي
+# المهمة 2 — بيانات التواصل (إيميل + رقمين + العنوان)
 
-الإيميل المعتمد بقى **`info@insan-eg.com`** (أكده صاحب المشروع 2026-08-08).
-القيمة الحالية في قاعدة البيانات (`info@insan-platform.com`) كانت **تخمين مني**
-وقت ما شلت إيميل الشركة الإدارية الغلط — مكنتش قيمة موثّقة.
+كل القيم دي من `business/brand/CONTACT_DIRECTORY.md` — مصدر الحقيقة المعتمد من
+صاحب المشروع.
+
+**أربع تصحيحات:**
+
+| المفتاح | القيمة الجديدة | ليه |
+|---|---|---|
+| `contact_email` | `info@insan-eg.com` | القيمة القديمة كانت **تخمين مني**، مش موثّقة |
+| `contact_phone` | `01500668657,01100755556` | إنسان عندها **رقمين**، والموقع كان بيعرض واحد بس |
+| `emergency_phone` | `01500668657` | القيمة القديمة `0403315000` رقم أرضي **صاحب المشروع لم يعتمده للنشر** |
+| `contact_address` | **فاضي** | "الغربية" كانت **استنتاج مني وطلع غلط**. مفيش عنوان موثّق، فنسيبه فاضي |
+
+> ℹ️ الكود اتعدّل عشان يقرا `contact_phone` كقائمة أرقام (بيفصل على الفاصلة)،
+> ويخفي بلوك العنوان تلقائيًا وهو فاضي. فمفيش فراغ هيبان في التصميم.
 
 ```javascript
-const r = await fetch('/api/v1/admin/settings/contact_email', {
-  method: 'PATCH', headers: H, body: JSON.stringify({ value: 'info@insan-eg.com' })
-});
-console.log('contact_email', r.status === 200 ? '✅' : '❌ ' + r.status + ' ' + await r.text());
+const SETTINGS = {
+  contact_email:   'info@insan-eg.com',
+  contact_phone:   '01500668657,01100755556',
+  emergency_phone: '01500668657',
+  contact_address: '',
+};
+
+for (const [key, value] of Object.entries(SETTINGS)) {
+  const r = await fetch(`/api/v1/admin/settings/${key}`, {
+    method: 'PATCH', headers: H, body: JSON.stringify({ value })
+  });
+  console.log(key.padEnd(16), r.status === 200 ? '✅' : '❌ ' + r.status + ' ' + await r.text());
+}
 ```
 
 **✅ التحقّق:**
 ```javascript
 const s = (await (await fetch('/api/v1/settings')).json()).data;
-console.log('email:', s.find(x=>x.key==='contact_email')?.value);
+['contact_email','contact_phone','emergency_phone','contact_address'].forEach(k => {
+  const v = s.find(x => x.key === k)?.value;
+  console.log(k.padEnd(16), JSON.stringify(v));
+});
 ```
-**المتوقّع:** `info@insan-eg.com`
+
+**المتوقّع:** الإيميل `info@insan-eg.com` · الهاتف فيه **الرقمين** · الطوارئ
+`01500668657` · العنوان `""` فاضي.
+
+> ⚠️ لو `contact_address` رجّع خطأ لأن القيمة الفاضية مرفوضة، جرّب `{"ar":"","en":""}`
+> بدلها وبلّغني بالنتيجة.
 
 ---
 
