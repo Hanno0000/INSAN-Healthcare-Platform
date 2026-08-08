@@ -35,6 +35,14 @@ export class SemanticSource implements RetrievalSource {
     const vector = await this.embed(query.text);
     if (!vector.length) return [];
 
+    // Scope is a data filter, never a prompt instruction (ARCHITECTURE.md §3).
+    // A row's `hospitals` array lists the hospital slugs it may be served to;
+    // an empty array is ecosystem-wide. Until scope resolves, only
+    // ecosystem-wide rows are eligible — the same rule the deterministic
+    // source already follows, and the reason a Future conversation cannot
+    // retrieve the Delta-only ENT centre no matter how well it matches.
+    const slug = await this.hospitalSlug(query.hospitalId);
+
     let rows: KbRow[];
     try {
       // NOTE: "isActive" is double-quoted deliberately.
@@ -48,10 +56,14 @@ export class SemanticSource implements RetrievalSource {
         `SELECT id, topic, question, answer,
                 1 - (embedding <=> $1::vector) AS similarity
            FROM "AiKnowledgeBase"
-          WHERE "isActive" = true AND embedding IS NOT NULL
+          WHERE "isActive" = true
+            AND embedding IS NOT NULL
+            AND (cardinality("hospitals") = 0
+                 OR ($2::text IS NOT NULL AND $2 = ANY("hospitals")))
           ORDER BY embedding <=> $1::vector
           LIMIT ${SemanticSource.LIMIT}`,
         `[${vector.join(',')}]`,
+        slug,
       );
     } catch (e) {
       // A failing knowledge search must not take down the turn — the
@@ -73,6 +85,24 @@ export class SemanticSource implements RetrievalSource {
         sourceRef: `AiKnowledgeBase ${r.id}`,
         similarity: r.similarity,
       }));
+  }
+
+  /**
+   * Rows record scope as hospital *slugs*, because that is what the knowledge
+   * files' front matter names and what survives a reseed with new cuids. The
+   * conversation carries a hospital id, so it is translated here rather than
+   * denormalised into the table.
+   *
+   * Null means scope has not resolved — the caller then sees ecosystem-wide
+   * rows only, never a specific hospital's.
+   */
+  private async hospitalSlug(hospitalId: string | null): Promise<string | null> {
+    if (!hospitalId) return null;
+    const h = await this.prisma.hospital.findUnique({
+      where: { id: hospitalId },
+      select: { slug: true },
+    });
+    return h?.slug ?? null;
   }
 
   /**

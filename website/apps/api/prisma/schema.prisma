@@ -643,10 +643,20 @@ model AiKnowledgeBase {
   category  String?
   isActive  Boolean  @default(true)
   embedding Unsupported("vector")?
+  /// Hospital slugs this row may be served to. Empty = ecosystem-wide.
+  /// Scope is enforced as a query filter, never as a prompt instruction
+  /// (ARCHITECTURE.md §3), so a Delta-only centre must be unreachable from a
+  /// Future conversation rather than merely unmentioned.
+  hospitals String[] @default([])
+  /// Set by the knowledge ingester to the file+section it came from, so a
+  /// re-ingest replaces exactly its own rows. NULL means hand-authored in
+  /// /admin, and the ingester never touches those.
+  sourceRef String?  @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([isActive])
+  @@index([hospitals], type: Gin)
 }
 
 model AiProvider {
