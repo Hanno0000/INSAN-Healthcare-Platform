@@ -56,8 +56,16 @@ if [ ! -f .env.production ]; then
   exit 1
 fi
 
-echo 'Rebuilding and restarting Docker containers...'
-docker compose --env-file .env.production -f "$ComposeFile" down
+# No `down` first. `down` stopped every container — including nginx — and the
+# site then stayed unreachable for the whole rebuild, which is minutes, not
+# seconds. That was tolerable while this was an IP nobody had yet; it is not
+# now that insan-eg.com is live and taking real traffic.
+#
+# `up -d --build` builds the new images first and only then recreates the
+# containers whose image actually changed, so downtime is the restart itself.
+# nginx is untouched unless its own config changed, so requests keep being
+# served right up to the swap.
+echo 'Building new images and swapping containers...'
 docker compose --env-file .env.production -f "$ComposeFile" up -d --build
 
 echo 'Container status:'
