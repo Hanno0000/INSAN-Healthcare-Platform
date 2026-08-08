@@ -96,26 +96,39 @@ module.exports = {
     // doctor's name misidentifies a specific human being to someone who is about
     // to walk in and ask for them.
     //
-    // Future's schedule came from a typed spreadsheet. Delta's came from a
-    // photograph of a handwritten page, and several names are transcribed at
-    // moderate confidence. The file therefore permits Future's names and forbids
-    // Delta's, and those two rules are the whole reason this check exists — they
-    // are exactly the kind of nuance a later edit flattens into "here is the
-    // schedule".
+    // Both hospitals are now confirmed from typed sources. Delta's names were
+    // withheld for part of 2026-08-08, and the transcription that was withheld
+    // turned out to be WRONG IN EIGHT OF TWELVE ENTRIES — including a specialty
+    // read as vascular surgery that is actually neurology, and a man's name that
+    // is actually a woman's.
+    //
+    // That comparison is kept in the file and pinned here. It is the only
+    // concrete evidence in this repository for a rule that is otherwise an
+    // abstraction, and the first edit that tidies the file will delete it.
     const SCHED = 'business/knowledge/hospitals/CLINIC_SCHEDULES.md';
     t.ok(fx.exists(SCHED), 'the clinic schedule file exists');
 
     if (fx.exists(SCHED)) {
       const s = fx.repoFile(SCHED);
 
-      t.ok(/UNVERIFIED TRANSCRIPTION FROM\s*\r?\n?>?\s*HANDWRITING/i.test(s)
-        || /unverified transcription/i.test(s),
-        'Delta\'s names are marked as an unverified transcription, not stated as ' +
-        'fact — they were read off a photograph of handwriting');
+      t.ok(/CONFIRMED by the brand owner/i.test(s),
+        'Delta\'s schedule is confirmed from a typed table, so its names may ' +
+        'now be given');
 
-      t.ok(/must not give a name from this table|may not give a Delta doctor|do not give the doctor's name/i.test(s),
-        'and the receptionist is forbidden from giving a Delta doctor\'s name ' +
-        'until a typed schedule arrives');
+      t.ok(/eight of twelve/i.test(s),
+        'and the file keeps what the handwriting transcription got wrong — the ' +
+        'evidence for withholding an unverified name, which is otherwise a ' +
+        'principle nobody can weigh');
+
+      t.ok(/مخ\s*\r?\n?وأعصاب/.test(s) && /جراحة/.test(s),
+        'including the specialty that was read as vascular surgery and is ' +
+        'actually neurology — a wrong department, not a misspelling');
+
+      // Delta's TIMES are still unconfirmed: the typed table has none, and the
+      // window comes from the handwritten header.
+      t.ok(/NEEDS-OPERATOR[\s\S]*?NO TIMES/i.test(s),
+        'and records that Delta\'s typed table carries no times, so the window ' +
+        'still rests on the handwriting');
 
       t.ok(/[Nn]ever invent a clinic time/.test(s),
         'and forbidden from inventing a time — a patient who travels on a guess ' +

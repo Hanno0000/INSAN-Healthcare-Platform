@@ -79,36 +79,64 @@ time yet — see §3.
 
 # 2. Delta International Hospital
 
-**Source:** a photograph of a handwritten page, supplied by the brand owner
-2026-08-08. **The header reads ١١ ص – ٢½ ظهر.**
+**Source:** the brand owner's typed table, 2026-08-08 — which replaced a
+photograph of a handwritten page supplied earlier the same day. **The ١١ ص – ٢½
+ظهر window comes from the handwritten header and is not in the typed table.**
 
-> ⚠️ **THE DOCTORS' NAMES BELOW ARE AN UNVERIFIED TRANSCRIPTION FROM
-> HANDWRITING, AND THE RECEPTIONIST MUST NOT GIVE A NAME FROM THIS TABLE.**
+> ✅ **CONFIRMED by the brand owner, 2026-08-08.** The table below is the typed
+> schedule, not the transcription. **Names may now be given.**
 >
-> The days, the two-clinic structure and the 11:00 ص – 2:30 م window are legible
-> and safe to use. The names are not: several are read at moderate confidence,
-> and a doctor's name given wrongly to a patient is a specific person
-> misidentified to someone about to walk into a hospital and ask for them.
->
-> **What the receptionist may say from this table:** the day, the time window,
-> and the specialty. **What it may not say:** who.
+> ⚠️ **The handwriting transcription was wrong in eight of twelve entries** — it
+> is recorded at the foot of this section, because it is the clearest evidence in
+> this repository for why an unverified name is withheld rather than published.
 
-**Reading of the page, for the brand owner to correct:**
-
-| اليوم | عيادة (١) | عيادة (٢) |
+| اليوم | عيادة الباطنة / التخصص الأول | التخصص الآخر |
 |---|---|---|
-| **السبت** | جهاد مسري — باطنة | وهاب وجيه — صدر |
-| **الأحد** | محمد عمار — باطنة | مؤمن درويش — عظام |
-| **الاثنين** | لمياء جميعة — باطنة | عمر عرفة — جراحة/أوعية *(specialty unclear)* |
-| **الثلاثاء** | مريم نشأت — باطنة | أحمد ربيع — مسالك |
-| **الأربعاء** | لبنى الشريف — باطنة | أحمد البنداري — قلب |
-| **الخميس** | إسلام حنيش — باطنة | لبنى عبد… — قلب |
+| **السبت** | د. جهاد صبري — **باطنة وغدد** | د. رحاب وحيد — **صدر** |
+| **الأحد** | د. محمد عمارة — **باطنة** *(ابتداءً من ٢٦/٧)* | د. مؤمن درويش — **عظام** |
+| **الاثنين** | د. لمياء نجيمة — **باطنة وحميات** | د. عمر عرفة — **مخ وأعصاب** |
+| **الثلاثاء** | د. مريم نشأت — **باطنة** | د. أحمد ربيع — **مسالك** |
+| **الأربعاء** | د. لبنى الشريف — **باطنة وغدد** | د. أحمد البنداري — **قلب** |
+| **الخميس** | د. إسلام حشيش — **باطنة وكلى** | د. لبنى حمد — **قلب** |
 
-Two further marks on the page could not be read with any confidence: a note
-beside الأحد that may be a start date, and a starred line at the foot beginning
-**"الخميس ١٥/١٢"** with a title that looks like **أ.م.د**.
+**الجمعة — مفيش عيادات في الجدول.**
 
-<!-- NEEDS-OPERATOR: Delta's clinic schedule needs to be supplied TYPED, the way Future's was, before any name from it reaches a patient. Every doctor name in §2 is a transcription from handwriting and several are uncertain. Specifically unclear: (1) عيادة 2 on الاثنين — the specialty, read as "جراحة" or "أوعية"; (2) the surname on الخميس عيادة 2, read as "لبنى عبد…"; (3) the note beside الأحد that may be a start date; (4) the starred line at the foot beginning "الخميس ١٥/١٢". Also: does the 11ص–2:30م window apply to every row, or only to some? -->
+**Specialties covered at Delta:** باطنة · باطنة وغدد · باطنة وحميات · باطنة وكلى ·
+صدر · عظام · مخ وأعصاب · مسالك · قلب. **That is nine**, against Future's five —
+and note that **five of the six first-clinic slots are internal medicine with a
+subspecialty**, which is the shape of the department rather than a coincidence.
+
+د. محمد عمارة's clinic **started ٢٦/٧**, which has already passed. It is running.
+
+<details>
+<summary><strong>⚠️ What the handwriting transcription got wrong — kept as evidence</strong></summary>
+
+Eight of twelve entries were wrong. Recorded because the argument for withholding
+an unverified name is otherwise abstract, and this makes it concrete.
+
+| | Read from handwriting | Actually |
+|---|---|---|
+| السبت ١ | جهاد **مسري** — باطنة | جهاد **صبري** — باطنة **وغدد** |
+| السبت ٢ | **وهاب وجيه** — صدر | **رحاب وحيد** — صدر |
+| الأحد ١ | محمد **عمار**، من **١٥/١٢** | محمد **عمارة**، من **٢٦/٧** |
+| الاثنين ١ | لمياء **جميعة** — باطنة | لمياء **نجيمة** — باطنة **وحميات** |
+| الاثنين ٢ | عمر عرفة — **جراحة/أوعية** | عمر عرفة — **مخ وأعصاب** |
+| الأربعاء ١ | لبنى الشريف — باطنة | لبنى الشريف — باطنة **وغدد** |
+| الخميس ١ | إسلام **حنيش** — باطنة | إسلام **حشيش** — باطنة **وكلى** |
+| الخميس ٢ | لبنى **عبد…** — قلب | لبنى **حمد** — قلب |
+
+**The dangerous one is الاثنين ٢.** Read as *جراحة/أوعية*, actually **مخ
+وأعصاب**. A patient with a neurological complaint would have been directed to a
+vascular surgeon — not a misspelling, a wrong department.
+
+**And السبت ٢ inverted the person entirely**: *وهاب وجيه*, a man's name, is
+**رحاب وحيد**, a woman's. A patient arriving asking for "دكتور وهاب" would have
+been asking for somebody who does not work there.
+
+Only four entries were right outright.
+</details>
+
+<!-- NEEDS-OPERATOR: the confirmed Delta table gives days, doctors and specialties but NO TIMES. The 11ص–2:30م window comes from the header of the handwritten page. Does it apply to every clinic in the table, or only to some? The receptionist is currently giving that window for all of them, and it is the one part of Delta's schedule still resting on the handwriting. Also: the handwritten page had a starred line at its foot reading roughly "الخميس ١٥/١٢" with a title like "أ.م.د" — it is absent from the typed table, so is it cancelled, or a separate clinic that was left out? -->
 
 ⚠️ **Note the window is much shorter than Future's.** Delta's page says
 **١١ص – ٢½ظ**, while `HOSPITAL_DELTA.md` records the outpatient department as
@@ -132,8 +160,14 @@ they are asking about.
 For **Future**, the doctor's name may also be given — it comes from a typed
 schedule.
 
-For **Delta**, **do not give the doctor's name.** Give the day, the window and
-the specialty only. See the warning in §2.
+For **Delta**, names may now be given too — the schedule was confirmed typed on
+2026-08-08.
+
+⚠️ **But the TIME for Delta is the one thing still unconfirmed.** The typed table
+gives days and doctors, not hours; the ١١ص–٢½ظ window comes from the handwritten
+header. Give it as the usual window, not as a guarantee:
+
+> «العيادة عادة من ١١ الصبح لحد ٢ ونص، بس خليني أأكدلك الميعاد قبل ما تيجي.»
 
 ### 3.2 When a patient asks about a clinic that is NOT in this file
 
