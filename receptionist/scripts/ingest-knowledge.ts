@@ -402,6 +402,24 @@ async function check(): Promise<void> {
   console.log('\nChecking ingestion prerequisites\n');
   let ok = true;
 
+  // 0 — the source content is reachable.
+  // Checked first because it is the one prerequisite that fails silently: with
+  // the directory missing, a real run collected nothing and exited 0.
+  if (fs.existsSync(KNOWLEDGE_DIR)) {
+    const found = collect().length;
+    if (found > 0) {
+      console.log(`  ✓ knowledge readable at ${KNOWLEDGE_DIR} — ${found} section(s)`);
+    } else {
+      console.log(`  ✗ ${KNOWLEDGE_DIR} exists but yielded 0 sections`);
+      ok = false;
+    }
+  } else {
+    console.log(`  ✗ knowledge NOT readable — ${KNOWLEDGE_DIR} does not exist`);
+    console.log('      in the container this needs the ../business:/business:ro mount,');
+    console.log('      which only attaches when the container is recreated');
+    ok = false;
+  }
+
   // 1 — the migration
   const cols: Array<{ column_name: string }> = await prisma.$queryRawUnsafe(
     `SELECT column_name FROM information_schema.columns
@@ -461,7 +479,17 @@ async function main(): Promise<void> {
   console.log(`\n${chunks.length} patient-facing section(s) collected.\n`);
 
   if (!chunks.length) {
-    console.log('Nothing to ingest.');
+    // Never a legitimate outcome: the repo always contains knowledge files, so
+    // zero means they were not found, not that there were none. This exited 0
+    // before, which reported success for a run that ingested nothing — the
+    // exact shape of the container bug where /business was not mounted and
+    // KNOWLEDGE_DIR pointed at a path that does not exist.
+    console.error(
+      `✗ Zero sections collected from ${KNOWLEDGE_DIR}\n` +
+        '  That directory is missing or empty. Inside the container it comes from the\n' +
+        '  ../business:/business:ro mount, which only attaches on container recreation.',
+    );
+    process.exitCode = 1;
     return;
   }
 
