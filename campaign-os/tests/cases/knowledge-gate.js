@@ -297,7 +297,13 @@ module.exports = {
       'MEDICAL_CENTER_PEDIATRICS.md',
       'MEDICAL_CENTER_PROCTOLOGY.md',
       'MEDICAL_CENTER_UROLOGY.md',
-      'MEDICAL_CENTER_WOMENS_HEALTH.md'
+      'MEDICAL_CENTER_WOMENS_HEALTH.md',
+
+      // PROG-003, created 2026-08-08. The registry had listed a Check-up
+      // Programs campaign from the beginning with no file behind it. All
+      // seventeen required sections pass; it is blocked on prices, which do not
+      // exist for any of the four programmes.
+      'PROGRAM_CHECKUP.md'
     ];
 
     // ⚠️ STRUCTURALLY broken is worse than blocked: a gap is a fact nobody has
