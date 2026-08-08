@@ -42,7 +42,7 @@ export default function TestimonialsClient() {
     { key: 'rating', header: 'التقييم', render: (r: any) => (
       <div className="flex items-center gap-0.5">{Array.from({ length: r.rating ?? 5 }).map((_, i) => <Star key={i} size={12} className="text-yellow-400 fill-yellow-400" />)}</div>
     )},
-    { key: 'hospital', header: 'المستشفى', render: (r: any) => r.hospital?.name?.ar || '—' },
+    { key: 'audience', header: 'الفئة', render: (r: any) => ({ PATIENT: 'مريض', DOCTOR: 'طبيب', INVESTOR: 'مستثمر' }[r.audience as string] ?? r.audience ?? '—') },
     { key: 'status', header: 'الحالة', render: (r: any) => <StatusBadge status={r.status} /> },
     { key: 'actions', header: '', width: '120px', render: (r: any) => (
       <div className="flex items-center gap-1">

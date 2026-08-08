@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShieldCheck, Clock, Star, PlayCircle, Phone, CalendarCheck } from 'lucide-react';
+import { ShieldCheck, Clock, Heart, HandHeart } from 'lucide-react';
 import CountUp from 'react-countup';
 
 export default function HeroSection() {
@@ -21,10 +21,6 @@ export default function HeroSection() {
               <div className="badge-item flex items-center gap-2 bg-white px-4 py-2 rounded-pill shadow-sm text-sm font-semibold text-heading font-cairo">
                 <Clock className="w-4 h-4 text-accent-500" />
                 <span>طوارئ 24/7</span>
-              </div>
-              <div className="badge-item flex items-center gap-2 bg-white px-4 py-2 rounded-pill shadow-sm text-sm font-semibold text-heading font-cairo">
-                <Star className="w-4 h-4 text-accent-500" />
-                <span>تقييم 4.9/5</span>
               </div>
             </div>
 
@@ -46,7 +42,7 @@ export default function HeroSection() {
               </div>
               <div className="stat-item">
                 <h3 className="text-3xl font-bold text-heading">
-                  <CountUp start={0} end={5000} duration={2} />+
+                  <CountUp start={0} end={12930} duration={2} />+
                 </h3>
                 <p className="text-default font-cairo text-sm mt-1">مريض تمت معالجته</p>
               </div>
@@ -73,28 +69,25 @@ export default function HeroSection() {
             <div className="main-image relative rounded-card overflow-hidden shadow-floating">
               <img src="https://images.unsplash.com/photo-1551076805-e1869033e561?q=80&w=1000&auto=format&fit=crop" alt="منشأة رعاية صحية حديثة" className="w-full h-auto object-cover aspect-[4/3]" />
               
-              <div className="floating-card appointment-card absolute top-10 -right-6 md:-right-12 bg-white p-4 rounded-card shadow-floating flex items-center gap-4 animate-[bounce_3s_infinite]">
+              <div className="floating-card appointment-card absolute top-10 -right-6 md:-right-12 bg-white p-4 rounded-card shadow-floating flex items-center gap-4 animate-[bounce_3s_infinite] max-w-[220px]">
                 <div className="card-icon w-12 h-12 rounded-full bg-accent-500/10 text-accent-500 flex items-center justify-center shrink-0">
-                  <CalendarCheck className="w-6 h-6" />
+                  <HandHeart className="w-6 h-6" />
                 </div>
                 <div className="card-content font-cairo">
-                  <h6 className="font-bold text-heading text-sm m-0">الموعد المتاح القادم</h6>
-                  <p className="text-default text-xs mb-1">اليوم 2:30 مساءً</p>
-                  <small className="text-accent-500 font-semibold text-[10px]">د. سارة جونسون</small>
+                  <h6 className="font-bold text-heading text-sm m-0">الرعاية الضرورية فقط</h6>
+                  <p className="text-default text-xs">لا نقترح أبداً إجراءً لا تحتاجه</p>
                 </div>
               </div>
 
-              <div className="floating-card rating-card absolute bottom-10 -left-6 md:-left-12 bg-white p-4 rounded-card shadow-floating animate-[bounce_4s_infinite]">
-                <div className="card-content font-cairo text-center">
-                  <div className="rating-stars flex text-yellow-400 gap-1 mb-1 justify-center">
-                    <Star className="w-4 h-4 fill-current" />
-                    <Star className="w-4 h-4 fill-current" />
-                    <Star className="w-4 h-4 fill-current" />
-                    <Star className="w-4 h-4 fill-current" />
-                    <Star className="w-4 h-4 fill-current" />
+              <div className="floating-card rating-card absolute bottom-10 -left-6 md:-left-12 bg-white p-4 rounded-card shadow-floating animate-[bounce_4s_infinite] max-w-[220px]">
+                <div className="card-content font-cairo flex items-center gap-3">
+                  <div className="card-icon w-12 h-12 rounded-full bg-accent-500/10 text-accent-500 flex items-center justify-center shrink-0">
+                    <Heart className="w-6 h-6" />
                   </div>
-                  <h6 className="font-bold text-heading text-lg m-0">4.9/5</h6>
-                  <small className="text-default text-xs">1,234 تقييم</small>
+                  <div>
+                    <h6 className="font-bold text-heading text-sm m-0">أساس الخدمة الطبية</h6>
+                    <small className="text-default text-xs">احترام الإنسان</small>
+                  </div>
                 </div>
               </div>
             </div>

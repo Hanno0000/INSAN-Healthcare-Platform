@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { api } from '@/lib/api-client';
 import { useToast } from '@/components/admin/ui/Toast';
 import Modal from '@/components/admin/ui/Modal';
@@ -12,23 +12,28 @@ import ImageUpload from '@/components/admin/ui/ImageUpload';
 
 interface Props { open: boolean; onClose: () => void; editing: any; onSaved: () => void; }
 
+const AUDIENCE_OPTIONS = [
+  { value: 'PATIENT', label: 'مريض' },
+  { value: 'DOCTOR', label: 'طبيب' },
+  { value: 'INVESTOR', label: 'مستثمر' },
+];
+
+const DEFAULT_VALUES = { name: { ar: '', en: '' }, audience: 'PATIENT', quote: { ar: '', en: '' }, rating: 5, photo: '' };
+
 export default function TestimonialModal({ open, onClose, editing, onSaved }: Props) {
   const { toast } = useToast();
   const { register, handleSubmit, reset, setValue, watch } = useForm<any>({
-    defaultValues: { name: { ar: '', en: '' }, content: { ar: '', en: '' }, role: { ar: '', en: '' }, rating: 5, hospitalId: '' },
+    defaultValues: DEFAULT_VALUES,
   });
-
-  const { data: hospitals } = useQuery({ queryKey: ['hospitals-all'], queryFn: () => api.hospitals.list({ pageSize: 100 }) });
 
   useEffect(() => {
     reset(editing ? {
       name: editing.name ?? { ar: '', en: '' },
-      content: editing.content ?? { ar: '', en: '' },
-      role: editing.role ?? { ar: '', en: '' },
+      audience: editing.audience ?? 'PATIENT',
+      quote: editing.quote ?? { ar: '', en: '' },
       photo: editing.photo ?? '',
       rating: editing.rating ?? 5,
-      hospitalId: editing.hospitalId ?? '',
-    } : { name: { ar: '', en: '' }, content: { ar: '', en: '' }, role: { ar: '', en: '' }, photo: '', rating: 5, hospitalId: '' });
+    } : DEFAULT_VALUES);
   }, [editing, reset]);
 
   const mut = useMutation({
@@ -45,22 +50,18 @@ export default function TestimonialModal({ open, onClose, editing, onSaved }: Pr
         <FormField label="الاسم" required>
           <BilingualInput arValue={f('name').ar} enValue={f('name').en} onArChange={(v) => setValue('name.ar', v)} onEnChange={(v) => setValue('name.en', v)} placeholder={{ ar: 'اسم الشخص', en: 'Person name' }} />
         </FormField>
-        <FormField label="الدور / الصفة">
-          <BilingualInput arValue={f('role').ar} enValue={f('role').en} onArChange={(v) => setValue('role.ar', v)} onEnChange={(v) => setValue('role.en', v)} placeholder={{ ar: 'مريض / ذوي مريض', en: 'Patient / Family' }} />
-        </FormField>
         <FormField label="النص" required>
-          <BilingualInput arValue={f('content').ar} enValue={f('content').en} onArChange={(v) => setValue('content.ar', v)} onEnChange={(v) => setValue('content.en', v)} multiline rows={3} placeholder={{ ar: 'نص الشهادة...', en: 'Testimonial text...' }} />
+          <BilingualInput arValue={f('quote').ar} enValue={f('quote').en} onArChange={(v) => setValue('quote.ar', v)} onEnChange={(v) => setValue('quote.en', v)} multiline rows={3} placeholder={{ ar: 'نص الشهادة...', en: 'Testimonial text...' }} />
         </FormField>
         <div className="grid grid-cols-2 gap-4">
+          <FormField label="الفئة" required>
+            <select {...register('audience')} className={selectCls}>
+              {AUDIENCE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
+          </FormField>
           <FormField label="التقييم">
             <select {...register('rating', { valueAsNumber: true })} className={selectCls}>
               {[5,4,3,2,1].map(n => <option key={n} value={n}>{n} نجوم</option>)}
-            </select>
-          </FormField>
-          <FormField label="المستشفى">
-            <select {...register('hospitalId')} className={selectCls}>
-              <option value="">— اختياري —</option>
-              {hospitals?.data.map((h: any) => <option key={h.id} value={h.id}>{h.name?.ar}</option>)}
             </select>
           </FormField>
         </div>

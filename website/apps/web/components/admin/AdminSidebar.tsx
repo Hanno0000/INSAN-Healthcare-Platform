@@ -19,6 +19,7 @@ const navItems = [
   { label: 'المحادثات', href: '/admin/conversations', icon: '💬', module: 'appointments', action: 'view' },
   { label: 'رسائل التواصل', href: '/admin/contact-submissions', icon: '✉️', module: 'contact', action: 'view' },
   { label: 'آراء العملاء', href: '/admin/testimonials', icon: '⭐', module: 'testimonials', action: 'view' },
+  { label: 'الأسئلة الشائعة', href: '/admin/faqs', icon: '❓', module: 'pages', action: 'view' },
   { label: 'التنقل', href: '/admin/navigation', icon: '🔗', module: 'navigation', action: 'view' },
   { label: 'المستخدمون', href: '/admin/users', icon: '👥', module: 'users', action: 'view' },
   { label: 'الذكاء الاصطناعي', href: '/admin/ai-assistant', icon: '🤖', module: 'ai-chat', action: 'view' },

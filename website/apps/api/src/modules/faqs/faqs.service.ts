@@ -9,7 +9,14 @@ export class FaqsService {
   async findAll(query: any) {
     const { page, pageSize, skip, take } = parsePagination(query);
 
-    const where: any = { isActive: true };
+    // Public callers pass isActive:true as a real boolean (see listPublic).
+    // Admin callers pass raw query params — a filter is optional, and when
+    // absent the admin list must show both active and inactive items, or a
+    // toggled-off FAQ becomes permanently unreachable from its own list.
+    const where: any = {};
+    if (query.isActive !== undefined) {
+      where.isActive = query.isActive === true || query.isActive === 'true';
+    }
     if (query.search) {
       where.OR = [
         { question: { path: ['ar'], string_contains: query.search } },
