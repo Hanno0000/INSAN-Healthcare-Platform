@@ -358,16 +358,58 @@ production.
 
 ### 6.1a The files to paste
 
-**Six files. Five `.gs` and one `.html`.**
+**Six files. Five `.gs` and one `.html`.** Line counts are checked by
+`deployment-files.js`, so a stale number here fails rather than misleads.
 
 | File | Lines | What is in it |
 |---|---|---|
-| `Core.gs` | 3,490 | CONFIG · ConfigResolver · Logger · SheetSchema · SheetWriter · DriveLoader · ResponseParser |
-| `AI.gs` | 4,699 | AIProvider · ImageProvider · ContextBuilder · AdPolicy · MediaDesigner · TextOverlay · Branding · AssetIntegrity · AssetLibrary · VisualPlan · ServiceRunner |
-| `Planning.gs` | 3,937 | CardBuilder · PlannerRunner · PortfolioCritic · EventsCalendar · EntityRegistry · Batches · Transfer · Archive · PostFooter |
-| `Delivery.gs` | 1,040 | PublishingRunner · AdsRunner |
-| `App.gs` | 3,859 | WorkerRunner (`onOpen` and every menu function) · ControlCenter |
-| `ControlCenter.html` | 1,346 | **Not a `.gs` and cannot be merged into one.** `HtmlService.createHtmlOutputFromFile('ControlCenter')` resolves it by name when the sidebar is opened |
+| `Core.gs` | 3,770 | CONFIG · ConfigResolver · Logger · SheetSchema · SheetWriter · DriveLoader · ResponseParser |
+| `AI.gs` | 4,702 | AIProvider · ImageProvider · ContextBuilder · AdPolicy · MediaDesigner · TextOverlay · Branding · AssetIntegrity · AssetLibrary · VisualPlan · ServiceRunner |
+| `App.gs` | 4,537 | WorkerRunner (`onOpen` and every menu function) · ControlCenter |
+| `Planning.gs` | 4,129 | CardBuilder · PlannerRunner · PortfolioCritic · EventsCalendar · EntityRegistry · Batches · Transfer · Archive · PostFooter |
+| `Delivery.gs` | 2,234 | PublishingRunner · AdsRunner · Enablement |
+| `ControlCenter.html` | 2,310 | **Not a `.gs` and cannot be merged into one.** `HtmlService.createHtmlOutputFromFile('ControlCenter')` resolves it by name when the sidebar is opened |
+
+The counts are how a truncated paste is caught. These files are long enough that a
+paste can silently lose its tail; in the editor, `Ctrl+End` in each file gives the
+last line, and it should match this table.
+
+### ⚠️ No seventh file. No code outside a function.
+
+**An extra file in the editor can remove the entire AI Workers menu**, and this
+has already happened once — on 2026-08-08 a leftover `Telegram.gs` containing
+bare top-level statements:
+
+```javascript
+const token = PropertiesService.getScriptProperties().getProperty("TELEGRAM_BOT_TOKEN");
+UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/sendMessage', { … });
+```
+
+Why that removes the menu, which is worth understanding because the symptom
+points nowhere near the cause:
+
+1. Apps Script evaluates **every file in the project, top to bottom**, before any
+   function is called. Statements outside a function run during that evaluation.
+2. `onOpen` is a **simple trigger**. It fires when the spreadsheet opens, in a
+   restricted context with **no authorization**.
+3. `UrlFetchApp` and `PropertiesService` **require** authorization. Called in that
+   context, they throw.
+4. The throw happens during evaluation — **before `onOpen` is reached**. The
+   project fails to load and no menu is drawn.
+
+The confusing part is that **running `onOpen` manually from the editor works
+perfectly**, because the editor runs authorized. So the operator sees a function
+that succeeds on demand and a menu that never appears. That split — works when
+run, missing on open — is the signature of top-level code that needs
+authorization.
+
+**The rule: every line in a `.gs` file belongs inside a function**, except the
+`var X = { … }` object literals the codebase is built from, which allocate an
+object and call nothing. If a test snippet is needed, wrap it:
+`function testTelegram() { … }` — then it runs only when invoked.
+
+Telegram sending already exists in `Delivery.gs`. There is no reason for a
+seventh file.
 
 It was 31 `.gs` files until 2026-08-02. They were merged because the operator pastes
 every file by hand and does it again after every change; 31 was an unreasonable
