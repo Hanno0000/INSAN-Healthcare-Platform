@@ -1,6 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { RetrievalQuery, RetrievalSource, RetrievedRecord, SourceKind } from '../types';
+import {
+  EMBEDDING_DIMENSIONS,
+  EMBEDDING_MODEL,
+  EMBEDDING_URL,
+  TASK_TYPE_QUERY,
+} from './embedding.config';
 
 interface KbRow {
   id: string;
@@ -117,20 +123,36 @@ export class SemanticSource implements RetrievalSource {
     if (!provider) return [];
 
     try {
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=${provider.apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ model: 'models/text-embedding-004', content: { parts: [{ text }] } }),
-        },
-      );
+      const res = await fetch(EMBEDDING_URL(provider.apiKey!), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: `models/${EMBEDDING_MODEL}`,
+          content: { parts: [{ text }] },
+          // Explicit: the model defaults to 3072 and the column is vector(768).
+          outputDimensionality: EMBEDDING_DIMENSIONS,
+          // A question, not a passage — the ingester uses RETRIEVAL_DOCUMENT.
+          taskType: TASK_TYPE_QUERY,
+        }),
+      });
       if (!res.ok) {
-        this.logger.warn(`Embedding request failed: ${res.status}`);
+        // Body included deliberately. A bare status hid a withdrawn model for
+        // weeks: 404 "text-embedding-004 is not found" reads identically to an
+        // empty knowledge base from the outside.
+        this.logger.warn(`Embedding request failed: ${res.status} ${(await res.text()).slice(0, 200)}`);
         return [];
       }
       const data = (await res.json()) as { embedding?: { values?: number[] } };
-      return data.embedding?.values ?? [];
+      const values = data.embedding?.values ?? [];
+      if (values.length && values.length !== EMBEDDING_DIMENSIONS) {
+        // Never store or compare a mismatched vector — pgvector would reject
+        // it at write time and, worse, compare it meaninglessly at read time.
+        this.logger.error(
+          `Embedding dimension mismatch: got ${values.length}, column expects ${EMBEDDING_DIMENSIONS}.`,
+        );
+        return [];
+      }
+      return values;
     } catch (e) {
       this.logger.warn(`Embedding request threw: ${(e as Error).message}`);
       return [];

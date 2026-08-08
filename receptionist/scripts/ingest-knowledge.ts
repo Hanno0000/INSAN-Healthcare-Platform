@@ -81,6 +81,47 @@ function loadPrismaClient(): { PrismaClient: new () => any } {
 
 const { PrismaClient } = loadPrismaClient();
 
+/**
+ * The embedding contract, loaded from the one file SemanticSource also reads,
+ * so the two can never drift onto different models or dimensionalities. That
+ * kind of drift does not raise — it silently returns wrong neighbours.
+ *
+ * Same two-environment problem as Prisma above: in the repo it is TypeScript
+ * source, and in the production image only the compiled `dist` is present.
+ */
+function loadEmbeddingConfig(): {
+  EMBEDDING_MODEL: string;
+  EMBEDDING_DIMENSIONS: number;
+  TASK_TYPE_DOCUMENT: string;
+  EMBEDDING_URL: (apiKey: string) => string;
+} {
+  const candidates = [
+    // Production container: only the build output ships.
+    '/app/dist/modules/receptionist/core/retrieval/embedding.config.js',
+    // Local checkout: ts-node compiles the source on the fly.
+    path.resolve(
+      __dirname,
+      '..',
+      '..',
+      'website/apps/api/src/modules/receptionist/core/retrieval/embedding.config',
+    ),
+  ];
+
+  for (const candidate of candidates) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      return require(candidate);
+    } catch {
+      /* try the next one */
+    }
+  }
+
+  throw new Error('Cannot locate embedding.config. Tried:\n  ' + candidates.join('\n  '));
+}
+
+const { EMBEDDING_MODEL, EMBEDDING_DIMENSIONS, TASK_TYPE_DOCUMENT, EMBEDDING_URL } =
+  loadEmbeddingConfig();
+
 const prisma = new PrismaClient();
 const DRY_RUN = process.argv.includes('--dry-run');
 /**
@@ -326,20 +367,33 @@ function collect(): Chunk[] {
   return chunks;
 }
 
-/** Same model and endpoint SemanticSource queries with — the dimensions must match. */
+/**
+ * Model, dimensions and task types come from the same file SemanticSource
+ * reads, because vectors produced by two different models — or the same model
+ * at two dimensionalities — are not comparable, and the mismatch does not
+ * raise: it just returns wrong neighbours.
+ */
 async function embed(text: string, apiKey: string): Promise<number[]> {
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=${apiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'models/text-embedding-004', content: { parts: [{ text }] } }),
-    },
-  );
-  if (!res.ok) throw new Error(`embed failed ${res.status}: ${(await res.text()).slice(0, 200)}`);
+  const res = await fetch(EMBEDDING_URL(apiKey), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: `models/${EMBEDDING_MODEL}`,
+      content: { parts: [{ text }] },
+      outputDimensionality: EMBEDDING_DIMENSIONS,
+      // A passage being stored, not a question being asked.
+      taskType: TASK_TYPE_DOCUMENT,
+    }),
+  });
+  if (!res.ok) throw new Error(`embed failed ${res.status}: ${(await res.text()).slice(0, 300)}`);
   const data = (await res.json()) as { embedding?: { values?: number[] } };
   const v = data.embedding?.values ?? [];
-  if (v.length !== 768) throw new Error(`expected 768 dimensions, got ${v.length}`);
+  if (v.length !== EMBEDDING_DIMENSIONS) {
+    throw new Error(
+      `expected ${EMBEDDING_DIMENSIONS} dimensions, got ${v.length} — ` +
+        'the column is vector(768); either request outputDimensionality or ALTER the column',
+    );
+  }
   return v;
 }
 
