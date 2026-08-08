@@ -928,7 +928,7 @@ async function seedBrands() {
       code: 'INSAN',
       displayName: { ar: 'مجموعة إنسان', en: 'INSAN Group' },
       socialAccounts: [
-        { provider: 'facebook_page_insan', platform: 'FACEBOOK' as const, pageId: 'placeholder', pageName: 'INSAN Healthcare', isPrimary: true },
+        { provider: 'facebook_page_insan', platform: 'FACEBOOK' as const, pageId: '1234349709765899', pageName: 'INSAN Healthcare', isPrimary: true },
         { provider: 'instagram_page_insan', platform: 'INSTAGRAM' as const, pageId: 'placeholder', pageName: 'INSAN Healthcare', isPrimary: false },
         { provider: 'linkedin_page_insan', platform: 'LINKEDIN' as const, pageId: 'placeholder', pageName: 'INSAN Healthcare', isPrimary: false },
       ],
@@ -937,14 +937,14 @@ async function seedBrands() {
       code: 'FUTURE',
       displayName: { ar: 'مستشفى المستقبل التخصصي', en: 'Future Specialized Hospital' },
       socialAccounts: [
-        { provider: 'facebook_page_future', platform: 'FACEBOOK' as const, pageId: 'placeholder', pageName: 'Future Specialized Hospital', isPrimary: true },
+        { provider: 'facebook_page_future', platform: 'FACEBOOK' as const, pageId: '1404631922892169', pageName: 'Future Specialized Hospital', isPrimary: true },
       ],
     },
     {
       code: 'DELTA',
       displayName: { ar: 'مستشفى الدلتا الدولي', en: 'Delta International Hospital' },
       socialAccounts: [
-        { provider: 'facebook_page_delta', platform: 'FACEBOOK' as const, pageId: 'placeholder', pageName: 'Delta International Hospital', isPrimary: true },
+        { provider: 'facebook_page_delta', platform: 'FACEBOOK' as const, pageId: '435159743012313', pageName: 'Delta International Hospital', isPrimary: true },
       ],
     },
   ];
@@ -974,9 +974,21 @@ async function seedBrands() {
             pageId: accountData.pageId,
             pageName: accountData.pageName,
             isPrimary: accountData.isPrimary,
-            isActive: false, // inactive until real page IDs are configured
+            // A real page id (supplied by the operator) goes live immediately.
+            // A row still carrying 'placeholder' stays inactive — there is
+            // nothing yet for the messenger adapter to match against.
+            isActive: accountData.pageId !== 'placeholder',
             integrationSettingId: integration?.id ?? null,
           },
+        });
+      } else if (existing.pageId === 'placeholder' && accountData.pageId !== 'placeholder') {
+        // The operator has since supplied the real page id for a row that was
+        // seeded as a placeholder. Activate it in place — re-running the seed
+        // is how that transition is meant to take effect, and the original
+        // "create only if missing" logic silently never applied it.
+        await prisma.brandSocialAccount.update({
+          where: { id: existing.id },
+          data: { pageId: accountData.pageId, pageName: accountData.pageName, isActive: true },
         });
       }
     }
