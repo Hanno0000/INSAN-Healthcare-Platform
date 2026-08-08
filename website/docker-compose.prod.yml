@@ -77,6 +77,7 @@ services:
       - "443:443"
     volumes:
       - ./infra/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infra/proxy-locations.conf:/etc/nginx/proxy-locations.conf:ro
       - ./infra/ssl:/etc/nginx/ssl:ro
       - ./infra/certbot-webroot:/var/www/certbot
       - uploads_data:/usr/share/nginx/html/uploads:ro
