@@ -1268,9 +1268,21 @@ async function main() {
   console.log('✅ Seed complete!');
 }
 
-main()
-  .catch((err) => {
-    console.error('❌ Seed failed:', err);
-    process.exit(1);
-  })
-  .finally(() => prisma.$disconnect());
+// Only run the full seed when this file is executed directly. Without this
+// guard, importing any single seeder from here would run the whole seed —
+// including the destructive steps — as an import side effect. seed-brands.ts
+// depends on that being safe.
+if (require.main === module) {
+  main()
+    .catch((err) => {
+      console.error('❌ Seed failed:', err);
+      process.exit(1);
+    })
+    .finally(() => prisma.$disconnect());
+}
+
+// Exported for seed-brands.ts, which runs only the non-destructive brand
+// seeders. Both of these are upsert / create-if-missing throughout and contain
+// no deleteMany — that property is what makes them safe to run against a
+// populated production database, and it must hold for any future edit.
+export { prisma, seedIntegrationSettings, seedBrands, seedBrandPersonas };

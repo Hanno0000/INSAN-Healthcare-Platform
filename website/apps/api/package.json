@@ -9,6 +9,7 @@
     "db:migrate": "prisma migrate deploy",
     "db:push": "prisma db push",
     "db:seed": "ts-node --compiler-options \"{\\\"module\\\":\\\"CommonJS\\\", \\\"resolveJsonModule\\\":true}\" prisma/seed.ts",
+    "db:seed:brands": "ts-node --compiler-options \"{\\\"module\\\":\\\"CommonJS\\\", \\\"resolveJsonModule\\\":true}\" prisma/seed-brands.ts",
     "db:studio": "prisma studio",
     "db:generate": "prisma generate",
     "type-check": "tsc --noEmit"
